@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx
+  namespace: nginx-ingress
+data:
+  body-size: 64m
+  proxy-connect-timeout: "15"
+  proxy-read-timeout: "600"
+  proxy-send-timeout: "600"
+  server-name-hash-bucket-size: "256"
