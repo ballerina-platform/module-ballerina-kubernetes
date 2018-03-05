@@ -17,8 +17,8 @@ Annotation based kubernetes extension implementation for ballerina.
 ### @kubernetes:deployment{}
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
-|name|Name of the deployment|<outputfilename>-deployment|
-|labels|Labels for deployment|"app: <outputfilename>"|
+|name|Name of the deployment|\<outputfilename\>-deployment|
+|labels|Labels for deployment|"app: \<outputfilename\>"|
 |replicas|Number of replicas|1|
 |liveness|Enable or disable liveness probe|disable|
 |initialDelaySeconds|Initial delay in seconds before performing the first probe|10s|

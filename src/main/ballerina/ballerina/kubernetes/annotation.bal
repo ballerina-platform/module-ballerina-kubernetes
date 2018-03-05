@@ -13,6 +13,9 @@ package ballerina.kubernetes;
 @Field {value:"image: Docker image with tag"}
 @Field {value:"envVars: Environment varialbes for container"}
 @Field {value:"imageBuild: Docker image to be build or not"}
+@Field {value:"username: Username for docker registry"}
+@Field {value:"password: Password for docker registry"}
+@Field {value:"push: Push to remote registry"}
 public annotation deployment attach service, function {
     string name;
     string labels;
@@ -26,6 +29,9 @@ public annotation deployment attach service, function {
     string image;
     string env;
     boolean imageBuild;
+    string username;
+    string password;
+    boolean push;
 }
 
 @Description {value:"Kubernetes service configuration"}

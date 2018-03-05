@@ -106,6 +106,18 @@ class KubeAnnotationProcessor {
         boolean imageBuild = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_IMAGE_BUILD)
                 == null || deploymentAnnotationInfo.getAttributeValue(
                 KubeGenConstants.DEPLOYMENT_IMAGE_BUILD).getBooleanValue();
+        boolean push = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_PUSH)
+                == null || deploymentAnnotationInfo.getAttributeValue(
+                KubeGenConstants.DEPLOYMENT_PUSH).getBooleanValue();
+        String username = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_USERNAME) != null ?
+                deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_USERNAME).getStringValue() :
+                null;
+
+
+        String password = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_PASSWORD) != null ?
+                deploymentAnnotationInfo.getAttributeValue(KubeGenConstants
+                        .DEPLOYMENT_PASSWORD).getStringValue() : null;
+
         deploymentModel.setImage(image);
 
         //generate dockerfile and docker image
@@ -115,6 +127,9 @@ class KubeAnnotationProcessor {
         dockerModel.setName(image);
         dockerModel.setTag(imageTag);
         dockerModel.setDebugEnable(false);
+        dockerModel.setUsername(username);
+        dockerModel.setPassword(password);
+        dockerModel.setPush(push);
         String balxFileName = KubeGenUtils.extractBalxName(balxFilePath) + BALX;
         dockerModel.setBalxFileName(balxFileName);
         dockerModel.setBalxFilePath(balxFileName);

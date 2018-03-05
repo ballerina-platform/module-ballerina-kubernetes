@@ -63,6 +63,9 @@ public class KubeGenConstants {
     public static final String DEPLOYMENT_LIVENESS_DISABLE = "disable";
     public static final String DEPLOYMENT_LIVENESS_ENABLE = "enable";
     public static final String DEPLOYMENT_ENV_VARS = "env";
+    public static final String DEPLOYMENT_USERNAME = "username";
+    public static final String DEPLOYMENT_PASSWORD = "password";
+    public static final String DEPLOYMENT_PUSH = "push";
 
 
     //Kubernetes service constants
