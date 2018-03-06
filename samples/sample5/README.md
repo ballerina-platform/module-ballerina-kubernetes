@@ -31,8 +31,8 @@
 @kubernetes:deployment{
     liveness:"enable",
     push:true,
-    image:"index.docker.io/<user_name>/gce-sample:1.0",
-    username:"<user_name>",
+    image:"index.docker.io/<username>/gce-sample:1.0",
+    username:"<username>",
     password:"<password>"
 }
 ```

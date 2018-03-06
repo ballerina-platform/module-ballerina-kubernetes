@@ -463,7 +463,7 @@ class KubeAnnotationProcessor {
         String password = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_PASSWORD) != null ?
                 deploymentAnnotationInfo.getAttributeValue(KubeGenConstants
                         .DEPLOYMENT_PASSWORD).getStringValue() : null;
-        deploymentModel.setUsername(password);
+        deploymentModel.setPassword(password);
         return deploymentModel;
     }
 
@@ -503,6 +503,7 @@ class KubeAnnotationProcessor {
                 Files.delete(Paths.get(balxDestination));
                 //push only if image build is enabled.
                 if (dockerModel.isPush()) {
+                    printInfo("Pushing docker image ...");
                     dockerArtifactHandler.pushImage(dockerModel);
                 }
             }

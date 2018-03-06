@@ -35,6 +35,7 @@ import java.util.concurrent.CountDownLatch;
 
 import static org.ballerinalang.artifactgen.utils.KubeGenUtils.printDebug;
 import static org.ballerinalang.artifactgen.utils.KubeGenUtils.printError;
+import static org.ballerinalang.artifactgen.utils.KubeGenUtils.printInfo;
 import static org.ballerinalang.artifactgen.utils.KubeGenUtils.printSuccess;
 
 /**
@@ -140,7 +141,7 @@ public class DockerHandler implements ArtifactHandler {
 
                     @Override
                     public void onEvent(String event) {
-                        printDebug(event);
+                        printInfo(event);
                     }
                 })
                 .toRegistry();
