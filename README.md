@@ -32,7 +32,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |push|Push docker image to registry. This can only be true if image build is true.|FALSE|
 |username|Username for the docker registry|null|
 |password|Password for the docker registry|null|
-|baseImage|Base image to create the docker image|ballerina/b7a:latest|
+|baseImage|Base image to create the docker image|ballerina/ballerina:latest|
 |sideCarTo|Pod name to attached as sidecar|null|
 
 ### @kubernetes:svc{}
