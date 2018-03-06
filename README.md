@@ -33,7 +33,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |username|Username for the docker registry|null|
 |password|Password for the docker registry|null|
 |baseImage|Base image to create the docker image|ballerina/ballerina:latest|
-|sideCarTo|Pod name to attached as sidecar|null|
+|sideCar|Name of the sidecar POD|null|
 
 ### @kubernetes:svc{}
 |**Annotation Name**|**Description**|**Default value**|
