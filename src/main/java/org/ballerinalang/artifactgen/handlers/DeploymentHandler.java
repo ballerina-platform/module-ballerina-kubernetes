@@ -145,6 +145,5 @@ public class DeploymentHandler implements ArtifactHandler {
         return deploymentYAML;
     }
 
-
 }
 

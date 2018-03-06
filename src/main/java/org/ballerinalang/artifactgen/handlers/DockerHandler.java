@@ -73,7 +73,7 @@ public class DockerHandler implements ArtifactHandler {
                 .usingListener(new EventListener() {
                     @Override
                     public void onSuccess(String message) {
-                        printSuccess(message);
+                        printSuccess("Docker image " + imageName + " generated.");
                         buildDone.countDown();
                     }
 

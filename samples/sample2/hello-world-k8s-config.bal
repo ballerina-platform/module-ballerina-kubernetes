@@ -6,6 +6,7 @@ import ballerina.kubernetes;
     liveness:"enable"
 }
 @kubernetes:svc{}
+@kubernetes:hpa{}
 @kubernetes:ingress{
     hostname:"abc.com"
 }

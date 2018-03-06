@@ -81,7 +81,7 @@ target/
 │       		├── job.yaml
 │       		├── service.yaml
 │        		└── docker
-│	      		└── Dockerfile
+│	      		    └── Dockerfile
 │  	
 └── outputfilename.balx	
 ```

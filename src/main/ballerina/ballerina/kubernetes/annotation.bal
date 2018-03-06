@@ -15,6 +15,7 @@ package ballerina.kubernetes;
 @Field {value:"imageBuild: Docker image to be build or not"}
 @Field {value:"username: Username for docker registry"}
 @Field {value:"password: Password for docker registry"}
+@Field {value:"baseImage: Base image for docker image building"}
 @Field {value:"push: Push to remote registry"}
 public annotation deployment attach service, function {
     string name;
@@ -31,6 +32,7 @@ public annotation deployment attach service, function {
     boolean imageBuild;
     string username;
     string password;
+    string baseImage;
     boolean push;
 }
 

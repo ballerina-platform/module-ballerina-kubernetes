@@ -60,12 +60,13 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bFile);
             ProgramFile programFile = reader.readProgram(byteArrayInputStream);
             PackageInfo packageInfos[] = programFile.getPackageInfoEntries();
+            KubeAnnotationProcessor kubeAnnotationProcessor = new KubeAnnotationProcessor();
+            ServiceInfo deploymentAnnotatedService = null;
             //iterate through packages
             for (PackageInfo packageInfo : packageInfos) {
-                KubeAnnotationProcessor kubeAnnotationProcessor = new KubeAnnotationProcessor();
                 ServiceInfo serviceInfos[] = packageInfo.getServiceInfoEntries();
                 int deploymentCount = 0;
-                ServiceInfo deploymentAnnotatedService = null;
+
                 for (ServiceInfo serviceInfo : serviceInfos) {
                     AnnAttachmentInfo serviceAnnotation = serviceInfo.getAnnotationAttachmentInfo
                             (KubeGenConstants.KUBERNETES_ANNOTATION_PACKAGE,
@@ -89,14 +90,13 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                         kubeAnnotationProcessor.processSvcAnnotationForService(serviceInfo, filePath, targetPath);
                     }
                 }
-                if (deploymentAnnotatedService != null) {
-                    String targetPath = userDir + File.separator + "target" + File.separator + KubeGenUtils
-                            .extractBalxName(filePath)
-                            + File.separator;
-                    kubeAnnotationProcessor.
-                            processDeploymentAnnotationForService(deploymentAnnotatedService, filePath, targetPath);
-                }
             }
+            String targetPath = userDir + File.separator + "target" + File.separator + KubeGenUtils
+                    .extractBalxName(filePath)
+                    + File.separator;
+            kubeAnnotationProcessor.
+                    processDeploymentAnnotationForService(deploymentAnnotatedService, filePath, targetPath);
+
         } catch (IOException e) {
             printError("error occurred while reading balx file" + e.getMessage());
         }

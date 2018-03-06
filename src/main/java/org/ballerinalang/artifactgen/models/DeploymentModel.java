@@ -34,7 +34,12 @@ public class DeploymentModel {
     private String imagePullPolicy;
     private String namespace;
     private String image;
+    private boolean imageBuild;
+    private String baseImage;
     private Map<String, String> env;
+    private String username;
+    private String password;
+    private boolean push;
     private List<Integer> ports;
 
     public String getName() {
@@ -133,6 +138,46 @@ public class DeploymentModel {
         this.livenessPort = livenessPort;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public boolean isPush() {
+        return push;
+    }
+
+    public void setPush(boolean push) {
+        this.push = push;
+    }
+
+    public boolean isImageBuild() {
+        return imageBuild;
+    }
+
+    public void setImageBuild(boolean imageBuild) {
+        this.imageBuild = imageBuild;
+    }
+
+    public String getBaseImage() {
+        return baseImage;
+    }
+
+    public void setBaseImage(String baseImage) {
+        this.baseImage = baseImage;
+    }
+
     @Override
     public String toString() {
         return "DeploymentModel{" +
@@ -146,7 +191,12 @@ public class DeploymentModel {
                 ", imagePullPolicy='" + imagePullPolicy + '\'' +
                 ", namespace='" + namespace + '\'' +
                 ", image='" + image + '\'' +
+                ", imageBuild=" + imageBuild +
+                ", baseImage='" + baseImage + '\'' +
                 ", env=" + env +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", push=" + push +
                 ", ports=" + ports +
                 '}';
     }

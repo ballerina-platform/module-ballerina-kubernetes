@@ -84,69 +84,45 @@ class KubeAnnotationProcessor {
      */
     void processDeploymentAnnotationForService(ServiceInfo serviceInfo, String balxFilePath, String
             outputDir) {
-        AnnAttachmentInfo deploymentAnnotationInfo = serviceInfo.getAnnotationAttachmentInfo
-                (KubeGenConstants.KUBERNETES_ANNOTATION_PACKAGE, KubeGenConstants.DEPLOYMENT_ANNOTATION);
-        if (deploymentAnnotationInfo == null) {
-            return;
+        AnnAttachmentInfo deploymentAnnotationInfo = null;
+        if (serviceInfo != null) {
+            deploymentAnnotationInfo = serviceInfo.getAnnotationAttachmentInfo
+                    (KubeGenConstants.KUBERNETES_ANNOTATION_PACKAGE, KubeGenConstants.DEPLOYMENT_ANNOTATION);
         }
-        DeploymentModel deploymentModel = getDeploymentModel(deploymentAnnotationInfo, balxFilePath);
-        int livenessPort = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants
-                .DEPLOYMENT_LIVENESS_PORT)
-                != null ?
-                Math.toIntExact(deploymentAnnotationInfo.getAttributeValue(KubeGenConstants
-                        .DEPLOYMENT_LIVENESS_PORT).getIntValue()) : KubeGenUtils.extractPort(serviceInfo);
-        deploymentModel.setLivenessPort(livenessPort);
-        String baseImage = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants
-                .DOCKER_BASE_IMAGE) != null ? deploymentAnnotationInfo.getAttributeValue(KubeGenConstants
-                .DOCKER_BASE_IMAGE).getStringValue() : DEFAULT_BASE_IMAGE;
-        String image = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_IMAGE)
-                != null ?
-                deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_IMAGE).getStringValue() :
-                KubeGenUtils.extractBalxName(balxFilePath) + DOCKER_LATEST_TAG;
-        boolean imageBuild = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_IMAGE_BUILD)
-                == null || deploymentAnnotationInfo.getAttributeValue(
-                KubeGenConstants.DEPLOYMENT_IMAGE_BUILD).getBooleanValue();
-        boolean push = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_PUSH)
-                == null || deploymentAnnotationInfo.getAttributeValue(
-                KubeGenConstants.DEPLOYMENT_PUSH).getBooleanValue();
-        String username = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_USERNAME) != null ?
-                deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_USERNAME).getStringValue() :
-                null;
-
-
-        String password = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_PASSWORD) != null ?
-                deploymentAnnotationInfo.getAttributeValue(KubeGenConstants
-                        .DEPLOYMENT_PASSWORD).getStringValue() : null;
-
-        deploymentModel.setImage(image);
+        DeploymentModel deploymentModel;
+        if (deploymentAnnotationInfo != null) {
+            deploymentModel = getDeploymentModel(serviceInfo, balxFilePath);
+            // Process HPA Annotation only if deployment annotation is present
+            AnnAttachmentInfo ingressAnnotationInfo = serviceInfo.getAnnotationAttachmentInfo
+                    (KubeGenConstants.KUBERNETES_ANNOTATION_PACKAGE, KubeGenConstants.HPA_ANNOTATION);
+            if (ingressAnnotationInfo != null) {
+                processHPAAnnotationForService(serviceInfo, deploymentModel, balxFilePath, outputDir);
+            }
+        } else {
+            deploymentModel = getDefaultDeploymentModel(balxFilePath);
+        }
 
         //generate dockerfile and docker image
         DockerModel dockerModel = new DockerModel();
-        String imageTag = image.substring(image.lastIndexOf(":") + 1, image.length());
-        dockerModel.setBaseImage(baseImage);
-        dockerModel.setName(image);
+        String dockerImage = deploymentModel.getImage();
+        String imageTag = dockerImage.substring(dockerImage.lastIndexOf(":") + 1, dockerImage.length());
+        dockerModel.setBaseImage(deploymentModel.getBaseImage());
+        dockerModel.setName(dockerImage);
         dockerModel.setTag(imageTag);
         dockerModel.setDebugEnable(false);
-        dockerModel.setUsername(username);
-        dockerModel.setPassword(password);
-        dockerModel.setPush(push);
+        dockerModel.setUsername(deploymentModel.getUsername());
+        dockerModel.setPassword(deploymentModel.getPassword());
+        dockerModel.setPush(deploymentModel.isPush());
         String balxFileName = KubeGenUtils.extractBalxName(balxFilePath) + BALX;
         dockerModel.setBalxFileName(balxFileName);
         dockerModel.setBalxFilePath(balxFileName);
         dockerModel.setPorts(deploymentModel.getPorts());
         dockerModel.setService(true);
-        dockerModel.setImageBuild(imageBuild);
+        dockerModel.setImageBuild(deploymentModel.isImageBuild());
         createDockerArtifacts(dockerModel, balxFilePath, outputDir + File.separator + KUBERNETES + File
                 .separator + DOCKER);
         printDebug(deploymentModel.toString());
         createDeploymentArtifacts(deploymentModel, outputDir, balxFilePath);
-
-        // Process HPA Annotation only if deployment annotation is present
-        AnnAttachmentInfo ingressAnnotationInfo = serviceInfo.getAnnotationAttachmentInfo
-                (KubeGenConstants.KUBERNETES_ANNOTATION_PACKAGE, KubeGenConstants.HPA_ANNOTATION);
-        if (ingressAnnotationInfo != null) {
-            processHPAAnnotationForService(serviceInfo, deploymentModel, balxFilePath, outputDir);
-        }
         printKubernetesInstructions(outputDir);
     }
 
@@ -377,11 +353,13 @@ class KubeAnnotationProcessor {
     /**
      * Extract deployment info from Annotation attachment.
      *
-     * @param deploymentAnnotationInfo Annotation attachment object
-     * @param balxFilePath             ballerina file path
+     * @param serviceInfo  Service Info object
+     * @param balxFilePath ballerina file path
      * @return DeploymentModel for kubernetes
      */
-    private DeploymentModel getDeploymentModel(AnnAttachmentInfo deploymentAnnotationInfo, String balxFilePath) {
+    private DeploymentModel getDeploymentModel(ServiceInfo serviceInfo, String balxFilePath) {
+        AnnAttachmentInfo deploymentAnnotationInfo = serviceInfo.getAnnotationAttachmentInfo
+                (KubeGenConstants.KUBERNETES_ANNOTATION_PACKAGE, KubeGenConstants.DEPLOYMENT_ANNOTATION);
         DeploymentModel deploymentModel = new DeploymentModel();
         String outputFileName = KubeGenUtils.extractBalxName(balxFilePath);
         String deploymentName = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_NAME) !=
@@ -442,15 +420,50 @@ class KubeAnnotationProcessor {
         String labels = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_LABELS) != null ?
                 deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_LABELS).getStringValue() :
                 null;
-
         deploymentModel.setLabels(getLabelMap(labels, KubeGenUtils.extractBalxName(balxFilePath)));
 
         String envVars = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_ENV_VARS) != null ?
                 deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_ENV_VARS).getStringValue() :
                 null;
-
         deploymentModel.setEnv(getEnvVars(envVars));
 
+        int livenessPort = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants
+                .DEPLOYMENT_LIVENESS_PORT)
+                != null ?
+                Math.toIntExact(deploymentAnnotationInfo.getAttributeValue(KubeGenConstants
+                        .DEPLOYMENT_LIVENESS_PORT).getIntValue()) : KubeGenUtils.extractPort(serviceInfo);
+        deploymentModel.setLivenessPort(livenessPort);
+
+        String baseImage = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants
+                .DOCKER_BASE_IMAGE) != null ? deploymentAnnotationInfo.getAttributeValue(KubeGenConstants
+                .DOCKER_BASE_IMAGE).getStringValue() : DEFAULT_BASE_IMAGE;
+        deploymentModel.setBaseImage(baseImage);
+
+        String image = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_IMAGE)
+                != null ?
+                deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_IMAGE).getStringValue() :
+                KubeGenUtils.extractBalxName(balxFilePath) + DOCKER_LATEST_TAG;
+        deploymentModel.setImage(image);
+
+        boolean imageBuild = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_IMAGE_BUILD) == null
+                || deploymentAnnotationInfo.getAttributeValue(
+                KubeGenConstants.DEPLOYMENT_IMAGE_BUILD).getBooleanValue();
+        deploymentModel.setImageBuild(imageBuild);
+
+        boolean push = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_PUSH)
+                != null && deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_PUSH)
+                .getBooleanValue();
+        deploymentModel.setPush(push);
+
+        String username = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_USERNAME) != null ?
+                deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_USERNAME).getStringValue() :
+                null;
+        deploymentModel.setUsername(username);
+
+        String password = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_PASSWORD) != null ?
+                deploymentAnnotationInfo.getAttributeValue(KubeGenConstants
+                        .DEPLOYMENT_PASSWORD).getStringValue() : null;
+        deploymentModel.setUsername(password);
         return deploymentModel;
     }
 
@@ -498,5 +511,43 @@ class KubeAnnotationProcessor {
         } catch (InterruptedException e) {
             printError("Unable to create docker images " + e.getMessage());
         }
+    }
+
+    /**
+     * Get DeploymentModel object with default values.
+     *
+     * @param balxFilePath ballerina file path
+     * @return DeploymentModel object with default values
+     */
+    private DeploymentModel getDefaultDeploymentModel(String balxFilePath) {
+        DeploymentModel deploymentModel = new DeploymentModel();
+
+        String deploymentName = KubeGenUtils.extractBalxName(balxFilePath) + "-deployment";
+        deploymentModel.setName(deploymentName.toLowerCase(Locale.ENGLISH));
+
+        List<Integer> portList = new ArrayList<>();
+        if (portList.addAll(ports)) {
+            deploymentModel.setPorts(portList);
+        }
+        String namespace = KubeGenConstants.DEPLOYMENT_NAMESPACE_DEFAULT;
+        deploymentModel.setNamespace(namespace);
+
+        String imagePullPolicy = KubeGenConstants.DEPLOYMENT_IMAGE_PULL_POLICY_DEFAULT;
+        deploymentModel.setImagePullPolicy(imagePullPolicy);
+
+        String liveness = KubeGenConstants.DEPLOYMENT_LIVENESS_DISABLE;
+        deploymentModel.setLiveness(liveness);
+
+        int defaultReplicas = 1;
+        deploymentModel.setReplicas(defaultReplicas);
+
+        deploymentModel.setLabels(getLabelMap(null, KubeGenUtils.extractBalxName(balxFilePath)));
+        deploymentModel.setEnv(getEnvVars(null));
+        deploymentModel.setBaseImage(DEFAULT_BASE_IMAGE);
+        deploymentModel.setImage(KubeGenUtils.extractBalxName(balxFilePath) + DOCKER_LATEST_TAG);
+        deploymentModel.setImageBuild(true);
+        deploymentModel.setPush(false);
+
+        return deploymentModel;
     }
 }

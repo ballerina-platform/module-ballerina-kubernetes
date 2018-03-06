@@ -2,7 +2,6 @@ import ballerina.net.http;
 import ballerina.kubernetes;
 
 
-@kubernetes:deployment{}
 @kubernetes:svc{}
 @kubernetes:ingress{}
 @http:configuration {
