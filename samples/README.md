@@ -19,3 +19,4 @@ kubectl apply -f nginx-ingress/namespaces/nginx-ingress.yaml -Rf nginx-ingress
 1. [Sample2: Kubernetes Hello World with liveness and hostname mapping](sample2/)
 1. [Sample3: Ballerina program with multiple services with different ports](sample3/)
 1. [Sample4: Ballerina program with multiple services running in multiple ports](sample4/)
+1. [Sample5: Kubernetes Hello World in Google Cloud Environment](sample5/)

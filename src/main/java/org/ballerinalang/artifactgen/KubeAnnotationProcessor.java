@@ -72,7 +72,7 @@ class KubeAnnotationProcessor {
     private static final String DOCKER_LATEST_TAG = ":latest";
     private static final String INGRESS_CLASS_NGINX = "nginx";
     private static final String INGRESS_HOSTNAME_POSTFIX = ".com";
-    private static final String DEFAULT_BASE_IMAGE = "ballerina/b7a:latest";
+    private static final String DEFAULT_BASE_IMAGE = "ballerina/ballerina:latest";
     private static Set<Integer> ports = new HashSet<>();
 
     /**
@@ -463,7 +463,7 @@ class KubeAnnotationProcessor {
         String password = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_PASSWORD) != null ?
                 deploymentAnnotationInfo.getAttributeValue(KubeGenConstants
                         .DEPLOYMENT_PASSWORD).getStringValue() : null;
-        deploymentModel.setUsername(password);
+        deploymentModel.setPassword(password);
         return deploymentModel;
     }
 
@@ -503,6 +503,7 @@ class KubeAnnotationProcessor {
                 Files.delete(Paths.get(balxDestination));
                 //push only if image build is enabled.
                 if (dockerModel.isPush()) {
+                    printInfo("Pushing docker image ...");
                     dockerArtifactHandler.pushImage(dockerModel);
                 }
             }
