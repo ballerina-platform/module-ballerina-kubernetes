@@ -1,7 +1,8 @@
 ## Sample1: Kubernetes Hello World
 
 - This sample runs simple ballerina hello world service in kubernetes cluster with minimal configurations. 
-- The service is annotated with @kubernetes:deployment{}, @kubernetes:svc{}, @kubernetes:ingress{} and without passing any parameters. 
+- The service is annotated with @kubernetes:svc{}, @kubernetes:ingress{} and without passing any parameters. 
+- Note that the @kubernetes:deployment{} is optional.
 - Default values for kubernetes annotation attributes will be used to create artifacts.
 - Following files will be generated from this sample.
     ``` 
