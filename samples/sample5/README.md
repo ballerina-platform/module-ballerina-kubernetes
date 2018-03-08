@@ -11,13 +11,13 @@
     
     $> tree
         .
-        ├── hello-world-gce.balx
+        ├── hello_world_gce.balx
         └── target
-            └── hello-world-gce
+            └── hello_world_gce
                 └── kubernetes
                     ├── docker
                     │   └── Dockerfile
-                    ├── hello-world-gce-deployment.yaml
+                    ├── hello_world_gce-deployment.yaml
                     ├── helloWorld-hpa.yaml
                     ├── helloWorld-ingress.yaml
                     └── helloWorld-svc.yaml
@@ -26,7 +26,7 @@
 
 1. Configure [kubernetes cluster and ingress controller](https://cloud.google.com/community/tutorials/nginx-ingress-gke) in google cloud.
 
-2. Open hello-world-gce.bal and change username and password with docker hub credentials.
+2. Open hello_world_gce.bal and change username and password with docker hub credentials.
 ```bash
 @kubernetes:deployment{
     liveness:"enable",
@@ -37,9 +37,9 @@
 }
 ```
 
-3. Compile the  hello-world-gce.bal file. Command to run kubernetes artifacts will be printed on success:
+3. Compile the  hello_world_gce.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
-$> ballerina build hello-world-gce.bal
+$> ballerina build hello_world_gce.bal
 
 info: Processing svc{} annotation for:helloWorld
 success: Service yaml generated.
@@ -56,20 +56,20 @@ success: Done.
 success: Deployment yaml generated.
 
 Run following command to deploy kubernetes artifacts:
-kubectl create -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample5/target/hello-world-gce/kubernetes
+kubectl create -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample5/target/hello_world_gce/kubernetes
 ```
 
-4. hello-world-gce.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
+4. hello_world_gce.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
 .
-├── hello-world-gce.balx
+├── hello_world_gce.balx
 └── target
-    └── hello-world-gce
+    └── hello_world_gce
         └── kubernetes
             ├── docker
             │   └── Dockerfile
-            ├── hello-world-gce-deployment.yaml
+            ├── hello_world_gce-deployment.yaml
             ├── helloWorld-hpa.yaml
             ├── helloWorld-ingress.yaml
             └── helloWorld-svc.yaml
@@ -85,8 +85,8 @@ anuruddhal/gce-sample        1.0                 88cabd203149        4 minutes a
 
 6. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl create -f target/hello-world-gce/kubernetes
-deployment "hello-world-gce-deployment" created
+$> kubectl create -f target/hello_world_gce/kubernetes
+deployment "hello_world_gce-deployment" created
 horizontalpodautoscaler "helloworld" created
 ingress "helloworld" created
 service "helloworld" created
@@ -96,7 +96,7 @@ service "helloworld" created
 ```bash
 $> kubectl get pods
 NAME                                         READY     STATUS    RESTARTS   AGE
-hello-world-gce-deployment-8477c9c446-h4dnr   1/1       Running   0          8s
+hello_world_gce-deployment-8477c9c446-h4dnr   1/1       Running   0          8s
 
 
 $> kubectl get svc
@@ -110,7 +110,7 @@ helloworld   abc.com   35.188.183.218   80, 443   1m
 
 $> kubectl get hpa
 NAME         REFERENCE                               TARGETS    MINPODS   MAXPODS   REPLICAS   AGE
-helloworld   Deployment/hello-world-gce-deployment   1% / 50%   1         2         1          2m
+helloworld   Deployment/hello_world_gce-deployment   1% / 50%   1         2         1          2m
 ```
 
 8. Access the hello world service with curl command:
@@ -130,7 +130,7 @@ Hello, World from service helloWorld !
 
 9. Undeploy sample:
 ```bash
-$> kubectl delete -f ./target/hello-world-gce/kubernetes
+$> kubectl delete -f ./target/hello_world_gce/kubernetes
 ```
 ## Troubleshooting
 - Run following commands to deploy ingress backend and controller

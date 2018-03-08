@@ -1,5 +1,5 @@
-import ballerina.kubernetes;
 import ballerina.net.http;
+import ballerinax.kubernetes;
 
 @kubernetes:deployment {
     image:"ballerina.com/pizzashack:2.1.0"

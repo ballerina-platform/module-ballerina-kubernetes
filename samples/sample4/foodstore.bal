@@ -1,5 +1,5 @@
-import ballerina.kubernetes;
 import ballerina.net.http;
+import ballerinax.kubernetes;
 
 @kubernetes:deployment {
     name:"foodstore",

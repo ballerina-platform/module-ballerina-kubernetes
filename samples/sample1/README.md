@@ -7,42 +7,42 @@
 - Following files will be generated from this sample.
     ``` 
     $> docker image
-    hello-world-k8s:latest
+    hello_world_k8s:latest
     
     $> tree
        .
-       ├── hello-world-k8s.balx
+       ├── hello_world_k8s.balx
        └── target
-           └── hello-world-k8s
+           └── hello_world_k8s
                └── kubernetes
                    ├── docker
                    │   └── Dockerfile
-                   ├── hello-world-k8s-deployment.yaml
+                   ├── hello_world_k8s-deployment.yaml
                    ├── helloWorld-ingress.yaml
                    └── helloWorld-svc.yaml
 
     ```
 ### How to run:
 
-1. Compile the  hello-world-k8s.bal file. Command to run kubernetes artifacts will be printed on success:
+1. Compile the  hello_world_k8s.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
-$> ballerina build hello-world-k8s.bal
+$> ballerina build hello_world_k8s.bal
 
 Run following command to deploy kubernetes artifacts: 
-kubectl create -f ./target/hello-world-k8s/kubernetes
+kubectl create -f ./target/hello_world_k8s/kubernetes
 ```
 
-2. hello-world-k8s.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
+2. hello_world_k8s.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
 .
-├── hello-world-k8s.balx
+├── hello_world_k8s.balx
 └── target
-    └── hello-world-k8s
+    └── hello_world_k8s
         └── kubernetes
             ├── docker
             │   └── Dockerfile
-            ├── hello-world-k8s-deployment.yaml
+            ├── hello_world_k8s-deployment.yaml
             ├── helloWorld-ingress.yaml
             └── helloWorld-svc.yaml
 ```
@@ -51,13 +51,13 @@ $> tree
 ```bash
 $> docker images
 REPOSITORY             TAG                 IMAGE ID            CREATED             SIZE
-hello-world-k8s       latest              df83ae43f69b        2 minutes ago        102MB
+hello_world_k8s       latest              df83ae43f69b        2 minutes ago        102MB
 
 ```
 
 4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl create -f /Users/anuruddha/Repos/ballerina-k8s-demo/kubernetes/sample1/target/hello-world-k8s/kubernetes
+$> kubectl create -f /Users/anuruddha/Repos/ballerina-k8s-demo/kubernetes/sample1/target/hello_world_k8s/kubernetes
 horizontalpodautoscaler "helloworld" created
 ingress "helloworld" created
 service "helloworld" created
@@ -67,7 +67,7 @@ service "helloworld" created
 ```bash
 $> kubectl get pods
 NAME                                         READY     STATUS    RESTARTS   AGE
-hello-world-k8s-deployment-bf8f98c7c-twwf9   1/1       Running   0          0s
+hello_world_k8s-deployment-bf8f98c7c-twwf9   1/1       Running   0          0s
 
 $> kubectl get svc
 NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
@@ -102,8 +102,8 @@ Hello, World from service helloWorld !
 
 7. Undeploy sample:
 ```bash
-$> kubectl delete -f ./target/hello-world-k8s/kubernetes
-deployment "hello-world-k8s-deployment" deleted
+$> kubectl delete -f ./target/hello_world_k8s/kubernetes
+deployment "hello_world_k8s-deployment" deleted
 ingress "helloworld" deleted
 service "helloworld" deleted
 
