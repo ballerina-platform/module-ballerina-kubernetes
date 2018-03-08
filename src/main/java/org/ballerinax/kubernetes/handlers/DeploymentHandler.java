@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.ballerinalang.artifactgen.handlers;
+package org.ballerinax.kubernetes.handlers;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -33,15 +33,15 @@ import io.fabric8.kubernetes.api.model.TCPSocketActionBuilder;
 import io.fabric8.kubernetes.api.model.extensions.Deployment;
 import io.fabric8.kubernetes.api.model.extensions.DeploymentBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
-import org.ballerinalang.artifactgen.KubeGenConstants;
-import org.ballerinalang.artifactgen.exceptions.ArtifactGenerationException;
-import org.ballerinalang.artifactgen.models.DeploymentModel;
+import org.ballerinax.kubernetes.KubeGenConstants;
+import org.ballerinax.kubernetes.exceptions.ArtifactGenerationException;
+import org.ballerinax.kubernetes.models.DeploymentModel;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.ballerinalang.artifactgen.utils.KubeGenUtils.printError;
+import static org.ballerinax.kubernetes.utils.KubeGenUtils.printError;
 
 /**
  * Generates kubernetes deployment from annotations.

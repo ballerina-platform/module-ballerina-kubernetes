@@ -1,19 +1,9 @@
 import ballerina.net.http;
-import ballerina.kubernetes;
+import ballerinax.kubernetes;
 
 
-@kubernetes:deployment{
-    liveness:"enable",
-    push:true,
-    image:"index.docker.io/<username>/gce-sample:1.0",
-    username:"<username>",
-    password:"<password>"
-}
 @kubernetes:svc{}
-@kubernetes:hpa{}
-@kubernetes:ingress{
-    hostname:"abc.com"
-}
+@kubernetes:ingress{}
 @http:configuration {
     basePath:"/helloWorld"
 }

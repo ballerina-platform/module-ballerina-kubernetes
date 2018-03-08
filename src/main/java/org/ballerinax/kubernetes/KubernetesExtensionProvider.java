@@ -16,26 +16,26 @@
  * under the License.
  */
 
-package org.ballerinalang.artifactgen;
+package org.ballerinax.kubernetes;
 
 import org.ballerinalang.annotation.JavaSPIService;
 import org.ballerinalang.repository.PackageRepository;
 import org.ballerinalang.repository.fs.ClasspathPackageRepository;
-import org.ballerinalang.spi.SystemPackageRepositoryProvider;
+import org.ballerinalang.spi.ExtensionPackageRepositoryProvider;
 
 /**
- * This represents the standard Ballerina built-in system package repository provider.
- * 
+ * This represents the Ballerina Kubernetes extension package repository provider.
+ *
  * @since 0.95
  */
-@JavaSPIService("org.ballerinalang.spi.SystemPackageRepositoryProvider")
-public class StandardSystemPackageRepositoryProvider implements SystemPackageRepositoryProvider {
+@JavaSPIService("org.ballerinalang.spi.ExtensionPackageRepositoryProvider")
+public class KubernetesExtensionProvider implements ExtensionPackageRepositoryProvider {
 
-    private static final String JAR_SYSTEM_LIB_LOCATION = "/META-INF/natives/";
+    private static final String SYSTEM_ORG_NAME = "natives";
 
     @Override
     public PackageRepository loadRepository() {
-        return new ClasspathPackageRepository(this.getClass(), JAR_SYSTEM_LIB_LOCATION);
+        return new ClasspathPackageRepository(this.getClass(), SYSTEM_ORG_NAME);
     }
 
 }

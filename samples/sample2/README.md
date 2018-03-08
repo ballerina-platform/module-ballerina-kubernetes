@@ -9,39 +9,39 @@
     
     $> tree
         .
-        ├── hello-world-k8s-config.balx
+        ├── hello_world_k8s_config.balx
         └── target
-            └── hello-world-k8s-config
+            └── hello_world_k8s_config
                 └── kubernetes
                     ├── docker
                     │   └── Dockerfile
-                    ├── hello-world-k8s-config-deployment.yaml
+                    ├── hello_world_k8s_config-deployment.yaml
                     ├── helloWorld-ingress.yaml
                     └── helloWorld-svc.yaml
 
     ```
 ### How to run:
 
-1. Compile the  hello-world-k8s-config.bal file. Command to run kubernetes artifacts will be printed on success:
+1. Compile the  hello_world_k8s_config.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build hello-world-k8s.bal
 
 Run following command to deploy kubernetes artifacts:  
-kubectl create -f ./target/hello-world-k8s-config/kubernetes
+kubectl create -f ./target/hello_world_k8s_config/kubernetes
 
 ```
 
-2. hello-world-k8s-config.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
+2. hello_world_k8s_config.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
 .
-├── hello-world-k8s-config.balx
+├── hello_world_k8s_config.balx
 └── target
-    └── hello-world-k8s-config
+    └── hello_world_k8s_config
         └── kubernetes
             ├── docker
             │   └── Dockerfile
-            ├── hello-world-k8s-config-deployment.yaml
+            ├── hello_world_k8s_config-deployment.yaml
             ├── helloWorld-ingress.yaml
             └── helloWorld-svc.yaml
 ```
@@ -50,7 +50,7 @@ $> tree
 ```bash
 $> docker images
 REPOSITORY                   TAG                 IMAGE ID            CREATED             SIZE
-hello-world-k8s-config      latest              df83ae43f69b        2 minutes ago        102MB
+hello_world_k8s_config      latest              df83ae43f69b        2 minutes ago        102MB
 
 ```
 
@@ -66,7 +66,7 @@ service "helloworld" created
 ```bash
 $> kubectl get pods
 NAME                                                READY     STATUS    RESTARTS   AGE
-hello-world-k8s-config-deployment-684965455d-5622z   1/1       Running   0          4s
+hello_world_k8s_config-deployment-684965455d-5622z   1/1       Running   0          4s
 
 
 $> kubectl get svc

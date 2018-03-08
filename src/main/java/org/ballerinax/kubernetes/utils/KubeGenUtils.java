@@ -16,13 +16,13 @@
  * under the License.
  */
 
-package org.ballerinalang.artifactgen.utils;
+package org.ballerinax.kubernetes.utils;
 
-import org.ballerinalang.artifactgen.KubeGenConstants;
 import org.ballerinalang.net.http.HttpConstants;
 import org.ballerinalang.util.codegen.AnnAttachmentInfo;
 import org.ballerinalang.util.codegen.AnnAttributeValue;
 import org.ballerinalang.util.codegen.ServiceInfo;
+import org.ballerinax.kubernetes.KubeGenConstants;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -86,6 +86,7 @@ public class KubeGenUtils {
 
     /**
      * Extract the ports from a given service.
+     *
      * @param serviceInfo service info object
      * @return port exposed by service
      */

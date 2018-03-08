@@ -1,5 +1,5 @@
 import ballerina.net.http;
-import ballerina.kubernetes;
+import ballerinax.kubernetes;
 
 
 @kubernetes:deployment{

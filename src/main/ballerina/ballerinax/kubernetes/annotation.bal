@@ -1,4 +1,4 @@
-package ballerina.kubernetes;
+package ballerinax.kubernetes;
 
 @Description {value:"Kubernetes deployment configuration"}
 @Field {value:"name: Name of the deployment"}
