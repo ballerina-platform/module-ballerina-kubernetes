@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ballerinalang.artifactgen.models;
+package org.ballerinax.kubernetes.models;
 
 import java.util.List;
 import java.util.Map;

@@ -16,16 +16,16 @@
  * under the License.
  */
 
-package org.ballerinalang.artifactgen.handlers;
+package org.ballerinax.kubernetes.handlers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscaler;
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscalerBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
-import org.ballerinalang.artifactgen.exceptions.ArtifactGenerationException;
-import org.ballerinalang.artifactgen.models.PodAutoscalerModel;
+import org.ballerinax.kubernetes.exceptions.ArtifactGenerationException;
+import org.ballerinax.kubernetes.models.PodAutoscalerModel;
 
-import static org.ballerinalang.artifactgen.utils.KubeGenUtils.printError;
+import static org.ballerinax.kubernetes.utils.KubeGenUtils.printError;
 
 /**
  * Generates kubernetes Horizontal Pod Autoscaler from annotations.

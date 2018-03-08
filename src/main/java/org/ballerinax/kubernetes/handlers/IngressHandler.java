@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.ballerinalang.artifactgen.handlers;
+package org.ballerinax.kubernetes.handlers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.fabric8.kubernetes.api.model.extensions.HTTPIngressPath;
@@ -28,13 +28,13 @@ import io.fabric8.kubernetes.api.model.extensions.IngressBuilder;
 import io.fabric8.kubernetes.api.model.extensions.IngressTLS;
 import io.fabric8.kubernetes.api.model.extensions.IngressTLSBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
-import org.ballerinalang.artifactgen.exceptions.ArtifactGenerationException;
-import org.ballerinalang.artifactgen.models.IngressModel;
+import org.ballerinax.kubernetes.exceptions.ArtifactGenerationException;
+import org.ballerinax.kubernetes.models.IngressModel;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.ballerinalang.artifactgen.utils.KubeGenUtils.printError;
+import static org.ballerinax.kubernetes.utils.KubeGenUtils.printError;
 
 
 /**

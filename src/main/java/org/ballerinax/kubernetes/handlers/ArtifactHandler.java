@@ -16,18 +16,13 @@
  * under the License.
  */
 
-package org.ballerinalang.artifactgen.exceptions;
+package org.ballerinax.kubernetes.handlers;
+
+import org.ballerinax.kubernetes.exceptions.ArtifactGenerationException;
 
 /**
- * Custom exception for kubernetes artifact generation errors.
+ * Artifact generator interface.
  */
-public class ArtifactGenerationException extends Exception {
-
-    public ArtifactGenerationException(String msg) {
-        super(msg);
-    }
-
-    public ArtifactGenerationException(String msg, Throwable e) {
-        super(msg, e);
-    }
+public interface ArtifactHandler {
+    String generate() throws ArtifactGenerationException;
 }

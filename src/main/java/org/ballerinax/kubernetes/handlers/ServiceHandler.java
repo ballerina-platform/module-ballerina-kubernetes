@@ -16,18 +16,18 @@
  * under the License.
  */
 
-package org.ballerinalang.artifactgen.handlers;
+package org.ballerinax.kubernetes.handlers;
 
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
-import org.ballerinalang.artifactgen.KubeGenConstants;
-import org.ballerinalang.artifactgen.exceptions.ArtifactGenerationException;
-import org.ballerinalang.artifactgen.models.ServiceModel;
+import org.ballerinax.kubernetes.KubeGenConstants;
+import org.ballerinax.kubernetes.exceptions.ArtifactGenerationException;
+import org.ballerinax.kubernetes.models.ServiceModel;
 
 import java.io.IOException;
 
-import static org.ballerinalang.artifactgen.utils.KubeGenUtils.printError;
+import static org.ballerinax.kubernetes.utils.KubeGenUtils.printError;
 
 
 /**

@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.ballerinalang.artifactgen;
+package org.ballerinax.kubernetes;
 
 /**
  * Constants used in kuberina.
@@ -27,23 +27,13 @@ public class KubeGenConstants {
     public static final String KUBERNETES_SELECTOR_KEY = "app";
 
     // Annotation package constants
-    public static final String KUBERNETES_ANNOTATION_PACKAGE = "ballerina.kubernetes";
+    public static final String KUBERNETES_ANNOTATION_PACKAGE = "ballerinax.kubernetes";
     public static final String DEPLOYMENT_ANNOTATION = "deployment";
     public static final String HPA_ANNOTATION = "hpa";
     public static final String SERVICE_ANNOTATION = "svc";
     public static final String INGRESS_ANNOTATION = "ingress";
 
     //Docker annotation constants
-    public static final String DOCKER_NAME = "name";
-    public static final String DOCKER_REGISTRY = "registry";
-    public static final String DOCKER_TAG = "tag";
-    public static final String DOCKER_USERNAME = "username";
-    public static final String DOCKER_PASSWORD = "password";
-    public static final String DOCKER_PUSH = "push";
-    public static final String DOCKER_TAG_LATEST = "latest";
-    public static final String DOCKER_IMAGE_BUILD = "imageBuild";
-    public static final String DOCKER_DEBUG_ENABLE = "debugEnable";
-    public static final String DOCKER_DEBUG_PORT = "debugPort";
     public static final String DOCKER_BASE_IMAGE = "baseImage";
 
     //Deployment annotation constants

@@ -18,10 +18,11 @@
 
 package org.ballerinalang.artifactgen;
 
-import org.ballerinalang.artifactgen.exceptions.ArtifactGenerationException;
-import org.ballerinalang.artifactgen.handlers.ServiceHandler;
-import org.ballerinalang.artifactgen.models.ServiceModel;
-import org.ballerinalang.artifactgen.utils.KubeGenUtils;
+import org.ballerinax.kubernetes.KubeGenConstants;
+import org.ballerinax.kubernetes.exceptions.ArtifactGenerationException;
+import org.ballerinax.kubernetes.handlers.ServiceHandler;
+import org.ballerinax.kubernetes.models.ServiceModel;
+import org.ballerinax.kubernetes.utils.KubeGenUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;

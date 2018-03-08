@@ -16,24 +16,24 @@
  * under the License.
  */
 
-package org.ballerinalang.artifactgen;
+package org.ballerinax.kubernetes;
 
-import org.ballerinalang.artifactgen.exceptions.ArtifactGenerationException;
-import org.ballerinalang.artifactgen.handlers.DeploymentHandler;
-import org.ballerinalang.artifactgen.handlers.DockerHandler;
-import org.ballerinalang.artifactgen.handlers.HPAHandler;
-import org.ballerinalang.artifactgen.handlers.IngressHandler;
-import org.ballerinalang.artifactgen.handlers.ServiceHandler;
-import org.ballerinalang.artifactgen.models.DeploymentModel;
-import org.ballerinalang.artifactgen.models.DockerModel;
-import org.ballerinalang.artifactgen.models.IngressModel;
-import org.ballerinalang.artifactgen.models.PodAutoscalerModel;
-import org.ballerinalang.artifactgen.models.ServiceModel;
-import org.ballerinalang.artifactgen.utils.KubeGenUtils;
 import org.ballerinalang.net.http.HttpConstants;
 import org.ballerinalang.util.codegen.AnnAttachmentInfo;
 import org.ballerinalang.util.codegen.AnnAttributeValue;
 import org.ballerinalang.util.codegen.ServiceInfo;
+import org.ballerinax.kubernetes.exceptions.ArtifactGenerationException;
+import org.ballerinax.kubernetes.handlers.DeploymentHandler;
+import org.ballerinax.kubernetes.handlers.DockerHandler;
+import org.ballerinax.kubernetes.handlers.HPAHandler;
+import org.ballerinax.kubernetes.handlers.IngressHandler;
+import org.ballerinax.kubernetes.handlers.ServiceHandler;
+import org.ballerinax.kubernetes.models.DeploymentModel;
+import org.ballerinax.kubernetes.models.DockerModel;
+import org.ballerinax.kubernetes.models.IngressModel;
+import org.ballerinax.kubernetes.models.PodAutoscalerModel;
+import org.ballerinax.kubernetes.models.ServiceModel;
+import org.ballerinax.kubernetes.utils.KubeGenUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,13 +48,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import static org.ballerinalang.artifactgen.KubeGenConstants.DEPLOYMENT_LIVENESS_ENABLE;
-import static org.ballerinalang.artifactgen.utils.KubeGenUtils.printDebug;
-import static org.ballerinalang.artifactgen.utils.KubeGenUtils.printError;
-import static org.ballerinalang.artifactgen.utils.KubeGenUtils.printInfo;
-import static org.ballerinalang.artifactgen.utils.KubeGenUtils.printInstruction;
-import static org.ballerinalang.artifactgen.utils.KubeGenUtils.printSuccess;
 
 /**
  * Process Kubernetes Annotations and generate Artifacts.
@@ -121,7 +114,7 @@ class KubeAnnotationProcessor {
         dockerModel.setImageBuild(deploymentModel.isImageBuild());
         createDockerArtifacts(dockerModel, balxFilePath, outputDir + File.separator + KUBERNETES + File
                 .separator + DOCKER);
-        printDebug(deploymentModel.toString());
+        KubeGenUtils.printDebug(deploymentModel.toString());
         createDeploymentArtifacts(deploymentModel, outputDir, balxFilePath);
         printKubernetesInstructions(outputDir);
     }
@@ -173,16 +166,16 @@ class KubeAnnotationProcessor {
             serviceModel.setPort(9090);
             ports.add(9090);
         }
-        printDebug(serviceModel.toString());
+        KubeGenUtils.printDebug(serviceModel.toString());
         try {
             String svcContent = new ServiceHandler(serviceModel).generate();
             KubeGenUtils.writeToFile(svcContent, outputDir + File.separator + KUBERNETES + File
                     .separator + serviceInfo.getName() + SVC_POSTFIX);
-            printSuccess("Service yaml generated.");
+            KubeGenUtils.printSuccess("Service yaml generated.");
         } catch (IOException e) {
-            printError("Unable to write service content to " + outputDir);
+            KubeGenUtils.printError("Unable to write service content to " + outputDir);
         } catch (ArtifactGenerationException e) {
-            printError("Unable to generate service  " + e.getMessage());
+            KubeGenUtils.printError("Unable to generate service  " + e.getMessage());
         }
         // Process Ingress Annotation only if svc annotation is present
         AnnAttachmentInfo ingressAnnotationInfo = serviceInfo.getAnnotationAttachmentInfo
@@ -244,16 +237,16 @@ class KubeAnnotationProcessor {
         ingressModel.setServiceName(svc.getName());
         ingressModel.setServicePort(svc.getPort());
 
-        printDebug(ingressModel.toString());
+        KubeGenUtils.printDebug(ingressModel.toString());
         try {
             String ingressContext = new IngressHandler(ingressModel).generate();
             KubeGenUtils.writeToFile(ingressContext, outputDir + File.separator + KUBERNETES + File
                     .separator + serviceInfo.getName() + INGRESS_POSTFIX);
-            printSuccess("Ingress yaml generated.");
+            KubeGenUtils.printSuccess("Ingress yaml generated.");
         } catch (IOException e) {
-            printError("Unable to write ingress content to " + outputDir);
+            KubeGenUtils.printError("Unable to write ingress content to " + outputDir);
         } catch (ArtifactGenerationException e) {
-            printError("Unable to generate ingress content  " + e.getMessage());
+            KubeGenUtils.printError("Unable to generate ingress content  " + e.getMessage());
         }
     }
 
@@ -302,16 +295,16 @@ class KubeAnnotationProcessor {
 
         podAutoscalerModel.setDeployment(deploymentModel.getName());
 
-        printDebug(podAutoscalerModel.toString());
+        KubeGenUtils.printDebug(podAutoscalerModel.toString());
         try {
             String hpaContent = new HPAHandler(podAutoscalerModel).generate();
             KubeGenUtils.writeToFile(hpaContent, outputDir + File.separator + KUBERNETES + File
                     .separator + serviceInfo.getName() + AUTOSCALER_POSTFIX);
-            printSuccess("Horizontal pod autoscaler yaml generated.");
+            KubeGenUtils.printSuccess("Horizontal pod autoscaler yaml generated.");
         } catch (IOException e) {
-            printError("Unable to write HPA content to " + outputDir);
+            KubeGenUtils.printError("Unable to write HPA content to " + outputDir);
         } catch (ArtifactGenerationException e) {
-            printError("Unable to generate HPA content  " + e.getMessage());
+            KubeGenUtils.printError("Unable to generate HPA content  " + e.getMessage());
         }
     }
 
@@ -392,7 +385,7 @@ class KubeAnnotationProcessor {
                 KubeGenConstants.DEPLOYMENT_LIVENESS_DISABLE;
         deploymentModel.setLiveness(liveness);
 
-        if (DEPLOYMENT_LIVENESS_ENABLE.equals(liveness)) {
+        if (KubeGenConstants.DEPLOYMENT_LIVENESS_ENABLE.equals(liveness)) {
             int defaultInitialDelay = 5;
             int defaultPeriodSeconds = 20;
             int initialDelay = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants
@@ -473,44 +466,44 @@ class KubeAnnotationProcessor {
             String deploymentContent = new DeploymentHandler(deploymentModel).generate();
             KubeGenUtils.writeToFile(deploymentContent, outputDir + File.separator + KUBERNETES + File
                     .separator + KubeGenUtils.extractBalxName(balxFilePath) + DEPLOYMENT_POSTFIX);
-            printSuccess("Deployment yaml generated.");
+            KubeGenUtils.printSuccess("Deployment yaml generated.");
         } catch (IOException e) {
-            printError("Unable to write deployment content to " + outputDir);
+            KubeGenUtils.printError("Unable to write deployment content to " + outputDir);
         } catch (ArtifactGenerationException e) {
-            printError("Unable to generate deployment  " + e.getMessage());
+            KubeGenUtils.printError("Unable to generate deployment  " + e.getMessage());
         }
     }
 
     private void printKubernetesInstructions(String outputDir) {
-        printInstruction("\nRun following command to deploy kubernetes artifacts: ");
-        printInstruction("kubectl create -f " + outputDir + KUBERNETES);
+        KubeGenUtils.printInstruction("\nRun following command to deploy kubernetes artifacts: ");
+        KubeGenUtils.printInstruction("kubectl create -f " + outputDir + KUBERNETES);
     }
 
     private void createDockerArtifacts(DockerModel dockerModel, String balxFilePath, String outputDir) {
         DockerHandler dockerArtifactHandler = new DockerHandler(dockerModel);
         String dockerContent = dockerArtifactHandler.generate();
         try {
-            printInfo("Creating Dockerfile ...");
+            KubeGenUtils.printInfo("Creating Dockerfile ...");
             KubeGenUtils.writeToFile(dockerContent, outputDir + File.separator + "Dockerfile");
-            printSuccess("Dockerfile generated.");
+            KubeGenUtils.printSuccess("Dockerfile generated.");
             String balxDestination = outputDir + File.separator + KubeGenUtils.extractBalxName
                     (balxFilePath) + BALX;
             KubeGenUtils.copyFile(balxFilePath, balxDestination);
             //check image build is enabled.
             if (dockerModel.isImageBuild()) {
-                printInfo("Creating docker image ...");
+                KubeGenUtils.printInfo("Creating docker image ...");
                 dockerArtifactHandler.buildImage(dockerModel.getName(), outputDir);
                 Files.delete(Paths.get(balxDestination));
                 //push only if image build is enabled.
                 if (dockerModel.isPush()) {
-                    printInfo("Pushing docker image ...");
+                    KubeGenUtils.printInfo("Pushing docker image ...");
                     dockerArtifactHandler.pushImage(dockerModel);
                 }
             }
         } catch (IOException e) {
-            printError("Unable to write Dockerfile content to " + outputDir);
+            KubeGenUtils.printError("Unable to write Dockerfile content to " + outputDir);
         } catch (InterruptedException e) {
-            printError("Unable to create docker images " + e.getMessage());
+            KubeGenUtils.printError("Unable to create docker images " + e.getMessage());
         }
     }
 

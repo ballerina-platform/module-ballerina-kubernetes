@@ -16,9 +16,8 @@
  * under the License.
  */
 
-package org.ballerinalang.artifactgen;
+package org.ballerinax.kubernetes;
 
-import org.ballerinalang.artifactgen.utils.KubeGenUtils;
 import org.ballerinalang.compiler.plugins.AbstractCompilerPlugin;
 import org.ballerinalang.compiler.plugins.SupportedAnnotationPackages;
 import org.ballerinalang.util.codegen.AnnAttachmentInfo;
@@ -27,6 +26,7 @@ import org.ballerinalang.util.codegen.ProgramFile;
 import org.ballerinalang.util.codegen.ProgramFileReader;
 import org.ballerinalang.util.codegen.ServiceInfo;
 import org.ballerinalang.util.diagnostic.DiagnosticLog;
+import org.ballerinax.kubernetes.utils.KubeGenUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -35,15 +35,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.ballerinalang.artifactgen.utils.KubeGenUtils.printError;
-import static org.ballerinalang.artifactgen.utils.KubeGenUtils.printInfo;
-import static org.ballerinalang.artifactgen.utils.KubeGenUtils.printWarn;
-
 /**
  * Compiler plugin to generate kubernetes artifacts.
  */
 @SupportedAnnotationPackages(
-        value = "ballerina.kubernetes"
+        value = "ballerinax.kubernetes"
 )
 public class KubernetesPlugin extends AbstractCompilerPlugin {
     @Override
@@ -52,6 +48,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
 
     @Override
     public void codeGenerated(Path binaryPath) {
+        KubeGenUtils.printInfo("Generating deployment artifacts kubernetes …");
         String filePath = binaryPath.toAbsolutePath().toString();
         String userDir = new File(filePath).getParentFile().getAbsolutePath();
         try {
@@ -78,12 +75,12 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                             deploymentCount += 1;
                             deploymentAnnotatedService = serviceInfo;
                         } else {
-                            printWarn("multiple deployment{} annotations detected. Ignoring annotation in" +
-                                    " service: " + serviceInfo.getName());
+                            KubeGenUtils.printWarn("multiple deployment{} annotations detected. " +
+                                    "Ignoring annotation in service: " + serviceInfo.getName());
                         }
                     }
                     if (serviceAnnotation != null) {
-                        printInfo("Processing svc{} annotation for:" + serviceInfo.getName());
+                        KubeGenUtils.printInfo("Processing svc{} annotation for:" + serviceInfo.getName());
                         String targetPath = userDir + File.separator + "target" + File.separator + KubeGenUtils
                                 .extractBalxName(filePath)
                                 + File.separator;
@@ -98,7 +95,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                     processDeploymentAnnotationForService(deploymentAnnotatedService, filePath, targetPath);
 
         } catch (IOException e) {
-            printError("error occurred while reading balx file" + e.getMessage());
+            KubeGenUtils.printError("error occurred while reading balx file" + e.getMessage());
         }
     }
 }
