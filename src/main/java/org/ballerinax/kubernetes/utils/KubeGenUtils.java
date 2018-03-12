@@ -121,7 +121,7 @@ public class KubeGenUtils {
     public static void printError(String msg) {
         String ansiReset = "\u001B[0m";
         String ansiRed = "\u001B[31m";
-        error.println(ansiRed + "error: " + msg + ansiReset);
+        error.println(ansiRed + "error [Kubernetes plugin]: " + msg + ansiReset);
     }
 
     /**
@@ -152,7 +152,7 @@ public class KubeGenUtils {
      * @param msg message to be printed
      */
     public static void printInfo(String msg) {
-        out.println("info: " + msg);
+        out.println("info [Kubernetes plugin]: " + msg);
 
     }
 

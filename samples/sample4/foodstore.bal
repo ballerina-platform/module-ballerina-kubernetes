@@ -5,7 +5,7 @@ import ballerinax.kubernetes;
     name:"foodstore",
     replicas:3,
     labels:"location:SL,city:COLOMBO",
-    liveness:"enable"
+    enableLiveness:"enable"
 }
 @kubernetes:svc {}
 @kubernetes:ingress {

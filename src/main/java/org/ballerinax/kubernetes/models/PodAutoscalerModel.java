@@ -31,6 +31,10 @@ public class PodAutoscalerModel {
     private int cpuPercentage;
     private String deployment;
 
+    public PodAutoscalerModel() {
+        this.cpuPercentage = 50;
+    }
+
     public String getName() {
         return name;
     }

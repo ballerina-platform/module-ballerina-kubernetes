@@ -3,7 +3,7 @@ import ballerinax.kubernetes;
 
 
 @kubernetes:deployment{
-    liveness:"enable"
+    enableLiveness:"enable"
 }
 @kubernetes:svc{}
 @kubernetes:hpa{}

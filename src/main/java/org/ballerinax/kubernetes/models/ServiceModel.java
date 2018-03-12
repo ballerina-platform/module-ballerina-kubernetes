@@ -29,6 +29,10 @@ public class ServiceModel {
     private int port;
     private String selector;
 
+    public ServiceModel() {
+        serviceType = "clusterIP";
+    }
+
     public String getName() {
         return name;
     }

@@ -81,4 +81,26 @@ public class KubeGenConstants {
     public static final String AUTOSCALER_CPU_PERCENTAGE = "cpuPercentage";
     public static final String AUTOSCALER_DEPLOYMENT = "deployment";
 
+    /**
+     * Enum class for DeploymentConfiguration.
+     */
+    public enum DeploymentConfiguration {
+        name,
+        labels,
+        replicas,
+        enableLiveness,
+        livenessPort,
+        initialDelaySeconds,
+        periodSeconds,
+        imagePullPolicy,
+        namespace,
+        image,
+        env,
+        buildImage,
+        username,
+        password,
+        baseImage,
+        push
+    }
+
 }

@@ -27,20 +27,32 @@ public class DeploymentModel {
     private String name;
     private Map<String, String> labels;
     private int replicas;
-    private String liveness;
+    private String enableLiveness;
     private int livenessPort;
     private int initialDelaySeconds;
     private int periodSeconds;
     private String imagePullPolicy;
     private String namespace;
     private String image;
-    private boolean imageBuild;
+    private boolean buildImage;
     private String baseImage;
     private Map<String, String> env;
     private String username;
     private String password;
     private boolean push;
     private List<Integer> ports;
+    private PodAutoscalerModel podAutoscalerModel;
+
+    public DeploymentModel() {
+        // Initialize with default values.
+        this.replicas = 1;
+        this.enableLiveness = "disable";
+        this.periodSeconds = 20;
+        this.initialDelaySeconds = 10;
+        this.buildImage = true;
+        this.baseImage = "ballerina/ballerina:latest";
+        this.push = false;
+    }
 
     public String getName() {
         return name;
@@ -66,12 +78,12 @@ public class DeploymentModel {
         this.replicas = replicas;
     }
 
-    public String getLiveness() {
-        return liveness;
+    public String getEnableLiveness() {
+        return enableLiveness;
     }
 
-    public void setLiveness(String liveness) {
-        this.liveness = liveness;
+    public void setEnableLiveness(String enableLiveness) {
+        this.enableLiveness = enableLiveness;
     }
 
     public int getInitialDelaySeconds() {
@@ -162,12 +174,12 @@ public class DeploymentModel {
         this.push = push;
     }
 
-    public boolean isImageBuild() {
-        return imageBuild;
+    public boolean isBuildImage() {
+        return buildImage;
     }
 
-    public void setImageBuild(boolean imageBuild) {
-        this.imageBuild = imageBuild;
+    public void setBuildImage(boolean buildImage) {
+        this.buildImage = buildImage;
     }
 
     public String getBaseImage() {
@@ -178,26 +190,35 @@ public class DeploymentModel {
         this.baseImage = baseImage;
     }
 
+    public PodAutoscalerModel getPodAutoscalerModel() {
+        return podAutoscalerModel;
+    }
+
+    public void setPodAutoscalerModel(PodAutoscalerModel podAutoscalerModel) {
+        this.podAutoscalerModel = podAutoscalerModel;
+    }
+
     @Override
     public String toString() {
         return "DeploymentModel{" +
                 "name='" + name + '\'' +
                 ", labels=" + labels +
                 ", replicas=" + replicas +
-                ", liveness='" + liveness + '\'' +
+                ", enableLiveness='" + enableLiveness + '\'' +
                 ", livenessPort=" + livenessPort +
                 ", initialDelaySeconds=" + initialDelaySeconds +
                 ", periodSeconds=" + periodSeconds +
                 ", imagePullPolicy='" + imagePullPolicy + '\'' +
                 ", namespace='" + namespace + '\'' +
                 ", image='" + image + '\'' +
-                ", imageBuild=" + imageBuild +
+                ", buildImage=" + buildImage +
                 ", baseImage='" + baseImage + '\'' +
                 ", env=" + env +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", push=" + push +
                 ", ports=" + ports +
+                ", podAutoscalerModel=" + podAutoscalerModel +
                 '}';
     }
 }

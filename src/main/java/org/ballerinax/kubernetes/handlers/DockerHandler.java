@@ -188,7 +188,7 @@ public class DockerHandler implements ArtifactHandler {
         } else {
             stringBuffer.append("CMD ballerina run ").append(dockerModel.getBalxFileName());
         }
-        if (dockerModel.isDebugEnable()) {
+        if (dockerModel.isEnableDebug()) {
             stringBuffer.append(" --debug ").append(dockerModel.getDebugPort());
         }
         return stringBuffer.toString();

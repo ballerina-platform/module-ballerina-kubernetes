@@ -4,15 +4,15 @@ package ballerinax.kubernetes;
 @Field {value:"name: Name of the deployment"}
 @Field {value:"labels: Labels for deployment"}
 @Field {value:"replicas: Number of replicas"}
-@Field {value:"liveness: Enable or disable liveness probe"}
-@Field {value:"livenessPort: Port to check the liveness"}
+@Field {value:"enableLiveness: Enable or disable enableLiveness probe"}
+@Field {value:"livenessPort: Port to check the enableLiveness"}
 @Field {value:"initialDelaySeconds: Initial delay in seconds before performing the first probe"}
 @Field {value:"periodSeconds: Liveness probe interval"}
 @Field {value:"imagePullPolicy: Docker image pull policy"}
 @Field {value:"namespace: Kubernetes namespace"}
 @Field {value:"image: Docker image with tag"}
 @Field {value:"envVars: Environment varialbes for container"}
-@Field {value:"imageBuild: Docker image to be build or not"}
+@Field {value:"buildImage: Docker image to be build or not"}
 @Field {value:"username: Username for docker registry"}
 @Field {value:"password: Password for docker registry"}
 @Field {value:"baseImage: Base image for docker image building"}
@@ -21,7 +21,7 @@ public annotation deployment attach service, function {
     string name;
     string labels;
     int replicas;
-    string liveness;
+    string enableLiveness;
     int livenessPort;
     int initialDelaySeconds;
     int periodSeconds;
@@ -29,7 +29,7 @@ public annotation deployment attach service, function {
     string namespace;
     string image;
     string env;
-    boolean imageBuild;
+    boolean buildImage;
     string username;
     string password;
     string baseImage;
@@ -46,32 +46,6 @@ public annotation svc attach service {
     string labels;
     string serviceType;
     int port;
-}
-
-@Description {value:"Kubernetes external deployment configuration"}
-@Field {value:"name: Name of the deployment"}
-@Field {value:"labels: Labels for deployment"}
-@Field {value:"replicas: Number of replicas"}
-@Field {value:"liveness: Enable or disable liveness probe"}
-@Field {value:"initialDelaySeconds: Initial delay in seconds before performing the first probe"}
-@Field {value:"periodSeconds: Liveness probe interval"}
-@Field {value:"imagePullPolicy: Docker image pull policy"}
-@Field {value:"namespace: Kubernetes namespace"}
-@Field {value:"image: Docker image with tag"}
-@Field {value:"envVars: Environment varialbes for container"}
-@Field {value:"sidecar: Attach this to main deployment as sidecar"}
-public annotation externalDeployment attach service, function {
-    string name;
-    string labels;
-    int replicas;
-    string liveness;
-    int initialDelaySeconds;
-    int periodSeconds;
-    string imagePullPolicy;
-    string namespace;
-    string image;
-    string env;
-    boolean sidecar;
 }
 
 @Description {value:"Kubernetes service configuration"}

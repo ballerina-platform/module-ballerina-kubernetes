@@ -102,16 +102,15 @@ class KubeAnnotationProcessor {
         dockerModel.setBaseImage(deploymentModel.getBaseImage());
         dockerModel.setName(dockerImage);
         dockerModel.setTag(imageTag);
-        dockerModel.setDebugEnable(false);
+        dockerModel.setEnableDebug(false);
         dockerModel.setUsername(deploymentModel.getUsername());
         dockerModel.setPassword(deploymentModel.getPassword());
         dockerModel.setPush(deploymentModel.isPush());
         String balxFileName = KubeGenUtils.extractBalxName(balxFilePath) + BALX;
         dockerModel.setBalxFileName(balxFileName);
-        dockerModel.setBalxFilePath(balxFileName);
         dockerModel.setPorts(deploymentModel.getPorts());
         dockerModel.setService(true);
-        dockerModel.setImageBuild(deploymentModel.isImageBuild());
+        dockerModel.setBuildImage(deploymentModel.isBuildImage());
         createDockerArtifacts(dockerModel, balxFilePath, outputDir + File.separator + KUBERNETES + File
                 .separator + DOCKER);
         KubeGenUtils.printDebug(deploymentModel.toString());
@@ -383,7 +382,7 @@ class KubeAnnotationProcessor {
                 != null ?
                 deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_LIVENESS).getStringValue() :
                 KubeGenConstants.DEPLOYMENT_LIVENESS_DISABLE;
-        deploymentModel.setLiveness(liveness);
+        deploymentModel.setEnableLiveness(liveness);
 
         if (KubeGenConstants.DEPLOYMENT_LIVENESS_ENABLE.equals(liveness)) {
             int defaultInitialDelay = 5;
@@ -441,7 +440,7 @@ class KubeAnnotationProcessor {
         boolean imageBuild = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_IMAGE_BUILD) == null
                 || deploymentAnnotationInfo.getAttributeValue(
                 KubeGenConstants.DEPLOYMENT_IMAGE_BUILD).getBooleanValue();
-        deploymentModel.setImageBuild(imageBuild);
+        deploymentModel.setBuildImage(imageBuild);
 
         boolean push = deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_PUSH)
                 != null && deploymentAnnotationInfo.getAttributeValue(KubeGenConstants.DEPLOYMENT_PUSH)
@@ -490,7 +489,7 @@ class KubeAnnotationProcessor {
                     (balxFilePath) + BALX;
             KubeGenUtils.copyFile(balxFilePath, balxDestination);
             //check image build is enabled.
-            if (dockerModel.isImageBuild()) {
+            if (dockerModel.isBuildImage()) {
                 KubeGenUtils.printInfo("Creating docker image ...");
                 dockerArtifactHandler.buildImage(dockerModel.getName(), outputDir);
                 Files.delete(Paths.get(balxDestination));
@@ -530,7 +529,7 @@ class KubeAnnotationProcessor {
         deploymentModel.setImagePullPolicy(imagePullPolicy);
 
         String liveness = KubeGenConstants.DEPLOYMENT_LIVENESS_DISABLE;
-        deploymentModel.setLiveness(liveness);
+        deploymentModel.setEnableLiveness(liveness);
 
         int defaultReplicas = 1;
         deploymentModel.setReplicas(defaultReplicas);
@@ -539,7 +538,7 @@ class KubeAnnotationProcessor {
         deploymentModel.setEnv(getEnvVars(null));
         deploymentModel.setBaseImage(DEFAULT_BASE_IMAGE);
         deploymentModel.setImage(KubeGenUtils.extractBalxName(balxFilePath) + DOCKER_LATEST_TAG);
-        deploymentModel.setImageBuild(true);
+        deploymentModel.setBuildImage(true);
         deploymentModel.setPush(false);
 
         return deploymentModel;

@@ -33,6 +33,12 @@ public class IngressModel {
     private String targetPath;
     private boolean enableTLS;
 
+    public IngressModel() {
+        this.path = "/";
+        this.enableTLS = false;
+        this.ingressClass = "nginx";
+    }
+
     public String getName() {
         return name;
     }

@@ -91,7 +91,7 @@ public class DeploymentHandler implements ArtifactHandler {
     }
 
     private Probe generateLivenessProbe(DeploymentModel deploymentModel) {
-        if (KubeGenConstants.DEPLOYMENT_LIVENESS_DISABLE.equals(deploymentModel.getLiveness())) {
+        if (KubeGenConstants.DEPLOYMENT_LIVENESS_DISABLE.equals(deploymentModel.getEnableLiveness())) {
             return null;
         }
         TCPSocketAction tcpSocketAction = new TCPSocketActionBuilder()
