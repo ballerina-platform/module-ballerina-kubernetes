@@ -22,7 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscaler;
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscalerBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
-import org.ballerinax.kubernetes.exceptions.ArtifactGenerationException;
+import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.PodAutoscalerModel;
 
 import static org.ballerinax.kubernetes.utils.KubeGenUtils.printError;
@@ -44,9 +44,9 @@ public class HPAHandler implements ArtifactHandler {
      * Generate kubernetes Horizontal pod autoscaler definition from annotation.
      *
      * @return Generated kubernetes {@link Ingress} definition
-     * @throws ArtifactGenerationException If an error occurs while generating artifact.
+     * @throws KubernetesPluginException If an error occurs while generating artifact.
      */
-    public String generate() throws ArtifactGenerationException {
+    public String generate() throws KubernetesPluginException {
         HorizontalPodAutoscaler horizontalPodAutoscaler = new HorizontalPodAutoscalerBuilder()
                 .withNewMetadata()
                 .withName(podAutoscalerModel.getName())
@@ -64,7 +64,7 @@ public class HPAHandler implements ArtifactHandler {
         } catch (JsonProcessingException e) {
             String errorMessage = "Error while generating yaml file for autoscaler: " + podAutoscalerModel.getName();
             printError(errorMessage);
-            throw new ArtifactGenerationException(errorMessage, e);
+            throw new KubernetesPluginException(errorMessage, e);
         }
     }
 }

@@ -22,9 +22,10 @@ package org.ballerinax.kubernetes;
  * Constants used in kuberina.
  */
 public class KubeGenConstants {
-    public static final String ENABLE_DEBUG_LOGS = "debugKuberina";
+    public static final String ENABLE_DEBUG_LOGS = "debugKubernetes";
     public static final String KUBERNETES_SVC_PROTOCOL = "TCP";
     public static final String KUBERNETES_SELECTOR_KEY = "app";
+    public static final String BALLERINA_NET_HTTP = "ballerina.net.http";
 
     // Annotation package constants
     public static final String KUBERNETES_ANNOTATION_PACKAGE = "ballerinax.kubernetes";
@@ -81,26 +82,6 @@ public class KubeGenConstants {
     public static final String AUTOSCALER_CPU_PERCENTAGE = "cpuPercentage";
     public static final String AUTOSCALER_DEPLOYMENT = "deployment";
 
-    /**
-     * Enum class for DeploymentConfiguration.
-     */
-    public enum DeploymentConfiguration {
-        name,
-        labels,
-        replicas,
-        enableLiveness,
-        livenessPort,
-        initialDelaySeconds,
-        periodSeconds,
-        imagePullPolicy,
-        namespace,
-        image,
-        env,
-        buildImage,
-        username,
-        password,
-        baseImage,
-        push
-    }
+
 
 }

@@ -21,13 +21,13 @@ package org.ballerinax.kubernetes.exceptions;
 /**
  * Custom exception for kubernetes artifact generation errors.
  */
-public class ArtifactGenerationException extends Exception {
+public class KubernetesPluginException extends Exception {
 
-    public ArtifactGenerationException(String msg) {
+    public KubernetesPluginException(String msg) {
         super(msg);
     }
 
-    public ArtifactGenerationException(String msg, Throwable e) {
+    public KubernetesPluginException(String msg, Throwable e) {
         super(msg, e);
     }
 }

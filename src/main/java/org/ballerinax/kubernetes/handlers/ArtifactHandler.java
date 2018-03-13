@@ -18,11 +18,11 @@
 
 package org.ballerinax.kubernetes.handlers;
 
-import org.ballerinax.kubernetes.exceptions.ArtifactGenerationException;
+import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 
 /**
  * Artifact generator interface.
  */
 public interface ArtifactHandler {
-    String generate() throws ArtifactGenerationException;
+    String generate() throws KubernetesPluginException;
 }

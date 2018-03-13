@@ -22,7 +22,7 @@ import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import org.ballerinax.kubernetes.KubeGenConstants;
-import org.ballerinax.kubernetes.exceptions.ArtifactGenerationException;
+import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.ServiceModel;
 
 import java.io.IOException;
@@ -45,9 +45,9 @@ public class ServiceHandler implements ArtifactHandler {
      * Generate kubernetes service definition from annotation.
      *
      * @return Generated kubernetes service yaml as a string
-     * @throws ArtifactGenerationException If an error occurs while generating artifact.
+     * @throws KubernetesPluginException If an error occurs while generating artifact.
      */
-    public String generate() throws ArtifactGenerationException {
+    public String generate() throws KubernetesPluginException {
         Service service = new ServiceBuilder()
                 .withNewMetadata()
                 .withName(serviceModel.getName())
@@ -69,7 +69,7 @@ public class ServiceHandler implements ArtifactHandler {
         } catch (IOException e) {
             String errorMessage = "Error while generating yaml file for service: " + serviceModel.getName();
             printError(errorMessage);
-            throw new ArtifactGenerationException(errorMessage, e);
+            throw new KubernetesPluginException(errorMessage, e);
         }
         return serviceYAML;
     }

@@ -19,7 +19,7 @@
 package org.ballerinalang.artifactgen;
 
 import org.ballerinax.kubernetes.KubeGenConstants;
-import org.ballerinax.kubernetes.exceptions.ArtifactGenerationException;
+import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.DeploymentHandler;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.utils.KubeGenUtils;
@@ -70,7 +70,7 @@ public class KubernetesDeploymentGeneratorTests {
             //    tempFile.deleteOnExit();
         } catch (IOException e) {
             Assert.fail("Unable to write to file");
-        } catch (ArtifactGenerationException e) {
+        } catch (KubernetesPluginException e) {
             Assert.fail("Unable to generate yaml from service");
         }
     }

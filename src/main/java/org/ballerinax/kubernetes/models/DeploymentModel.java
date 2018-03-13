@@ -17,6 +17,7 @@
  */
 package org.ballerinax.kubernetes.models;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,11 +48,13 @@ public class DeploymentModel {
         // Initialize with default values.
         this.replicas = 1;
         this.enableLiveness = "disable";
-        this.periodSeconds = 20;
+        this.periodSeconds = 5;
         this.initialDelaySeconds = 10;
         this.buildImage = true;
         this.baseImage = "ballerina/ballerina:latest";
         this.push = false;
+        this.labels = new HashMap<>();
+        this.setImagePullPolicy("IfNotPresent");
     }
 
     public String getName() {
@@ -188,6 +191,10 @@ public class DeploymentModel {
 
     public void setBaseImage(String baseImage) {
         this.baseImage = baseImage;
+    }
+
+    public void addLabel(String key, String value) {
+        this.labels.put(key, value);
     }
 
     public PodAutoscalerModel getPodAutoscalerModel() {

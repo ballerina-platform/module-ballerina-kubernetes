@@ -18,6 +18,7 @@
 
 package org.ballerinax.kubernetes.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,9 +26,11 @@ import java.util.List;
  */
 public class KubernetesDataHolder {
     private DeploymentModel deploymentModel;
+    private PodAutoscalerModel podAutoscalerModel;
     private DockerModel dockerModel;
-    private List<ServiceModel> serviceModels;
-    private List<IngressModel> ingressModels;
+    private List<ServiceModel> serviceModels = new ArrayList<>();
+    private List<IngressModel> ingressModels = new ArrayList<>();
+    private List<Integer> ports = new ArrayList<>();
 
     public DeploymentModel getDeploymentModel() {
         return deploymentModel;
@@ -41,16 +44,16 @@ public class KubernetesDataHolder {
         return serviceModels;
     }
 
-    public void setServiceModels(List<ServiceModel> serviceModels) {
-        this.serviceModels = serviceModels;
+    public void addServiceModel(ServiceModel serviceModel) {
+        this.serviceModels.add(serviceModel);
     }
 
     public List<IngressModel> getIngressModels() {
         return ingressModels;
     }
 
-    public void setIngressModels(List<IngressModel> ingressModels) {
-        this.ingressModels = ingressModels;
+    public void addIngressModel(IngressModel ingressModel) {
+        this.ingressModels.add(ingressModel);
     }
 
     public DockerModel getDockerModel() {
@@ -59,5 +62,21 @@ public class KubernetesDataHolder {
 
     public void setDockerModel(DockerModel dockerModel) {
         this.dockerModel = dockerModel;
+    }
+
+    public PodAutoscalerModel getPodAutoscalerModel() {
+        return podAutoscalerModel;
+    }
+
+    public void setPodAutoscalerModel(PodAutoscalerModel podAutoscalerModel) {
+        this.podAutoscalerModel = podAutoscalerModel;
+    }
+
+    public List<Integer> getPorts() {
+        return ports;
+    }
+
+    public void addPort(int port) {
+        this.ports.add(port);
     }
 }

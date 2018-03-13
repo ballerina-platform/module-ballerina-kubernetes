@@ -21,14 +21,25 @@ package org.ballerinax.kubernetes;
 import org.ballerinalang.compiler.plugins.AbstractCompilerPlugin;
 import org.ballerinalang.compiler.plugins.SupportedAnnotationPackages;
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
+import org.ballerinalang.model.tree.Node;
+import org.ballerinalang.model.tree.PackageNode;
 import org.ballerinalang.model.tree.ServiceNode;
+import org.ballerinalang.util.diagnostic.Diagnostic;
 import org.ballerinalang.util.diagnostic.DiagnosticLog;
+import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.DeploymentModel;
+import org.ballerinax.kubernetes.models.IngressModel;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.PodAutoscalerModel;
+import org.ballerinax.kubernetes.models.ServiceModel;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangAnnotAttachmentAttribute;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 
+import static org.ballerinax.kubernetes.KubeGenConstants.BALLERINA_NET_HTTP;
 import static org.ballerinax.kubernetes.utils.KubeGenUtils.printInfo;
 import static org.ballerinax.kubernetes.utils.KubeGenUtils.printInstruction;
 
@@ -39,71 +50,99 @@ import static org.ballerinax.kubernetes.utils.KubeGenUtils.printInstruction;
         value = "ballerinax.kubernetes"
 )
 public class KubernetesPlugin extends AbstractCompilerPlugin {
+
+    static KubernetesDataHolder kubernetesDataHolder = new KubernetesDataHolder();
+    KubeAnnotationProcessor kubeAnnotationProcessor;
+    private boolean canProcess = false;
+    private DiagnosticLog dlog;
+
     @Override
     public void init(DiagnosticLog diagnosticLog) {
-        printInfo("Generating Kubernetes artifacts ...");
+        this.dlog = diagnosticLog;
+        this.kubeAnnotationProcessor = new KubeAnnotationProcessor();
     }
 
     @Override
-    public void process(ServiceNode serviceNode, List<AnnotationAttachmentNode> annotations) {
-        printInfo("**kubernetes** service node: " + serviceNode.getName().getValue());
-        for (AnnotationAttachmentNode attachmentNode : annotations) {
-            printInstruction(attachmentNode.getAnnotationName().getValue());
-            List<BLangAnnotAttachmentAttribute> bLangAnnotationAttachments = ((BLangAnnotationAttachment)
-                    attachmentNode).attributes;
-            for (BLangAnnotAttachmentAttribute annotationAttribute : bLangAnnotationAttachments) {
-                printInfo(annotationAttribute.name.value);
-                //Node annotationValue = annotationAttribute.getValue().getValue();
+    public void process(PackageNode packageNode) {
+        // extract port values from services.
+        List<? extends ServiceNode> serviceNodes = packageNode.getServices();
+        for (ServiceNode serviceNode : serviceNodes) {
+            List<? extends AnnotationAttachmentNode> annotationAttachmentNodes = serviceNode.getAnnotationAttachments();
+            for (AnnotationAttachmentNode annotationAttachmentNode : annotationAttachmentNodes) {
+                String packageID = ((BLangAnnotationAttachment) annotationAttachmentNode).
+                        annotationSymbol.pkgID.name.value;
+                if (BALLERINA_NET_HTTP.equals(packageID)) {
+                    List<BLangAnnotAttachmentAttribute> bLangAnnotationAttachments = ((BLangAnnotationAttachment)
+                            annotationAttachmentNode).attributes;
+                    for (BLangAnnotAttachmentAttribute annotationAttribute : bLangAnnotationAttachments) {
+                        String annotationKey = annotationAttribute.name.value;
+                        if ("port".equals(annotationKey)) {
+                            Node annotationValue = annotationAttribute.getValue().getValue();
+                            kubernetesDataHolder.addPort(Integer.parseInt(annotationValue.toString()));
+                        }
+                    }
+                }
             }
-            // This is how you can report compilation errors, warnings, and messages.
-            //dlog.logDiagnostic(Diagnostic.Kind.WARNING, serviceNode.getPosition(), "Dummy warning message");
         }
     }
 
+
+    @Override
+    public void process(ServiceNode serviceNode, List<AnnotationAttachmentNode> annotations) {
+        printInfo(serviceNode.getName().getValue());
+        canProcess = true;
+        for (AnnotationAttachmentNode attachmentNode : annotations) {
+            printInstruction(attachmentNode.getAnnotationName().getValue());
+            String annotationKey = attachmentNode.getAnnotationName().getValue();
+            switch (annotationKey) {
+                case "svc":
+                    ServiceModel serviceModel = new ServiceModel();
+                    kubernetesDataHolder.addServiceModel(serviceModel);
+                    break;
+                case "ingress":
+                    IngressModel ingressModel = new IngressModel();
+                    kubernetesDataHolder.addIngressModel(ingressModel);
+                    break;
+                case "hpa":
+                    PodAutoscalerModel podAutoscalerModel = new PodAutoscalerModel();
+                    kubernetesDataHolder.setPodAutoscalerModel(podAutoscalerModel);
+                    break;
+                case "deployment":
+                    kubernetesDataHolder.setDeploymentModel(kubeAnnotationProcessor.processDeployment(attachmentNode));
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+
     @Override
     public void codeGenerated(Path binaryPath) {
-//        String filePath = binaryPath.toAbsolutePath().toString();
-//        String userDir = new File(filePath).getParentFile().getAbsolutePath();
-//        try {
-//            byte[] bFile = Files.readAllBytes(Paths.get(filePath));
-//            ProgramFileReader reader = new ProgramFileReader();
-//            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bFile);
-//            ProgramFile programFile = reader.readProgram(byteArrayInputStream);
-//            PackageInfo packageInfos[] = programFile.getPackageInfoEntries();
-//            KubeAnnotationProcessor kubeAnnotationProcessor = new KubeAnnotationProcessor();
-//            //iterate through packages
-//            for (PackageInfo packageInfo : packageInfos) {
-//                ServiceInfo serviceInfos[] = packageInfo.getServiceInfoEntries();
-//                int deploymentCount = 0;
-//
-//                for (ServiceInfo serviceInfo : serviceInfos) {
-//                    AnnAttachmentInfo serviceAnnotation = serviceInfo.getAnnotationAttachmentInfo
-//                            (KubeGenConstants.KUBERNETES_ANNOTATION_PACKAGE,
-//                                    KubeGenConstants.SERVICE_ANNOTATION);
-//                    if (serviceInfo.getAnnotationAttachmentInfo
-//                            (KubeGenConstants.KUBERNETES_ANNOTATION_PACKAGE,
-//                                    KubeGenConstants.DEPLOYMENT_ANNOTATION) != null) {
-//                        if (deploymentCount < 1) {
-//                            deploymentCount += 1;
-//                        } else {
-//                            KubeGenUtils.printWarn("multiple deployment{} annotations detected. " +
-//                                    "Ignoring annotation in service: " + serviceInfo.getName());
-//                        }
-//                    }
-//                    if (serviceAnnotation != null) {
-//                        printInfo("Processing svc{} annotation for:" + serviceInfo.getName());
-//                        String targetPath = userDir + File.separator + "target" + File.separator + KubeGenUtils
-//                                .extractBalxName(filePath)
-//                                + File.separator;
-//                        kubeAnnotationProcessor.processSvcAnnotationForService(serviceInfo, filePath, targetPath);
-//                    }
-//                }
-//            }
-//            //kubeAnnotationProcessor.processDeploymentAnnotationForService(deploymentAnnotatedService, filePath,
-//            // targetPath);
-//
-//        } catch (IOException e) {
-//            KubeGenUtils.printError("error occurred while reading balx file" + e.getMessage());
-//        }
+        if (canProcess) {
+            KubeAnnotationProcessor kubeAnnotationProcessor = new KubeAnnotationProcessor();
+            String filePath = binaryPath.toAbsolutePath().toString();
+            String userDir = new File(filePath).getParentFile().getAbsolutePath();
+            String targetPath = userDir + File.separator + "target" + File.separator + "kubernetes" + File.separator;
+
+            DeploymentModel deploymentModel = kubernetesDataHolder.getDeploymentModel();
+            if (deploymentModel == null) {
+                deploymentModel = kubeAnnotationProcessor.getDefaultDeploymentModel(filePath);
+            }
+            //TODO:Fix this
+            if (kubernetesDataHolder.getPorts().size() == 0) {
+                kubernetesDataHolder.addPort(9090);
+            }
+            deploymentModel.setPorts(kubernetesDataHolder.getPorts());
+            kubernetesDataHolder.setDeploymentModel(deploymentModel);
+
+            try {
+                kubeAnnotationProcessor.
+                        createArtifacts(kubernetesDataHolder, filePath, targetPath);
+            } catch (KubernetesPluginException e) {
+                dlog.logDiagnostic(Diagnostic.Kind.ERROR, null, e.getMessage());
+            }
+        }
+
     }
 }
