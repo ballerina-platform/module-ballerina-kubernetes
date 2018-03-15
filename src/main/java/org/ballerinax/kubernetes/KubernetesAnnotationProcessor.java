@@ -411,6 +411,9 @@ class KubernetesAnnotationProcessor {
                     break;
             }
         }
+        if (serviceModel.getName() == null) {
+            serviceModel.setName(getValidName(endpointName) + SVC_POSTFIX);
+        }
         return serviceModel;
     }
 
