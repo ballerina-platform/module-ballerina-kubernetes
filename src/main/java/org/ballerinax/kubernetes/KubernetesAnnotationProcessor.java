@@ -60,7 +60,7 @@ class KubernetesAnnotationProcessor {
     private static final String SVC_POSTFIX = "-svc";
     private static final String INGRESS_POSTFIX = "-ingress";
     private static final String YAML = ".yaml";
-    private static final String HPA_POSTFIX = "-hpa.yaml";
+    private static final String HPA_POSTFIX = "-hpa";
     private static final String DOCKER_LATEST_TAG = ":latest";
     private static final String INGRESS_HOSTNAME_POSTFIX = ".com";
     private static final String DEFAULT_BASE_IMAGE = "ballerina/ballerina:latest";
@@ -195,7 +195,7 @@ class KubernetesAnnotationProcessor {
         String serviceContent = new IngressHandler(ingressModel).generate();
         try {
             KubernetesUtils.writeToFile(serviceContent, outputDir + File
-                    .separator + ingressModel.getName() + YAML);
+                    .separator + balxFileName + INGRESS_POSTFIX + YAML);
         } catch (IOException e) {
             throw new KubernetesPluginException("Error while writing ingress content", e);
         }
@@ -217,13 +217,13 @@ class KubernetesAnnotationProcessor {
             podAutoscalerModel.setMinReplicas(deploymentModel.getReplicas());
         }
         if (podAutoscalerModel.getName() == null || podAutoscalerModel.getName().length() == 0) {
-            podAutoscalerModel.setName(deploymentModel.getName());
+            podAutoscalerModel.setName(deploymentModel.getName() + HPA_POSTFIX);
         }
         String serviceContent = new HPAHandler(podAutoscalerModel).generate();
         try {
             out.println();
             KubernetesUtils.writeToFile(serviceContent, outputDir + File
-                    .separator + podAutoscalerModel.getName() + HPA_POSTFIX);
+                    .separator + balxFileName + HPA_POSTFIX + YAML);
             out.print("@kubernetes:hpa \t\t - complete 1/1");
         } catch (IOException e) {
             throw new KubernetesPluginException("Error while writing HPA content", e);
