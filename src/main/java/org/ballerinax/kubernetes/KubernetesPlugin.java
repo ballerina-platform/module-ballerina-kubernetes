@@ -28,6 +28,7 @@ import org.ballerinalang.util.diagnostic.DiagnosticLog;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.models.ServiceModel;
+import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.BLangEndpoint;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
@@ -155,6 +156,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
             String targetPath = userDir + File.separator + "kubernetes" + File
                     .separator;
             try {
+                KubernetesUtils.deleteDirectory(targetPath);
                 kubernetesAnnotationProcessor.
                         createArtifacts(kubernetesDataHolder, filePath, targetPath);
             } catch (KubernetesPluginException e) {
