@@ -43,6 +43,7 @@ public annotation <service> deployment DeploymentConfiguration;
 @Field {value:"labels: Labels for service"}
 @Field {value:"serviceType: Service type of the service"}
 public struct ServiceConfiguration {
+    string name;
     string labels;
     string serviceType;
 }
