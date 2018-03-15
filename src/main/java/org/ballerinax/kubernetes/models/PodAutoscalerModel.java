@@ -18,6 +18,7 @@
 
 package org.ballerinax.kubernetes.models;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -33,6 +34,7 @@ public class PodAutoscalerModel {
 
     public PodAutoscalerModel() {
         this.cpuPercentage = 50;
+        labels = new HashMap<>();
     }
 
     public String getName() {
@@ -81,5 +83,9 @@ public class PodAutoscalerModel {
 
     public void setLabels(Map<String, String> labels) {
         this.labels = labels;
+    }
+
+    public void addLabel(String key, String value) {
+        this.labels.put(key, value);
     }
 }

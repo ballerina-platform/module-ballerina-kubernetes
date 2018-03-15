@@ -21,13 +21,13 @@ package org.ballerinax.kubernetes.handlers;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
-import org.ballerinax.kubernetes.KubeGenConstants;
+import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.ServiceModel;
 
 import java.io.IOException;
 
-import static org.ballerinax.kubernetes.utils.KubeGenUtils.printError;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
 
 
 /**
@@ -55,11 +55,11 @@ public class ServiceHandler implements ArtifactHandler {
                 .endMetadata()
                 .withNewSpec()
                 .addNewPort()
-                .withProtocol(KubeGenConstants.KUBERNETES_SVC_PROTOCOL)
+                .withProtocol(KubernetesConstants.KUBERNETES_SVC_PROTOCOL)
                 .withPort(serviceModel.getPort())
                 .withNewTargetPort(serviceModel.getPort())
                 .endPort()
-                .addToSelector(KubeGenConstants.KUBERNETES_SELECTOR_KEY, serviceModel.getSelector())
+                .addToSelector(KubernetesConstants.KUBERNETES_SELECTOR_KEY, serviceModel.getSelector())
                 .withType(serviceModel.getServiceType())
                 .endSpec()
                 .build();

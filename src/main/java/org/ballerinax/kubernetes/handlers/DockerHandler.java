@@ -33,10 +33,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.concurrent.CountDownLatch;
 
-import static org.ballerinax.kubernetes.utils.KubeGenUtils.printDebug;
-import static org.ballerinax.kubernetes.utils.KubeGenUtils.printError;
-import static org.ballerinax.kubernetes.utils.KubeGenUtils.printInfo;
-import static org.ballerinax.kubernetes.utils.KubeGenUtils.printSuccess;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.printDebug;
 
 /**
  * Generates Docker artifacts from annotations.
@@ -74,19 +71,16 @@ public class DockerHandler implements ArtifactHandler {
                 .usingListener(new EventListener() {
                     @Override
                     public void onSuccess(String message) {
-                        printSuccess("Docker image " + imageName + " generated.");
                         buildDone.countDown();
                     }
 
                     @Override
                     public void onError(String messsage) {
-                        printError(messsage);
                         buildDone.countDown();
                     }
 
                     @Override
                     public void onError(Throwable t) {
-                        printError(t.getMessage());
                         buildDone.countDown();
                     }
 
@@ -123,25 +117,21 @@ public class DockerHandler implements ArtifactHandler {
                 .usingListener(new EventListener() {
                     @Override
                     public void onSuccess(String message) {
-                        printSuccess(message);
                         pushDone.countDown();
                     }
 
                     @Override
                     public void onError(String message) {
-                        printError(message);
                         pushDone.countDown();
                     }
 
                     @Override
                     public void onError(Throwable t) {
-                        printError(t.getMessage());
                         pushDone.countDown();
                     }
 
                     @Override
                     public void onEvent(String event) {
-                        printInfo(event);
                     }
                 })
                 .toRegistry();

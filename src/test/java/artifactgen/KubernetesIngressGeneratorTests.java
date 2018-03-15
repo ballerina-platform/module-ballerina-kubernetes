@@ -18,11 +18,11 @@
 
 package org.ballerinalang.artifactgen;
 
-import org.ballerinax.kubernetes.KubeGenConstants;
+import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.IngressHandler;
 import org.ballerinax.kubernetes.models.IngressModel;
-import org.ballerinax.kubernetes.utils.KubeGenUtils;
+import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -50,7 +50,7 @@ public class KubernetesIngressGeneratorTests {
         ingressModel.setIngressClass("nginx");
         ingressModel.setServiceName("HelloWorldService");
         Map<String, String> labels = new HashMap<>();
-        labels.put(KubeGenConstants.KUBERNETES_SELECTOR_KEY, "TestAPP");
+        labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, "TestAPP");
         ingressModel.setLabels(labels);
         IngressHandler kubernetesIngressGenerator = new IngressHandler(ingressModel);
         try {
@@ -59,7 +59,7 @@ public class KubernetesIngressGeneratorTests {
             File artifactLocation = new File("target/kubernetes");
             artifactLocation.mkdir();
             File tempFile = File.createTempFile("temp", ingressModel.getName() + ".yaml", artifactLocation);
-            KubeGenUtils.writeToFile(ingressYaml, tempFile.getPath());
+            KubernetesUtils.writeToFile(ingressYaml, tempFile.getPath());
             log.info("Generated YAML: \n" + ingressYaml);
             Assert.assertTrue(tempFile.exists());
             // tempFile.deleteOnExit();

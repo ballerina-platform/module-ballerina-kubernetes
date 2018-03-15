@@ -1,52 +1,60 @@
 import ballerina.net.http;
 import ballerinax.kubernetes;
 
+
+@kubernetes:svc{}
+endpoint<http:Service> pizzaEP {
+    port:9099
+}
+@kubernetes:svc{}
+endpoint<http:Service> burgerEP {
+    port:9096
+}
 @kubernetes:deployment {
     name:"foodstore",
     replicas:3,
     labels:"location:SL,city:COLOMBO",
-    enableLiveness:"enable"
+    enableLiveness:"enable",
+    livenessPort:9099
 }
-@kubernetes:svc {}
 @kubernetes:ingress {
     hostname:"pizza.com",
     path:"/pizzastore",
     targetPath:"/"
 }
-@http:configuration {
+@http:serviceConfig {
     basePath:"/pizza",
-    port:9099
+    endpoints:[pizzaEP]
 }
-service<http> PizzaAPI {
+service<http:Service> PizzaAPI {
     @http:resourceConfig {
         methods:["GET"],
         path:"/menu"
     }
-    resource getPizzaMenu (http:Connection conn, http:InRequest req) {
-        http:OutResponse res = {};
-        res.setStringPayload("Get pizza menu ");
-        _ = conn.respond(res);
+    resource getPizzaMenu (http:ServerConnector conn, http:Request req) {
+        http:Response response = {};
+        response.setStringPayload("Pizza menu ");
+        _ = conn -> respond(response);
     }
 }
 
-@kubernetes:svc {}
 @kubernetes:ingress {
     hostname:"burger.com",
     path:"/",
     targetPath:"/burger"
 }
-@http:configuration {
+@http:serviceConfig {
     basePath:"/burger",
-    port:9096
+    endpoints:[burgerEP]
 }
-service<http> BurgerAPI {
+service<http:Service> BurgerAPI {
     @http:resourceConfig {
         methods:["GET"],
         path:"/menu"
     }
-    resource getBurgerMenu (http:Connection conn, http:InRequest req) {
-        http:OutResponse res = {};
-        res.setStringPayload("Get burger menu ");
-        _ = conn.respond(res);
+    resource getBurgerMenu (http:ServerConnector conn, http:Request req) {
+        http:Response response = {};
+        response.setStringPayload("Burger menu ");
+        _ = conn -> respond(response);
     }
 }

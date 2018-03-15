@@ -19,7 +19,9 @@
 package org.ballerinax.kubernetes.models;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Model class to store kubernetes artifacts.
@@ -27,10 +29,15 @@ import java.util.List;
 public class KubernetesDataHolder {
     private DeploymentModel deploymentModel;
     private PodAutoscalerModel podAutoscalerModel;
-    private DockerModel dockerModel;
-    private List<ServiceModel> serviceModels = new ArrayList<>();
-    private List<IngressModel> ingressModels = new ArrayList<>();
-    private List<Integer> ports = new ArrayList<>();
+    private Map<String, ServiceModel> endpointToServiceModelMap;
+    private Map<IngressModel, List<String>> ingressToEndpointMap;
+    private List<Integer> ports;
+
+    public KubernetesDataHolder() {
+        endpointToServiceModelMap = new HashMap<>();
+        ingressToEndpointMap = new HashMap<>();
+        ports = new ArrayList<>();
+    }
 
     public DeploymentModel getDeploymentModel() {
         return deploymentModel;
@@ -38,30 +45,6 @@ public class KubernetesDataHolder {
 
     public void setDeploymentModel(DeploymentModel deploymentModel) {
         this.deploymentModel = deploymentModel;
-    }
-
-    public List<ServiceModel> getServiceModels() {
-        return serviceModels;
-    }
-
-    public void addServiceModel(ServiceModel serviceModel) {
-        this.serviceModels.add(serviceModel);
-    }
-
-    public List<IngressModel> getIngressModels() {
-        return ingressModels;
-    }
-
-    public void addIngressModel(IngressModel ingressModel) {
-        this.ingressModels.add(ingressModel);
-    }
-
-    public DockerModel getDockerModel() {
-        return dockerModel;
-    }
-
-    public void setDockerModel(DockerModel dockerModel) {
-        this.dockerModel = dockerModel;
     }
 
     public PodAutoscalerModel getPodAutoscalerModel() {
@@ -78,5 +61,21 @@ public class KubernetesDataHolder {
 
     public void addPort(int port) {
         this.ports.add(port);
+    }
+
+    public Map<IngressModel, List<String>> getIngressToEndpointMap() {
+        return ingressToEndpointMap;
+    }
+
+    public void addIngressModel(IngressModel ingressModel, List<String> endpoints) {
+        this.ingressToEndpointMap.put(ingressModel, endpoints);
+    }
+
+    public Map<String, ServiceModel> getEndpointToServiceModelMap() {
+        return endpointToServiceModelMap;
+    }
+
+    public void addServiceModel(String endpointName, ServiceModel serviceModel) {
+        this.endpointToServiceModelMap.put(endpointName, serviceModel);
     }
 }

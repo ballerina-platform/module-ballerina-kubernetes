@@ -25,7 +25,7 @@ import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.PodAutoscalerModel;
 
-import static org.ballerinax.kubernetes.utils.KubeGenUtils.printError;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
 
 /**
  * Generates kubernetes Horizontal Pod Autoscaler from annotations.

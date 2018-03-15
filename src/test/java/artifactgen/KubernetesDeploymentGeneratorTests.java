@@ -18,11 +18,11 @@
 
 package org.ballerinalang.artifactgen;
 
-import org.ballerinax.kubernetes.KubeGenConstants;
+import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.DeploymentHandler;
 import org.ballerinax.kubernetes.models.DeploymentModel;
-import org.ballerinax.kubernetes.utils.KubeGenUtils;
+import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -47,7 +47,7 @@ public class KubernetesDeploymentGeneratorTests {
         DeploymentModel deploymentModel = new DeploymentModel();
         deploymentModel.setName("MyDeployment");
         Map<String, String> labels = new HashMap<>();
-        labels.put(KubeGenConstants.KUBERNETES_SELECTOR_KEY, "TestAPP");
+        labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, "TestAPP");
         List<Integer> ports = new ArrayList<>();
         ports.add(9090);
         ports.add(9091);
@@ -64,7 +64,7 @@ public class KubernetesDeploymentGeneratorTests {
             File artifactLocation = new File("target/kubernetes");
             artifactLocation.mkdir();
             File tempFile = File.createTempFile("temp", deploymentModel.getName() + ".yaml", artifactLocation);
-            KubeGenUtils.writeToFile(deploymentYAML, tempFile.getPath());
+            KubernetesUtils.writeToFile(deploymentYAML, tempFile.getPath());
             log.info("Generated YAML: \n" + deploymentYAML);
             Assert.assertTrue(tempFile.exists());
             //    tempFile.deleteOnExit();

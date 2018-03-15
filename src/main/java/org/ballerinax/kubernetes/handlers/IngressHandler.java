@@ -34,7 +34,7 @@ import org.ballerinax.kubernetes.models.IngressModel;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.ballerinax.kubernetes.utils.KubeGenUtils.printError;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
 
 
 /**
