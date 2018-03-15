@@ -39,7 +39,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |--|--|--|
 |name|Name of the Service|\<ballerina service name\>-service|
 |labels|Labels for service|"app: \<outputfilename\>"|
-|serviceType|Service type of the service|NodePort|
+|serviceType|Service type of the service|ClusterIP|
 |port|Service port|Port of the ballerina service|
 
 ### @kubernetes:ingress{}
