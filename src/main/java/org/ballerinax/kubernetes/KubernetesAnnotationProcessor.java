@@ -155,12 +155,16 @@ class KubernetesAnnotationProcessor {
             KubernetesPluginException {
         String balxFileName = KubernetesUtils.extractBalxName(balxFilePath);
         if (deploymentModel.getName() == null) {
-            deploymentModel.setName(balxFileName + DEPLOYMENT_POSTFIX);
+            deploymentModel.setName(getValidName(balxFileName) + DEPLOYMENT_POSTFIX);
         }
         if (deploymentModel.getImage() == null) {
             deploymentModel.setImage(balxFileName + DOCKER_LATEST_TAG);
         }
         deploymentModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
+        if ("enable".equals(deploymentModel.getEnableLiveness()) && deploymentModel.getLivenessPort() == 0) {
+            //set first port as liveness port
+            deploymentModel.setLivenessPort(deploymentModel.getPorts().get(0));
+        }
         String deploymentContent = new DeploymentHandler(deploymentModel).generate();
         try {
             KubernetesUtils.writeToFile(deploymentContent, outputDir + File
@@ -331,7 +335,7 @@ class KubernetesAnnotationProcessor {
             String annotationValue = keyValue.getValue().toString();
             switch (deploymentConfiguration) {
                 case name:
-                    deploymentModel.setName(annotationValue);
+                    deploymentModel.setName(getValidName(annotationValue));
                     break;
                 case labels:
                     deploymentModel.setLabels(getLabelMap(annotationValue));
@@ -396,7 +400,7 @@ class KubernetesAnnotationProcessor {
             String annotationValue = keyValue.getValue().toString();
             switch (serviceConfiguration) {
                 case name:
-                    serviceModel.setName(annotationValue);
+                    serviceModel.setName(getValidName(annotationValue));
                     break;
                 case labels:
                     serviceModel.setLabels(getLabelMap(annotationValue));
@@ -433,7 +437,7 @@ class KubernetesAnnotationProcessor {
             String annotationValue = keyValue.getValue().toString();
             switch (podAutoscalerConfiguration) {
                 case name:
-                    podAutoscalerModel.setName(annotationValue);
+                    podAutoscalerModel.setName(getValidName(annotationValue));
                     break;
                 case labels:
                     podAutoscalerModel.setLabels(getLabelMap(annotationValue));
@@ -471,7 +475,7 @@ class KubernetesAnnotationProcessor {
             String annotationValue = keyValue.getValue().toString();
             switch (ingressConfiguration) {
                 case name:
-                    ingressModel.setName(annotationValue);
+                    ingressModel.setName(getValidName(annotationValue));
                     break;
                 case labels:
                     ingressModel.setLabels(getLabelMap(annotationValue));
