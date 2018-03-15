@@ -18,10 +18,6 @@
 
 package org.ballerinax.kubernetes.utils;
 
-import org.ballerinalang.net.http.HttpConstants;
-import org.ballerinalang.util.codegen.AnnAttachmentInfo;
-import org.ballerinalang.util.codegen.AnnAttributeValue;
-import org.ballerinalang.util.codegen.ServiceInfo;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 
@@ -32,7 +28,10 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.Comparator;
 
 /**
  * Util methods used for artifact generation.
@@ -53,9 +52,9 @@ public class KubernetesUtils {
      */
     public static void writeToFile(String context, String targetFilePath) throws IOException {
         File newFile = new File(targetFilePath);
-        // delete if file exists
-        if (newFile.exists() && newFile.delete()) {
-            Files.write(Paths.get(targetFilePath), context.getBytes(StandardCharsets.UTF_8));
+        // append if file exists
+        if (newFile.exists()) {
+            Files.write(Paths.get(targetFilePath), context.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
             return;
         }
         //create required directories
@@ -85,24 +84,6 @@ public class KubernetesUtils {
         } catch (IOException e) {
             throw new KubernetesPluginException("Error while copying file", e);
         }
-
-    }
-
-    /**
-     * Extract the ports from a given service.
-     *
-     * @param serviceInfo service info object
-     * @return port exposed by service
-     */
-    public static int extractPort(ServiceInfo serviceInfo) {
-        AnnAttachmentInfo annotationInfo = serviceInfo.getAnnotationAttachmentInfo(HttpConstants
-                .HTTP_PACKAGE_PATH, HttpConstants.ANN_NAME_CONFIG);
-        AnnAttributeValue portAttrVal = annotationInfo.getAttributeValue(HttpConstants.ANN_CONFIG_ATTR_PORT);
-        if (portAttrVal != null && portAttrVal.getIntValue() > 0) {
-            return Math.toIntExact(portAttrVal.getIntValue());
-        }
-        //TODO: remove this with actual port(s)
-        return 9090;
 
     }
 
@@ -150,5 +131,27 @@ public class KubernetesUtils {
         String ansiReset = "\u001B[0m";
         String ansiCyan = "\u001B[36m";
         out.println(ansiCyan + msg + ansiReset);
+    }
+
+    /**
+     * Deletes a given directory.
+     *
+     * @param path path to directory
+     * @throws KubernetesPluginException if an error occurs while deleting
+     */
+    public static void deleteDirectory(String path) throws KubernetesPluginException {
+        Path pathToBeDeleted = Paths.get(path);
+        if (!Files.exists(pathToBeDeleted)) {
+            return;
+        }
+        try {
+            Files.walk(pathToBeDeleted)
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+        } catch (IOException e) {
+            throw new KubernetesPluginException("Unable to delete directory: " + path, e);
+        }
+
     }
 }
