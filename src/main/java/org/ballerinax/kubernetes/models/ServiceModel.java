@@ -31,7 +31,7 @@ public class ServiceModel {
     private String selector;
 
     public ServiceModel() {
-        serviceType = "clusterIP";
+        serviceType = "ClusterIP";
         labels = new HashMap<>();
     }
 
