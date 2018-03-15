@@ -182,7 +182,7 @@ class KubernetesAnnotationProcessor {
         String serviceContent = new ServiceHandler(serviceModel).generate();
         try {
             KubernetesUtils.writeToFile(serviceContent, outputDir + File
-                    .separator + serviceModel.getName() + YAML);
+                    .separator + getValidName(balxFileName) + SVC_POSTFIX + YAML);
         } catch (IOException e) {
             throw new KubernetesPluginException("Error while writing service content", e);
         }
@@ -382,11 +382,11 @@ class KubernetesAnnotationProcessor {
     /**
      * Process annotations and create service model object.
      *
-     * @param serviceName    ballerina service name
+     * @param endpointName   ballerina service name
      * @param attachmentNode annotation attachment node.
      * @return Service model object
      */
-    ServiceModel processServiceAnnotation(String serviceName, AnnotationAttachmentNode attachmentNode) {
+    ServiceModel processServiceAnnotation(String endpointName, AnnotationAttachmentNode attachmentNode) {
         ServiceModel serviceModel = new ServiceModel();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
@@ -410,9 +410,6 @@ class KubernetesAnnotationProcessor {
                 default:
                     break;
             }
-        }
-        if (serviceModel.getName() == null) {
-            serviceModel.setName(getValidName(serviceName) + SVC_POSTFIX);
         }
         return serviceModel;
     }

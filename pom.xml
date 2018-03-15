@@ -164,7 +164,6 @@
             </plugin>
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.4.3</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -175,26 +174,6 @@
                             <createDependencyReducedPom>true</createDependencyReducedPom>
                             <minimizeJar>true</minimizeJar>
                             <artifactSet>
-                                <includes>
-                                    <include>io.fabric8:*</include>
-                                    <include>commons-io:commons-io</include>
-                                    <include>commons-codec:commons-codec</include>
-                                    <include>javax.validation:validation-api</include>
-                                    <include>com.squareup.okhttp3:okhttp</include>
-                                    <include>com.squareup.okhttp3:logging-interceptor</include>
-                                    <include>com.squareup.okio:okio</include>
-                                    <include>org.apache.commons:commons-compress</include>
-                                    <include>com.github.jnr:jnr-unixsocket</include>
-                                    <include>com.github.jnr:jnr-ffi</include>
-                                    <include>com.github.jnr:jffi</include>
-                                    <include>com.github.jnr:jnr-constants</include>
-                                    <include>com.github.jnr:jnr-enxio</include>
-                                    <include>com.github.jnr:jnr-posix</include>
-                                    <include>org.ow2.asm:asm</include>
-                                    <include>com.fasterxml.jackson.core:jackson-databind</include>
-                                    <include>com.fasterxml.jackson.core:jackson-core</include>
-                                    <include>com.fasterxml.jackson.core:jackson-annotations</include>
-                                </includes>
                                 <excludes>
                                     <exclude>org.slf4j:slf4j-api</exclude>
                                     <exclude>org.slf4j:slf4j-jdk14</exclude>
