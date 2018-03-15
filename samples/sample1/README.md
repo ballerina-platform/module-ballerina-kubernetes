@@ -10,14 +10,14 @@
     hello_world_k8s:latest
     
     $> tree
-        ├── README.md
-        ├── hello_world_k8s.bal
-        ├── hello_world_k8s.balx
-        └── kubernetes
-            ├── backendep-svc.yaml
-            ├── docker
-            │   └── Dockerfile
-            └── hello_world_k8s-deployment.yaml
+    ├── README.md
+    ├── hello_world_k8s.bal
+    ├── hello_world_k8s.balx
+    └── kubernetes
+        ├── docker
+        │   └── Dockerfile
+        ├── hello-world-k8s-svc.yaml
+        └── hello_world_k8s-deployment.yaml
     ```
 ### How to run:
 
