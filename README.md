@@ -20,20 +20,19 @@ Annotation based kubernetes extension implementation for ballerina.
 |name|Name of the deployment|\<outputfilename\>-deployment|
 |labels|Labels for deployment|"app: \<outputfilename\>"|
 |replicas|Number of replicas|1|
-|liveness|Enable or disable liveness probe|disable|
+|enableLiveness|Enable or disable liveness probe|disable|
 |initialDelaySeconds|Initial delay in seconds before performing the first probe|10s|
 |periodSeconds|Liveness probe interval|5s|
-|livenessPort|Port where the liveness probe check|\<ServicePort\>|
+|livenessPort|Port which the Liveness probe check|\<ServicePort\>|
 |imagePullPolicy|Docker image pull policy|IfNotPresent|
 |namespace|Kubernetes namespace|default|
 |image|Docker image with tag|<output file name>:latest|
 |env|List of environment variables|null|
-|imageBuild|Building docker image|TRUE|
-|push|Push docker image to registry. This can only be true if image build is true.|FALSE|
+|buildImage|Building docker image|true|
+|push|Push docker image to registry. This can only be true if image build is true.|false|
 |username|Username for the docker registry|null|
 |password|Password for the docker registry|null|
 |baseImage|Base image to create the docker image|ballerina/ballerina:latest|
-|sideCar|Name of the sidecar POD|null|
 
 ### @kubernetes:svc{}
 |**Annotation Name**|**Description**|**Default value**|
@@ -52,7 +51,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |path|Resource path.|/
 |targetPath|This will use for URL rewrite.|null
 |ingressClass|Ingress class|nginx
-|enableTLS|Enable ingress TLS|FALSE
+|enableTLS|Enable ingress TLS|false
 
 ### @kubernetes:hpa{}
 |**Annotation Name**|**Description**|**Default value**|
@@ -93,7 +92,7 @@ import ballerinax.kubernetes;
 
 
 @kubernetes:deployment{
-    liveness:"enable"
+    enableLiveness:"enable"
 }
 @kubernetes:svc{}
 @kubernetes:ingress{

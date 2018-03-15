@@ -20,20 +20,25 @@ package org.ballerinax.kubernetes;
 
 import org.ballerinalang.compiler.plugins.AbstractCompilerPlugin;
 import org.ballerinalang.compiler.plugins.SupportedAnnotationPackages;
-import org.ballerinalang.util.codegen.AnnAttachmentInfo;
-import org.ballerinalang.util.codegen.PackageInfo;
-import org.ballerinalang.util.codegen.ProgramFile;
-import org.ballerinalang.util.codegen.ProgramFileReader;
-import org.ballerinalang.util.codegen.ServiceInfo;
+import org.ballerinalang.model.tree.AnnotationAttachmentNode;
+import org.ballerinalang.model.tree.EndpointNode;
+import org.ballerinalang.model.tree.ServiceNode;
+import org.ballerinalang.util.diagnostic.Diagnostic;
 import org.ballerinalang.util.diagnostic.DiagnosticLog;
-import org.ballerinax.kubernetes.utils.KubeGenUtils;
+import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.ServiceModel;
+import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
+import org.wso2.ballerinalang.compiler.tree.BLangEndpoint;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Compiler plugin to generate kubernetes artifacts.
@@ -42,60 +47,119 @@ import java.nio.file.Paths;
         value = "ballerinax.kubernetes"
 )
 public class KubernetesPlugin extends AbstractCompilerPlugin {
+
+    private static KubernetesDataHolder kubernetesDataHolder = new KubernetesDataHolder();
+    private static boolean canProcess;
+    private KubernetesAnnotationProcessor kubernetesAnnotationProcessor;
+    private DiagnosticLog dlog;
+
+    private static synchronized void setCanProcess(boolean val) {
+        canProcess = val;
+    }
+
     @Override
     public void init(DiagnosticLog diagnosticLog) {
+        this.dlog = diagnosticLog;
+        setCanProcess(false);
+        this.kubernetesAnnotationProcessor = new KubernetesAnnotationProcessor();
+    }
+
+    @Override
+    public void process(ServiceNode serviceNode, List<AnnotationAttachmentNode> annotations) {
+        setCanProcess(true);
+        List<String> endpoints = extractEndpointName(serviceNode);
+        for (AnnotationAttachmentNode attachmentNode : annotations) {
+            String annotationKey = attachmentNode.getAnnotationName().getValue();
+            switch (annotationKey) {
+                case "ingress":
+                    kubernetesDataHolder.addIngressModel(kubernetesAnnotationProcessor
+                            .processIngressAnnotation
+                                    (serviceNode.getName().getValue(), attachmentNode), endpoints);
+                    break;
+                case "hpa":
+                    kubernetesDataHolder.setPodAutoscalerModel(kubernetesAnnotationProcessor
+                            .processPodAutoscalerAnnotation(attachmentNode));
+                    break;
+                case "deployment":
+                    kubernetesDataHolder.setDeploymentModel(kubernetesAnnotationProcessor.processDeployment
+                            (attachmentNode));
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    //TODO: Remove this after new ServiceNode implementation
+    private List<String> extractEndpointName(ServiceNode serviceNode) {
+        List<String> endpoints = new ArrayList<>();
+        List<? extends AnnotationAttachmentNode> attachmentNodes = serviceNode.getAnnotationAttachments();
+        for (AnnotationAttachmentNode attachmentNode : attachmentNodes) {
+            String annotationType = attachmentNode.getAnnotationName().getValue();
+            if ("serviceConfig".equals(annotationType)) {
+                List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
+                        ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
+                for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
+                    final String key = ((BLangSimpleVarRef) keyValue.getKey()).variableName.value;
+                    if (!key.equals("endpoints")) {
+                        continue;
+                    }
+                    final List<BLangExpression> endpointExp = ((BLangArrayLiteral) keyValue.getValue()).exprs;
+                    for (BLangExpression endpoint : endpointExp) {
+                        if (endpoint instanceof BLangSimpleVarRef) {
+                            endpoints.add(endpoint.toString());
+                        }
+                    }
+                }
+            }
+        }
+        return endpoints;
+    }
+
+    @Override
+    public void process(EndpointNode endpointNode, List<AnnotationAttachmentNode> annotations) {
+        String endpointName = endpointNode.getName().getValue();
+        ServiceModel serviceModel = null;
+        setCanProcess(true);
+        for (AnnotationAttachmentNode attachmentNode : annotations) {
+            String annotationKey = attachmentNode.getAnnotationName().getValue();
+            switch (annotationKey) {
+                case "svc":
+                    serviceModel = kubernetesAnnotationProcessor.processServiceAnnotation(endpointName,
+                            attachmentNode);
+                    kubernetesDataHolder.addServiceModel(endpointName, serviceModel);
+                    break;
+                default:
+                    break;
+            }
+        }
+        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
+                ((BLangRecordLiteral) ((BLangEndpoint) endpointNode).configurationExpr).getKeyValuePairs();
+        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
+            if ("port".equals(keyValue.getKey().toString())) {
+                int port = Integer.parseInt(keyValue.getValue().toString());
+                kubernetesDataHolder.addPort(port);
+                if (serviceModel != null) {
+                    serviceModel.setPort(port);
+                }
+            }
+        }
     }
 
     @Override
     public void codeGenerated(Path binaryPath) {
-        KubeGenUtils.printInfo("Generating deployment artifacts kubernetes …");
-        String filePath = binaryPath.toAbsolutePath().toString();
-        String userDir = new File(filePath).getParentFile().getAbsolutePath();
-        try {
-            byte[] bFile = Files.readAllBytes(Paths.get(filePath));
-            ProgramFileReader reader = new ProgramFileReader();
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bFile);
-            ProgramFile programFile = reader.readProgram(byteArrayInputStream);
-            PackageInfo packageInfos[] = programFile.getPackageInfoEntries();
-            KubeAnnotationProcessor kubeAnnotationProcessor = new KubeAnnotationProcessor();
-            ServiceInfo deploymentAnnotatedService = null;
-            //iterate through packages
-            for (PackageInfo packageInfo : packageInfos) {
-                ServiceInfo serviceInfos[] = packageInfo.getServiceInfoEntries();
-                int deploymentCount = 0;
-
-                for (ServiceInfo serviceInfo : serviceInfos) {
-                    AnnAttachmentInfo serviceAnnotation = serviceInfo.getAnnotationAttachmentInfo
-                            (KubeGenConstants.KUBERNETES_ANNOTATION_PACKAGE,
-                                    KubeGenConstants.SERVICE_ANNOTATION);
-                    if (serviceInfo.getAnnotationAttachmentInfo
-                            (KubeGenConstants.KUBERNETES_ANNOTATION_PACKAGE,
-                                    KubeGenConstants.DEPLOYMENT_ANNOTATION) != null) {
-                        if (deploymentCount < 1) {
-                            deploymentCount += 1;
-                            deploymentAnnotatedService = serviceInfo;
-                        } else {
-                            KubeGenUtils.printWarn("multiple deployment{} annotations detected. " +
-                                    "Ignoring annotation in service: " + serviceInfo.getName());
-                        }
-                    }
-                    if (serviceAnnotation != null) {
-                        KubeGenUtils.printInfo("Processing svc{} annotation for:" + serviceInfo.getName());
-                        String targetPath = userDir + File.separator + "target" + File.separator + KubeGenUtils
-                                .extractBalxName(filePath)
-                                + File.separator;
-                        kubeAnnotationProcessor.processSvcAnnotationForService(serviceInfo, filePath, targetPath);
-                    }
-                }
+        if (canProcess) {
+            KubernetesAnnotationProcessor kubernetesAnnotationProcessor = new KubernetesAnnotationProcessor();
+            String filePath = binaryPath.toAbsolutePath().toString();
+            String userDir = new File(filePath).getParentFile().getAbsolutePath();
+            String targetPath = userDir + File.separator + "kubernetes" + File
+                    .separator;
+            try {
+                kubernetesAnnotationProcessor.
+                        createArtifacts(kubernetesDataHolder, filePath, targetPath);
+            } catch (KubernetesPluginException e) {
+                dlog.logDiagnostic(Diagnostic.Kind.ERROR, null, e.getMessage());
             }
-            String targetPath = userDir + File.separator + "target" + File.separator + KubeGenUtils
-                    .extractBalxName(filePath)
-                    + File.separator;
-            kubeAnnotationProcessor.
-                    processDeploymentAnnotationForService(deploymentAnnotatedService, filePath, targetPath);
-
-        } catch (IOException e) {
-            KubeGenUtils.printError("error occurred while reading balx file" + e.getMessage());
         }
     }
 }

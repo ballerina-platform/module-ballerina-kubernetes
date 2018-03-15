@@ -17,6 +17,9 @@
  */
 package org.ballerinax.kubernetes.models;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,6 +35,15 @@ public class IngressModel {
     private int servicePort;
     private String targetPath;
     private boolean enableTLS;
+    private List<ServiceModel> serviceModelList;
+
+    public IngressModel() {
+        this.path = "/";
+        this.enableTLS = false;
+        this.ingressClass = "nginx";
+        this.serviceModelList = new ArrayList<>();
+        this.labels = new HashMap<>();
+    }
 
     public String getName() {
         return name;
@@ -118,5 +130,17 @@ public class IngressModel {
                 ", targetPath='" + targetPath + '\'' +
                 ", enableTLS=" + enableTLS +
                 '}';
+    }
+
+    public List<ServiceModel> getServiceModelList() {
+        return serviceModelList;
+    }
+
+    public void addServiceModel(ServiceModel serviceModel) {
+        this.serviceModelList.add(serviceModel);
+    }
+
+    public void addLabel(String key, String value) {
+        this.labels.put(key, value);
     }
 }

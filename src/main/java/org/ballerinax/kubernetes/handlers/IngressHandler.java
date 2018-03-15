@@ -28,13 +28,13 @@ import io.fabric8.kubernetes.api.model.extensions.IngressBuilder;
 import io.fabric8.kubernetes.api.model.extensions.IngressTLS;
 import io.fabric8.kubernetes.api.model.extensions.IngressTLSBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
-import org.ballerinax.kubernetes.exceptions.ArtifactGenerationException;
+import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.IngressModel;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.ballerinax.kubernetes.utils.KubeGenUtils.printError;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
 
 
 /**
@@ -51,9 +51,9 @@ public class IngressHandler implements ArtifactHandler {
      * Generate kubernetes ingress definition from annotation.
      *
      * @return Generated kubernetes {@link Ingress} definition
-     * @throws ArtifactGenerationException If an error occurs while generating artifact.
+     * @throws KubernetesPluginException If an error occurs while generating artifact.
      */
-    public String generate() throws ArtifactGenerationException {
+    public String generate() throws KubernetesPluginException {
         //generate ingress backend
         IngressBackend ingressBackend = new IngressBackendBuilder()
                 .withServiceName(ingressModel.getServiceName())
@@ -107,7 +107,7 @@ public class IngressHandler implements ArtifactHandler {
         } catch (JsonProcessingException e) {
             String errorMessage = "Error while generating yaml file for ingress: " + ingressModel.getName();
             printError(errorMessage);
-            throw new ArtifactGenerationException(errorMessage, e);
+            throw new KubernetesPluginException(errorMessage, e);
         }
         return ingressYAML;
     }

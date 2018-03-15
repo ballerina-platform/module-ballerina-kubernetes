@@ -33,15 +33,15 @@ import io.fabric8.kubernetes.api.model.TCPSocketActionBuilder;
 import io.fabric8.kubernetes.api.model.extensions.Deployment;
 import io.fabric8.kubernetes.api.model.extensions.DeploymentBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
-import org.ballerinax.kubernetes.KubeGenConstants;
-import org.ballerinax.kubernetes.exceptions.ArtifactGenerationException;
+import org.ballerinax.kubernetes.KubernetesConstants;
+import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.ballerinax.kubernetes.utils.KubeGenUtils.printError;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
 
 /**
  * Generates kubernetes deployment from annotations.
@@ -59,7 +59,7 @@ public class DeploymentHandler implements ArtifactHandler {
         for (int port : ports) {
             ContainerPort containerPort = new ContainerPortBuilder()
                     .withContainerPort(port)
-                    .withProtocol(KubeGenConstants.KUBERNETES_SVC_PROTOCOL)
+                    .withProtocol(KubernetesConstants.KUBERNETES_SVC_PROTOCOL)
                     .build();
             containerPorts.add(containerPort);
         }
@@ -91,7 +91,7 @@ public class DeploymentHandler implements ArtifactHandler {
     }
 
     private Probe generateLivenessProbe(DeploymentModel deploymentModel) {
-        if (KubeGenConstants.DEPLOYMENT_LIVENESS_DISABLE.equals(deploymentModel.getLiveness())) {
+        if (KubernetesConstants.DEPLOYMENT_LIVENESS_DISABLE.equals(deploymentModel.getEnableLiveness())) {
             return null;
         }
         TCPSocketAction tcpSocketAction = new TCPSocketActionBuilder()
@@ -108,9 +108,9 @@ public class DeploymentHandler implements ArtifactHandler {
      * Generate kubernetes deployment definition from annotation.
      *
      * @return Generated kubernetes @{@link Deployment} definition
-     * @throws ArtifactGenerationException If an error occurs while generating artifact.
+     * @throws KubernetesPluginException If an error occurs while generating artifact.
      */
-    public String generate() throws ArtifactGenerationException {
+    public String generate() throws KubernetesPluginException {
         List<ContainerPort> containerPorts = null;
         if (deploymentModel.getPorts() != null) {
             containerPorts = populatePorts(deploymentModel.getPorts());
@@ -140,7 +140,7 @@ public class DeploymentHandler implements ArtifactHandler {
         } catch (JsonProcessingException e) {
             String errorMessage = "Error while parsing yaml file for deployment: " + deploymentModel.getName();
             printError(errorMessage);
-            throw new ArtifactGenerationException(errorMessage, e);
+            throw new KubernetesPluginException(errorMessage, e);
         }
         return deploymentYAML;
     }

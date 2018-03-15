@@ -1,16 +1,21 @@
 import ballerina.net.http;
 import ballerinax.kubernetes;
 
-
 @kubernetes:svc{}
-@kubernetes:ingress{}
-@http:configuration {
-    basePath:"/helloWorld"
+endpoint<http:Service> backendEP {
+    port:9090
 }
-service<http> helloWorld {
-    resource sayHello (http:Connection conn, http:InRequest req) {
-        http:OutResponse res = {};
-        res.setStringPayload("Hello, World from service helloWorld! ");
-        _ = conn.respond(res);
+
+@kubernetes:hpa{}
+@kubernetes:ingress{}
+@http:serviceConfig {
+    basePath:"/helloWorld",
+    endpoints:[backendEP]
+}
+service<http:Service> helloWorld {
+    resource sayHello (http:ServerConnector conn, http:Request request) {
+        http:Response response = {};
+        response.setStringPayload("Hello, World from service helloWorld ! ");
+        _ = conn -> respond(response);
     }
 }

@@ -36,3 +36,4 @@ dependency-reduced-pom.xml
 
 #Ballerina
 *.balx
+samples/*/kubernetes

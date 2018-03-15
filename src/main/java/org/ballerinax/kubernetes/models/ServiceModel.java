@@ -17,6 +17,7 @@
  */
 package org.ballerinax.kubernetes.models;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -28,6 +29,11 @@ public class ServiceModel {
     private String serviceType;
     private int port;
     private String selector;
+
+    public ServiceModel() {
+        serviceType = "clusterIP";
+        labels = new HashMap<>();
+    }
 
     public String getName() {
         return name;
@@ -43,6 +49,10 @@ public class ServiceModel {
 
     public void setLabels(Map<String, String> labels) {
         this.labels = labels;
+    }
+
+    public void addLabel(String key, String value) {
+        this.labels.put(key, value);
     }
 
     public String getServiceType() {

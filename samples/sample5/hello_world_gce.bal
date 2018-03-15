@@ -3,7 +3,7 @@ import ballerinax.kubernetes;
 
 
 @kubernetes:deployment{
-    liveness:"enable",
+    enableLiveness:"enable",
     push:true,
     image:"index.docker.io/<username>/gce-sample:1.0",
     username:"<username>",

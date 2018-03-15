@@ -24,20 +24,29 @@ import java.util.List;
  * Docker annotations model class.
  */
 public class DockerModel {
-    private boolean debugEnable;
-    private int debugPort;
     private String name;
     private String registry;
     private String tag;
+    private boolean push;
     private String username;
     private String password;
-    private String balxFileName;
-    private String balxFilePath;
-    private boolean push;
-    private boolean isService;
-    private boolean imageBuild;
+    private boolean buildImage;
     private String baseImage;
     private List<Integer> ports;
+    private boolean enableDebug;
+    private int debugPort;
+    private String balxFileName;
+    private boolean isService;
+
+    public DockerModel() {
+        // Initialize with default values except for image name
+        this.tag = "latest";
+        this.push = false;
+        this.buildImage = true;
+        this.baseImage = "ballerina/ballerina:latest";
+        this.enableDebug = false;
+        this.debugPort = 5005;
+    }
 
     public String getName() {
         return name;
@@ -111,20 +120,12 @@ public class DockerModel {
         isService = service;
     }
 
-    public String getBalxFilePath() {
-        return balxFilePath;
+    public boolean isBuildImage() {
+        return buildImage;
     }
 
-    public void setBalxFilePath(String balxFilePath) {
-        this.balxFilePath = balxFilePath;
-    }
-
-    public boolean isImageBuild() {
-        return imageBuild;
-    }
-
-    public void setImageBuild(boolean imageBuild) {
-        this.imageBuild = imageBuild;
+    public void setBuildImage(boolean buildImage) {
+        this.buildImage = buildImage;
     }
 
     public String getBaseImage() {
@@ -135,12 +136,12 @@ public class DockerModel {
         this.baseImage = baseImage;
     }
 
-    public boolean isDebugEnable() {
-        return debugEnable;
+    public boolean isEnableDebug() {
+        return enableDebug;
     }
 
-    public void setDebugEnable(boolean debugEnable) {
-        this.debugEnable = debugEnable;
+    public void setEnableDebug(boolean enableDebug) {
+        this.enableDebug = enableDebug;
     }
 
     public int getDebugPort() {
@@ -154,20 +155,19 @@ public class DockerModel {
     @Override
     public String toString() {
         return "DockerModel{" +
-                "debugEnable=" + debugEnable +
-                ", debugPort=" + debugPort +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", registry='" + registry + '\'' +
                 ", tag='" + tag + '\'' +
+                ", push=" + push +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", balxFileName='" + balxFileName + '\'' +
-                ", balxFilePath='" + balxFilePath + '\'' +
-                ", push=" + push +
-                ", isService=" + isService +
-                ", imageBuild=" + imageBuild +
+                ", buildImage=" + buildImage +
                 ", baseImage='" + baseImage + '\'' +
                 ", ports=" + ports +
+                ", enableDebug=" + enableDebug +
+                ", debugPort=" + debugPort +
+                ", balxFileName='" + balxFileName + '\'' +
+                ", isService=" + isService +
                 '}';
     }
 }

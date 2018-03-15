@@ -1,6 +1,6 @@
 ## Sample5: Kubernetes Hello World in Google Cloud Environment
 
-- This sample runs  ballerina hello world service in GCE kubernetes cluster with liveness probe and  hostname
+- This sample runs  ballerina hello world service in GCE kubernetes cluster with enableLiveness probe and  hostname
  mapping for ingress. 
 - This sample will build the docker image and push it to docker-hub. 
 - Kubernetes cluster will pull the image from docker registry.
@@ -29,7 +29,7 @@
 2. Open hello_world_gce.bal and change username and password with docker hub credentials.
 ```bash
 @kubernetes:deployment{
-    liveness:"enable",
+    enableLiveness:"enable",
     push:true,
     image:"index.docker.io/<username>/gce-sample:1.0",
     username:"<username>",

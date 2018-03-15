@@ -22,7 +22,8 @@ import org.ballerinalang.net.http.HttpConstants;
 import org.ballerinalang.util.codegen.AnnAttachmentInfo;
 import org.ballerinalang.util.codegen.AnnAttributeValue;
 import org.ballerinalang.util.codegen.ServiceInfo;
-import org.ballerinax.kubernetes.KubeGenConstants;
+import org.ballerinax.kubernetes.KubernetesConstants;
+import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,9 +37,10 @@ import java.nio.file.Paths;
 /**
  * Util methods used for artifact generation.
  */
-public class KubeGenUtils {
+public class KubernetesUtils {
 
-    private static final boolean debugEnabled = "true".equals(System.getProperty(KubeGenConstants.ENABLE_DEBUG_LOGS));
+    private static final boolean debugEnabled = "true".equals(System.getProperty(KubernetesConstants
+            .ENABLE_DEBUG_LOGS));
     private static final PrintStream error = System.err;
     private static final PrintStream out = System.out;
 
@@ -51,10 +53,12 @@ public class KubeGenUtils {
      */
     public static void writeToFile(String context, String targetFilePath) throws IOException {
         File newFile = new File(targetFilePath);
+        // delete if file exists
         if (newFile.exists() && newFile.delete()) {
             Files.write(Paths.get(targetFilePath), context.getBytes(StandardCharsets.UTF_8));
             return;
         }
+        //create required directories
         if (newFile.getParentFile().mkdirs()) {
             Files.write(Paths.get(targetFilePath), context.getBytes(StandardCharsets.UTF_8));
             return;
@@ -68,7 +72,7 @@ public class KubeGenUtils {
      * @param source      source file path
      * @param destination destination file path
      */
-    public static void copyFile(String source, String destination) {
+    public static void copyFile(String source, String destination) throws KubernetesPluginException {
         File sourceFile = new File(source);
         File destinationFile = new File(destination);
         try (FileInputStream fileInputStream = new FileInputStream(sourceFile);
@@ -79,7 +83,7 @@ public class KubeGenUtils {
                 fileOutputStream.write(buffer, 0, bufferSize);
             }
         } catch (IOException e) {
-            error.println("Error while copying file. File not found " + e.getMessage());
+            throw new KubernetesPluginException("Error while copying file", e);
         }
 
     }
@@ -121,39 +125,7 @@ public class KubeGenUtils {
     public static void printError(String msg) {
         String ansiReset = "\u001B[0m";
         String ansiRed = "\u001B[31m";
-        error.println(ansiRed + "error: " + msg + ansiReset);
-    }
-
-    /**
-     * Prints a Warn message.
-     *
-     * @param msg message to be printed
-     */
-    public static void printWarn(String msg) {
-        String ansiReset = "\u001B[0m";
-        String ansiYellow = "\u001B[33m";
-        out.println(ansiYellow + "warning: " + msg + ansiReset);
-    }
-
-    /**
-     * Prints a Success message.
-     *
-     * @param msg message to be printed
-     */
-    public static void printSuccess(String msg) {
-        String ansiReset = "\u001B[0m";
-        String ansiGreen = "\u001B[32m";
-        out.println(ansiGreen + "success: " + msg + ansiReset);
-    }
-
-    /**
-     * Prints an Info message.
-     *
-     * @param msg message to be printed
-     */
-    public static void printInfo(String msg) {
-        out.println("info: " + msg);
-
+        error.println(ansiRed + "error [Kubernetes plugin]: " + msg + ansiReset);
     }
 
     /**

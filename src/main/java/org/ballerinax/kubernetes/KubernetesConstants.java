@@ -16,18 +16,16 @@
  * under the License.
  */
 
-package org.ballerinax.kubernetes.exceptions;
+package org.ballerinax.kubernetes;
 
 /**
- * Custom exception for kubernetes artifact generation errors.
+ * Constants used in kuberina.
  */
-public class ArtifactGenerationException extends Exception {
-
-    public ArtifactGenerationException(String msg) {
-        super(msg);
-    }
-
-    public ArtifactGenerationException(String msg, Throwable e) {
-        super(msg, e);
-    }
+public class KubernetesConstants {
+    public static final String ENABLE_DEBUG_LOGS = "debugKubernetes";
+    public static final String KUBERNETES_SVC_PROTOCOL = "TCP";
+    public static final String KUBERNETES_SELECTOR_KEY = "app";
+    public static final String DEPLOYMENT_NAMESPACE_DEFAULT = "default";
+    public static final String DEPLOYMENT_IMAGE_PULL_POLICY_DEFAULT = "IfNotPresent";
+    public static final String DEPLOYMENT_LIVENESS_DISABLE = "disable";
 }
