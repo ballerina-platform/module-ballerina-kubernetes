@@ -168,7 +168,7 @@ class KubernetesAnnotationProcessor {
         String deploymentContent = new DeploymentHandler(deploymentModel).generate();
         try {
             KubernetesUtils.writeToFile(deploymentContent, outputDir + File
-                    .separator + getValidName(balxFileName) + DEPLOYMENT_POSTFIX + YAML);
+                    .separator + balxFileName + DEPLOYMENT_POSTFIX + YAML);
             //generate dockerfile and docker image
             genereateDocker(deploymentModel, balxFilePath, outputDir + File.separator + DOCKER);
             // generate HPA
@@ -186,7 +186,7 @@ class KubernetesAnnotationProcessor {
         String serviceContent = new ServiceHandler(serviceModel).generate();
         try {
             KubernetesUtils.writeToFile(serviceContent, outputDir + File
-                    .separator + getValidName(balxFileName) + SVC_POSTFIX + YAML);
+                    .separator + balxFileName + SVC_POSTFIX + YAML);
         } catch (IOException e) {
             throw new KubernetesPluginException("Error while writing service content", e);
         }
