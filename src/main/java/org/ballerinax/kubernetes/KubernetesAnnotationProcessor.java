@@ -59,8 +59,12 @@ class KubernetesAnnotationProcessor {
     private static final String DEPLOYMENT_POSTFIX = "-deployment";
     private static final String SVC_POSTFIX = "-svc";
     private static final String INGRESS_POSTFIX = "-ingress";
-    private static final String YAML = ".yaml";
     private static final String HPA_POSTFIX = "-hpa";
+    private static final String DEPLOYMENT_FILE_POSTFIX = "_deployment";
+    private static final String SVC_FILE_POSTFIX = "_svc";
+    private static final String INGRESS_FILE_POSTFIX = "_ingress";
+    private static final String HPA_FILE_POSTFIX = "_hpa";
+    private static final String YAML = ".yaml";
     private static final String DOCKER_LATEST_TAG = ":latest";
     private static final String INGRESS_HOSTNAME_POSTFIX = ".com";
     private static final String DEFAULT_BASE_IMAGE = "ballerina/ballerina:latest";
@@ -168,9 +172,9 @@ class KubernetesAnnotationProcessor {
         String deploymentContent = new DeploymentHandler(deploymentModel).generate();
         try {
             KubernetesUtils.writeToFile(deploymentContent, outputDir + File
-                    .separator + balxFileName + DEPLOYMENT_POSTFIX + YAML);
+                    .separator + balxFileName + DEPLOYMENT_FILE_POSTFIX + YAML);
             //generate dockerfile and docker image
-            genereateDocker(deploymentModel, balxFilePath, outputDir + File.separator + DOCKER);
+            generateDocker(deploymentModel, balxFilePath, outputDir + File.separator + DOCKER);
             // generate HPA
             generatePodAutoscaler(deploymentModel, balxFilePath, outputDir);
         } catch (IOException e) {
@@ -186,7 +190,7 @@ class KubernetesAnnotationProcessor {
         String serviceContent = new ServiceHandler(serviceModel).generate();
         try {
             KubernetesUtils.writeToFile(serviceContent, outputDir + File
-                    .separator + balxFileName + SVC_POSTFIX + YAML);
+                    .separator + balxFileName + SVC_FILE_POSTFIX + YAML);
         } catch (IOException e) {
             throw new KubernetesPluginException("Error while writing service content", e);
         }
@@ -199,7 +203,7 @@ class KubernetesAnnotationProcessor {
         String serviceContent = new IngressHandler(ingressModel).generate();
         try {
             KubernetesUtils.writeToFile(serviceContent, outputDir + File
-                    .separator + balxFileName + INGRESS_POSTFIX + YAML);
+                    .separator + balxFileName + INGRESS_FILE_POSTFIX + YAML);
         } catch (IOException e) {
             throw new KubernetesPluginException("Error while writing ingress content", e);
         }
@@ -227,7 +231,7 @@ class KubernetesAnnotationProcessor {
         try {
             out.println();
             KubernetesUtils.writeToFile(serviceContent, outputDir + File
-                    .separator + balxFileName + HPA_POSTFIX + YAML);
+                    .separator + balxFileName + HPA_FILE_POSTFIX + YAML);
             out.print("@kubernetes:hpa \t\t - complete 1/1");
         } catch (IOException e) {
             throw new KubernetesPluginException("Error while writing HPA content", e);
@@ -247,7 +251,7 @@ class KubernetesAnnotationProcessor {
      * @param outputDir       output directory which data should be written
      * @throws KubernetesPluginException If an error occurs while generating artifacts
      */
-    private void genereateDocker(DeploymentModel deploymentModel, String balxFilePath, String outputDir)
+    private void generateDocker(DeploymentModel deploymentModel, String balxFilePath, String outputDir)
             throws KubernetesPluginException {
         DockerModel dockerModel = new DockerModel();
         String dockerImage = deploymentModel.getImage();
