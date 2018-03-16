@@ -41,6 +41,7 @@ public class DeploymentModel {
     private String username;
     private String password;
     private boolean push;
+    private String dockerHost;
     private List<Integer> ports;
     private PodAutoscalerModel podAutoscalerModel;
 
@@ -55,6 +56,7 @@ public class DeploymentModel {
         this.push = false;
         this.labels = new HashMap<>();
         this.setImagePullPolicy("IfNotPresent");
+        this.dockerHost = "unix:///var/run/docker.sock";
     }
 
     public String getName() {
@@ -227,5 +229,13 @@ public class DeploymentModel {
                 ", ports=" + ports +
                 ", podAutoscalerModel=" + podAutoscalerModel +
                 '}';
+    }
+
+    public String getDockerHost() {
+        return dockerHost;
+    }
+
+    public void setDockerHost(String dockerHost) {
+        this.dockerHost = dockerHost;
     }
 }

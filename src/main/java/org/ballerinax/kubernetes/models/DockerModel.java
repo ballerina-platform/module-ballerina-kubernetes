@@ -35,8 +35,9 @@ public class DockerModel {
     private List<Integer> ports;
     private boolean enableDebug;
     private int debugPort;
-    private String balxFileName;
+    private String dockerHost;
     private boolean isService;
+    private String balxFileName;
 
     public DockerModel() {
         // Initialize with default values except for image name
@@ -46,6 +47,7 @@ public class DockerModel {
         this.baseImage = "ballerina/ballerina:latest";
         this.enableDebug = false;
         this.debugPort = 5005;
+        this.dockerHost = "unix:///var/run/docker.sock";
     }
 
     public String getName() {
@@ -150,6 +152,14 @@ public class DockerModel {
 
     public void setDebugPort(int debugPort) {
         this.debugPort = debugPort;
+    }
+
+    public String getDockerHost() {
+        return dockerHost;
+    }
+
+    public void setDockerHost(String dockerHost) {
+        this.dockerHost = dockerHost;
     }
 
     @Override

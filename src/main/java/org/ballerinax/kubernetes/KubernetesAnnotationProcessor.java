@@ -262,6 +262,7 @@ class KubernetesAnnotationProcessor {
         dockerModel.setBalxFileName(KubernetesUtils.extractBalxName(balxFilePath) + BALX);
         dockerModel.setPorts(deploymentModel.getPorts());
         dockerModel.setService(true);
+        dockerModel.setDockerHost(deploymentModel.getDockerHost());
         dockerModel.setBuildImage(deploymentModel.isBuildImage());
         DockerHandler dockerArtifactHandler = new DockerHandler(dockerModel);
         String dockerContent = dockerArtifactHandler.generate();
@@ -274,7 +275,7 @@ class KubernetesAnnotationProcessor {
             KubernetesUtils.copyFile(balxFilePath, balxDestination);
             //check image build is enabled.
             if (dockerModel.isBuildImage()) {
-                dockerArtifactHandler.buildImage(dockerModel.getName(), outputDir);
+                dockerArtifactHandler.buildImage(dockerModel, outputDir);
                 out.print("@docker \t\t\t - complete 2/3 \r");
                 Files.delete(Paths.get(balxDestination));
                 //push only if image build is enabled.
@@ -369,6 +370,9 @@ class KubernetesAnnotationProcessor {
                     break;
                 case buildImage:
                     deploymentModel.setBuildImage(Boolean.valueOf(annotationValue));
+                    break;
+                case dockerHost:
+                    deploymentModel.setDockerHost(annotationValue);
                     break;
                 case imagePullPolicy:
                     deploymentModel.setImagePullPolicy(annotationValue);
@@ -528,6 +532,7 @@ class KubernetesAnnotationProcessor {
         image,
         env,
         buildImage,
+        dockerHost,
         username,
         password,
         baseImage,
