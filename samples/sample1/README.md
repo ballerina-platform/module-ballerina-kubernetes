@@ -57,7 +57,7 @@ hello_world_k8s       latest              df83ae43f69b        2 minutes ago     
 
 4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl create -f /Users/lakmal/ballerina/kubernetes/samples/sample1/kubernetes/
+$> kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample1/kubernetes/
 service "helloworldep" created
 deployment "hello-world-k8s-deployment" created
 ```
@@ -87,7 +87,7 @@ Hello, World from service helloWorld !
 
 7. Undeploy sample:
 ```bash
-$> kubectl delete -f ./target/hello_world_k8s/kubernetes
+$> kubectl delete -f /Users/lakmal/ballerina/kubernetes/samples/sample1/kubernetes/
 deployment "hello-world-k8s-deployment" deleted
 service "helloworldep" deleted
 
