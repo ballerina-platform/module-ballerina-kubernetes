@@ -168,7 +168,7 @@ class KubernetesAnnotationProcessor {
         String deploymentContent = new DeploymentHandler(deploymentModel).generate();
         try {
             KubernetesUtils.writeToFile(deploymentContent, outputDir + File
-                    .separator + KubernetesUtils.extractBalxName(balxFilePath) + DEPLOYMENT_POSTFIX + YAML);
+                    .separator + getValidName(balxFileName) + DEPLOYMENT_POSTFIX + YAML);
             //generate dockerfile and docker image
             genereateDocker(deploymentModel, balxFilePath, outputDir + File.separator + DOCKER);
             // generate HPA
