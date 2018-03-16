@@ -29,6 +29,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |image|Docker image with tag|<output file name>:latest|
 |env|List of environment variables|null|
 |buildImage|Building docker image|true|
+|dockerHost|Docker host IP and docker PORT. ( e.g minikube IP and docker PORT)|unix:///var/run/docker.sock|
 |push|Push docker image to registry. This can only be true if image build is true.|false|
 |username|Username for the docker registry|null|
 |password|Password for the docker registry|null|

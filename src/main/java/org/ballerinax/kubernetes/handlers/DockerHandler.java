@@ -40,7 +40,6 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.printDebug;
  */
 public class DockerHandler implements ArtifactHandler {
 
-    private static final String LOCAL_DOCKER_DAEMON_SOCKET = "unix:///var/run/docker.sock";
     private final CountDownLatch pushDone = new CountDownLatch(1);
     private final CountDownLatch buildDone = new CountDownLatch(1);
     private DockerModel dockerModel;
@@ -52,20 +51,20 @@ public class DockerHandler implements ArtifactHandler {
     /**
      * Create docker image.
      *
-     * @param imageName docker image name
-     * @param dockerDir dockerfile directory
+     * @param dockerModel dockerModel object
+     * @param dockerDir   dockerfile directory
      * @throws InterruptedException When error with docker build process
      * @throws IOException          When error with docker build process
      */
-    public void buildImage(String imageName, String dockerDir) throws
+    public void buildImage(DockerModel dockerModel, String dockerDir) throws
             InterruptedException, IOException {
         Config dockerClientConfig = new ConfigBuilder()
-                .withDockerUrl(LOCAL_DOCKER_DAEMON_SOCKET)
+                .withDockerUrl(dockerModel.getDockerHost())
                 .build();
         DockerClient client = new io.fabric8.docker.client.DefaultDockerClient(dockerClientConfig);
         OutputHandle buildHandle = client.image()
                 .build()
-                .withRepositoryName(imageName)
+                .withRepositoryName(dockerModel.getName())
                 .withNoCache()
                 .alwaysRemovingIntermediate()
                 .usingListener(new EventListener() {
@@ -108,7 +107,7 @@ public class DockerHandler implements ArtifactHandler {
                 (dockerModel.getPassword())
                 .build();
         Config config = new ConfigBuilder()
-                .withDockerUrl(LOCAL_DOCKER_DAEMON_SOCKET)
+                .withDockerUrl(dockerModel.getDockerHost())
                 .addToAuthConfigs(RegistryUtils.extractRegistry(dockerModel.getName()), authConfig)
                 .build();
 
@@ -132,6 +131,7 @@ public class DockerHandler implements ArtifactHandler {
 
                     @Override
                     public void onEvent(String event) {
+                        printDebug(event);
                     }
                 })
                 .toRegistry();

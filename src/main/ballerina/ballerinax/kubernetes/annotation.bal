@@ -13,6 +13,7 @@ package ballerinax.kubernetes;
 @Field {value:"image: Docker image with tag"}
 @Field {value:"envVars: Environment varialbes for container"}
 @Field {value:"buildImage: Docker image to be build or not"}
+@Field {value:"dockerHost: Docker host IP and docker PORT. (e.g minikube IP and docker PORT)"}
 @Field {value:"username: Username for docker registry"}
 @Field {value:"password: Password for docker registry"}
 @Field {value:"baseImage: Base image for docker image building"}
@@ -30,6 +31,7 @@ public struct DeploymentConfiguration {
     string image;
     string env;
     boolean buildImage;
+    string dockerHost;
     string username;
     string password;
     string baseImage;
