@@ -221,7 +221,7 @@ class KubernetesAnnotationProcessor {
             podAutoscalerModel.setMinReplicas(deploymentModel.getReplicas());
         }
         if (podAutoscalerModel.getName() == null || podAutoscalerModel.getName().length() == 0) {
-            podAutoscalerModel.setName(deploymentModel.getName() + HPA_POSTFIX);
+            podAutoscalerModel.setName(getValidName(balxFileName) + HPA_POSTFIX);
         }
         String serviceContent = new HPAHandler(podAutoscalerModel).generate();
         try {
