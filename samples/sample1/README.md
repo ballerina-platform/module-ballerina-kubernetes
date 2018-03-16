@@ -16,8 +16,8 @@
     └── kubernetes
         ├── docker
         │   └── Dockerfile
-        ├── hello-world-k8s-svc.yaml
-        └── hello_world_k8s-deployment.yaml
+        ├── hello_world_k8s_svc.yaml
+        └── hello_world_k8s_deployment.yaml
     ```
 ### How to run:
 
@@ -43,8 +43,8 @@ $> tree
 └── kubernetes
     ├── docker
     │   └── Dockerfile
-    ├── hello-world-k8s-svc.yaml
-    └── hello_world_k8s-deployment.yaml
+    ├── hello_world_k8s_svc.yaml
+    └── hello_world_k8s_deployment.yaml
 ```
 
 3. Verify the docker image is created:
@@ -66,7 +66,7 @@ deployment "hello-world-k8s-deployment" created
 ```bash
 $> kubectl get pods
 NAME                                         READY     STATUS    RESTARTS   AGE
-hello_world_k8s-deployment-bf8f98c7c-twwf9   1/1       Running   0          0s
+hello-world-k8s-deployment-bf8f98c7c-twwf9   1/1       Running   0          0s
 
 $> kubectl get svc
 NAME                    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
@@ -88,7 +88,7 @@ Hello, World from service helloWorld !
 7. Undeploy sample:
 ```bash
 $> kubectl delete -f ./target/hello_world_k8s/kubernetes
-deployment "hello_world_k8s-deployment" deleted
+deployment "hello-world-k8s-deployment" deleted
 service "helloworldep" deleted
 
 ```
