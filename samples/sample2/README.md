@@ -14,15 +14,15 @@
     └── kubernetes
         ├── docker
         │   └── Dockerfile
-        ├── hello-world-k8s-config-svc.yaml
-        ├── hello_world_k8s_config-deployment.yaml
-        └── hello_world_k8s_config-ingress.yaml
+        ├── hello_world_k8s_config_svc.yaml
+        ├── hello_world_k8s_config_deployment.yaml
+        └── hello_world_k8s_config_ingress.yaml
     ```
 ### How to run:
 
 1. Compile the  hello_world_k8s_config.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
-$> ballerina build hello-world-k8s.bal
+$> ballerina build hello_world_k8s.bal
 @docker 			 - complete 3/3 
 @kubernetes:deployment 		 - complete 1/1
 @kubernetes:service 		 - complete 1/1
@@ -35,16 +35,15 @@ kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample2/kubernetes/
 2. hello_world_k8s_config.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
-.
+├── README.md
+├── hello_world_k8s_config.bal
 ├── hello_world_k8s_config.balx
-└── target
-    └── hello_world_k8s_config
-        └── kubernetes
-            ├── docker
-            │   └── Dockerfile
-            ├── hello_world_k8s_config-deployment.yaml
-            ├── helloWorld-ingress.yaml
-            └── helloWorld-svc.yaml
+└── kubernetes
+    ├── docker
+    │   └── Dockerfile
+    ├── hello_world_k8s_config_deployment.yaml
+    ├── hello_world_k8s_config_svc.yaml
+    └── hello_world_k8s_config_ingress.yaml
 ```
 
 3. Verify the docker image is created:
