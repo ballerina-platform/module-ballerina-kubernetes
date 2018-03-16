@@ -8,26 +8,27 @@
     hello-world-k8s:latest
     
     $> tree
-        .
-        ├── hello_world_k8s_config.balx
-        └── target
-            └── hello_world_k8s_config
-                └── kubernetes
-                    ├── docker
-                    │   └── Dockerfile
-                    ├── hello_world_k8s_config-deployment.yaml
-                    ├── helloWorld-ingress.yaml
-                    └── helloWorld-svc.yaml
-
+    ├── README.md
+    ├── hello_world_k8s_config.bal
+    ├── hello_world_k8s_config.balx
+    └── kubernetes
+        ├── docker
+        │   └── Dockerfile
+        ├── hello-world-k8s-config-svc.yaml
+        ├── hello_world_k8s_config-deployment.yaml
+        └── hello_world_k8s_config-ingress.yaml
     ```
 ### How to run:
 
 1. Compile the  hello_world_k8s_config.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build hello-world-k8s.bal
-
-Run following command to deploy kubernetes artifacts:  
-kubectl create -f ./target/hello_world_k8s_config/kubernetes
+@docker 			 - complete 3/3 
+@kubernetes:deployment 		 - complete 1/1
+@kubernetes:service 		 - complete 1/1
+@kubernetes:ingress 		 - complete 1/1
+Run following command to deploy kubernetes artifacts: 
+kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample2/kubernetes/
 
 ```
 
@@ -56,38 +57,29 @@ hello_world_k8s_config      latest              df83ae43f69b        2 minutes ag
 
 4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl create -f /Users/anuruddha/Repos/ballerina-k8s-demo/kubernetes/sample1/target/hello-world-k8s/kubernetes
-horizontalpodautoscaler "helloworld" created
-ingress "helloworld" created
-service "helloworld" created
+$> kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample2/kubernetes/
+service "helloep-svc" created
+deployment "hello-world-k8s-config-deployment" created
+ingress "helloworld-ingress" created
 ```
 
 5. Verify kubernetes deployment,service and ingress is running:
 ```bash
 $> kubectl get pods
 NAME                                                READY     STATUS    RESTARTS   AGE
-hello_world_k8s_config-deployment-684965455d-5622z   1/1       Running   0          4s
+hello-world-k8s-config-deployment-54768647ff-m64v9   1/1       Running   0          4s
 
 
 $> kubectl get svc
-NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
-helloworld   NodePort    10.104.207.65   <none>        9090:30778/TCP   23s
-
+NAME                                              TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
+helloep-svc                                       ClusterIP      10.110.199.222   <none>        9090/TCP                     3m
 
 $> kubectl get ingress
-NAME         HOSTS     ADDRESS   PORTS     AGE
-helloworld   abc.com             80, 443   41s
+NAME                 HOSTS     ADDRESS   PORTS     AGE
+helloworld-ingress   abc.com             80, 443   4m
 ```
 
 6. Access the hello world service with curl command:
-
-- **Using node port:**
-
-Note that the node port(30778) is derived from `kubectl get svc` output.
-```bash
-$> curl http://localhost:30778/HelloWorld/sayHello
-Hello, World from service helloWorld !
-```
 
 - **Using ingress**
 
@@ -104,5 +96,5 @@ Hello, World from service helloWorld !
 ```
 7. Undeploy sample:
 ```bash
-$> kubectl delete -f ./target/hello-world-k8s/kubernetes
+$> kubectl delete -f /Users/lakmal/ballerina/kubernetes/samples/sample2/kubernetes/
 ```
