@@ -1,6 +1,6 @@
 ## Sample3: Ballerina program with multiple services with different ports
 
-- This sample deploy ballerina program 2 services with two base paths. (/bureger,/pizza)
+- This sample deploy ballerina program 2 services with single endpoint.
 - The ingress is configured so that two APIs can be accessed as following.
     http://pizzashack.com/customer
     http://order.com/orders
@@ -10,29 +10,29 @@
     ballerina.com/pizzashack:2.1.0 
     
     $> tree
-        .
-        ├── pizzashack.balx
-        └── target
-            └── pizzashack
-                └── kubernetes
-                    ├── Customer-ingress.yaml
-                    ├── Customer-svc.yaml
-                    ├── Order-ingress.yaml
-                    ├── Order-svc.yaml
-                    ├── docker
-                    │   └── Dockerfile
-                    └── pizzashack-deployment.yaml
-
-
+        ├── README.md
+        ├── kubernetes
+        │   ├── docker
+        │   │   └── Dockerfile
+        │   ├── pizzashack_deployment.yaml
+        │   ├── pizzashack_hpa.yaml
+        │   ├── pizzashack_ingress.yaml
+        │   └── pizzashack_svc.yaml
+        ├── pizzashack.bal
+        └── pizzashack.balx
     ```
 ### How to run:
 
 1. Compile the  pizzashack.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build pizzashack.bal
-
-Run following command to deploy kubernetes artifacts:  
-kubectl create -f ./target/pizzashack/kubernetes
+@docker 			 - complete 3/3 
+@kubernetes:hpa 		 - complete 1/1
+@kubernetes:deployment 		 - complete 1/1
+@kubernetes:service 		 - complete 1/1
+@kubernetes:ingress 		 - complete 2/2
+Run following command to deploy kubernetes artifacts: 
+kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample3/kubernetes/
 
 ```
 
@@ -40,18 +40,16 @@ kubectl create -f ./target/pizzashack/kubernetes
 ```bash
 $> tree
 .
-├── pizzashack.balx
-└── target
-    └── pizzashack
-        └── kubernetes
-            ├── Customer-ingress.yaml
-            ├── Customer-svc.yaml
-            ├── Order-ingress.yaml
-            ├── Order-svc.yaml
-            ├── docker
-            │   └── Dockerfile
-            └── pizzashack-deployment.yaml
-
+├── README.md
+├── kubernetes
+│   ├── docker
+│   │   └── Dockerfile
+│   ├── pizzashack_deployment.yaml
+│   ├── pizzashack_hpa.yaml
+│   ├── pizzashack_ingress.yaml
+│   └── pizzashack_svc.yaml
+├── pizzashack.bal
+└── pizzashack.balx
 ```
 
 3. Verify the docker image is created:
@@ -64,12 +62,12 @@ ballerina.com/pizzashack     2.1.0              df83ae43f69b        2 minutes ag
 
 4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl create -f target/pizzashack/kubernetes
-ingress "customer" created
-service "customer" created
-ingress "order" created
-service "order" created
+$> kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample3/kubernetes/
 deployment "pizzashack-deployment" created
+horizontalpodautoscaler "pizzashack-hpa" created
+ingress "customer-ingress" created
+ingress "order-ingress" created
+service "pizzaep-svc" created
 
 ```
 
@@ -81,16 +79,15 @@ pizzashack-deployment-d6747b8b9-64n7d   1/1       Running   0          39m
 
 
 $> kubectl get svc
-NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
-customer     NodePort    10.103.235.191   <none>        9090:32376/TCP   39m
-order        NodePort    10.98.245.0      <none>        9090:31491/TCP   39m
+NAME                                              TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
+pizzaep-svc                                       ClusterIP      10.99.151.55     <none>        9090/TCP                     1m
 
 
 
 $> kubectl get ingress
-NAME       HOSTS            ADDRESS   PORTS     AGE
-customer   pizzashack.com             80, 443   39m
-order      order.com                  80, 443   39m
+NAME               HOSTS            ADDRESS   PORTS     AGE
+customer-ingress   pizzashack.com             80, 443   2m
+order-ingress      order.com                  80, 443   2m
 ```
 
 6. Access the hello world service with curl command:
@@ -106,14 +103,14 @@ from `kubectl get ingress` command.)_
  ```
 Use curl command with hostname to access the service.
 ```bash
-$> curl curl http://order.com/orders
-Get order resource
+$> curl http://order.com/orders
+Get order resource !!!!
 
 $>curl http://pizzashack.com/customer
-Get Customer resource
+Get Customer resource !!!!
 ```
 
 7. Undeploy sample:
 ```bash
-$> kubectl delete -f ./target/pizzashack/kubernetes
+$> kubectl delete -f /Users/lakmal/ballerina/kubernetes/samples/sample3/kubernetes/
 ```
