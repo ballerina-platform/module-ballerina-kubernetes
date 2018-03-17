@@ -18,10 +18,11 @@
 
 package org.ballerinax.kubernetes.models;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Model class to store kubernetes artifacts.
@@ -31,12 +32,14 @@ public class KubernetesDataHolder {
     private PodAutoscalerModel podAutoscalerModel;
     private Map<String, ServiceModel> endpointToServiceModelMap;
     private Map<IngressModel, List<String>> ingressToEndpointMap;
-    private List<Integer> ports;
+    private Set<Integer> ports;
+    private Set<String> sslFiles;
 
     public KubernetesDataHolder() {
         endpointToServiceModelMap = new HashMap<>();
         ingressToEndpointMap = new HashMap<>();
-        ports = new ArrayList<>();
+        ports = new HashSet<>();
+        sslFiles = new HashSet<>();
     }
 
     public DeploymentModel getDeploymentModel() {
@@ -55,7 +58,7 @@ public class KubernetesDataHolder {
         this.podAutoscalerModel = podAutoscalerModel;
     }
 
-    public List<Integer> getPorts() {
+    public Set<Integer> getPorts() {
         return ports;
     }
 
@@ -77,5 +80,13 @@ public class KubernetesDataHolder {
 
     public void addServiceModel(String endpointName, ServiceModel serviceModel) {
         this.endpointToServiceModelMap.put(endpointName, serviceModel);
+    }
+
+    public Set<String> getSSLFiles() {
+        return sslFiles;
+    }
+
+    public void addSSLFile(String sslFile) {
+        this.sslFiles.add(sslFile);
     }
 }

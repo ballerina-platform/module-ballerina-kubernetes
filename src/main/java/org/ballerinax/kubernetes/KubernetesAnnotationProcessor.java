@@ -18,18 +18,21 @@
 
 package org.ballerinax.kubernetes;
 
+import org.apache.commons.codec.binary.Base64;
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.DeploymentHandler;
 import org.ballerinax.kubernetes.handlers.DockerHandler;
 import org.ballerinax.kubernetes.handlers.HPAHandler;
 import org.ballerinax.kubernetes.handlers.IngressHandler;
+import org.ballerinax.kubernetes.handlers.SecretHandler;
 import org.ballerinax.kubernetes.handlers.ServiceHandler;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.DockerModel;
 import org.ballerinax.kubernetes.models.IngressModel;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.models.PodAutoscalerModel;
+import org.ballerinax.kubernetes.models.SecretModel;
 import org.ballerinax.kubernetes.models.ServiceModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
@@ -39,6 +42,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
@@ -104,6 +108,36 @@ class KubernetesAnnotationProcessor {
     }
 
 
+    void extractSSLConfigurations(String endpointName, List<BLangRecordLiteral.BLangRecordKeyValue>
+            sslKeyValues) {
+        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : sslKeyValues) {
+            //extract file paths.
+            String key = keyValue.getKey().toString();
+            String value = keyValue.getValue().toString();
+            if ("keyStoreFile".equals(key) || "trustStoreFile".equals(key)) {
+                //TODO: Fix this
+                if (value.contains("${ballerina.home}")) {
+                    String ballerinaHome = System.getProperty("ballerina.home");
+                    String secretFilePath = value.replace("${ballerina.home}", ballerinaHome);
+                    Path dataFilePath = Paths.get(secretFilePath);
+                    Map<String, String> dataMap = new HashMap<>();
+                    try {
+                        String content = Base64.encodeBase64String(KubernetesUtils.readFileContent(dataFilePath));
+                        dataMap.put(String.valueOf(dataFilePath.getFileName()), content);
+                        SecretModel secretModel = new SecretModel();
+                        secretModel.setName(endpointName);
+                        secretModel.setData(dataMap);
+                        String secretYAML = new SecretHandler(secretModel).generate();
+                        out.println(secretYAML);
+                    } catch (KubernetesPluginException ignored) {
+                    }
+                    //substitute ballerina.home value at compile time to container's ballerina.home
+                    value = value.replace("${ballerina.home}", "/ballerina/runtime");
+                }
+            }
+        }
+    }
+
     /**
      * Generate kubernetes artifacts.
      *
@@ -167,7 +201,7 @@ class KubernetesAnnotationProcessor {
         deploymentModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
         if ("enable".equals(deploymentModel.getEnableLiveness()) && deploymentModel.getLivenessPort() == 0) {
             //set first port as liveness port
-            deploymentModel.setLivenessPort(deploymentModel.getPorts().get(0));
+            deploymentModel.setLivenessPort(deploymentModel.getPorts().iterator().next());
         }
         String deploymentContent = new DeploymentHandler(deploymentModel).generate();
         try {
@@ -294,6 +328,8 @@ class KubernetesAnnotationProcessor {
             throw new KubernetesPluginException("Unable to create docker images " + e.getMessage());
         }
     }
+
+
 
     /**
      * Get DeploymentModel object with default values.

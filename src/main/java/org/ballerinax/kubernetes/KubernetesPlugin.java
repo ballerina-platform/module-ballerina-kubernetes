@@ -37,6 +37,7 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     private static boolean canProcess;
     private KubernetesAnnotationProcessor kubernetesAnnotationProcessor;
     private DiagnosticLog dlog;
+    private PrintStream out = System.out;
 
     private static synchronized void setCanProcess(boolean val) {
         canProcess = val;
@@ -137,15 +139,29 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangEndpoint) endpointNode).configurationExpr).getKeyValuePairs();
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
-            if ("port".equals(keyValue.getKey().toString())) {
-                int port = Integer.parseInt(keyValue.getValue().toString());
-                kubernetesDataHolder.addPort(port);
-                if (serviceModel != null) {
-                    serviceModel.setPort(port);
-                }
+            String key = keyValue.getKey().toString();
+            switch (key) {
+                case "port":
+                    int port = Integer.parseInt(keyValue.getValue().toString());
+                    kubernetesDataHolder.addPort(port);
+                    if (serviceModel != null) {
+                        serviceModel.setPort(port);
+                    }
+                    break;
+                case "ssl":
+                    List<BLangRecordLiteral.BLangRecordKeyValue> sslKeyValues = ((BLangRecordLiteral) keyValue
+                            .valueExpr).getKeyValuePairs();
+                    kubernetesAnnotationProcessor.extractSSLConfigurations(endpointName, sslKeyValues);
+                    break;
+                default:
+                    break;
+
             }
         }
     }
+
+
+
 
     @Override
     public void codeGenerated(Path binaryPath) {

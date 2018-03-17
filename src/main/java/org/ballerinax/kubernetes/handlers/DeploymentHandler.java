@@ -40,6 +40,7 @@ import org.ballerinax.kubernetes.models.DeploymentModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
 
@@ -54,7 +55,7 @@ public class DeploymentHandler implements ArtifactHandler {
         this.deploymentModel = deploymentModel;
     }
 
-    private List<ContainerPort> populatePorts(List<Integer> ports) {
+    private List<ContainerPort> populatePorts(Set<Integer> ports) {
         List<ContainerPort> containerPorts = new ArrayList<>();
         for (int port : ports) {
             ContainerPort containerPort = new ContainerPortBuilder()
@@ -134,15 +135,14 @@ public class DeploymentHandler implements ArtifactHandler {
                 .endTemplate()
                 .endSpec()
                 .build();
-        String deploymentYAML;
+
         try {
-            deploymentYAML = SerializationUtils.dumpWithoutRuntimeStateAsYaml(deployment);
+            return  SerializationUtils.dumpWithoutRuntimeStateAsYaml(deployment);
         } catch (JsonProcessingException e) {
             String errorMessage = "Error while parsing yaml file for deployment: " + deploymentModel.getName();
             printError(errorMessage);
             throw new KubernetesPluginException(errorMessage, e);
         }
-        return deploymentYAML;
     }
 
 }
