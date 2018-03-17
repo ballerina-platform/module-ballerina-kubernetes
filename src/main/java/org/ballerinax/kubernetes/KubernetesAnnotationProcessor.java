@@ -375,6 +375,9 @@ class KubernetesAnnotationProcessor {
                 case buildImage:
                     deploymentModel.setBuildImage(Boolean.valueOf(annotationValue));
                     break;
+                case image:
+                    deploymentModel.setImage(annotationValue);
+                    break;
                 case dockerHost:
                     deploymentModel.setDockerHost(annotationValue);
                     break;
