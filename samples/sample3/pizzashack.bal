@@ -2,7 +2,7 @@ import ballerina.net.http;
 import ballerinax.kubernetes;
 
 @kubernetes:svc{}
-endpoint<http:Service> backendEP {
+endpoint<http:Service> pizzaEP {
     port:9090
 }
 
@@ -17,7 +17,7 @@ endpoint<http:Service> backendEP {
 @kubernetes:hpa{}
 @http:serviceConfig {
     basePath:"/customer",
-    endpoints:[backendEP]
+    endpoints:[pizzaEP]
 }
 service<http:Service> Customer {
     @http:resourceConfig {
@@ -34,7 +34,7 @@ service<http:Service> Customer {
 @kubernetes:ingress{}
 @http:serviceConfig {
     basePath:"/orders",
-    endpoints:[backendEP]
+    endpoints:[pizzaEP]
 }
 service<http:Service> Order {
     @http:resourceConfig {
