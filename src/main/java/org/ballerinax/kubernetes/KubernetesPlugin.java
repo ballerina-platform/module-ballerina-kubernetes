@@ -27,19 +27,19 @@ import org.ballerinalang.util.diagnostic.Diagnostic;
 import org.ballerinalang.util.diagnostic.DiagnosticLog;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.SecretModel;
 import org.ballerinax.kubernetes.models.ServiceModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
-import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.BLangEndpoint;
-import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
-import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
+import org.wso2.ballerinalang.compiler.tree.BLangService;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Compiler plugin to generate kubernetes artifacts.
@@ -69,7 +69,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     @Override
     public void process(ServiceNode serviceNode, List<AnnotationAttachmentNode> annotations) {
         setCanProcess(true);
-        List<String> endpoints = extractEndpointName(serviceNode);
+        Set<String> endpoints = extractEndpointName(serviceNode);
         for (AnnotationAttachmentNode attachmentNode : annotations) {
             String annotationKey = attachmentNode.getAnnotationName().getValue();
             switch (annotationKey) {
@@ -93,27 +93,11 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     }
 
     //TODO: Remove this after new ServiceNode implementation
-    private List<String> extractEndpointName(ServiceNode serviceNode) {
-        List<String> endpoints = new ArrayList<>();
-        List<? extends AnnotationAttachmentNode> attachmentNodes = serviceNode.getAnnotationAttachments();
-        for (AnnotationAttachmentNode attachmentNode : attachmentNodes) {
-            String annotationType = attachmentNode.getAnnotationName().getValue();
-            if ("serviceConfig".equals(annotationType)) {
-                List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                        ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
-                for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
-                    final String key = ((BLangSimpleVarRef) keyValue.getKey()).variableName.value;
-                    if (!key.equals("endpoints")) {
-                        continue;
-                    }
-                    final List<BLangExpression> endpointExp = ((BLangArrayLiteral) keyValue.getValue()).exprs;
-                    for (BLangExpression endpoint : endpointExp) {
-                        if (endpoint instanceof BLangSimpleVarRef) {
-                            endpoints.add(endpoint.toString());
-                        }
-                    }
-                }
-            }
+    private Set<String> extractEndpointName(ServiceNode serviceNode) {
+        Set<String> endpoints = new HashSet<>();
+        List<BLangSimpleVarRef> endpointList = ((BLangService) serviceNode).boundEndpoints;
+        for (BLangSimpleVarRef var : endpointList) {
+            endpoints.add(var.variableName.getValue());
         }
         return endpoints;
     }
@@ -150,7 +134,14 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                 case "ssl":
                     List<BLangRecordLiteral.BLangRecordKeyValue> sslKeyValues = ((BLangRecordLiteral) keyValue
                             .valueExpr).getKeyValuePairs();
-                    kubernetesAnnotationProcessor.processSSLAnnotation(endpointName, sslKeyValues);
+                    try {
+                        Set<SecretModel> secretModels = kubernetesAnnotationProcessor
+                                .processSSLAnnotation(endpointName, sslKeyValues);
+                        kubernetesDataHolder.addEndpointSecret(endpointName, secretModels);
+                        kubernetesDataHolder.addSecrets(secretModels);
+                    } catch (KubernetesPluginException e) {
+                        dlog.logDiagnostic(Diagnostic.Kind.ERROR, null, e.getMessage());
+                    }
                     break;
                 default:
                     break;
@@ -158,8 +149,6 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
             }
         }
     }
-
-
 
 
     @Override

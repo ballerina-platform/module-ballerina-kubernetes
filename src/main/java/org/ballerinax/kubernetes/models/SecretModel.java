@@ -8,6 +8,7 @@ import java.util.Map;
 public class SecretModel {
     private String name;
     private Map<String, String> data;
+    private String mountPath;
 
     public String getName() {
         return name;
@@ -23,5 +24,13 @@ public class SecretModel {
 
     public void setData(Map<String, String> data) {
         this.data = data;
+    }
+
+    public String getMountPath() {
+        return mountPath;
+    }
+
+    public void setMountPath(String mountPath) {
+        this.mountPath = mountPath;
     }
 }

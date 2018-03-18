@@ -30,12 +30,17 @@ import io.fabric8.kubernetes.api.model.Probe;
 import io.fabric8.kubernetes.api.model.ProbeBuilder;
 import io.fabric8.kubernetes.api.model.TCPSocketAction;
 import io.fabric8.kubernetes.api.model.TCPSocketActionBuilder;
+import io.fabric8.kubernetes.api.model.Volume;
+import io.fabric8.kubernetes.api.model.VolumeBuilder;
+import io.fabric8.kubernetes.api.model.VolumeMount;
+import io.fabric8.kubernetes.api.model.VolumeMountBuilder;
 import io.fabric8.kubernetes.api.model.extensions.Deployment;
 import io.fabric8.kubernetes.api.model.extensions.DeploymentBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
+import org.ballerinax.kubernetes.models.SecretModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +72,19 @@ public class DeploymentHandler implements ArtifactHandler {
         return containerPorts;
     }
 
+    private List<VolumeMount> populateVolumeMounts(DeploymentModel deploymentModel) {
+        List<VolumeMount> volumeMounts = new ArrayList<>();
+        for (SecretModel secretModel : deploymentModel.getSecretModels()) {
+            VolumeMount volumeMount = new VolumeMountBuilder()
+                    .withMountPath(secretModel.getName())
+                    .withName(secretModel.getMountPath())
+                    .withReadOnly(false)
+                    .build();
+            volumeMounts.add(volumeMount);
+        }
+        return volumeMounts;
+    }
+
     private Container generateContainer(DeploymentModel deploymentModel, List<ContainerPort>
             containerPorts) {
         return new ContainerBuilder()
@@ -75,6 +93,7 @@ public class DeploymentHandler implements ArtifactHandler {
                 .withImagePullPolicy(deploymentModel.getImagePullPolicy())
                 .withPorts(containerPorts)
                 .withEnv(populateEnvVar(deploymentModel.getEnv()))
+                .withVolumeMounts(populateVolumeMounts(deploymentModel))
                 .withLivenessProbe(generateLivenessProbe(deploymentModel))
                 .build();
     }
@@ -89,6 +108,20 @@ public class DeploymentHandler implements ArtifactHandler {
             envVars.add(envVar);
         });
         return envVars;
+    }
+
+    private List<Volume> populateVolume(DeploymentModel deploymentModel) {
+        List<Volume> volumes = new ArrayList<>();
+        for (SecretModel secretModel : deploymentModel.getSecretModels()) {
+            Volume volume = new VolumeBuilder()
+                    .withName(secretModel.getMountPath())
+                    .withNewSecret()
+                    .withSecretName(secretModel.getName())
+                    .endSecret()
+                    .build();
+            volumes.add(volume);
+        }
+        return volumes;
     }
 
     private Probe generateLivenessProbe(DeploymentModel deploymentModel) {
@@ -131,13 +164,14 @@ public class DeploymentHandler implements ArtifactHandler {
                 .endMetadata()
                 .withNewSpec()
                 .withContainers(container)
+                .withVolumes(populateVolume(deploymentModel))
                 .endSpec()
                 .endTemplate()
                 .endSpec()
                 .build();
 
         try {
-            return  SerializationUtils.dumpWithoutRuntimeStateAsYaml(deployment);
+            return SerializationUtils.dumpWithoutRuntimeStateAsYaml(deployment);
         } catch (JsonProcessingException e) {
             String errorMessage = "Error while parsing yaml file for deployment: " + deploymentModel.getName();
             printError(errorMessage);

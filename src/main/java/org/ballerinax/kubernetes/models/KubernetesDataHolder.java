@@ -20,7 +20,6 @@ package org.ballerinax.kubernetes.models;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,15 +30,17 @@ public class KubernetesDataHolder {
     private DeploymentModel deploymentModel;
     private PodAutoscalerModel podAutoscalerModel;
     private Map<String, ServiceModel> endpointToServiceModelMap;
-    private Map<IngressModel, List<String>> ingressToEndpointMap;
+    private Map<IngressModel, Set<String>> ingressToEndpointMap;
     private Set<Integer> ports;
-    private Set<SecretModel> secretModels;
+    private Map<String, Set<SecretModel>> endPointToSecretMap;
+    private Set<SecretModel> secrets;
 
     public KubernetesDataHolder() {
         endpointToServiceModelMap = new HashMap<>();
-        ingressToEndpointMap = new HashMap<>();
+        ingressToEndpointMap = new HashMap();
         ports = new HashSet<>();
-        secretModels = new HashSet<>();
+        endPointToSecretMap = new HashMap<>();
+        secrets = new HashSet<>();
     }
 
     public DeploymentModel getDeploymentModel() {
@@ -66,11 +67,11 @@ public class KubernetesDataHolder {
         this.ports.add(port);
     }
 
-    public Map<IngressModel, List<String>> getIngressToEndpointMap() {
+    public Map<IngressModel, Set<String>> getIngressToEndpointMap() {
         return ingressToEndpointMap;
     }
 
-    public void addIngressModel(IngressModel ingressModel, List<String> endpoints) {
+    public void addIngressModel(IngressModel ingressModel, Set<String> endpoints) {
         this.ingressToEndpointMap.put(ingressModel, endpoints);
     }
 
@@ -82,11 +83,20 @@ public class KubernetesDataHolder {
         this.endpointToServiceModelMap.put(endpointName, serviceModel);
     }
 
-    public Set<SecretModel> getSSLFiles() {
-        return secretModels;
+    public Map<String, Set<SecretModel>> getSecretModels() {
+        return endPointToSecretMap;
     }
 
-    public void addSSLFile(SecretModel secretModel) {
-        this.secretModels.add(secretModel);
+
+    public void addEndpointSecret(String endpointName, Set<SecretModel> secretModel) {
+        this.endPointToSecretMap.put(endpointName, secretModel);
+    }
+
+    public Set<SecretModel> getSecrets() {
+        return secrets;
+    }
+
+    public void addSecrets(Set<SecretModel> secrets) {
+        this.secrets.addAll(secrets);
     }
 }

@@ -44,6 +44,7 @@ public class DeploymentModel {
     private String dockerHost;
     private Set<Integer> ports;
     private PodAutoscalerModel podAutoscalerModel;
+    private Set<SecretModel> secretModels;
 
     public DeploymentModel() {
         // Initialize with default values.
@@ -237,5 +238,13 @@ public class DeploymentModel {
 
     public void setDockerHost(String dockerHost) {
         this.dockerHost = dockerHost;
+    }
+
+    public Set<SecretModel> getSecretModels() {
+        return secretModels;
+    }
+
+    public void setSecretModels(Set<SecretModel> secretModels) {
+        this.secretModels = secretModels;
     }
 }
