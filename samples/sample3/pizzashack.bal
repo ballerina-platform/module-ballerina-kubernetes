@@ -2,9 +2,9 @@ import ballerina.net.http;
 import ballerinax.kubernetes;
 
 @kubernetes:svc{}
-endpoint<http:Service> pizzaEP {
+endpoint http:ServiceEndpoint pizzaEP {
     port:9090
-}
+};
 
 @kubernetes:deployment {
     image:"ballerina.com/pizzashack:2.1.0"
@@ -16,18 +16,17 @@ endpoint<http:Service> pizzaEP {
 }
 @kubernetes:hpa{}
 @http:serviceConfig {
-    basePath:"/customer",
-    endpoints:[pizzaEP]
+    basePath:"/customer"
 }
-service<http:Service> Customer {
+service<http:Service> Customer bind pizzaEP{
     @http:resourceConfig {
         methods:["GET"],
         path:"/"
     }
-    resource getCustomer (http:ServerConnector conn, http:Request request) {
+    getCustomer (endpoint outboundEP, http:Request request) {
         http:Response response = {};
         response.setStringPayload("Get Customer resource !!!!");
-        _ = conn -> respond(response);
+        _ = outboundEP -> respond(response);
     }
 }
 
@@ -36,14 +35,14 @@ service<http:Service> Customer {
     basePath:"/orders",
     endpoints:[pizzaEP]
 }
-service<http:Service> Order {
+service<http:Service> Order bind pizzaEP{
     @http:resourceConfig {
         methods:["GET"],
         path:"/"
     }
-    resource getOrder (http:ServerConnector conn, http:Request request) {
+    getOrder (endpoint outboundEP, http:Request request) {
         http:Response response = {};
         response.setStringPayload("Get order resource !!!!");
-        _ = conn-> respond(response);
+        _ = outboundEP -> respond(response);
     }
 }

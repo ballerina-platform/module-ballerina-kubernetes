@@ -1,6 +1,10 @@
 import ballerina.net.http;
 import ballerinax.kubernetes;
 
+@kubernetes:svc{serviceType:"NodePort"}
+endpoint http:ServiceEndpoint gceHelloWorldDEP {
+    port:9090
+};
 
 @kubernetes:deployment{
     enableLiveness:"enable",
@@ -9,18 +13,17 @@ import ballerinax.kubernetes;
     username:"<username>",
     password:"<password>"
 }
-@kubernetes:svc{}
 @kubernetes:hpa{}
 @kubernetes:ingress{
     hostname:"abc.com"
 }
-@http:configuration {
+@http:serviceConfig {
     basePath:"/helloWorld"
 }
-service<http> helloWorld {
-    resource sayHello (http:Connection conn, http:InRequest req) {
-        http:OutResponse res = {};
-        res.setStringPayload("Hello, World from service helloWorld! ");
-        _ = conn.respond(res);
+service<http:Service>  helloWorld bind gceHelloWorldDEP {
+    sayHello (endpoint outboundEP, http:Request request) {
+        http:Response response = {};
+        response.setStringPayload("Hello, World from service helloWorld! ");
+        _ = outboundEP -> respond(response);
     }
 }

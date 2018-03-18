@@ -37,7 +37,6 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
 
 import java.io.File;
-import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +53,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     private static boolean canProcess;
     private KubernetesAnnotationProcessor kubernetesAnnotationProcessor;
     private DiagnosticLog dlog;
-    private PrintStream out = System.out;
+//    private PrintStream out = System.out;
 
     private static synchronized void setCanProcess(boolean val) {
         canProcess = val;
@@ -151,7 +150,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                 case "ssl":
                     List<BLangRecordLiteral.BLangRecordKeyValue> sslKeyValues = ((BLangRecordLiteral) keyValue
                             .valueExpr).getKeyValuePairs();
-                    kubernetesAnnotationProcessor.extractSSLConfigurations(endpointName, sslKeyValues);
+                    kubernetesAnnotationProcessor.processSSLAnnotation(endpointName, sslKeyValues);
                     break;
                 default:
                     break;

@@ -25,7 +25,6 @@ import org.ballerinax.kubernetes.handlers.DeploymentHandler;
 import org.ballerinax.kubernetes.handlers.DockerHandler;
 import org.ballerinax.kubernetes.handlers.HPAHandler;
 import org.ballerinax.kubernetes.handlers.IngressHandler;
-import org.ballerinax.kubernetes.handlers.SecretHandler;
 import org.ballerinax.kubernetes.handlers.ServiceHandler;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.DockerModel;
@@ -44,6 +43,7 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -107,36 +107,6 @@ class KubernetesAnnotationProcessor {
                 .collect(Collectors.toMap(a -> a[0], a -> a.length > 1 ? a[1] : ""));
     }
 
-
-    void extractSSLConfigurations(String endpointName, List<BLangRecordLiteral.BLangRecordKeyValue>
-            sslKeyValues) {
-        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : sslKeyValues) {
-            //extract file paths.
-            String key = keyValue.getKey().toString();
-            String value = keyValue.getValue().toString();
-            if ("keyStoreFile".equals(key) || "trustStoreFile".equals(key)) {
-                //TODO: Fix this
-                if (value.contains("${ballerina.home}")) {
-                    String ballerinaHome = System.getProperty("ballerina.home");
-                    String secretFilePath = value.replace("${ballerina.home}", ballerinaHome);
-                    Path dataFilePath = Paths.get(secretFilePath);
-                    Map<String, String> dataMap = new HashMap<>();
-                    try {
-                        String content = Base64.encodeBase64String(KubernetesUtils.readFileContent(dataFilePath));
-                        dataMap.put(String.valueOf(dataFilePath.getFileName()), content);
-                        SecretModel secretModel = new SecretModel();
-                        secretModel.setName(endpointName);
-                        secretModel.setData(dataMap);
-                        String secretYAML = new SecretHandler(secretModel).generate();
-                        out.println(secretYAML);
-                    } catch (KubernetesPluginException ignored) {
-                    }
-                    //substitute ballerina.home value at compile time to container's ballerina.home
-                    value = value.replace("${ballerina.home}", "/ballerina/runtime");
-                }
-            }
-        }
-    }
 
     /**
      * Generate kubernetes artifacts.
@@ -328,7 +298,6 @@ class KubernetesAnnotationProcessor {
             throw new KubernetesPluginException("Unable to create docker images " + e.getMessage());
         }
     }
-
 
 
     /**
@@ -553,6 +522,43 @@ class KubernetesAnnotationProcessor {
             ingressModel.setHostname(getValidName(serviceName) + INGRESS_HOSTNAME_POSTFIX);
         }
         return ingressModel;
+    }
+
+    /**
+     * Extract key-store/trust-store file location from endpoint.
+     * @param endpointName Endpoint name
+     * @param sslKeyValues SSL annotation struct
+     * @return List of @{@link SecretModel} objects
+     */
+    List<SecretModel> processSSLAnnotation(String endpointName, List<BLangRecordLiteral.BLangRecordKeyValue>
+            sslKeyValues) {
+        List<SecretModel> secrets = new ArrayList<>();
+        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : sslKeyValues) {
+            //extract file paths.
+            String key = keyValue.getKey().toString();
+            String value = keyValue.getValue().toString();
+            if ("keyStoreFile".equals(key) || "trustStoreFile".equals(key)) {
+                //TODO: Fix this
+                if (value.contains("${ballerina.home}")) {
+                    String ballerinaHome = System.getProperty("ballerina.home");
+                    String secretFilePath = value.replace("${ballerina.home}", ballerinaHome);
+                    Path dataFilePath = Paths.get(secretFilePath);
+                    Map<String, String> dataMap = new HashMap<>();
+                    try {
+                        String content = Base64.encodeBase64String(KubernetesUtils.readFileContent(dataFilePath));
+                        dataMap.put(String.valueOf(dataFilePath.getFileName()), content);
+                        SecretModel secretModel = new SecretModel();
+                        secretModel.setName(endpointName);
+                        secretModel.setData(dataMap);
+                        secrets.add(secretModel);
+                    } catch (KubernetesPluginException ignored) {
+                    }
+                    //substitute ballerina.home value at compile time to container's ballerina.home
+                    //value = value.replace("${ballerina.home}", "/ballerina/runtime");
+                }
+            }
+        }
+        return secrets;
     }
 
     private String getValidName(String name) {

@@ -33,13 +33,13 @@ public class KubernetesDataHolder {
     private Map<String, ServiceModel> endpointToServiceModelMap;
     private Map<IngressModel, List<String>> ingressToEndpointMap;
     private Set<Integer> ports;
-    private Set<String> sslFiles;
+    private Set<SecretModel> secretModels;
 
     public KubernetesDataHolder() {
         endpointToServiceModelMap = new HashMap<>();
         ingressToEndpointMap = new HashMap<>();
         ports = new HashSet<>();
-        sslFiles = new HashSet<>();
+        secretModels = new HashSet<>();
     }
 
     public DeploymentModel getDeploymentModel() {
@@ -82,11 +82,11 @@ public class KubernetesDataHolder {
         this.endpointToServiceModelMap.put(endpointName, serviceModel);
     }
 
-    public Set<String> getSSLFiles() {
-        return sslFiles;
+    public Set<SecretModel> getSSLFiles() {
+        return secretModels;
     }
 
-    public void addSSLFile(String sslFile) {
-        this.sslFiles.add(sslFile);
+    public void addSSLFile(SecretModel secretModel) {
+        this.secretModels.add(secretModel);
     }
 }
