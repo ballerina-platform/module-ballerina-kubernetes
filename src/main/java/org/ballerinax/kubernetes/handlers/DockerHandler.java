@@ -166,7 +166,7 @@ public class DockerHandler implements ArtifactHandler {
                 "# -----------------------------------------------------------------------\n" +
                 "\n" +
                 "FROM " + dockerModel.getBaseImage() + "\n" +
-                "MAINTAINER ballerina Maintainers \"dev@ballerina.io\"\n" +
+                "LABEL maintainer=\"dev@ballerina.io\"\n" +
                 "\n" +
                 "COPY " + dockerModel.getBalxFileName() + " /home/ballerina \n\n";
 
