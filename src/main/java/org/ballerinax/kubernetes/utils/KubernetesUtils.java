@@ -125,7 +125,7 @@ public class KubernetesUtils {
     public static void printError(String msg) {
         String ansiReset = "\u001B[0m";
         String ansiRed = "\u001B[31m";
-        error.println(ansiRed + "error [Kubernetes plugin]: " + msg + ansiReset);
+        error.println(ansiRed + msg + ansiReset);
     }
 
     /**

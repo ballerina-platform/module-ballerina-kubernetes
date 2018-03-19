@@ -25,8 +25,6 @@ import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.PodAutoscalerModel;
 
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
-
 /**
  * Generates kubernetes Horizontal Pod Autoscaler from annotations.
  */
@@ -63,7 +61,6 @@ public class HPAHandler implements ArtifactHandler {
             return SerializationUtils.dumpWithoutRuntimeStateAsYaml(horizontalPodAutoscaler);
         } catch (JsonProcessingException e) {
             String errorMessage = "Error while generating yaml file for autoscaler: " + podAutoscalerModel.getName();
-            printError(errorMessage);
             throw new KubernetesPluginException(errorMessage, e);
         }
     }

@@ -47,8 +47,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
-
 /**
  * Generates kubernetes deployment from annotations.
  */
@@ -174,7 +172,6 @@ public class DeploymentHandler implements ArtifactHandler {
             return SerializationUtils.dumpWithoutRuntimeStateAsYaml(deployment);
         } catch (JsonProcessingException e) {
             String errorMessage = "Error while parsing yaml file for deployment: " + deploymentModel.getName();
-            printError(errorMessage);
             throw new KubernetesPluginException(errorMessage, e);
         }
     }

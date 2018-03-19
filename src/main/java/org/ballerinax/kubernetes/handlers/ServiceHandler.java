@@ -27,8 +27,6 @@ import org.ballerinax.kubernetes.models.ServiceModel;
 
 import java.io.IOException;
 
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
-
 
 /**
  * Generates kubernetes service from annotations.
@@ -68,7 +66,6 @@ public class ServiceHandler implements ArtifactHandler {
             serviceYAML = SerializationUtils.dumpWithoutRuntimeStateAsYaml(service);
         } catch (IOException e) {
             String errorMessage = "Error while generating yaml file for service: " + serviceModel.getName();
-            printError(errorMessage);
             throw new KubernetesPluginException(errorMessage, e);
         }
         return serviceYAML;

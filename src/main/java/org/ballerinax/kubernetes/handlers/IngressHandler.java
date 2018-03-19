@@ -34,8 +34,6 @@ import org.ballerinax.kubernetes.models.IngressModel;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
-
 
 /**
  * Generates kubernetes ingress from annotations.
@@ -106,7 +104,6 @@ public class IngressHandler implements ArtifactHandler {
             ingressYAML = SerializationUtils.dumpWithoutRuntimeStateAsYaml(ingress);
         } catch (JsonProcessingException e) {
             String errorMessage = "Error while generating yaml file for ingress: " + ingressModel.getName();
-            printError(errorMessage);
             throw new KubernetesPluginException(errorMessage, e);
         }
         return ingressYAML;

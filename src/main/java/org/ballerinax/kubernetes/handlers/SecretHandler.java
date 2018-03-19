@@ -7,8 +7,6 @@ import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.SecretModel;
 
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
-
 /**
  * Generates kubernetes secret.
  */
@@ -33,7 +31,6 @@ public class SecretHandler implements ArtifactHandler {
             return SerializationUtils.dumpWithoutRuntimeStateAsYaml(secret);
         } catch (JsonProcessingException e) {
             String errorMessage = "Error while parsing yaml file for secret: " + secretModel.getName();
-            printError(errorMessage);
             throw new KubernetesPluginException(errorMessage, e);
         }
     }

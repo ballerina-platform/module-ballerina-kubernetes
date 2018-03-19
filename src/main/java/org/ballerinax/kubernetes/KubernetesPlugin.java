@@ -36,10 +36,13 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
 
 /**
  * Compiler plugin to generate kubernetes artifacts.
@@ -53,7 +56,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     private static boolean canProcess;
     private KubernetesAnnotationProcessor kubernetesAnnotationProcessor;
     private DiagnosticLog dlog;
-//    private PrintStream out = System.out;
+    private PrintStream out = System.out;
 
     private static synchronized void setCanProcess(boolean val) {
         canProcess = val;
@@ -164,7 +167,13 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                 kubernetesAnnotationProcessor.
                         createArtifacts(kubernetesDataHolder, filePath, targetPath);
             } catch (KubernetesPluginException e) {
+                out.println();
+                printError(e.getMessage());
                 dlog.logDiagnostic(Diagnostic.Kind.ERROR, null, e.getMessage());
+                try {
+                    KubernetesUtils.deleteDirectory(targetPath);
+                } catch (KubernetesPluginException ignored) {
+                }
             }
         }
     }
