@@ -92,7 +92,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
         }
     }
 
-    //TODO: Remove this after new ServiceNode implementation
+
     private Set<String> extractEndpointName(ServiceNode serviceNode) {
         Set<String> endpoints = new HashSet<>();
         List<BLangSimpleVarRef> endpointList = ((BLangService) serviceNode).boundEndpoints;

@@ -76,8 +76,8 @@ public class DeploymentHandler implements ArtifactHandler {
         List<VolumeMount> volumeMounts = new ArrayList<>();
         for (SecretModel secretModel : deploymentModel.getSecretModels()) {
             VolumeMount volumeMount = new VolumeMountBuilder()
-                    .withMountPath(secretModel.getName())
-                    .withName(secretModel.getMountPath())
+                    .withMountPath(secretModel.getMountPath())
+                    .withName(secretModel.getName())
                     .withReadOnly(false)
                     .build();
             volumeMounts.add(volumeMount);
@@ -114,7 +114,7 @@ public class DeploymentHandler implements ArtifactHandler {
         List<Volume> volumes = new ArrayList<>();
         for (SecretModel secretModel : deploymentModel.getSecretModels()) {
             Volume volume = new VolumeBuilder()
-                    .withName(secretModel.getMountPath())
+                    .withName(secretModel.getName() + "-volume")
                     .withNewSecret()
                     .withSecretName(secretModel.getName())
                     .endSecret()

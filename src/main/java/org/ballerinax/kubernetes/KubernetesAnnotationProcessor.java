@@ -587,17 +587,20 @@ class KubernetesAnnotationProcessor {
             }
             //TODO: Fix this
             String secretFilePath = value;
+            String mountPath = value;
             if (value.contains("${ballerina.home}")) {
                 // Resolve variable locally before reading file.
                 String ballerinaHome = System.getProperty("ballerina.home");
                 secretFilePath = value.replace("${ballerina.home}", ballerinaHome);
+                // replace mount path with container's ballerina.home
+                mountPath = value.replace("${ballerina.home}", "/ballerina/runtime");
             }
             Path dataFilePath = Paths.get(secretFilePath);
             Map<String, String> dataMap = new HashMap<>();
             String content = Base64.encodeBase64String(KubernetesUtils.readFileContent(dataFilePath));
             dataMap.put(String.valueOf(dataFilePath.getFileName()), content);
             secretModel.setData(dataMap);
-            secretModel.setMountPath(secretFilePath);
+            secretModel.setMountPath(mountPath);
             secrets.add(secretModel);
         }
         return secrets;
