@@ -89,6 +89,13 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                     kubernetesDataHolder.setDeploymentModel(kubernetesAnnotationProcessor.processDeployment
                             (attachmentNode));
                     break;
+                case "secret":
+                    try {
+                        kubernetesDataHolder.addSecrets(kubernetesAnnotationProcessor.processSecrets(attachmentNode));
+                    } catch (KubernetesPluginException e) {
+                        dlog.logDiagnostic(Diagnostic.Kind.ERROR, serviceNode.getPosition(), e.getMessage());
+                    }
+                    break;
                 default:
                     break;
             }
@@ -143,7 +150,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                         kubernetesDataHolder.addEndpointSecret(endpointName, secretModels);
                         kubernetesDataHolder.addSecrets(secretModels);
                     } catch (KubernetesPluginException e) {
-                        dlog.logDiagnostic(Diagnostic.Kind.ERROR, null, e.getMessage());
+                        dlog.logDiagnostic(Diagnostic.Kind.ERROR, endpointNode.getPosition(), e.getMessage());
                     }
                     break;
                 default:

@@ -78,10 +78,10 @@ public class KubernetesUtils {
             try {
                 return Files.readAllBytes(targetFilePath);
             } catch (IOException e) {
-                throw new KubernetesPluginException("Unable to read contents of the file" + targetFilePath);
+                throw new KubernetesPluginException("Unable to read contents of the file " + targetFilePath);
             }
         }
-        throw new KubernetesPluginException("Unable to read contents of the file" + targetFilePath);
+        throw new KubernetesPluginException("Unable to read contents of the file " + targetFilePath);
     }
 
     /**

@@ -63,6 +63,14 @@ Annotation based kubernetes extension implementation for ballerina.
 |maxReplicas|Maximum number of replicas|minReplicas+1|
 |cpuPrecentage|CPU percentage to start scaling|50|
 
+### @kubernetes:secret{}
+|**Annotation Name**|**Description**|**Default value**|
+|--|--|--|
+|name|Name secret mount|null|
+|mountPath|Path to mount on container|null|
+|readOnly|Is mount read only|false|
+|data|Data as key and values for secrets|null|
+
 ## How to run
 
 1. Download and install JDK 8 or later
@@ -91,22 +99,25 @@ target/
 import ballerina.net.http;
 import ballerinax.kubernetes;
 
+@kubernetes:svc{name:"hello"}
+endpoint http:ServiceEndpoint helloEP {
+    port:9090
+};
 
 @kubernetes:deployment{
     enableLiveness:"enable"
 }
-@kubernetes:svc{}
 @kubernetes:ingress{
     hostname:"abc.com"
 }
-@http:configuration {
+@http:serviceConfig {
     basePath:"/helloWorld"
 }
-service<http> helloWorld {
-    resource sayHello (http:Connection conn, http:InRequest req) {
-        http:OutResponse res = {};
-        res.setStringPayload("Hello, World from service helloWorld! ");
-        _ = conn.respond(res);
+service<http:Service> helloWorld bind helloEP {
+    sayHello (endpoint outboundEP, http:Request request) {
+        http:Response response = {};
+        response.setStringPayload("Hello, World from service helloWorld ! ");
+        _ = outboundEP -> respond(response);
     }
 }
 ```

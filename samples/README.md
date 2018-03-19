@@ -21,3 +21,4 @@ kubectl apply -f nginx-ingress/namespaces/nginx-ingress.yaml -Rf nginx-ingress
 1. [Sample4: Ballerina program with multiple services running in multiple ports](sample4/)
 1. [Sample5: Kubernetes Hello World in Google Cloud Environment](sample5/)
 1. [Sample6: Kubernetes Hello World Secured](sample6/)
+1. [Sample7: Mount secret volumes to deployment](sample7)

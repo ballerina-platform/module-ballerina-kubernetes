@@ -63,7 +63,7 @@ public class DockerHandler implements ArtifactHandler {
                 .withDockerUrl(dockerModel.getDockerHost())
                 .build();
         DockerClient client = new io.fabric8.docker.client.DefaultDockerClient(dockerClientConfig);
-        final DockerBuildError dockerError = new DockerBuildError();
+        final DockerError dockerError = new DockerError();
         OutputHandle buildHandle = client.image()
                 .build()
                 .withRepositoryName(dockerModel.getName())
@@ -99,9 +99,9 @@ public class DockerHandler implements ArtifactHandler {
         handleError(dockerError);
     }
 
-    private void handleError(DockerBuildError dockerBuildError) throws KubernetesPluginException {
-        if (dockerBuildError.isError()) {
-            throw new KubernetesPluginException(dockerBuildError.getErrorMsg());
+    private void handleError(DockerError dockerError) throws KubernetesPluginException {
+        if (dockerError.isError()) {
+            throw new KubernetesPluginException(dockerError.getErrorMsg());
         }
     }
 
@@ -123,7 +123,7 @@ public class DockerHandler implements ArtifactHandler {
                 .build();
 
         DockerClient client = new DefaultDockerClient(config);
-        final DockerBuildError dockerError = new DockerBuildError();
+        final DockerError dockerError = new DockerError();
         OutputHandle handle = client.image().withName(dockerModel.getName()).push()
                 .usingListener(new EventListener() {
                     @Override
@@ -198,26 +198,29 @@ public class DockerHandler implements ArtifactHandler {
         }
         return stringBuffer.toString();
     }
-}
 
-class DockerBuildError {
-    private boolean error;
-    private String errorMsg;
+    /**
+     * Class to hold docker errors.
+     */
+    private static class DockerError {
+        private boolean error;
+        private String errorMsg;
 
-    DockerBuildError() {
-        this.error = false;
-    }
+        DockerError() {
+            this.error = false;
+        }
 
-    public boolean isError() {
-        return error;
-    }
+        public boolean isError() {
+            return error;
+        }
 
-    public String getErrorMsg() {
-        return errorMsg;
-    }
+        public String getErrorMsg() {
+            return errorMsg;
+        }
 
-    public void setErrorMsg(String errorMsg) {
-        this.error = true;
-        this.errorMsg = errorMsg;
+        public void setErrorMsg(String errorMsg) {
+            this.error = true;
+            this.errorMsg = errorMsg;
+        }
     }
 }

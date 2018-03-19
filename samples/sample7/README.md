@@ -1,0 +1,123 @@
+## Sample7: Mount secret volumes to deployment 
+
+- This sample runs simple ballerina hello world service with secret volume mounts.
+- Following files will be generated from this sample.
+    ``` 
+    $> docker image
+    hello_world_secret_mount_k8s:latest
+    
+    $> tree
+    ├── hello_world_secret_mount_k8s.balx
+    ├── kubernetes
+       ├── docker
+       │   └── Dockerfile
+       ├── hello_world_secret_mount_k8s_deployment.yaml
+       ├── hello_world_secret_mount_k8s_ingress.yaml
+       ├── hello_world_secret_mount_k8s_secret.yaml
+       └── hello_world_secret_mount_k8s_svc.yaml
+    ```
+### How to run:
+
+1. Compile the  hello_world_secret_mount_k8s.bal file. Command to run kubernetes artifacts will be printed on success:
+```bash
+$> ballerina hello_world_secret_mount_k8s.bal
+@docker 			 - complete 3/3
+@kubernetes:deployment 		 - complete 1/1
+@kubernetes:service 		 - complete 1/1
+@kubernetes:secret  		 - complete 2/2
+
+Run following command to deploy kubernetes artifacts:
+kubectl apply -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample7/kubernetes/
+```
+
+2. hello_world_secret_mount_k8s.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
+```bash
+$> tree
+├── hello_world_secret_mount_k8s.balx
+    ├── kubernetes
+       ├── docker
+       │   └── Dockerfile
+       ├── hello_world_secret_mount_k8s_deployment.yaml
+       ├── hello_world_secret_mount_k8s_ingress.yaml
+       ├── hello_world_secret_mount_k8s_secret.yaml
+       └── hello_world_secret_mount_k8s_svc.yaml
+```
+
+3. Verify the docker image is created:
+```bash
+$> docker images
+REPOSITORY                      TAG                 IMAGE ID            CREATED             SIZE
+hello_world_secret_mount_k8s   latest              53559c0cd4f4        55 seconds ago      194MB
+
+```
+
+4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
+```bash
+$> kubectl apply -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample7/kubernetes/
+deployment "hello-world-secret-mount-k8s-deployment" created
+ingress "helloworld-ingress" created
+secret "public" created
+secret "private" created
+service "helloworldep-svc" created
+```
+
+5. Verify kubernetes deployment,service,secrets and ingress is deployed:
+```bash
+$> kubectl get pods
+NAME                                                       READY     STATUS    RESTARTS   AGE
+hello-world-secret-mount-k8s-deployment-7fb6b6f7f8-blwm2   1/1       Running   0          34s
+
+$> kubectl get svc
+NAME               TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+helloworldep-svc   NodePort    10.105.238.19   <none>        9090:30136/TCP   47s
+
+$> kubectl get ingress
+NAME                 HOSTS     ADDRESS   PORTS     AGE
+helloworld-ingress   abc.com             80, 443   1m
+
+$> kubectl get secrets
+NAME                    TYPE                                 DATA      AGE
+private                 Opaque                                1         1m
+public                  Opaque                                2         1m
+helloworldep-keystore   Opaque                                1         1m
+
+```
+
+6. Access the hello world service with curl command:
+
+- **Using node port:**
+
+Note that the node port is derived from `kubectl get svc` output.
+```bash
+$> curl http://localhost:30814/HelloWorld/secret1
+Secret1 resource: Secret1
+
+$> curl http://localhost:30814/HelloWorld/secret2
+Secret2 resource: Secret2
+
+$> curl http://localhost:30814/HelloWorld/secret3
+Secret3 resource: Secret3
+```
+
+- **Using ingress:**
+```bash
+$>curl https://abc.com/HelloWorld/secret1 -k
+Secret1 resource: Secret1
+
+$>curl https://abc.com/HelloWorld/secret2 -k
+Secret2 resource: Secret2
+
+$>curl https://abc.com/HelloWorld/secret3 -k
+Secret3 resource: Secret3
+```
+
+7. Undeploy sample:
+```bash
+$> kubectl delete -f ./kubernetes/
+ingress "helloworld-ingress" deleted
+secret "helloworldep-keystore" deleted
+secret "public" deleted
+secret "private" deleted
+service "helloworldep-svc" deleted
+
+```

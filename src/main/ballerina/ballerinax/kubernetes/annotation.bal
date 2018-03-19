@@ -89,3 +89,27 @@ public struct PodAutoscalerConfig {
 
 @Description {value:"Pod Autoscaler annotation for Kubernetes"}
 public annotation <service> hpa PodAutoscalerConfig;
+
+public struct SecretData {
+    string key;
+    string filePath;
+}
+
+@Description {value:"Kubernetes Secret volume mount"}
+@Field {value:"name: Name of the volume Mount"}
+@Field {value:"mountPath: Mount Path"}
+@Field {value:"readOnly: Is mount read only"}
+@Field {value:"data: Data as key and values for secrets"}
+public struct Secret {
+    string name;
+    string mountPath;
+    boolean readOnly;
+    SecretData[] data;
+}
+
+public struct  SecretMount{
+    Secret[] secrets;
+}
+
+@Description {value:"Volumes annotation for Kubernetes"}
+public annotation <service> secret SecretMount;
