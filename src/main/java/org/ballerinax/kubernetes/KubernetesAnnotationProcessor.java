@@ -596,6 +596,7 @@ class KubernetesAnnotationProcessor {
                 mountPath = value.replace("${ballerina.home}", "/ballerina/runtime");
             }
             Path dataFilePath = Paths.get(secretFilePath);
+            mountPath = String.valueOf(Paths.get(mountPath).getParent());
             Map<String, String> dataMap = new HashMap<>();
             String content = Base64.encodeBase64String(KubernetesUtils.readFileContent(dataFilePath));
             dataMap.put(String.valueOf(dataFilePath.getFileName()), content);
