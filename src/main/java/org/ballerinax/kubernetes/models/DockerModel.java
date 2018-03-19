@@ -18,7 +18,7 @@
 
 package org.ballerinax.kubernetes.models;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Docker annotations model class.
@@ -32,7 +32,7 @@ public class DockerModel {
     private String password;
     private boolean buildImage;
     private String baseImage;
-    private List<Integer> ports;
+    private Set<Integer> ports;
     private boolean enableDebug;
     private int debugPort;
     private String dockerHost;
@@ -98,11 +98,11 @@ public class DockerModel {
         this.push = push;
     }
 
-    public List<Integer> getPorts() {
+    public Set<Integer> getPorts() {
         return ports;
     }
 
-    public void setPorts(List<Integer> ports) {
+    public void setPorts(Set<Integer> ports) {
         this.ports = ports;
     }
 

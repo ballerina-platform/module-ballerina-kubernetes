@@ -18,18 +18,21 @@
 
 package org.ballerinax.kubernetes;
 
+import org.apache.commons.codec.binary.Base64;
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.DeploymentHandler;
 import org.ballerinax.kubernetes.handlers.DockerHandler;
 import org.ballerinax.kubernetes.handlers.HPAHandler;
 import org.ballerinax.kubernetes.handlers.IngressHandler;
+import org.ballerinax.kubernetes.handlers.SecretHandler;
 import org.ballerinax.kubernetes.handlers.ServiceHandler;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.DockerModel;
 import org.ballerinax.kubernetes.models.IngressModel;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.models.PodAutoscalerModel;
+import org.ballerinax.kubernetes.models.SecretModel;
 import org.ballerinax.kubernetes.models.ServiceModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
@@ -39,13 +42,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -62,6 +68,7 @@ class KubernetesAnnotationProcessor {
     private static final String HPA_POSTFIX = "-hpa";
     private static final String DEPLOYMENT_FILE_POSTFIX = "_deployment";
     private static final String SVC_FILE_POSTFIX = "_svc";
+    private static final String SECRET_FILE_POSTFIX = "_secret";
     private static final String INGRESS_FILE_POSTFIX = "_ingress";
     private static final String HPA_FILE_POSTFIX = "_hpa";
     private static final String YAML = ".yaml";
@@ -121,9 +128,12 @@ class KubernetesAnnotationProcessor {
         kubernetesDataHolder.setDeploymentModel(deploymentModel);
         deploymentModel.setPorts(kubernetesDataHolder.getPorts());
         deploymentModel.setPodAutoscalerModel(kubernetesDataHolder.getPodAutoscalerModel());
+        deploymentModel.setSecretModels(kubernetesDataHolder.getSecrets());
         generateDeployment(deploymentModel, balxFilePath, outputDir);
         out.println();
         out.println("@kubernetes:deployment \t\t - complete 1/1");
+
+        //svc
         Collection<ServiceModel> serviceModels = kubernetesDataHolder.getEndpointToServiceModelMap().values();
         int count = 0;
         for (ServiceModel serviceModel : serviceModels) {
@@ -132,18 +142,35 @@ class KubernetesAnnotationProcessor {
             out.print("@kubernetes:service \t\t - complete " + count + "/" + serviceModels.size() + "\r");
         }
         out.println();
+
+        //secret
         count = 0;
-        Map<IngressModel, List<String>> ingressModels = kubernetesDataHolder.getIngressToEndpointMap();
+        Collection<SecretModel> secretModels = kubernetesDataHolder.getSecrets();
+        for (SecretModel secretModel : secretModels) {
+            count++;
+            generateSecrets(secretModel, balxFilePath, outputDir);
+            out.print("@kubernetes:secret \t\t - complete " + count + "/" + secretModels.size() + "\r");
+        }
+        out.println();
+
+        //ingress
+        count = 0;
+        Map<IngressModel, Set<String>> ingressModels = kubernetesDataHolder.getIngressToEndpointMap();
         int size = ingressModels.size();
         Map<String, ServiceModel> endpointMap = kubernetesDataHolder.getEndpointToServiceModelMap();
-        Iterator<Map.Entry<IngressModel, List<String>>> iterator = ingressModels.entrySet().iterator();
+        Iterator<Map.Entry<IngressModel, Set<String>>> iterator = ingressModels.entrySet().iterator();
+        Map<String, Set<SecretModel>> secretModelsMap = kubernetesDataHolder.getSecretModels();
         while (iterator.hasNext()) {
-            Map.Entry<IngressModel, List<String>> pair = iterator.next();
+            Map.Entry<IngressModel, Set<String>> pair = iterator.next();
             IngressModel ingressModel = pair.getKey();
-            List<String> endpoints = pair.getValue();
-            for (String endpoint : endpoints) {
-                ingressModel.setServiceName(endpointMap.get(endpoint).getName());
-                ingressModel.setServicePort(endpointMap.get(endpoint).getPort());
+            Set<String> endpoints = pair.getValue();
+            for (String endpointName : endpoints) {
+                ServiceModel serviceModel = endpointMap.get(endpointName);
+                ingressModel.setServiceName(serviceModel.getName());
+                ingressModel.setServicePort(serviceModel.getPort());
+                if (secretModelsMap.get(endpointName) != null && secretModelsMap.get(endpointName).size() != 0) {
+                    ingressModel.setEnableTLS(true);
+                }
             }
             generateIngress(ingressModel, balxFilePath, outputDir);
             count++;
@@ -167,7 +194,7 @@ class KubernetesAnnotationProcessor {
         deploymentModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
         if ("enable".equals(deploymentModel.getEnableLiveness()) && deploymentModel.getLivenessPort() == 0) {
             //set first port as liveness port
-            deploymentModel.setLivenessPort(deploymentModel.getPorts().get(0));
+            deploymentModel.setLivenessPort(deploymentModel.getPorts().iterator().next());
         }
         String deploymentContent = new DeploymentHandler(deploymentModel).generate();
         try {
@@ -195,6 +222,20 @@ class KubernetesAnnotationProcessor {
             throw new KubernetesPluginException("Error while writing service content", e);
         }
     }
+
+    private void generateSecrets(SecretModel secretModel, String balxFilePath, String outputDir) throws
+            KubernetesPluginException {
+        String balxFileName = KubernetesUtils.extractBalxName(balxFilePath);
+        String secretContent = new SecretHandler(secretModel).generate();
+        try {
+            KubernetesUtils.writeToFile(secretContent, outputDir + File
+                    .separator + balxFileName + SECRET_FILE_POSTFIX + YAML);
+        } catch (IOException e) {
+            throw new KubernetesPluginException("Error while writing service content", e);
+        }
+
+    }
+
 
     private void generateIngress(IngressModel ingressModel, String balxFilePath, String outputDir) throws
             KubernetesPluginException {
@@ -294,6 +335,7 @@ class KubernetesAnnotationProcessor {
             throw new KubernetesPluginException("Unable to create docker images " + e.getMessage());
         }
     }
+
 
     /**
      * Get DeploymentModel object with default values.
@@ -517,6 +559,48 @@ class KubernetesAnnotationProcessor {
             ingressModel.setHostname(getValidName(serviceName) + INGRESS_HOSTNAME_POSTFIX);
         }
         return ingressModel;
+    }
+
+    /**
+     * Extract key-store/trust-store file location from endpoint.
+     *
+     * @param endpointName Endpoint name
+     * @param sslKeyValues SSL annotation struct
+     * @return List of @{@link SecretModel} objects
+     */
+    Set<SecretModel> processSSLAnnotation(String endpointName, List<BLangRecordLiteral.BLangRecordKeyValue>
+            sslKeyValues) throws KubernetesPluginException {
+        Set<SecretModel> secrets = new HashSet<>();
+        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : sslKeyValues) {
+            //extract file paths.
+            String key = keyValue.getKey().toString();
+            String value = keyValue.getValue().toString();
+            SecretModel secretModel = null;
+            if ("keyStoreFile".equals(key)) {
+                secretModel = new SecretModel();
+                secretModel.setName(endpointName + "-keystore");
+            } else if ("trustStoreFile".equals(key)) {
+                secretModel = new SecretModel();
+                secretModel.setName(endpointName + "-truststore");
+            } else {
+                continue;
+            }
+            //TODO: Fix this
+            String secretFilePath = value;
+            if (value.contains("${ballerina.home}")) {
+                // Resolve variable locally before reading file.
+                String ballerinaHome = System.getProperty("ballerina.home");
+                secretFilePath = value.replace("${ballerina.home}", ballerinaHome);
+            }
+            Path dataFilePath = Paths.get(secretFilePath);
+            Map<String, String> dataMap = new HashMap<>();
+            String content = Base64.encodeBase64String(KubernetesUtils.readFileContent(dataFilePath));
+            dataMap.put(String.valueOf(dataFilePath.getFileName()), content);
+            secretModel.setData(dataMap);
+            secretModel.setMountPath(secretFilePath);
+            secrets.add(secretModel);
+        }
+        return secrets;
     }
 
     private String getValidName(String name) {

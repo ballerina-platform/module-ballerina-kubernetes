@@ -66,6 +66,25 @@ public class KubernetesUtils {
     }
 
     /**
+     * Read contents of a File.
+     *
+     * @param targetFilePath target file path
+     * @throws KubernetesPluginException If an error occurs when reading file
+     */
+    public static byte[] readFileContent(Path targetFilePath) throws KubernetesPluginException {
+        File file = targetFilePath.toFile();
+        // append if file exists
+        if (file.exists() && !file.isDirectory()) {
+            try {
+                return Files.readAllBytes(targetFilePath);
+            } catch (IOException e) {
+                throw new KubernetesPluginException("Unable to read contents of the file" + targetFilePath);
+            }
+        }
+        throw new KubernetesPluginException("Unable to read contents of the file" + targetFilePath);
+    }
+
+    /**
      * Copy file from source to destination.
      *
      * @param source      source file path

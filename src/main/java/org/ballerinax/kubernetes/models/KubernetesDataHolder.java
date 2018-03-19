@@ -18,10 +18,10 @@
 
 package org.ballerinax.kubernetes.models;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Model class to store kubernetes artifacts.
@@ -30,13 +30,17 @@ public class KubernetesDataHolder {
     private DeploymentModel deploymentModel;
     private PodAutoscalerModel podAutoscalerModel;
     private Map<String, ServiceModel> endpointToServiceModelMap;
-    private Map<IngressModel, List<String>> ingressToEndpointMap;
-    private List<Integer> ports;
+    private Map<IngressModel, Set<String>> ingressToEndpointMap;
+    private Set<Integer> ports;
+    private Map<String, Set<SecretModel>> endPointToSecretMap;
+    private Set<SecretModel> secrets;
 
     public KubernetesDataHolder() {
         endpointToServiceModelMap = new HashMap<>();
-        ingressToEndpointMap = new HashMap<>();
-        ports = new ArrayList<>();
+        ingressToEndpointMap = new HashMap();
+        ports = new HashSet<>();
+        endPointToSecretMap = new HashMap<>();
+        secrets = new HashSet<>();
     }
 
     public DeploymentModel getDeploymentModel() {
@@ -55,7 +59,7 @@ public class KubernetesDataHolder {
         this.podAutoscalerModel = podAutoscalerModel;
     }
 
-    public List<Integer> getPorts() {
+    public Set<Integer> getPorts() {
         return ports;
     }
 
@@ -63,11 +67,11 @@ public class KubernetesDataHolder {
         this.ports.add(port);
     }
 
-    public Map<IngressModel, List<String>> getIngressToEndpointMap() {
+    public Map<IngressModel, Set<String>> getIngressToEndpointMap() {
         return ingressToEndpointMap;
     }
 
-    public void addIngressModel(IngressModel ingressModel, List<String> endpoints) {
+    public void addIngressModel(IngressModel ingressModel, Set<String> endpoints) {
         this.ingressToEndpointMap.put(ingressModel, endpoints);
     }
 
@@ -77,5 +81,22 @@ public class KubernetesDataHolder {
 
     public void addServiceModel(String endpointName, ServiceModel serviceModel) {
         this.endpointToServiceModelMap.put(endpointName, serviceModel);
+    }
+
+    public Map<String, Set<SecretModel>> getSecretModels() {
+        return endPointToSecretMap;
+    }
+
+
+    public void addEndpointSecret(String endpointName, Set<SecretModel> secretModel) {
+        this.endPointToSecretMap.put(endpointName, secretModel);
+    }
+
+    public Set<SecretModel> getSecrets() {
+        return secrets;
+    }
+
+    public void addSecrets(Set<SecretModel> secrets) {
+        this.secrets.addAll(secrets);
     }
 }

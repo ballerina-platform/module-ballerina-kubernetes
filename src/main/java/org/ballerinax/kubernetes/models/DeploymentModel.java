@@ -18,8 +18,8 @@
 package org.ballerinax.kubernetes.models;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Kubernetes deployment annotations model class.
@@ -42,8 +42,9 @@ public class DeploymentModel {
     private String password;
     private boolean push;
     private String dockerHost;
-    private List<Integer> ports;
+    private Set<Integer> ports;
     private PodAutoscalerModel podAutoscalerModel;
+    private Set<SecretModel> secretModels;
 
     public DeploymentModel() {
         // Initialize with default values.
@@ -131,11 +132,11 @@ public class DeploymentModel {
         this.image = image;
     }
 
-    public List<Integer> getPorts() {
+    public Set<Integer> getPorts() {
         return ports;
     }
 
-    public void setPorts(List<Integer> ports) {
+    public void setPorts(Set<Integer> ports) {
         this.ports = ports;
     }
 
@@ -237,5 +238,13 @@ public class DeploymentModel {
 
     public void setDockerHost(String dockerHost) {
         this.dockerHost = dockerHost;
+    }
+
+    public Set<SecretModel> getSecretModels() {
+        return secretModels;
+    }
+
+    public void setSecretModels(Set<SecretModel> secretModels) {
+        this.secretModels = secretModels;
     }
 }

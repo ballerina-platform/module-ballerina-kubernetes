@@ -3,13 +3,13 @@ import ballerinax.kubernetes;
 
 
 @kubernetes:svc{}
-endpoint<http:Service> pizzaEP {
+endpoint http:ServiceEndpoint pizzaEP {
     port:9099
-}
+};
 @kubernetes:svc{}
-endpoint<http:Service> burgerEP {
+endpoint http:ServiceEndpoint burgerEP {
     port:9096
-}
+};
 @kubernetes:deployment {
     name:"foodstore",
     replicas:3,
@@ -23,18 +23,17 @@ endpoint<http:Service> burgerEP {
     targetPath:"/"
 }
 @http:serviceConfig {
-    basePath:"/pizza",
-    endpoints:[pizzaEP]
+    basePath:"/pizza"
 }
-service<http:Service> PizzaAPI {
+service<http:Service> PizzaAPI bind pizzaEP{
     @http:resourceConfig {
         methods:["GET"],
         path:"/menu"
     }
-    resource getPizzaMenu (http:ServerConnector conn, http:Request req) {
+    getPizzaMenu (endpoint outboundEP, http:Request req) {
         http:Response response = {};
         response.setStringPayload("Pizza menu ");
-        _ = conn -> respond(response);
+        _ = outboundEP -> respond(response);
     }
 }
 
@@ -44,17 +43,16 @@ service<http:Service> PizzaAPI {
     targetPath:"/burger"
 }
 @http:serviceConfig {
-    basePath:"/burger",
-    endpoints:[burgerEP]
+    basePath:"/burger"
 }
-service<http:Service> BurgerAPI {
+service<http:Service> BurgerAPI bind burgerEP {
     @http:resourceConfig {
         methods:["GET"],
         path:"/menu"
     }
-    resource getBurgerMenu (http:ServerConnector conn, http:Request req) {
+    getBurgerMenu (endpoint outboundEP, http:Request req) {
         http:Response response = {};
         response.setStringPayload("Burger menu ");
-        _ = conn -> respond(response);
+        _ = outboundEP -> respond(response);
     }
 }

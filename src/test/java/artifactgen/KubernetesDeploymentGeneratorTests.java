@@ -30,10 +30,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Generates kubernetes Service from annotations.
@@ -48,7 +48,7 @@ public class KubernetesDeploymentGeneratorTests {
         deploymentModel.setName("MyDeployment");
         Map<String, String> labels = new HashMap<>();
         labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, "TestAPP");
-        List<Integer> ports = new ArrayList<>();
+        Set<Integer> ports = new HashSet<>();
         ports.add(9090);
         ports.add(9091);
         ports.add(9092);
@@ -67,7 +67,7 @@ public class KubernetesDeploymentGeneratorTests {
             KubernetesUtils.writeToFile(deploymentYAML, tempFile.getPath());
             log.info("Generated YAML: \n" + deploymentYAML);
             Assert.assertTrue(tempFile.exists());
-            //    tempFile.deleteOnExit();
+            tempFile.deleteOnExit();
         } catch (IOException e) {
             Assert.fail("Unable to write to file");
         } catch (KubernetesPluginException e) {
