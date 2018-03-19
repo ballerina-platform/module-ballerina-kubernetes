@@ -578,10 +578,10 @@ class KubernetesAnnotationProcessor {
             SecretModel secretModel = null;
             if ("keyStoreFile".equals(key)) {
                 secretModel = new SecretModel();
-                secretModel.setName(endpointName + "-keystore");
+                secretModel.setName(getValidName(endpointName) + "-keystore");
             } else if ("trustStoreFile".equals(key)) {
                 secretModel = new SecretModel();
-                secretModel.setName(endpointName + "-truststore");
+                secretModel.setName(getValidName(endpointName) + "-truststore");
             } else {
                 continue;
             }
