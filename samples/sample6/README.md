@@ -24,43 +24,45 @@
     ```
 ### How to run:
 
-1. Compile the  hello_world_k8s.bal file. Command to run kubernetes artifacts will be printed on success:
+1. Compile the  hello_world_ssl_k8s.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
-$> ballerina build hello_world_k8s.bal
-
-@docker                     - complete 3/3
-@kubernetes:deployment      - complete 1/1
-@kubernetes:service         - complete 1/1
-
+$> ballerina build hello_world_ssl_k8s.bal
+@docker 			 - complete 3/3 
+@kubernetes:deployment 		 - complete 1/1
+@kubernetes:service 		 - complete 1/1
+@kubernetes:secret 		 - complete 1/1
+@kubernetes:ingress 		 - complete 1/1
 Run following command to deploy kubernetes artifacts: 
-kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample1/kubernetes/
+kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample6/kubernetes/
 ```
 
-2. hello_world_k8s.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
+2. hello_world_ssl_k8s.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
 .
 ├── README.md
-├── hello_world_k8s.bal
-├── hello_world_k8s.balx
+├── hello_world_ssl_k8s.bal
+├── hello_world_ssl_k8s.balx
 └── kubernetes
     ├── docker
     │   └── Dockerfile
-    ├── hello_world_k8s_svc.yaml
-    └── hello_world_k8s_deployment.yaml
+    ├── hello_world_ssl_k8s_deployment.yaml
+    ├── hello_world_ssl_k8s_ingress.yaml
+    ├── hello_world_ssl_k8s_secret.yaml
+    └── hello_world_ssl_k8s_svc.yaml
 ```
 
 3. Verify the docker image is created:
 ```bash
 $> docker images
 REPOSITORY             TAG                 IMAGE ID            CREATED             SIZE
-hello_world_k8s       latest              df83ae43f69b        2 minutes ago        103MB
+hello_world_ssl_k8s       latest              df83ae43f69b        2 minutes ago        103MB
 
 ```
 
 4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample1/kubernetes/
+$> kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample6/kubernetes/
 service "helloworldep" created
 deployment "hello-world-k8s-deployment" created
 ```
