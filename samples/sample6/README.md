@@ -10,17 +10,17 @@
     hello_world_k8s:latest
     
     $> tree
-    .
-    ├── README.md
-    ├── hello_world_k8s.bal
-    ├── hello_world_k8s.balx
-    └── kubernetes
-        ├── docker
-        │   └── Dockerfile
-        ├── hello_world_k8s_deployment.yaml
-        ├── hello_world_k8s_ingress.yaml
-        ├── hello_world_k8s_secret.yaml
-        └── hello_world_k8s_svc.yaml
+        .
+        ├── README.md
+        ├── hello_world_ssl_k8s.bal
+        ├── hello_world_ssl_k8s.balx
+        └── kubernetes
+            ├── docker
+            │   └── Dockerfile
+            ├── hello_world_ssl_k8s_deployment.yaml
+            ├── hello_world_ssl_k8s_ingress.yaml
+            ├── hello_world_ssl_k8s_secret.yaml
+            └── hello_world_ssl_k8s_svc.yaml
     ```
 ### How to run:
 
@@ -67,7 +67,7 @@ service "helloworldep" created
 deployment "hello-world-k8s-deployment" created
 ```
 
-5. Verify kubernetes deployment,service and ingress is running:
+5. Verify kubernetes deployment,service,secret and ingress is deployed:
 ```bash
 $> kubectl get pods
 NAME                                         READY     STATUS    RESTARTS   AGE
@@ -77,6 +77,9 @@ $> kubectl get svc
 NAME                    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
 helloworldep           NodePort    10.96.118.214    <none>        9090:32045/TCP   1m
 
+$> kubectl get secret
+NAME                           TYPE                                  DATA      AGE
+helloworldsecuredep-keystore   Opaque                                1         21m
 ```
 
 6. Access the hello world service with curl command:
@@ -91,7 +94,7 @@ from `kubectl get ingress` command.)_
  ```
 Use curl command with hostname to access the service.
 ```bash
-$> curl http://abc.com/HelloWorld/sayHello
+$> curl https://abc.com/HelloWorld/sayHello -k
 Hello, World from service helloWorld !
 
 
