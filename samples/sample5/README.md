@@ -135,7 +135,7 @@ $> kubectl delete -f ./target/hello_world_gce/kubernetes
 ## Troubleshooting
 - Run following commands to deploy ingress backend and controller
 ```bash
-$> helm inint
+$> helm init
 $> kubectl create clusterrolebinding permissive-binding --clusterrole=cluster-admin --user=admin --user=kubelet --group=system:serviceaccounts;
 $> helm install --name nginx-ingress stable/nginx-ingress --set rbac.create=true
 ```

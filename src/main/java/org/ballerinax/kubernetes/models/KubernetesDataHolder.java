@@ -34,6 +34,8 @@ public class KubernetesDataHolder {
     private Set<Integer> ports;
     private Map<String, Set<SecretModel>> endPointToSecretMap;
     private Set<SecretModel> secrets;
+    private Set<ConfigMapModel> configMaps;
+    private Set<PersistentVolumeClaimModel> persistentVolumeClaims;
 
     public KubernetesDataHolder() {
         endpointToServiceModelMap = new HashMap<>();
@@ -41,6 +43,8 @@ public class KubernetesDataHolder {
         ports = new HashSet<>();
         endPointToSecretMap = new HashMap<>();
         secrets = new HashSet<>();
+        configMaps = new HashSet<>();
+        persistentVolumeClaims = new HashSet<>();
     }
 
     public DeploymentModel getDeploymentModel() {
@@ -98,5 +102,21 @@ public class KubernetesDataHolder {
 
     public void addSecrets(Set<SecretModel> secrets) {
         this.secrets.addAll(secrets);
+    }
+
+    public Set<ConfigMapModel> getConfigMaps() {
+        return configMaps;
+    }
+
+    public void addConfigMaps(Set<ConfigMapModel> configMaps) {
+        this.configMaps.addAll(configMaps);
+    }
+
+    public Set<PersistentVolumeClaimModel> getPersistentVolumeClaims() {
+        return persistentVolumeClaims;
+    }
+
+    public void addPersistentVolumeClaims(Set<PersistentVolumeClaimModel> persistentVolumeClaims) {
+        this.persistentVolumeClaims.addAll(persistentVolumeClaims);
     }
 }

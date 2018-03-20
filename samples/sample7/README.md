@@ -31,7 +31,7 @@
 
 1. Compile the  hello_world_secret_mount_k8s.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
-$> ballerina hello_world_secret_mount_k8s.bal
+$> ballerina build hello_world_secret_mount_k8s.bal
 @docker 			 - complete 3/3
 @kubernetes:deployment 		 - complete 1/1
 @kubernetes:service 		 - complete 1/1

@@ -45,6 +45,8 @@ public class DeploymentModel {
     private Set<Integer> ports;
     private PodAutoscalerModel podAutoscalerModel;
     private Set<SecretModel> secretModels;
+    private Set<ConfigMapModel> configMapModels;
+    private Set<PersistentVolumeClaimModel> volumeClaimModels;
 
     public DeploymentModel() {
         // Initialize with default values.
@@ -246,5 +248,21 @@ public class DeploymentModel {
 
     public void setSecretModels(Set<SecretModel> secretModels) {
         this.secretModels = secretModels;
+    }
+
+    public Set<ConfigMapModel> getConfigMapModels() {
+        return configMapModels;
+    }
+
+    public void setConfigMapModels(Set<ConfigMapModel> configMapModels) {
+        this.configMapModels = configMapModels;
+    }
+
+    public Set<PersistentVolumeClaimModel> getVolumeClaimModels() {
+        return volumeClaimModels;
+    }
+
+    public void setVolumeClaimModels(Set<PersistentVolumeClaimModel> volumeClaimModels) {
+        this.volumeClaimModels = volumeClaimModels;
     }
 }

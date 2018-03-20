@@ -74,6 +74,21 @@ Annotation based kubernetes extension implementation for ballerina.
 |readOnly|Is mount read only|false|
 |data|Paths to data files|null|
 
+### @kubernetes:configMap{}
+|**Annotation Name**|**Description**|**Default value**|
+|--|--|--|
+|name|Name secret mount|null|
+|mountPath|Path to mount on container|null|
+|readOnly|Is mount read only|false|
+|data|Paths to data files|null|
+
+### @kubernetes:persistentVolumeClaim{}
+|**Annotation Name**|**Description**|**Default value**|
+|--|--|--|
+|name|Name secret mount|null|
+|mountPath|Path to mount on container|null|
+|readOnly|Is mount read only|false|
+
 ## How to run
 
 1. Download and install JDK 8 or later

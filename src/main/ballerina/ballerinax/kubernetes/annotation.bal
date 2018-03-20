@@ -91,9 +91,9 @@ public struct PodAutoscalerConfig {
 public annotation <service> hpa PodAutoscalerConfig;
 
 
-@Description {value:"Kubernetes Secret volume mount"}
-@Field {value:"name: Name of the volume Mount"}
-@Field {value:"mountPath: Mount Path"}
+@Description {value:"Kubernetes secret volume mount"}
+@Field {value:"name: Name of the volume mount"}
+@Field {value:"mountPath: Mount path"}
 @Field {value:"readOnly: Is mount read only"}
 @Field {value:"data: Paths to data files"}
 public struct Secret {
@@ -107,5 +107,39 @@ public struct  SecretMount{
     Secret[] secrets;
 }
 
-@Description {value:"Volumes annotation for Kubernetes"}
+@Description {value:"Secret volumes annotation for Kubernetes"}
 public annotation <service> secret SecretMount;
+
+@Description {value:"Kubernetes Config Map volume mount"}
+@Field {value:"name: Name of the volume mount"}
+@Field {value:"mountPath: Mount path"}
+@Field {value:"readOnly: Is mount read only"}
+@Field {value:"data: Paths to data files"}
+public struct ConfigMap {
+    string name;
+    string mountPath;
+    boolean readOnly;
+    string[] data;
+}
+public struct  ConfigMapMount{
+    ConfigMap[] configMaps;
+}
+
+@Description {value:"ConfigMap volumes annotation for Kubernetes"}
+public annotation <service> configMap ConfigMapMount;
+
+@Description {value:"Kubernetes Persistent Volume Claim"}
+@Field {value:"name: Name of the volume claim"}
+@Field {value:"mountPath: Mount Path"}
+@Field {value:"readOnly: Is mount read only"}
+public struct PersistentVolumeClaim {
+    string name;
+    string mountPath;
+    boolean readOnly;
+}
+public struct  PersistentVolumeClaims{
+    PersistentVolumeClaim[] volumeClaims;
+}
+
+@Description {value:"ConfigMap volumes annotation for Kubernetes"}
+public annotation <service> persistentVolumeClaim PersistentVolumeClaims;
