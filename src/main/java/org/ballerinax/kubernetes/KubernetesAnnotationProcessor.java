@@ -36,6 +36,8 @@ import org.ballerinax.kubernetes.models.SecretModel;
 import org.ballerinax.kubernetes.models.ServiceModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
 import java.io.File;
@@ -143,16 +145,6 @@ class KubernetesAnnotationProcessor {
         }
         out.println();
 
-        //secret
-        count = 0;
-        Collection<SecretModel> secretModels = kubernetesDataHolder.getSecrets();
-        for (SecretModel secretModel : secretModels) {
-            count++;
-            generateSecrets(secretModel, balxFilePath, outputDir);
-            out.print("@kubernetes:secret \t\t - complete " + count + "/" + secretModels.size() + "\r");
-        }
-        out.println();
-
         //ingress
         count = 0;
         Map<IngressModel, Set<String>> ingressModels = kubernetesDataHolder.getIngressToEndpointMap();
@@ -177,6 +169,16 @@ class KubernetesAnnotationProcessor {
             out.print("@kubernetes:ingress \t\t - complete " + count + "/" + size + "\r");
             iterator.remove();
         }
+
+        //secret
+        count = 0;
+        Collection<SecretModel> secretModels = kubernetesDataHolder.getSecrets();
+        for (SecretModel secretModel : secretModels) {
+            count++;
+            generateSecrets(secretModel, balxFilePath, outputDir);
+            out.print("@kubernetes:secret \t\t - complete " + count + "/" + secretModels.size() + "\r");
+        }
+        out.println();
 
         printKubernetesInstructions(outputDir);
     }
@@ -607,6 +609,70 @@ class KubernetesAnnotationProcessor {
         return secrets;
     }
 
+    /**
+     * Process Secrets annotations.
+     *
+     * @param attachmentNode Attachment Node
+     * @return List of @{@link SecretModel} objects
+     */
+    Set<SecretModel> processSecrets(AnnotationAttachmentNode attachmentNode) throws KubernetesPluginException {
+        Set<SecretModel> secrets = new HashSet<>();
+        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
+                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
+        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
+            List<BLangExpression> secretAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
+            for (BLangExpression bLangExpression : secretAnnotation) {
+                SecretModel secretModel = new SecretModel();
+                List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
+                        ((BLangRecordLiteral) bLangExpression).getKeyValuePairs();
+                for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
+                    SecretConfiguration secretConfiguration =
+                            SecretConfiguration.valueOf(annotation.getKey().toString());
+                    String annotationValue = annotation.getValue().toString();
+                    switch (secretConfiguration) {
+                        case name:
+                            secretModel.setName(getValidName(annotationValue));
+                            break;
+                        case mountPath:
+                            secretModel.setMountPath(annotationValue);
+                            break;
+                        case data:
+                            List<BLangExpression> data = ((BLangArrayLiteral) annotation.valueExpr).exprs;
+                            secretModel.setData(getData(data));
+                            break;
+                        case readOnly:
+                            secretModel.setReadOnly(Boolean.parseBoolean(annotationValue));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                secrets.add(secretModel);
+            }
+        }
+        return secrets;
+    }
+
+    private Map<String, String> getData(List<BLangExpression> data) throws KubernetesPluginException {
+        Map<String, String> dataMap = new HashMap<>();
+        for (BLangExpression bLangExpression : data) {
+            List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
+                    ((BLangRecordLiteral) bLangExpression).getKeyValuePairs();
+            String key = null;
+            String content = null;
+            for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
+                if ("key".equals(annotation.getKey().toString())) {
+                    key = annotation.getValue().toString();
+                } else if ("filePath".equals(annotation.getKey().toString())) {
+                    Path dataFilePath = Paths.get(annotation.getValue().toString());
+                    content = Base64.encodeBase64String(KubernetesUtils.readFileContent(dataFilePath));
+                }
+            }
+            dataMap.put(key, content);
+        }
+        return dataMap;
+    }
+
     private String getValidName(String name) {
         return name.toLowerCase(Locale.ENGLISH).replace("_", "-");
     }
@@ -666,5 +732,15 @@ class KubernetesAnnotationProcessor {
         minReplicas,
         maxReplicas,
         cpuPercentage
+    }
+
+    /**
+     * Enum class for secret volume configurations.
+     */
+    private enum SecretConfiguration {
+        name,
+        mountPath,
+        readOnly,
+        data
     }
 }

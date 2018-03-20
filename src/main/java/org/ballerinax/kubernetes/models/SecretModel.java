@@ -9,6 +9,7 @@ public class SecretModel {
     private String name;
     private Map<String, String> data;
     private String mountPath;
+    private boolean readOnly;
 
     public String getName() {
         return name;
@@ -32,5 +33,13 @@ public class SecretModel {
 
     public void setMountPath(String mountPath) {
         this.mountPath = mountPath;
+    }
+
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
     }
 }
