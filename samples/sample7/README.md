@@ -1,6 +1,10 @@
 ## Sample7: Mount secret volumes to deployment 
 
 - This sample runs simple ballerina hello world service with secret volume mounts.
+- K8S secret are intended to hold sensitive information, such as passwords, OAuth tokens, and ssh keys.
+- Putting this information in a secret is safer and more flexible than putting it verbatim in a pod definition or in a
+  docker image.
+- @kubernetes:secret{} annotation will create k8s secrets. See [hello_world_secret_mount_k8s.bal](./hello_world_secret_mount_k8s.bal)  
 - Following files will be generated from this sample.
     ``` 
     $> docker image
