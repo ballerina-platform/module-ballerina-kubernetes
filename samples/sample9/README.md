@@ -1,8 +1,8 @@
 ## Sample9: Mount PersistentVolumeClaim to deployment 
 
 - This sample runs simple ballerina hello world service with persistence volume claim mounts.
-- @kubernetes:persistentVolumeClaim{} annotation will create k8s config maps. See [hello_world_persistence_volume_k8s](
-./hello_world_persistence_volume_k8s.bal)  
+- @kubernetes:persistentVolumeClaim{} annotation will create k8s persistent volume claim mounts. See 
+[hello_world_persistence_volume_k8s.bal](./hello_world_persistence_volume_k8s.bal)  
 - Following files will be generated from this sample.
     ``` 
     $> docker image
@@ -35,7 +35,7 @@ Run following command to deploy kubernetes artifacts:
 kubectl apply -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample9/kubernetes/
 ```
 
-2. hello_world_secret_mount_k8s.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
+2. hello_world_persistence_volume_k8s.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
 .
@@ -82,7 +82,6 @@ persistentvolumeclaim "local-pv-2" created
 $> kubectl get pods
 NAME                                                             READY     STATUS    RESTARTS   AGE
 hello-world-persistence-volume-k8s-deployment-6ff8d6b94b-fqwmw   1/1       Running   0          1m
-
 
 $> kubectl get svc
 NAME               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
