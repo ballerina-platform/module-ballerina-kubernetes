@@ -9,12 +9,12 @@
     $> tree
     ├── hello_world_secret_mount_k8s.balx
     ├── kubernetes
-       ├── docker
-       │   └── Dockerfile
-       ├── hello_world_secret_mount_k8s_deployment.yaml
-       ├── hello_world_secret_mount_k8s_ingress.yaml
-       ├── hello_world_secret_mount_k8s_secret.yaml
-       └── hello_world_secret_mount_k8s_svc.yaml
+    ├── docker
+    │   └── Dockerfile
+    ├── hello_world_secret_mount_k8s_deployment.yaml
+    ├── hello_world_secret_mount_k8s_ingress.yaml
+    ├── hello_world_secret_mount_k8s_secret.yaml
+    └── hello_world_secret_mount_k8s_svc.yaml
     ```
 ### How to run:
 
@@ -69,7 +69,7 @@ hello-world-secret-mount-k8s-deployment-7fb6b6f7f8-blwm2   1/1       Running   0
 
 $> kubectl get svc
 NAME               TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
-helloworldep-svc   NodePort    10.105.238.19   <none>        9090:30136/TCP   47s
+helloworldep-svc   ClusterIP    10.105.238.19   <none>        9090/TCP         47s
 
 $> kubectl get ingress
 NAME                 HOSTS     ADDRESS   PORTS     AGE
@@ -85,19 +85,6 @@ helloworldep-keystore   Opaque                                1         1m
 
 6. Access the hello world service with curl command:
 
-- **Using node port:**
-
-Note that the node port is derived from `kubectl get svc` output.
-```bash
-$> curl http://localhost:30814/HelloWorld/secret1
-Secret1 resource: Secret1
-
-$> curl http://localhost:30814/HelloWorld/secret2
-Secret2 resource: Secret2
-
-$> curl http://localhost:30814/HelloWorld/secret3
-Secret3 resource: Secret3
-```
 
 - **Using ingress:**
 ```bash
@@ -113,11 +100,6 @@ Secret3 resource: Secret3
 
 7. Undeploy sample:
 ```bash
-$> kubectl delete -f ./kubernetes/
-ingress "helloworld-ingress" deleted
-secret "helloworldep-keystore" deleted
-secret "public" deleted
-secret "private" deleted
-service "helloworldep-svc" deleted
+$> kubectl delete -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample7/kubernetes/
 
 ```

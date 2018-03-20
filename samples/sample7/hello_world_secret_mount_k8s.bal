@@ -2,7 +2,7 @@ import ballerina.net.http;
 import ballerinax.kubernetes;
 import ballerina.io;
 
-@kubernetes:svc{serviceType:"NodePort"}
+@kubernetes:svc{}
 endpoint http:ServiceEndpoint helloWorldEP {
     port:9090,
 	ssl:{
@@ -15,15 +15,15 @@ endpoint http:ServiceEndpoint helloWorldEP {
 @kubernetes:secret{
 	secrets:[
 		{name:"private",mountPath:"/home/ballerina/private",readOnly:false,
-						data:[
-							{key:"private.txt",filePath:"./secrets/MySecret1.txt"}
-						]
+			data:[
+				{key:"private.txt",filePath:"./secrets/MySecret1.txt"}
+			]
 		},
 		{name:"public",mountPath:"/home/ballerina/public",readOnly:false,
-						data:[
-							{key:"public1.txt",filePath:"./secrets/MySecret2.txt"},
-							{key:"public2.txt",filePath:"./secrets/MySecret3.txt"}
-						]
+			data:[
+				{key:"public1.txt",filePath:"./secrets/MySecret2.txt"},
+				{key:"public2.txt",filePath:"./secrets/MySecret3.txt"}
+			]
 		}
 	]
 }

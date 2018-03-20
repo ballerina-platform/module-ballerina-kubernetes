@@ -1,7 +1,7 @@
 import ballerina.net.http;
 import ballerinax.kubernetes;
 
-@kubernetes:svc{serviceType:"NodePort"}
+@kubernetes:svc{}
 endpoint http:ServiceEndpoint helloWorldSecuredEP {
     port:9090,
     ssl:{

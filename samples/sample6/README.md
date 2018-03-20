@@ -1,6 +1,7 @@
 ## Sample6: Kubernetes SSL
 
-- This sample runs simple ballerina hello world service in kubernetes cluster with https. 
+- This sample runs simple ballerina hello world service in kubernetes cluster with https. Keystore will 
+  automatically passed into relevant POD by using k8s secret volume mount.
 - The endpoint is annotated with @kubernetes:svc{} and without passing serviceType as NodePort. 
 - Note that the @kubernetes:deployment{} is optional.
 - Default values for kubernetes annotation attributes will be used to create artifacts.
@@ -63,8 +64,9 @@ hello_world_ssl_k8s       latest              df83ae43f69b        2 minutes ago 
 4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
 $> kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample6/kubernetes/
-service "helloworldep" created
-deployment "hello-world-k8s-deployment" created
+ingress "helloworld-ingress" created
+secret "helloworldsecuredep-keystore" created
+service "helloworldsecuredep-svc" created
 ```
 
 5. Verify kubernetes deployment,service,secret and ingress is deployed:
@@ -75,7 +77,7 @@ hello-world-k8s-deployment-bf8f98c7c-twwf9   1/1       Running   0          0s
 
 $> kubectl get svc
 NAME                    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
-helloworldep           NodePort    10.96.118.214    <none>        9090:32045/TCP   1m
+helloworldep           ClusterIP    10.96.118.214    <none>        9090/TCP         1m
 
 $> kubectl get secret
 NAME                           TYPE                                  DATA      AGE
@@ -100,8 +102,7 @@ Hello, World from service helloWorld !
 
 7. Undeploy sample:
 ```bash
-$> kubectl delete -f /Users/lakmal/ballerina/kubernetes/samples/sample1/kubernetes/
-deployment "hello-world-k8s-deployment" deleted
-service "helloworldep" deleted
+$> kubectl delete -f /Users/lakmal/ballerina/kubernetes/samples/sample6/kubernetes/
+
 
 ```
