@@ -5,12 +5,15 @@ Annotation based kubernetes extension implementation for ballerina.
 ## Features:
 - Kubernetes deployment support. 
 - Kubernetes service support.
+- Kubernetes liveness probe support
 - Kubernetes ingress support.
 - Kubernetes horizontal pod autoscaler support.
-- Docker file generation. 
 - Docker image generation. 
-- Docker push support with docker registry.
- 
+- Docker push support with remote docker registry.
+- Kubernetes secret support.
+- Kubernetes config map support
+- Kubernetes persistent volume claim support
+
 
 ## Supported Annotations:
 
@@ -29,7 +32,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |image|Docker image with tag|<output file name>:latest|
 |env|List of environment variables|null|
 |buildImage|Building docker image|true|
-|dockerHost|Docker host IP and docker PORT. ( e.g minikube IP and docker PORT)|unix:///var/run/docker.sock|
+|dockerHost|Docker host IP and docker PORT.(e.g "tcp://192.168.99.100:2376")|null|
 |push|Push docker image to registry. This can only be true if image build is true.|false|
 |username|Username for the docker registry|null|
 |password|Password for the docker registry|null|
