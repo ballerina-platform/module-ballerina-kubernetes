@@ -72,7 +72,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |--|--|--|
 |name|Name secret mount|null|
 |mountPath|Path to mount on container|null|
-|readOnly|Is mount read only|false|
+|readOnly|Is mount read only|true|
 |data|Paths to data files|null|
 
 ### @kubernetes:configMap{}
@@ -80,7 +80,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |--|--|--|
 |name|Name secret mount|null|
 |mountPath|Path to mount on container|null|
-|readOnly|Is mount read only|false|
+|readOnly|Is mount read only|true|
 |data|Paths to data files|null|
 
 ### @kubernetes:persistentVolumeClaim{}

@@ -14,10 +14,10 @@ endpoint http:ServiceEndpoint helloWorldEP {
 
 @kubernetes:secret{
 	secrets:[
-		{name:"private",mountPath:"/home/ballerina/private",readOnly:false,
+		{name:"private",mountPath:"/home/ballerina/private",
 			data:["./secrets/MySecret1.txt"]
 		},
-		{name:"public",mountPath:"/home/ballerina/public",readOnly:false,
+		{name:"public",mountPath:"/home/ballerina/public",
 			data:["./secrets/MySecret2.txt", "./secrets/MySecret3.txt"]
 		}
 	]
