@@ -15,15 +15,10 @@ endpoint http:ServiceEndpoint helloWorldEP {
 @kubernetes:secret{
 	secrets:[
 		{name:"private",mountPath:"/home/ballerina/private",readOnly:false,
-			data:[
-				{key:"private.txt",filePath:"./secrets/MySecret1.txt"}
-			]
+			data:["./secrets/MySecret1.txt"]
 		},
 		{name:"public",mountPath:"/home/ballerina/public",readOnly:false,
-			data:[
-				{key:"public1.txt",filePath:"./secrets/MySecret2.txt"},
-				{key:"public2.txt",filePath:"./secrets/MySecret3.txt"}
-			]
+			data:["./secrets/MySecret2.txt", "./secrets/MySecret3.txt"]
 		}
 	]
 }
@@ -40,7 +35,7 @@ service<http:Service> helloWorld bind helloWorldEP {
     }
     getSecret1 (endpoint outboundEP, http:Request request) {
         http:Response response = {};
-		io:CharacterChannel sourceChannel = getFileCharacterChannel("./private/private.txt", "r", "UTF-8");
+		io:CharacterChannel sourceChannel = getFileCharacterChannel("./private/MySecret1.txt", "r", "UTF-8");
 		string payload = process(sourceChannel);
         response.setStringPayload("Secret1 resource: "+ payload +"\n");
         _ = outboundEP -> respond(response);
@@ -52,7 +47,7 @@ service<http:Service> helloWorld bind helloWorldEP {
     }
     getSecret2 (endpoint outboundEP, http:Request request) {
         http:Response response = {};
-		io:CharacterChannel sourceChannel = getFileCharacterChannel("./public/public1.txt", "r", "UTF-8");
+		io:CharacterChannel sourceChannel = getFileCharacterChannel("./public/MySecret2.txt", "r", "UTF-8");
 		string payload = process(sourceChannel);
         response.setStringPayload("Secret2 resource: "+ payload +"\n");
         _ = outboundEP -> respond(response);
@@ -64,7 +59,7 @@ service<http:Service> helloWorld bind helloWorldEP {
     }
     getSecret3 (endpoint outboundEP, http:Request request) {
         http:Response response = {};
-		io:CharacterChannel sourceChannel = getFileCharacterChannel("./public/public2.txt", "r", "UTF-8");
+		io:CharacterChannel sourceChannel = getFileCharacterChannel("./public/MySecret3.txt", "r", "UTF-8");
 		string payload = process(sourceChannel);
         response.setStringPayload("Secret3 resource: "+ payload+ "\n");
         _ = outboundEP -> respond(response);

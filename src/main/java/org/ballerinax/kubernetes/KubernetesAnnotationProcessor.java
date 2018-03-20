@@ -38,6 +38,7 @@ import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
 import java.io.File;
@@ -577,7 +578,7 @@ class KubernetesAnnotationProcessor {
             //extract file paths.
             String key = keyValue.getKey().toString();
             String value = keyValue.getValue().toString();
-            SecretModel secretModel = null;
+            SecretModel secretModel;
             if ("keyStoreFile".equals(key)) {
                 secretModel = new SecretModel();
                 secretModel.setName(getValidName(endpointName) + "-keystore");
@@ -656,18 +657,9 @@ class KubernetesAnnotationProcessor {
     private Map<String, String> getData(List<BLangExpression> data) throws KubernetesPluginException {
         Map<String, String> dataMap = new HashMap<>();
         for (BLangExpression bLangExpression : data) {
-            List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
-                    ((BLangRecordLiteral) bLangExpression).getKeyValuePairs();
-            String key = null;
-            String content = null;
-            for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
-                if ("key".equals(annotation.getKey().toString())) {
-                    key = annotation.getValue().toString();
-                } else if ("filePath".equals(annotation.getKey().toString())) {
-                    Path dataFilePath = Paths.get(annotation.getValue().toString());
-                    content = Base64.encodeBase64String(KubernetesUtils.readFileContent(dataFilePath));
-                }
-            }
+            Path dataFilePath = Paths.get(((BLangLiteral) bLangExpression).getValue().toString());
+            String key = String.valueOf(dataFilePath.getFileName());
+            String content = Base64.encodeBase64String(KubernetesUtils.readFileContent(dataFilePath));
             dataMap.put(key, content);
         }
         return dataMap;

@@ -72,7 +72,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |name|Name secret mount|null|
 |mountPath|Path to mount on container|null|
 |readOnly|Is mount read only|false|
-|data|Data as key and values for secrets|null|
+|data|Paths to data files|null|
 
 ## How to run
 
