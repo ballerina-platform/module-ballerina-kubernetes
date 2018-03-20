@@ -42,6 +42,7 @@ public class DeploymentModel {
     private String password;
     private boolean push;
     private String dockerHost;
+    private String dockerCertPath;
     private Set<Integer> ports;
     private PodAutoscalerModel podAutoscalerModel;
     private Set<SecretModel> secretModels;
@@ -264,5 +265,13 @@ public class DeploymentModel {
 
     public void setVolumeClaimModels(Set<PersistentVolumeClaimModel> volumeClaimModels) {
         this.volumeClaimModels = volumeClaimModels;
+    }
+
+    public String getDockerCertPath() {
+        return dockerCertPath;
+    }
+
+    public void setDockerCertPath(String dockerCertPath) {
+        this.dockerCertPath = dockerCertPath;
     }
 }

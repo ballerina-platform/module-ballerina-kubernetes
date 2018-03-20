@@ -11,6 +11,10 @@ public class ConfigMapModel {
     private String mountPath;
     private boolean readOnly;
 
+    public ConfigMapModel() {
+        this.readOnly = true;
+    }
+
     public String getName() {
         return name;
     }

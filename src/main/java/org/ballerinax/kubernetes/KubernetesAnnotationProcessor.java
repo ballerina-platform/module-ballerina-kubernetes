@@ -371,6 +371,7 @@ class KubernetesAnnotationProcessor {
         dockerModel.setPorts(deploymentModel.getPorts());
         dockerModel.setService(true);
         dockerModel.setDockerHost(deploymentModel.getDockerHost());
+        dockerModel.setDockerCertPath(deploymentModel.getDockerCertPath());
         dockerModel.setBuildImage(deploymentModel.isBuildImage());
         DockerHandler dockerArtifactHandler = new DockerHandler(dockerModel);
         String dockerContent = dockerArtifactHandler.generate();
@@ -485,6 +486,9 @@ class KubernetesAnnotationProcessor {
                     break;
                 case dockerHost:
                     deploymentModel.setDockerHost(annotationValue);
+                    break;
+                case dockerCertPath:
+                    deploymentModel.setDockerCertPath(annotationValue);
                     break;
                 case imagePullPolicy:
                     deploymentModel.setImagePullPolicy(annotationValue);
@@ -851,7 +855,8 @@ class KubernetesAnnotationProcessor {
         username,
         password,
         baseImage,
-        push
+        push,
+        dockerCertPath
     }
 
     /**

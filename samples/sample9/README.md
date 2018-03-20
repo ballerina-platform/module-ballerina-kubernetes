@@ -1,7 +1,7 @@
 ## Sample9: Mount PersistentVolumeClaim to deployment 
 
 - This sample runs simple ballerina hello world service with persistence volume claim mounts.
-- @kubernetes:persistentVolumeClaim{} annotation will create k8s config maps. See [hello_world_config_map_k8s.bal](
+- @kubernetes:persistentVolumeClaim{} annotation will create k8s config maps. See [hello_world_persistence_volume_k8s](
 ./hello_world_persistence_volume_k8s.bal)  
 - Following files will be generated from this sample.
     ``` 
@@ -22,7 +22,7 @@
     ```
 ### How to run:
 
-1. Compile the  hello_world_config_map_k8s.bal file. Command to run kubernetes artifacts will be printed on success:
+1. Compile the  hello_world_persistence_volume_k8s.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build hello_world_persistence_volume_k8s.bal
 @docker 				 - complete 3/3

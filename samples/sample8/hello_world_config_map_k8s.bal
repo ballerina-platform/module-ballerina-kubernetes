@@ -14,7 +14,7 @@ endpoint http:ServiceEndpoint helloWorldEP {
 
 @kubernetes:configMap{
     configMaps:[
-		{name:"ballerina-config",mountPath:"/home/ballerina/conf",readOnly:false,
+		{name:"ballerina-config",mountPath:"/home/ballerina/conf",
 			data:["./conf/ballerina.conf"]
 		}
 	]

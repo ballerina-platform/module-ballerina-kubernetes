@@ -4,7 +4,13 @@
 ### Prerequisites
  1. Install a recent version of Docker for Mac and [enable Kubernetes](https://docs.docker.com/docker-for-mac/#kubernetes)
  2. Nginx backend controllers deployed.
-
+ 3. Mini-kube users should configure following annotations in every sample with valid values: 
+    ```bash
+    @kubernetes:deployment {
+        dockerHost:"tcp://192.168.99.100:2376", 
+        dockerCertPath:"/Users/anuruddha/.minikube/certs"
+    }
+    ```
 #### Setting up nginx-ingress
 
 1. Run the following command to deploy nginx backend.

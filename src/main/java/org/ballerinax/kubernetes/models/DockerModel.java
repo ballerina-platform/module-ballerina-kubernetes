@@ -38,6 +38,7 @@ public class DockerModel {
     private String dockerHost;
     private boolean isService;
     private String balxFileName;
+    private String dockerCertPath;
 
     public DockerModel() {
         // Initialize with default values except for image name
@@ -179,5 +180,13 @@ public class DockerModel {
                 ", balxFileName='" + balxFileName + '\'' +
                 ", isService=" + isService +
                 '}';
+    }
+
+    public String getDockerCertPath() {
+        return dockerCertPath;
+    }
+
+    public void setDockerCertPath(String dockerCertPath) {
+        this.dockerCertPath = dockerCertPath;
     }
 }

@@ -47,6 +47,9 @@ public class DockerHandler implements ArtifactHandler {
 
     public DockerHandler(DockerModel dockerModel) {
         this.dockerModel = dockerModel;
+        if (dockerModel.getDockerCertPath() != null) {
+            System.setProperty("docker.cert.path", dockerModel.getDockerCertPath());
+        }
     }
 
     /**

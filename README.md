@@ -33,6 +33,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |env|List of environment variables|null|
 |buildImage|Building docker image|true|
 |dockerHost|Docker host IP and docker PORT.(e.g "tcp://192.168.99.100:2376")|null|
+|dockerCertPath|Docker cert path|null|
 |push|Push docker image to registry. This can only be true if image build is true.|false|
 |username|Username for the docker registry|null|
 |password|Password for the docker registry|null|
@@ -71,7 +72,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |--|--|--|
 |name|Name secret mount|null|
 |mountPath|Path to mount on container|null|
-|readOnly|Is mount read only|false|
+|readOnly|Is mount read only|true|
 |data|Paths to data files|null|
 
 ### @kubernetes:configMap{}
@@ -79,7 +80,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |--|--|--|
 |name|Name secret mount|null|
 |mountPath|Path to mount on container|null|
-|readOnly|Is mount read only|false|
+|readOnly|Is mount read only|true|
 |data|Paths to data files|null|
 
 ### @kubernetes:persistentVolumeClaim{}

@@ -11,6 +11,10 @@ public class SecretModel {
     private String mountPath;
     private boolean readOnly;
 
+    public SecretModel() {
+        this.readOnly = true;
+    }
+
     public String getName() {
         return name;
     }
