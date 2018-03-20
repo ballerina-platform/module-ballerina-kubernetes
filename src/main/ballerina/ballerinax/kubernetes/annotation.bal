@@ -131,10 +131,14 @@ public annotation <service> configMap ConfigMapMount;
 @Description {value:"Kubernetes Persistent Volume Claim"}
 @Field {value:"name: Name of the volume claim"}
 @Field {value:"mountPath: Mount Path"}
+@Field {value:"accessMode: Access mode"}
+@Field {value:"volumeClaimSize: Size of the volume claim"}
 @Field {value:"readOnly: Is mount read only"}
 public struct PersistentVolumeClaim {
     string name;
     string mountPath;
+    string accessMode;
+    string volumeClaimSize;
     boolean readOnly;
 }
 public struct  PersistentVolumeClaims{

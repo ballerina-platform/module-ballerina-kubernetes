@@ -149,9 +149,9 @@ public class DeploymentHandler implements ArtifactHandler {
         for (PersistentVolumeClaimModel volumeClaimModel : deploymentModel.getVolumeClaimModels()) {
             Volume volume = new VolumeBuilder()
                     .withName(volumeClaimModel.getName() + "-volume")
-                    .withNewConfigMap()
-                    .withName(volumeClaimModel.getName())
-                    .endConfigMap()
+                    .withNewPersistentVolumeClaim()
+                    .withClaimName(volumeClaimModel.getName())
+                    .endPersistentVolumeClaim()
                     .build();
             volumes.add(volume);
         }

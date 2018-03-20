@@ -1,6 +1,6 @@
-## Sample7: Mount secret volumes to deployment 
+## Sample8: Mount config map volumes to deployment 
 
-- This sample runs simple ballerina hello world service with secret volume mounts.
+- This sample runs simple ballerina hello world service with config map mounts.
 - K8S config maps are intended to hold config information.
 - Putting this information in a config map is safer and more flexible than putting it verbatim in a pod definition or in a docker image.
 - @kubernetes:configMap{} annotation will create k8s config maps. See [hello_world_config_map_k8s.bal](
