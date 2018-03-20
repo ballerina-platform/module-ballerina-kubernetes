@@ -26,6 +26,7 @@ import org.ballerinax.kubernetes.handlers.DeploymentHandler;
 import org.ballerinax.kubernetes.handlers.DockerHandler;
 import org.ballerinax.kubernetes.handlers.HPAHandler;
 import org.ballerinax.kubernetes.handlers.IngressHandler;
+import org.ballerinax.kubernetes.handlers.PersistentVolumeClaimHandler;
 import org.ballerinax.kubernetes.handlers.SecretHandler;
 import org.ballerinax.kubernetes.handlers.ServiceHandler;
 import org.ballerinax.kubernetes.models.ConfigMapModel;
@@ -77,6 +78,7 @@ class KubernetesAnnotationProcessor {
     private static final String SVC_FILE_POSTFIX = "_svc";
     private static final String SECRET_FILE_POSTFIX = "_secret";
     private static final String CONFIG_MAP_FILE_POSTFIX = "_config_map";
+    private static final String VOLUME_CLAIM_FILE_POSTFIX = "_volume_claim";
     private static final String INGRESS_FILE_POSTFIX = "_ingress";
     private static final String HPA_FILE_POSTFIX = "_hpa";
     private static final String YAML = ".yaml";
@@ -138,9 +140,10 @@ class KubernetesAnnotationProcessor {
         deploymentModel.setPodAutoscalerModel(kubernetesDataHolder.getPodAutoscalerModel());
         deploymentModel.setSecretModels(kubernetesDataHolder.getSecrets());
         deploymentModel.setConfigMapModels(kubernetesDataHolder.getConfigMaps());
+        deploymentModel.setVolumeClaimModels(kubernetesDataHolder.getPersistentVolumeClaims());
         generateDeployment(deploymentModel, balxFilePath, outputDir);
         out.println();
-        out.println("@kubernetes:deployment \t\t - complete 1/1");
+        out.println("@kubernetes:deployment \t\t\t - complete 1/1");
 
         //svc
         Collection<ServiceModel> serviceModels = kubernetesDataHolder.getEndpointToServiceModelMap().values();
@@ -148,13 +151,15 @@ class KubernetesAnnotationProcessor {
         for (ServiceModel serviceModel : serviceModels) {
             count++;
             generateService(serviceModel, balxFilePath, outputDir);
-            out.print("@kubernetes:service \t\t - complete " + count + "/" + serviceModels.size() + "\r");
+            out.print("@kubernetes:service \t\t\t - complete " + count + "/" + serviceModels.size() + "\r");
         }
-        out.println();
 
         //ingress
         count = 0;
         Map<IngressModel, Set<String>> ingressModels = kubernetesDataHolder.getIngressToEndpointMap();
+        if (ingressModels.size() < 0) {
+            out.println();
+        }
         int size = ingressModels.size();
         Map<String, ServiceModel> endpointMap = kubernetesDataHolder.getEndpointToServiceModelMap();
         Iterator<Map.Entry<IngressModel, Set<String>>> iterator = ingressModels.entrySet().iterator();
@@ -173,27 +178,44 @@ class KubernetesAnnotationProcessor {
             }
             generateIngress(ingressModel, balxFilePath, outputDir);
             count++;
-            out.print("@kubernetes:ingress \t\t - complete " + count + "/" + size + "\r");
+            out.print("@kubernetes:ingress \t\t\t - complete " + count + "/" + size + "\r");
             iterator.remove();
         }
 
         //secret
         count = 0;
         Collection<SecretModel> secretModels = kubernetesDataHolder.getSecrets();
+        if (secretModels.size() > 0) {
+            out.println();
+        }
         for (SecretModel secretModel : secretModels) {
             count++;
             generateSecrets(secretModel, balxFilePath, outputDir);
-            out.print("@kubernetes:secret \t\t - complete " + count + "/" + secretModels.size() + "\r");
+            out.print("@kubernetes:secret \t\t\t - complete " + count + "/" + secretModels.size() + "\r");
         }
-        out.println();
 
         //configMap
         count = 0;
         Collection<ConfigMapModel> configMapModels = kubernetesDataHolder.getConfigMaps();
+        if (configMapModels.size() > 0) {
+            out.println();
+        }
         for (ConfigMapModel configMapModel : configMapModels) {
             count++;
             generateConfigMaps(configMapModel, balxFilePath, outputDir);
-            out.print("@kubernetes:configMap \t\t - complete " + count + "/" + configMapModels.size() + "\r");
+            out.print("@kubernetes:configMap \t\t\t - complete " + count + "/" + configMapModels.size() + "\r");
+        }
+
+        //volume mount
+        count = 0;
+        Collection<PersistentVolumeClaimModel> volumeClaims = kubernetesDataHolder.getPersistentVolumeClaims();
+        if (volumeClaims.size() > 0) {
+            out.println();
+        }
+        for (PersistentVolumeClaimModel claimModel : volumeClaims) {
+            count++;
+            generatePersistentVolumeClaim(claimModel, balxFilePath, outputDir);
+            out.print("@kubernetes:volumeClaim \t\t - complete " + count + "/" + volumeClaims.size() + "\r");
         }
         out.println();
 
@@ -263,6 +285,18 @@ class KubernetesAnnotationProcessor {
                     .separator + balxFileName + CONFIG_MAP_FILE_POSTFIX + YAML);
         } catch (IOException e) {
             throw new KubernetesPluginException("Error while writing config map content", e);
+        }
+    }
+
+    private void generatePersistentVolumeClaim(PersistentVolumeClaimModel volumeClaimModel, String balxFilePath,
+                                               String outputDir) throws KubernetesPluginException {
+        String balxFileName = KubernetesUtils.extractBalxName(balxFilePath);
+        String configMapContent = new PersistentVolumeClaimHandler(volumeClaimModel).generate();
+        try {
+            KubernetesUtils.writeToFile(configMapContent, outputDir + File
+                    .separator + balxFileName + VOLUME_CLAIM_FILE_POSTFIX + YAML);
+        } catch (IOException e) {
+            throw new KubernetesPluginException("Error while writing volume claim content", e);
         }
     }
 
@@ -341,22 +375,22 @@ class KubernetesAnnotationProcessor {
         DockerHandler dockerArtifactHandler = new DockerHandler(dockerModel);
         String dockerContent = dockerArtifactHandler.generate();
         try {
-            out.print("@docker \t\t\t - complete 0/3 \r");
+            out.print("@docker \t\t\t\t - complete 0/3 \r");
             KubernetesUtils.writeToFile(dockerContent, outputDir + File.separator + "Dockerfile");
-            out.print("@docker \t\t\t - complete 1/3 \r");
+            out.print("@docker \t\t\t\t - complete 1/3 \r");
             String balxDestination = outputDir + File.separator + KubernetesUtils.extractBalxName
                     (balxFilePath) + BALX;
             KubernetesUtils.copyFile(balxFilePath, balxDestination);
             //check image build is enabled.
             if (dockerModel.isBuildImage()) {
                 dockerArtifactHandler.buildImage(dockerModel, outputDir);
-                out.print("@docker \t\t\t - complete 2/3 \r");
+                out.print("@docker \t\t\t\t - complete 2/3 \r");
                 Files.delete(Paths.get(balxDestination));
                 //push only if image build is enabled.
                 if (dockerModel.isPush()) {
                     dockerArtifactHandler.pushImage(dockerModel);
                 }
-                out.print("@docker \t\t\t - complete 3/3");
+                out.print("@docker \t\t\t\t - complete 3/3");
             }
         } catch (IOException e) {
             throw new KubernetesPluginException("Unable to write Dockerfile content to " + outputDir);
@@ -742,8 +776,8 @@ class KubernetesAnnotationProcessor {
                 List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
                         ((BLangRecordLiteral) bLangExpression).getKeyValuePairs();
                 for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
-                    VolumeMountConfig volumeMountConfig =
-                            VolumeMountConfig.valueOf(annotation.getKey().toString());
+                    VolumeClaimConfig volumeMountConfig =
+                            VolumeClaimConfig.valueOf(annotation.getKey().toString());
                     String annotationValue = annotation.getValue().toString();
                     switch (volumeMountConfig) {
                         case name:
@@ -751,6 +785,12 @@ class KubernetesAnnotationProcessor {
                             break;
                         case mountPath:
                             claimModel.setMountPath(annotationValue);
+                            break;
+                        case accessMode:
+                            claimModel.setAccessMode(annotationValue);
+                            break;
+                        case volumeClaimSize:
+                            claimModel.setVolumeClaimSize(annotationValue);
                             break;
                         case readOnly:
                             claimModel.setReadOnly(Boolean.parseBoolean(annotationValue));
@@ -856,5 +896,16 @@ class KubernetesAnnotationProcessor {
         mountPath,
         readOnly,
         data
+    }
+
+    /**
+     * Enum class for volume configurations.
+     */
+    private enum VolumeClaimConfig {
+        name,
+        mountPath,
+        readOnly,
+        accessMode,
+        volumeClaimSize
     }
 }

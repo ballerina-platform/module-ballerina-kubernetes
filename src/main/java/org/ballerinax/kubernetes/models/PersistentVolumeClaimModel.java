@@ -7,6 +7,12 @@ public class PersistentVolumeClaimModel {
     private String name;
     private String mountPath;
     private boolean readOnly;
+    private String accessMode;
+    private String volumeClaimSize;
+
+    public PersistentVolumeClaimModel() {
+        this.accessMode = "ReadWriteOnce";
+    }
 
     public String getName() {
         return name;
@@ -30,5 +36,21 @@ public class PersistentVolumeClaimModel {
 
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
+    }
+
+    public String getAccessMode() {
+        return accessMode;
+    }
+
+    public void setAccessMode(String accessMode) {
+        this.accessMode = accessMode;
+    }
+
+    public String getVolumeClaimSize() {
+        return volumeClaimSize;
+    }
+
+    public void setVolumeClaimSize(String volumeClaimSize) {
+        this.volumeClaimSize = volumeClaimSize;
     }
 }

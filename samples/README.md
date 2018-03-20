@@ -22,3 +22,5 @@ kubectl apply -f nginx-ingress/namespaces/nginx-ingress.yaml -Rf nginx-ingress
 1. [Sample5: Kubernetes Hello World in Google Cloud Environment](sample5/)
 1. [Sample6: Kubernetes Hello World Secured](sample6/)
 1. [Sample7: Mount secret volumes to deployment](sample7)
+1. [Sample8: Mount config map volumes to deployment](sample8)
+1. [Sample9: Mount PersistentVolumeClaim to deployment](sample9)
