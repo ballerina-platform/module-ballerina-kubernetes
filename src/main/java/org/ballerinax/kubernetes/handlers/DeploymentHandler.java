@@ -39,6 +39,7 @@ import io.fabric8.kubernetes.api.model.extensions.DeploymentBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.ConfigMapModel;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.SecretModel;
 
@@ -80,6 +81,14 @@ public class DeploymentHandler implements ArtifactHandler {
                     .build();
             volumeMounts.add(volumeMount);
         }
+        for (ConfigMapModel configMapModel : deploymentModel.getConfigMapModels()) {
+            VolumeMount volumeMount = new VolumeMountBuilder()
+                    .withMountPath(configMapModel.getMountPath())
+                    .withName(configMapModel.getName() + "-volume")
+                    .withReadOnly(false)
+                    .build();
+            volumeMounts.add(volumeMount);
+        }
         return volumeMounts;
     }
 
@@ -116,6 +125,15 @@ public class DeploymentHandler implements ArtifactHandler {
                     .withNewSecret()
                     .withSecretName(secretModel.getName())
                     .endSecret()
+                    .build();
+            volumes.add(volume);
+        }
+        for (ConfigMapModel configMapModel : deploymentModel.getConfigMapModels()) {
+            Volume volume = new VolumeBuilder()
+                    .withName(configMapModel.getName() + "-volume")
+                    .withNewConfigMap()
+                    .withName(configMapModel.getName())
+                    .endConfigMap()
                     .build();
             volumes.add(volume);
         }

@@ -21,12 +21,14 @@ package org.ballerinax.kubernetes;
 import org.apache.commons.codec.binary.Base64;
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.handlers.ConfigMapHandler;
 import org.ballerinax.kubernetes.handlers.DeploymentHandler;
 import org.ballerinax.kubernetes.handlers.DockerHandler;
 import org.ballerinax.kubernetes.handlers.HPAHandler;
 import org.ballerinax.kubernetes.handlers.IngressHandler;
 import org.ballerinax.kubernetes.handlers.SecretHandler;
 import org.ballerinax.kubernetes.handlers.ServiceHandler;
+import org.ballerinax.kubernetes.models.ConfigMapModel;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.DockerModel;
 import org.ballerinax.kubernetes.models.IngressModel;
@@ -44,6 +46,7 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -72,6 +75,7 @@ class KubernetesAnnotationProcessor {
     private static final String DEPLOYMENT_FILE_POSTFIX = "_deployment";
     private static final String SVC_FILE_POSTFIX = "_svc";
     private static final String SECRET_FILE_POSTFIX = "_secret";
+    private static final String CONFIG_MAP_FILE_POSTFIX = "_config_map";
     private static final String INGRESS_FILE_POSTFIX = "_ingress";
     private static final String HPA_FILE_POSTFIX = "_hpa";
     private static final String YAML = ".yaml";
@@ -132,6 +136,7 @@ class KubernetesAnnotationProcessor {
         deploymentModel.setPorts(kubernetesDataHolder.getPorts());
         deploymentModel.setPodAutoscalerModel(kubernetesDataHolder.getPodAutoscalerModel());
         deploymentModel.setSecretModels(kubernetesDataHolder.getSecrets());
+        deploymentModel.setConfigMapModels(kubernetesDataHolder.getConfigMaps());
         generateDeployment(deploymentModel, balxFilePath, outputDir);
         out.println();
         out.println("@kubernetes:deployment \t\t - complete 1/1");
@@ -178,6 +183,16 @@ class KubernetesAnnotationProcessor {
             count++;
             generateSecrets(secretModel, balxFilePath, outputDir);
             out.print("@kubernetes:secret \t\t - complete " + count + "/" + secretModels.size() + "\r");
+        }
+        out.println();
+
+        //configMap
+        count = 0;
+        Collection<ConfigMapModel> configMapModels = kubernetesDataHolder.getConfigMaps();
+        for (ConfigMapModel configMapModel : configMapModels) {
+            count++;
+            generateConfigMaps(configMapModel, balxFilePath, outputDir);
+            out.print("@kubernetes:configMap \t\t - complete " + count + "/" + configMapModels.size() + "\r");
         }
         out.println();
 
@@ -234,11 +249,21 @@ class KubernetesAnnotationProcessor {
             KubernetesUtils.writeToFile(secretContent, outputDir + File
                     .separator + balxFileName + SECRET_FILE_POSTFIX + YAML);
         } catch (IOException e) {
-            throw new KubernetesPluginException("Error while writing service content", e);
+            throw new KubernetesPluginException("Error while writing secret content", e);
         }
-
     }
 
+    private void generateConfigMaps(ConfigMapModel configMapModel, String balxFilePath, String outputDir) throws
+            KubernetesPluginException {
+        String balxFileName = KubernetesUtils.extractBalxName(balxFilePath);
+        String configMapContent = new ConfigMapHandler(configMapModel).generate();
+        try {
+            KubernetesUtils.writeToFile(configMapContent, outputDir + File
+                    .separator + balxFileName + CONFIG_MAP_FILE_POSTFIX + YAML);
+        } catch (IOException e) {
+            throw new KubernetesPluginException("Error while writing config map content", e);
+        }
+    }
 
     private void generateIngress(IngressModel ingressModel, String balxFilePath, String outputDir) throws
             KubernetesPluginException {
@@ -627,10 +652,10 @@ class KubernetesAnnotationProcessor {
                 List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
                         ((BLangRecordLiteral) bLangExpression).getKeyValuePairs();
                 for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
-                    SecretConfiguration secretConfiguration =
-                            SecretConfiguration.valueOf(annotation.getKey().toString());
+                    VolumeMountConfig volumeMountConfig =
+                            VolumeMountConfig.valueOf(annotation.getKey().toString());
                     String annotationValue = annotation.getValue().toString();
-                    switch (secretConfiguration) {
+                    switch (volumeMountConfig) {
                         case name:
                             secretModel.setName(getValidName(annotationValue));
                             break;
@@ -639,7 +664,7 @@ class KubernetesAnnotationProcessor {
                             break;
                         case data:
                             List<BLangExpression> data = ((BLangArrayLiteral) annotation.valueExpr).exprs;
-                            secretModel.setData(getData(data));
+                            secretModel.setData(getDataForSecret(data));
                             break;
                         case readOnly:
                             secretModel.setReadOnly(Boolean.parseBoolean(annotationValue));
@@ -654,12 +679,67 @@ class KubernetesAnnotationProcessor {
         return secrets;
     }
 
-    private Map<String, String> getData(List<BLangExpression> data) throws KubernetesPluginException {
+    /**
+     * Process ConfigMap annotations.
+     *
+     * @param attachmentNode Attachment Node
+     * @return Set of @{@link ConfigMapModel} objects
+     */
+    Set<ConfigMapModel> processConfigMap(AnnotationAttachmentNode attachmentNode) throws KubernetesPluginException {
+        Set<ConfigMapModel> configMapModels = new HashSet<>();
+        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
+                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
+        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
+            List<BLangExpression> secretAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
+            for (BLangExpression bLangExpression : secretAnnotation) {
+                ConfigMapModel configMapModel = new ConfigMapModel();
+                List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
+                        ((BLangRecordLiteral) bLangExpression).getKeyValuePairs();
+                for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
+                    VolumeMountConfig volumeMountConfig =
+                            VolumeMountConfig.valueOf(annotation.getKey().toString());
+                    String annotationValue = annotation.getValue().toString();
+                    switch (volumeMountConfig) {
+                        case name:
+                            configMapModel.setName(getValidName(annotationValue));
+                            break;
+                        case mountPath:
+                            configMapModel.setMountPath(annotationValue);
+                            break;
+                        case data:
+                            List<BLangExpression> data = ((BLangArrayLiteral) annotation.valueExpr).exprs;
+                            configMapModel.setData(getDataForConfigMap(data));
+                            break;
+                        case readOnly:
+                            configMapModel.setReadOnly(Boolean.parseBoolean(annotationValue));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                configMapModels.add(configMapModel);
+            }
+        }
+        return configMapModels;
+    }
+
+    private Map<String, String> getDataForSecret(List<BLangExpression> data) throws KubernetesPluginException {
         Map<String, String> dataMap = new HashMap<>();
         for (BLangExpression bLangExpression : data) {
             Path dataFilePath = Paths.get(((BLangLiteral) bLangExpression).getValue().toString());
             String key = String.valueOf(dataFilePath.getFileName());
             String content = Base64.encodeBase64String(KubernetesUtils.readFileContent(dataFilePath));
+            dataMap.put(key, content);
+        }
+        return dataMap;
+    }
+
+    private Map<String, String> getDataForConfigMap(List<BLangExpression> data) throws KubernetesPluginException {
+        Map<String, String> dataMap = new HashMap<>();
+        for (BLangExpression bLangExpression : data) {
+            Path dataFilePath = Paths.get(((BLangLiteral) bLangExpression).getValue().toString());
+            String key = String.valueOf(dataFilePath.getFileName());
+            String content = new String(KubernetesUtils.readFileContent(dataFilePath), StandardCharsets.UTF_8);
             dataMap.put(key, content);
         }
         return dataMap;
@@ -727,9 +807,9 @@ class KubernetesAnnotationProcessor {
     }
 
     /**
-     * Enum class for secret volume configurations.
+     * Enum class for volume configurations.
      */
-    private enum SecretConfiguration {
+    private enum VolumeMountConfig {
         name,
         mountPath,
         readOnly,

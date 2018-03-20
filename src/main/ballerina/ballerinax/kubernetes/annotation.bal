@@ -107,5 +107,23 @@ public struct  SecretMount{
     Secret[] secrets;
 }
 
-@Description {value:"Volumes annotation for Kubernetes"}
+@Description {value:"Secret volumes annotation for Kubernetes"}
 public annotation <service> secret SecretMount;
+
+@Description {value:"Kubernetes Config Map volume mount"}
+@Field {value:"name: Name of the volume Mount"}
+@Field {value:"mountPath: Mount Path"}
+@Field {value:"readOnly: Is mount read only"}
+@Field {value:"data: Paths to data files"}
+public struct ConfigMap {
+    string name;
+    string mountPath;
+    boolean readOnly;
+    string[] data;
+}
+public struct  ConfigMapMount{
+    ConfigMap[] configMaps;
+}
+
+@Description {value:"ConfigMap volumes annotation for Kubernetes"}
+public annotation <service> configMap ConfigMapMount;

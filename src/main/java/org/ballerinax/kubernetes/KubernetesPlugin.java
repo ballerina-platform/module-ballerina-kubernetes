@@ -96,6 +96,14 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                         dlog.logDiagnostic(Diagnostic.Kind.ERROR, serviceNode.getPosition(), e.getMessage());
                     }
                     break;
+                case "configMap":
+                    try {
+                        kubernetesDataHolder.addConfigMaps(kubernetesAnnotationProcessor.processConfigMap
+                                (attachmentNode));
+                    } catch (KubernetesPluginException e) {
+                        dlog.logDiagnostic(Diagnostic.Kind.ERROR, serviceNode.getPosition(), e.getMessage());
+                    }
+                    break;
                 default:
                     break;
             }
