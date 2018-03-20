@@ -18,6 +18,7 @@ package ballerinax.kubernetes;
 @Field {value:"password: Password for docker registry"}
 @Field {value:"baseImage: Base image for docker image building"}
 @Field {value:"push: Push to remote registry"}
+@Field {value:"dockerCertPath: Docker cert path."}
 public struct DeploymentConfiguration {
     string name;
     string labels;
@@ -36,6 +37,7 @@ public struct DeploymentConfiguration {
     string password;
     string baseImage;
     boolean push;
+    string dockerCertPath;
 }
 
 @Description {value:"Deployment annotation for Kubernetes"}

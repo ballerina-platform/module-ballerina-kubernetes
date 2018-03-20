@@ -33,6 +33,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |env|List of environment variables|null|
 |buildImage|Building docker image|true|
 |dockerHost|Docker host IP and docker PORT.(e.g "tcp://192.168.99.100:2376")|null|
+|dockerCertPath|Docker cert path|null|
 |push|Push docker image to registry. This can only be true if image build is true.|false|
 |username|Username for the docker registry|null|
 |password|Password for the docker registry|null|
