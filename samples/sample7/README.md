@@ -31,7 +31,7 @@ $> ballerina hello_world_secret_mount_k8s.bal
 @docker 			 - complete 3/3
 @kubernetes:deployment 		 - complete 1/1
 @kubernetes:service 		 - complete 1/1
-@kubernetes:secret  		 - complete 2/2
+@kubernetes:secret  		 - complete 3/3
 
 Run following command to deploy kubernetes artifacts:
 kubectl apply -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample7/kubernetes/
