@@ -104,6 +104,14 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                         dlog.logDiagnostic(Diagnostic.Kind.ERROR, serviceNode.getPosition(), e.getMessage());
                     }
                     break;
+                case "persistentVolumeClaim":
+                    try {
+                        kubernetesDataHolder.addPersistentVolumeClaims(
+                                kubernetesAnnotationProcessor.processPersistentVolumeClaim(attachmentNode));
+                    } catch (KubernetesPluginException e) {
+                        dlog.logDiagnostic(Diagnostic.Kind.ERROR, serviceNode.getPosition(), e.getMessage());
+                    }
+                    break;
                 default:
                     break;
             }

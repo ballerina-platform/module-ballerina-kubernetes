@@ -41,6 +41,7 @@ import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.ConfigMapModel;
 import org.ballerinax.kubernetes.models.DeploymentModel;
+import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
 import org.ballerinax.kubernetes.models.SecretModel;
 
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ public class DeploymentHandler implements ArtifactHandler {
             VolumeMount volumeMount = new VolumeMountBuilder()
                     .withMountPath(secretModel.getMountPath())
                     .withName(secretModel.getName() + "-volume")
-                    .withReadOnly(false)
+                    .withReadOnly(secretModel.isReadOnly())
                     .build();
             volumeMounts.add(volumeMount);
         }
@@ -85,7 +86,15 @@ public class DeploymentHandler implements ArtifactHandler {
             VolumeMount volumeMount = new VolumeMountBuilder()
                     .withMountPath(configMapModel.getMountPath())
                     .withName(configMapModel.getName() + "-volume")
-                    .withReadOnly(false)
+                    .withReadOnly(configMapModel.isReadOnly())
+                    .build();
+            volumeMounts.add(volumeMount);
+        }
+        for (PersistentVolumeClaimModel volumeClaimModel : deploymentModel.getVolumeClaimModels()) {
+            VolumeMount volumeMount = new VolumeMountBuilder()
+                    .withMountPath(volumeClaimModel.getMountPath())
+                    .withName(volumeClaimModel.getName() + "-volume")
+                    .withReadOnly(volumeClaimModel.isReadOnly())
                     .build();
             volumeMounts.add(volumeMount);
         }
@@ -133,6 +142,15 @@ public class DeploymentHandler implements ArtifactHandler {
                     .withName(configMapModel.getName() + "-volume")
                     .withNewConfigMap()
                     .withName(configMapModel.getName())
+                    .endConfigMap()
+                    .build();
+            volumes.add(volume);
+        }
+        for (PersistentVolumeClaimModel volumeClaimModel : deploymentModel.getVolumeClaimModels()) {
+            Volume volume = new VolumeBuilder()
+                    .withName(volumeClaimModel.getName() + "-volume")
+                    .withNewConfigMap()
+                    .withName(volumeClaimModel.getName())
                     .endConfigMap()
                     .build();
             volumes.add(volume);

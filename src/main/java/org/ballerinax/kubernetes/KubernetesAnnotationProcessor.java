@@ -33,6 +33,7 @@ import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.DockerModel;
 import org.ballerinax.kubernetes.models.IngressModel;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
 import org.ballerinax.kubernetes.models.PodAutoscalerModel;
 import org.ballerinax.kubernetes.models.SecretModel;
 import org.ballerinax.kubernetes.models.ServiceModel;
@@ -690,8 +691,8 @@ class KubernetesAnnotationProcessor {
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
-            List<BLangExpression> secretAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
-            for (BLangExpression bLangExpression : secretAnnotation) {
+            List<BLangExpression> configAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
+            for (BLangExpression bLangExpression : configAnnotation) {
                 ConfigMapModel configMapModel = new ConfigMapModel();
                 List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
                         ((BLangRecordLiteral) bLangExpression).getKeyValuePairs();
@@ -721,6 +722,47 @@ class KubernetesAnnotationProcessor {
             }
         }
         return configMapModels;
+    }
+
+    /**
+     * Process PersistentVolumeClaim annotations.
+     *
+     * @param attachmentNode Attachment Node
+     * @return Set of @{@link ConfigMapModel} objects
+     */
+    Set<PersistentVolumeClaimModel> processPersistentVolumeClaim(AnnotationAttachmentNode attachmentNode) throws
+            KubernetesPluginException {
+        Set<PersistentVolumeClaimModel> volumeClaimModels = new HashSet<>();
+        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
+                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
+        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
+            List<BLangExpression> secretAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
+            for (BLangExpression bLangExpression : secretAnnotation) {
+                PersistentVolumeClaimModel claimModel = new PersistentVolumeClaimModel();
+                List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
+                        ((BLangRecordLiteral) bLangExpression).getKeyValuePairs();
+                for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
+                    VolumeMountConfig volumeMountConfig =
+                            VolumeMountConfig.valueOf(annotation.getKey().toString());
+                    String annotationValue = annotation.getValue().toString();
+                    switch (volumeMountConfig) {
+                        case name:
+                            claimModel.setName(getValidName(annotationValue));
+                            break;
+                        case mountPath:
+                            claimModel.setMountPath(annotationValue);
+                            break;
+                        case readOnly:
+                            claimModel.setReadOnly(Boolean.parseBoolean(annotationValue));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                volumeClaimModels.add(claimModel);
+            }
+        }
+        return volumeClaimModels;
     }
 
     private Map<String, String> getDataForSecret(List<BLangExpression> data) throws KubernetesPluginException {
