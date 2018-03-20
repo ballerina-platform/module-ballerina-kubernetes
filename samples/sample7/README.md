@@ -7,14 +7,21 @@
     hello_world_secret_mount_k8s:latest
     
     $> tree
+    ├── README.md
+    ├── hello_world_secret_mount_k8s.bal
     ├── hello_world_secret_mount_k8s.balx
     ├── kubernetes
-    ├── docker
-    │   └── Dockerfile
-    ├── hello_world_secret_mount_k8s_deployment.yaml
-    ├── hello_world_secret_mount_k8s_ingress.yaml
-    ├── hello_world_secret_mount_k8s_secret.yaml
-    └── hello_world_secret_mount_k8s_svc.yaml
+    │   ├── docker
+    │   │   └── Dockerfile
+    │   ├── hello_world_secret_mount_k8s_deployment.yaml
+    │   ├── hello_world_secret_mount_k8s_ingress.yaml
+    │   ├── hello_world_secret_mount_k8s_secret.yaml
+    │   └── hello_world_secret_mount_k8s_svc.yaml
+    └── secrets
+        ├── MySecret1.txt
+        ├── MySecret2.txt
+        └── MySecret3.txt
+
     ```
 ### How to run:
 
@@ -33,14 +40,21 @@ kubectl apply -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample7/ku
 2. hello_world_secret_mount_k8s.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
-├── hello_world_secret_mount_k8s.balx
+    ├── README.md
+    ├── hello_world_secret_mount_k8s.bal
+    ├── hello_world_secret_mount_k8s.balx
     ├── kubernetes
-       ├── docker
-       │   └── Dockerfile
-       ├── hello_world_secret_mount_k8s_deployment.yaml
-       ├── hello_world_secret_mount_k8s_ingress.yaml
-       ├── hello_world_secret_mount_k8s_secret.yaml
-       └── hello_world_secret_mount_k8s_svc.yaml
+    │   ├── docker
+    │   │   └── Dockerfile
+    │   ├── hello_world_secret_mount_k8s_deployment.yaml
+    │   ├── hello_world_secret_mount_k8s_ingress.yaml
+    │   ├── hello_world_secret_mount_k8s_secret.yaml
+    │   └── hello_world_secret_mount_k8s_svc.yaml
+    └── secrets
+        ├── MySecret1.txt
+        ├── MySecret2.txt
+        └── MySecret3.txt
+
 ```
 
 3. Verify the docker image is created:
