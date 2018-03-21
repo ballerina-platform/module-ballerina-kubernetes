@@ -4,11 +4,12 @@ import ballerinax.kubernetes;
 @kubernetes:SVC{}
 endpoint http:ServiceEndpoint helloWorldEP {
     port:9090,
-	ssl:{
-		keyStoreFile:"${ballerina.home}/bre/security/ballerinaKeystore.p12",
-		keyStorePassword:"ballerina",
-		certPassword:"ballerina"
-	}
+	secureSocket: {
+        keyStore: {
+            filePath: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
+            password: "ballerina"
+        }
+    }
 };
 
 @kubernetes:PersistentVolumeClaim{
@@ -19,11 +20,11 @@ endpoint http:ServiceEndpoint helloWorldEP {
 @kubernetes:Ingress{
 	hostname:"abc.com"
 }
-@http:serviceConfig {
+@http:ServiceConfig {
     basePath:"/helloWorld"
 }
 service<http:Service> helloWorld bind helloWorldEP {
-	@http:resourceConfig {
+	@http:ResourceConfig {
         methods:["GET"],
         path:"/sayHello"
     }

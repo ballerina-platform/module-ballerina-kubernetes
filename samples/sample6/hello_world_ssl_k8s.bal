@@ -4,10 +4,11 @@ import ballerinax.kubernetes;
 @kubernetes:SVC{}
 endpoint http:ServiceEndpoint helloWorldSecuredEP {
     port:9090,
-    ssl:{
-        keyStoreFile:"${ballerina.home}/bre/security/ballerinaKeystore.p12",
-        keyStorePassword:"ballerina",
-        certPassword:"ballerina"
+    secureSocket: {
+        keyStore: {
+            filePath: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
+            password: "ballerina"
+        }
     }
 };
 

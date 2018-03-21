@@ -157,12 +157,12 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                         serviceModel.setPort(port);
                     }
                     break;
-                case "ssl":
+                case "secureSocket":
                     List<BLangRecordLiteral.BLangRecordKeyValue> sslKeyValues = ((BLangRecordLiteral) keyValue
                             .valueExpr).getKeyValuePairs();
                     try {
                         Set<SecretModel> secretModels = kubernetesAnnotationProcessor
-                                .processSSLAnnotation(endpointName, sslKeyValues);
+                                .processSecureSocketAnnotation(endpointName, sslKeyValues);
                         kubernetesDataHolder.addEndpointSecret(endpointName, secretModels);
                         kubernetesDataHolder.addSecrets(secretModels);
                     } catch (KubernetesPluginException e) {
