@@ -2,7 +2,7 @@ import ballerina.net.http;
 import ballerinax.kubernetes;
 import ballerina.io;
 
-@kubernetes:svc{}
+@kubernetes:SVC{}
 endpoint http:ServiceEndpoint helloWorldEP {
     port:9090,
 	ssl:{
@@ -12,7 +12,7 @@ endpoint http:ServiceEndpoint helloWorldEP {
 	}
 };
 
-@kubernetes:secret{
+@kubernetes:Secret{
 	secrets:[
 		{name:"private",mountPath:"/home/ballerina/private",
 			data:["./secrets/MySecret1.txt"]
@@ -22,14 +22,14 @@ endpoint http:ServiceEndpoint helloWorldEP {
 		}
 	]
 }
-@kubernetes:ingress{
+@kubernetes:Ingress{
 	hostname:"abc.com"
 }
-@http:serviceConfig {
+@http:ServiceConfig {
     basePath:"/helloWorld"
 }
 service<http:Service> helloWorld bind helloWorldEP {
-	@http:resourceConfig {
+	@http:ResourceConfig {
         methods:["GET"],
         path:"/secret1"
     }
@@ -41,7 +41,7 @@ service<http:Service> helloWorld bind helloWorldEP {
         _ = outboundEP -> respond(response);
     }
 
-    @http:resourceConfig {
+    @http:ResourceConfig {
         methods:["GET"],
         path:"/secret2"
     }
@@ -53,7 +53,7 @@ service<http:Service> helloWorld bind helloWorldEP {
         _ = outboundEP -> respond(response);
     }
 
-    @http:resourceConfig {
+    @http:ResourceConfig {
         methods:["GET"],
         path:"/secret3"
     }

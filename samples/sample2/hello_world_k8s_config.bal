@@ -1,18 +1,18 @@
 import ballerina.net.http;
 import ballerinax.kubernetes;
 
-@kubernetes:svc{name:"hello"}
+@kubernetes:SVC{name:"hello"}
 endpoint http:ServiceEndpoint helloEP {
     port:9090
 };
 
-@kubernetes:deployment{
+@kubernetes:Deployment{
     enableLiveness:"enable"
 }
-@kubernetes:ingress{
+@kubernetes:Ingress{
     hostname:"abc.com"
 }
-@http:serviceConfig {
+@http:ServiceConfig {
     basePath:"/helloWorld"
 }
 service<http:Service> helloWorld bind helloEP {

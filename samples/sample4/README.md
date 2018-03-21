@@ -27,9 +27,9 @@
 ```bash
 $> ballerina build foodstore.bal
 @docker 			 - complete 3/3 
-@kubernetes:deployment 		 - complete 1/1
-@kubernetes:service 		 - complete 2/2
-@kubernetes:ingress 		 - complete 2/2
+@kubernetes:Deployment 		 - complete 1/1
+@kubernetes:Service 		 - complete 2/2
+@kubernetes:Ingress 		 - complete 2/2
 Run following command to deploy kubernetes artifacts: 
 kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample4/kubernetes/
 ```

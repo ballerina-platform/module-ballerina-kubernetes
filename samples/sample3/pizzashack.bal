@@ -1,25 +1,25 @@
 import ballerina.net.http;
 import ballerinax.kubernetes;
 
-@kubernetes:svc{}
+@kubernetes:SVC{}
 endpoint http:ServiceEndpoint pizzaEP {
     port:9090
 };
 
-@kubernetes:deployment {
+@kubernetes:Deployment {
     image:"ballerina.com/pizzashack:2.1.0"
 }
 
-@kubernetes :ingress{
+@kubernetes :Ingress{
     hostname:"pizzashack.com",
     path:"/"
 }
-@kubernetes:hpa{}
-@http:serviceConfig {
+@kubernetes:HPA{}
+@http:ServiceConfig {
     basePath:"/customer"
 }
 service<http:Service> Customer bind pizzaEP{
-    @http:resourceConfig {
+    @http:ResourceConfig {
         methods:["GET"],
         path:"/"
     }
@@ -30,13 +30,13 @@ service<http:Service> Customer bind pizzaEP{
     }
 }
 
-@kubernetes:ingress{}
-@http:serviceConfig {
+@kubernetes:Ingress{}
+@http:ServiceConfig {
     basePath:"/orders",
     endpoints:[pizzaEP]
 }
 service<http:Service> Order bind pizzaEP{
-    @http:resourceConfig {
+    @http:ResourceConfig {
         methods:["GET"],
         path:"/"
     }

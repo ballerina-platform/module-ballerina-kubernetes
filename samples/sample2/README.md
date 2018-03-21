@@ -24,9 +24,9 @@
 ```bash
 $> ballerina build hello_world_k8s.bal
 @docker 			 - complete 3/3 
-@kubernetes:deployment 		 - complete 1/1
-@kubernetes:service 		 - complete 1/1
-@kubernetes:ingress 		 - complete 1/1
+@kubernetes:Deployment 		 - complete 1/1
+@kubernetes:Service 		 - complete 1/1
+@kubernetes:Ingress 		 - complete 1/1
 Run following command to deploy kubernetes artifacts: 
 kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample2/kubernetes/
 

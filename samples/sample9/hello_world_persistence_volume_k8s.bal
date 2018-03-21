@@ -1,7 +1,7 @@
 import ballerina.net.http;
 import ballerinax.kubernetes;
 
-@kubernetes:svc{}
+@kubernetes:SVC{}
 endpoint http:ServiceEndpoint helloWorldEP {
     port:9090,
 	ssl:{
@@ -11,12 +11,12 @@ endpoint http:ServiceEndpoint helloWorldEP {
 	}
 };
 
-@kubernetes:persistentVolumeClaim{
+@kubernetes:PersistentVolumeClaim{
 	volumeClaims:[
 		{name:"local-pv-2",mountPath:"/home/ballerina/tmp",readOnly:false,accessMode:"ReadWriteOnce",volumeClaimSize:"1Gi"}
 	]
 }
-@kubernetes:ingress{
+@kubernetes:Ingress{
 	hostname:"abc.com"
 }
 @http:serviceConfig {

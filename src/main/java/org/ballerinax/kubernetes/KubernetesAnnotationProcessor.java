@@ -143,7 +143,7 @@ class KubernetesAnnotationProcessor {
         deploymentModel.setVolumeClaimModels(kubernetesDataHolder.getPersistentVolumeClaims());
         generateDeployment(deploymentModel, balxFilePath, outputDir);
         out.println();
-        out.println("@kubernetes:deployment \t\t\t - complete 1/1");
+        out.println("@kubernetes:Deployment \t\t\t - complete 1/1");
 
         //svc
         Collection<ServiceModel> serviceModels = kubernetesDataHolder.getEndpointToServiceModelMap().values();
@@ -151,7 +151,7 @@ class KubernetesAnnotationProcessor {
         for (ServiceModel serviceModel : serviceModels) {
             count++;
             generateService(serviceModel, balxFilePath, outputDir);
-            out.print("@kubernetes:service \t\t\t - complete " + count + "/" + serviceModels.size() + "\r");
+            out.print("@kubernetes:Service \t\t\t - complete " + count + "/" + serviceModels.size() + "\r");
         }
 
         //ingress
@@ -178,7 +178,7 @@ class KubernetesAnnotationProcessor {
             }
             generateIngress(ingressModel, balxFilePath, outputDir);
             count++;
-            out.print("@kubernetes:ingress \t\t\t - complete " + count + "/" + size + "\r");
+            out.print("@kubernetes:Ingress \t\t\t - complete " + count + "/" + size + "\r");
             iterator.remove();
         }
 
@@ -191,7 +191,7 @@ class KubernetesAnnotationProcessor {
         for (SecretModel secretModel : secretModels) {
             count++;
             generateSecrets(secretModel, balxFilePath, outputDir);
-            out.print("@kubernetes:secret \t\t\t - complete " + count + "/" + secretModels.size() + "\r");
+            out.print("@kubernetes:Secret \t\t\t - complete " + count + "/" + secretModels.size() + "\r");
         }
 
         //configMap
@@ -203,7 +203,7 @@ class KubernetesAnnotationProcessor {
         for (ConfigMapModel configMapModel : configMapModels) {
             count++;
             generateConfigMaps(configMapModel, balxFilePath, outputDir);
-            out.print("@kubernetes:configMap \t\t\t - complete " + count + "/" + configMapModels.size() + "\r");
+            out.print("@kubernetes:ConfigMap \t\t\t - complete " + count + "/" + configMapModels.size() + "\r");
         }
 
         //volume mount
@@ -336,7 +336,7 @@ class KubernetesAnnotationProcessor {
             out.println();
             KubernetesUtils.writeToFile(serviceContent, outputDir + File
                     .separator + balxFileName + HPA_FILE_POSTFIX + YAML);
-            out.print("@kubernetes:hpa \t\t - complete 1/1");
+            out.print("@kubernetes:HPA \t\t\t - complete 1/1");
         } catch (IOException e) {
             throw new KubernetesPluginException("Error while writing HPA content", e);
         }

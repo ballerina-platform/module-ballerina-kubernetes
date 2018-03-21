@@ -41,7 +41,7 @@ public struct DeploymentConfiguration {
 }
 
 @Description {value:"Deployment annotation for Kubernetes"}
-public annotation <service> deployment DeploymentConfiguration;
+public annotation <service> Deployment DeploymentConfiguration;
 
 @Description {value:"Kubernetes service configuration"}
 @Field {value:"labels: Labels for service"}
@@ -53,7 +53,7 @@ public struct ServiceConfiguration {
 }
 
 @Description {value:"Service annotation for Kubernetes"}
-public annotation <endpoint> svc ServiceConfiguration;
+public annotation <endpoint> SVC ServiceConfiguration;
 
 @Description {value:"Kubernetes ingress configuration"}
 @Field {value:"name: Name of the ingress"}
@@ -73,7 +73,7 @@ public struct IngressConfiguration {
     boolean enableTLS;
 }
 @Description {value:"Ingress annotation for Kubernetes"}
-public annotation <service> ingress IngressConfiguration;
+public annotation <service> Ingress IngressConfiguration;
 
 @Description {value:"Kubernetes Horizontal Pod Autoscaler configuration"}
 @Field {value:"name: Name of the Autoscaler"}
@@ -90,7 +90,7 @@ public struct PodAutoscalerConfig {
 }
 
 @Description {value:"Pod Autoscaler annotation for Kubernetes"}
-public annotation <service> hpa PodAutoscalerConfig;
+public annotation <service> HPA PodAutoscalerConfig;
 
 
 @Description {value:"Kubernetes secret volume mount"}
@@ -110,7 +110,7 @@ public struct  SecretMount{
 }
 
 @Description {value:"Secret volumes annotation for Kubernetes"}
-public annotation <service> secret SecretMount;
+public annotation <service> Secret SecretMount;
 
 @Description {value:"Kubernetes Config Map volume mount"}
 @Field {value:"name: Name of the volume mount"}
@@ -128,7 +128,7 @@ public struct  ConfigMapMount{
 }
 
 @Description {value:"ConfigMap volumes annotation for Kubernetes"}
-public annotation <service> configMap ConfigMapMount;
+public annotation <service> ConfigMap ConfigMapMount;
 
 @Description {value:"Kubernetes Persistent Volume Claim"}
 @Field {value:"name: Name of the volume claim"}
@@ -136,7 +136,7 @@ public annotation <service> configMap ConfigMapMount;
 @Field {value:"accessMode: Access mode"}
 @Field {value:"volumeClaimSize: Size of the volume claim"}
 @Field {value:"readOnly: Is mount read only"}
-public struct PersistentVolumeClaim {
+public struct PersistentVolumeClaimConfig {
     string name;
     string mountPath;
     string accessMode;
@@ -144,8 +144,8 @@ public struct PersistentVolumeClaim {
     boolean readOnly;
 }
 public struct  PersistentVolumeClaims{
-    PersistentVolumeClaim[] volumeClaims;
+    PersistentVolumeClaimConfig[] volumeClaims;
 }
 
 @Description {value:"ConfigMap volumes annotation for Kubernetes"}
-public annotation <service> persistentVolumeClaim PersistentVolumeClaims;
+public annotation <service> PersistentVolumeClaim PersistentVolumeClaims;

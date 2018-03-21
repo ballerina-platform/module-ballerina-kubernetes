@@ -2,8 +2,8 @@
 
 - This sample runs simple ballerina hello world service in kubernetes cluster with https. Keystore will 
   automatically passed into relevant POD by using k8s secret volume mount.
-- The endpoint is annotated with @kubernetes:svc{} and without passing serviceType as NodePort. 
-- Note that the @kubernetes:deployment{} is optional.
+- The endpoint is annotated with @kubernetes:SVC{} and without passing serviceType as NodePort. 
+- Note that the @kubernetes:Deployment{} is optional.
 - Default values for kubernetes annotation attributes will be used to create artifacts.
 - Following files will be generated from this sample.
     ``` 
@@ -29,10 +29,10 @@
 ```bash
 $> ballerina build hello_world_ssl_k8s.bal
 @docker 			 - complete 3/3 
-@kubernetes:deployment 		 - complete 1/1
-@kubernetes:service 		 - complete 1/1
-@kubernetes:secret 		 - complete 1/1
-@kubernetes:ingress 		 - complete 1/1
+@kubernetes:Deployment 		 - complete 1/1
+@kubernetes:Service 		 - complete 1/1
+@kubernetes:Secret 		 - complete 1/1
+@kubernetes:Ingress 		 - complete 1/1
 Run following command to deploy kubernetes artifacts: 
 kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample6/kubernetes/
 ```

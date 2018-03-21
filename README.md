@@ -17,7 +17,7 @@ Annotation based kubernetes extension implementation for ballerina.
 
 ## Supported Annotations:
 
-### @kubernetes:deployment{}
+### @kubernetes:Deployment{}
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
 |name|Name of the deployment|\<outputfilename\>-deployment|
@@ -39,7 +39,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |password|Password for the docker registry|null|
 |baseImage|Base image to create the docker image|ballerina/ballerina:latest|
 
-### @kubernetes:svc{}
+### @kubernetes:SVC{}
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
 |name|Name of the Service|\<ballerina service name\>-service|
@@ -47,7 +47,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |serviceType|Service type of the service|ClusterIP|
 |port|Service port|Port of the ballerina service|
 
-### @kubernetes:ingress{}
+### @kubernetes:Ingress{}
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
 |name|Name of the Ingress|\<ballerina service name\>-ingress
@@ -58,7 +58,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |ingressClass|Ingress class|nginx
 |enableTLS|Enable ingress TLS|false
 
-### @kubernetes:hpa{}
+### @kubernetes:HPA{}
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
 |name|Name of the Horizontal Pod Autoscaler|\<ballerina service name\>-hpa|
@@ -67,7 +67,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |maxReplicas|Maximum number of replicas|minReplicas+1|
 |cpuPrecentage|CPU percentage to start scaling|50|
 
-### @kubernetes:secret{}
+### @kubernetes:Secret{}
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
 |name|Name secret mount|null|
@@ -75,7 +75,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |readOnly|Is mount read only|true|
 |data|Paths to data files|null|
 
-### @kubernetes:configMap{}
+### @kubernetes:ConfigMap{}
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
 |name|Name secret mount|null|
@@ -83,7 +83,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |readOnly|Is mount read only|true|
 |data|Paths to data files|null|
 
-### @kubernetes:persistentVolumeClaim{}
+### @kubernetes:PersistentVolumeClaim{}
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
 |name|Name secret mount|null|
@@ -103,17 +103,18 @@ Annotation based kubernetes extension implementation for ballerina.
 
 The docker artifacts will be created in a folder called target with following structure.
 ```bash
-target/
-├── outputfilename
-│   └── kubernetes
-│      		├── deployment.yaml
-│       		├── ingress.yaml
-│       		├── job.yaml
-│       		├── service.yaml
-│        		└── docker
-│	      		    └── Dockerfile
-│  	
-└── outputfilename.balx	
+    target/
+    └── kubernetes
+    │      		├── deployment.yaml
+    │       	├── ingress.yaml
+    │       	├── secret.yaml
+    │       	├── config-map.yaml
+    │       	├── persistence-volume-claim.yaml
+    │       	├── service.yaml
+    │        	└── docker
+    │	      		  └── Dockerfile
+    │  	
+    └── outputfilename.balx	
 ```
 
 ### Annotation Usage Sample:
@@ -121,15 +122,15 @@ target/
 import ballerina.net.http;
 import ballerinax.kubernetes;
 
-@kubernetes:svc{name:"hello"}
+@kubernetes:SVC{name:"hello"}
 endpoint http:ServiceEndpoint helloEP {
     port:9090
 };
 
-@kubernetes:deployment{
+@kubernetes:Deployment{
     enableLiveness:"enable"
 }
-@kubernetes:ingress{
+@kubernetes:Ingress{
     hostname:"abc.com"
 }
 @http:serviceConfig {

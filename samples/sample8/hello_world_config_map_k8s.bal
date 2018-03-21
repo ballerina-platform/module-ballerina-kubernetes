@@ -2,7 +2,7 @@ import ballerina.net.http;
 import ballerinax.kubernetes;
 import ballerina.io;
 
-@kubernetes:svc{}
+@kubernetes:SVC{}
 endpoint http:ServiceEndpoint helloWorldEP {
     port:9090,
 	ssl:{
@@ -12,25 +12,25 @@ endpoint http:ServiceEndpoint helloWorldEP {
 	}
 };
 
-@kubernetes:configMap{
+@kubernetes:ConfigMap{
     configMaps:[
 		{name:"ballerina-config",mountPath:"/home/ballerina/conf",
 			data:["./conf/ballerina.conf"]
 		}
 	]
 }
-@kubernetes:ingress{
+@kubernetes:Ingress{
 	hostname:"abc.com"
 }
-@http:serviceConfig {
+@http:ServiceConfig {
     basePath:"/helloWorld"
 }
 service<http:Service> helloWorld bind helloWorldEP {
-	@http:resourceConfig {
+	@http:ResourceConfig {
         methods:["GET"],
         path:"/conf"
     }
-    getSecret1 (endpoint outboundEP, http:Request request) {
+    getConf (endpoint outboundEP, http:Request request) {
         http:Response response = {};
 		io:CharacterChannel sourceChannel = getFileCharacterChannel("./conf/ballerina.conf", "r", "UTF-8");
 		string payload = process(sourceChannel);

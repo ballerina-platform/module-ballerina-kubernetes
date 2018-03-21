@@ -1,8 +1,8 @@
 ## Sample1: Kubernetes Hello World
 
 - This sample runs simple ballerina hello world service in kubernetes cluster with minimal configurations. 
-- The endpoint is annotated with @kubernetes:svc{} and without passing serviceType as NodePort. 
-- Note that the @kubernetes:deployment{} is optional.
+- The endpoint is annotated with @kubernetes:SVC{} and without passing serviceType as NodePort. 
+- Note that the @kubernetes:Deployment{} is optional.
 - Default values for kubernetes annotation attributes will be used to create artifacts.
 - Following files will be generated from this sample.
     ``` 
@@ -26,8 +26,8 @@
 $> ballerina build hello_world_k8s.bal
 
 @docker                     - complete 3/3
-@kubernetes:deployment      - complete 1/1
-@kubernetes:service         - complete 1/1
+@kubernetes:Deployment      - complete 1/1
+@kubernetes:Service         - complete 1/1
 
 Run following command to deploy kubernetes artifacts: 
 kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample1/kubernetes/
