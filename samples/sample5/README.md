@@ -119,7 +119,7 @@ _(35.188.183.218 is the external ip address from `kubectl get ingress` command.)
  ```
 Use curl command with hostname to access the service.
 ```bash
-$> curl http://abc.com/HelloWorld/sayHello
+$> curl http://abc.com/helloWorld/sayHello
 Hello, World from service helloWorld !
 ```
 

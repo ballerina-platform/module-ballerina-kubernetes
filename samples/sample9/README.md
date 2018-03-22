@@ -109,7 +109,7 @@ local-pv-2   Bound     pvc-d26dd46d-2c46-11e8-b313-025000000001   1Gi        RWO
 
 - **Using ingress:**
 ```bash
-$>curl https://abc.com/HelloWorld/sayHello -k
+$>curl https://abc.com/helloWorld/sayHello -k
 Hello World
 ```
 
