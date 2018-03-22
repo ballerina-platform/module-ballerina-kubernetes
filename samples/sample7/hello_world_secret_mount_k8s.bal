@@ -40,8 +40,8 @@ service<http:Service> helloWorld bind helloWorldEP {
     }
     getSecret1 (endpoint outboundEP, http:Request request) {
         http:Response response = {};
-        string payload = readFile("./public/MySecret1.txt", "r", "UTF-8");
-        response.setStringPayload("Secret2 resource: "+ payload +"\n");
+        string payload = readFile("./private/MySecret1.txt", "r", "UTF-8");
+        response.setStringPayload("Secret1 resource: "+ payload +"\n");
         _ = outboundEP -> respond(response);
     }
      
@@ -63,7 +63,7 @@ service<http:Service> helloWorld bind helloWorldEP {
     getSecret3 (endpoint outboundEP, http:Request request) {
         http:Response response = {};
         string payload = readFile("./public/MySecret3.txt", "r", "UTF-8");
-        response.setStringPayload("Secret2 resource: "+ payload +"\n");
+        response.setStringPayload("Secret3 resource: "+ payload +"\n");
         _ = outboundEP -> respond(response);
     }
 }
