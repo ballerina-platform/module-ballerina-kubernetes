@@ -1,5 +1,5 @@
-import ballerina.net.http;
-import ballerinax.kubernetes;
+import ballerina/net.http;
+import ballerinax/kubernetes;
 
 @kubernetes:Deployment{
     enableLiveness:"enable"

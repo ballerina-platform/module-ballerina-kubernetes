@@ -1,6 +1,6 @@
-import ballerina.net.http;
-import ballerinax.kubernetes;
-import ballerina.io;
+import ballerina/net.http;
+import ballerinax/kubernetes;
+import ballerina/io;
 
 @kubernetes:SVC{}
 endpoint http:ServiceEndpoint helloWorldEP {

@@ -1,5 +1,5 @@
-import ballerina.net.http;
-import ballerinax.kubernetes;
+import ballerina/net.http;
+import ballerinax/kubernetes;
 
 @kubernetes:SVC{serviceType:"NodePort"}
 endpoint http:ServiceEndpoint helloWorldEP {
