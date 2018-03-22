@@ -45,7 +45,8 @@ public class DockerModel {
         this.tag = "latest";
         this.push = false;
         this.buildImage = true;
-        this.baseImage = "ballerina/ballerina:latest";
+        String baseImageVersion = getClass().getPackage().getImplementationVersion();
+        this.baseImage = "ballerina/ballerina:" + baseImageVersion;
         this.enableDebug = false;
         this.debugPort = 5005;
         this.dockerHost = "unix:///var/run/docker.sock";

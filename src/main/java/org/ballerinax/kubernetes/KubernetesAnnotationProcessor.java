@@ -375,6 +375,7 @@ class KubernetesAnnotationProcessor {
         dockerModel.setDockerHost(deploymentModel.getDockerHost());
         dockerModel.setDockerCertPath(deploymentModel.getDockerCertPath());
         dockerModel.setBuildImage(deploymentModel.isBuildImage());
+
         DockerHandler dockerArtifactHandler = new DockerHandler(dockerModel);
         String dockerContent = dockerArtifactHandler.generate();
         try {
@@ -424,7 +425,6 @@ class KubernetesAnnotationProcessor {
         deploymentModel.setReplicas(defaultReplicas);
         deploymentModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxName);
         deploymentModel.setEnv(getEnvVars(null));
-        deploymentModel.setBaseImage(DEFAULT_BASE_IMAGE);
         deploymentModel.setImage(balxName + DOCKER_LATEST_TAG);
         deploymentModel.setBuildImage(true);
         deploymentModel.setPush(false);
