@@ -75,45 +75,46 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
         Set<String> endpoints = extractEndpointName(serviceNode);
         for (AnnotationAttachmentNode attachmentNode : annotations) {
             String annotationKey = attachmentNode.getAnnotationName().getValue();
-            switch (annotationKey) {
-                case "Ingress":
-                    kubernetesDataHolder.addIngressModel(kubernetesAnnotationProcessor
-                            .processIngressAnnotation
-                                    (serviceNode.getName().getValue(), attachmentNode), endpoints);
-                    break;
-                case "HPA":
-                    kubernetesDataHolder.setPodAutoscalerModel(kubernetesAnnotationProcessor
-                            .processPodAutoscalerAnnotation(attachmentNode));
-                    break;
-                case "Deployment":
-                    kubernetesDataHolder.setDeploymentModel(kubernetesAnnotationProcessor.processDeployment
-                            (attachmentNode));
-                    break;
-                case "Secret":
-                    try {
-                        kubernetesDataHolder.addSecrets(kubernetesAnnotationProcessor.processSecrets(attachmentNode));
-                    } catch (KubernetesPluginException e) {
-                        dlog.logDiagnostic(Diagnostic.Kind.ERROR, serviceNode.getPosition(), e.getMessage());
-                    }
-                    break;
-                case "ConfigMap":
-                    try {
-                        kubernetesDataHolder.addConfigMaps(kubernetesAnnotationProcessor.processConfigMap
+            try {
+                switch (annotationKey) {
+                    case "Ingress":
+                        kubernetesDataHolder.addIngressModel(kubernetesAnnotationProcessor
+                                .processIngressAnnotation
+                                        (serviceNode.getName().getValue(), attachmentNode), endpoints);
+                        break;
+                    case "HPA":
+                        kubernetesDataHolder.setPodAutoscalerModel(kubernetesAnnotationProcessor
+                                .processPodAutoscalerAnnotation(attachmentNode));
+                        break;
+                    case "Deployment":
+                        kubernetesDataHolder.setDeploymentModel(kubernetesAnnotationProcessor.processDeployment
                                 (attachmentNode));
-                    } catch (KubernetesPluginException e) {
-                        dlog.logDiagnostic(Diagnostic.Kind.ERROR, serviceNode.getPosition(), e.getMessage());
-                    }
-                    break;
-                case "PersistentVolumeClaim":
-                    try {
-                        kubernetesDataHolder.addPersistentVolumeClaims(
-                                kubernetesAnnotationProcessor.processPersistentVolumeClaim(attachmentNode));
-                    } catch (KubernetesPluginException e) {
-                        dlog.logDiagnostic(Diagnostic.Kind.ERROR, serviceNode.getPosition(), e.getMessage());
-                    }
-                    break;
-                default:
-                    break;
+                        break;
+                    case "Secret":
+                        kubernetesDataHolder.addSecrets(kubernetesAnnotationProcessor.processSecrets
+                                (attachmentNode));
+                        break;
+                    case "ConfigMap":
+                        try {
+                            kubernetesDataHolder.addConfigMaps(kubernetesAnnotationProcessor.processConfigMap
+                                    (attachmentNode));
+                        } catch (KubernetesPluginException e) {
+                            dlog.logDiagnostic(Diagnostic.Kind.ERROR, serviceNode.getPosition(), e.getMessage());
+                        }
+                        break;
+                    case "PersistentVolumeClaim":
+                        try {
+                            kubernetesDataHolder.addPersistentVolumeClaims(
+                                    kubernetesAnnotationProcessor.processPersistentVolumeClaim(attachmentNode));
+                        } catch (KubernetesPluginException e) {
+                            dlog.logDiagnostic(Diagnostic.Kind.ERROR, serviceNode.getPosition(), e.getMessage());
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            } catch (KubernetesPluginException e) {
+                dlog.logDiagnostic(Diagnostic.Kind.ERROR, serviceNode.getPosition(), e.getMessage());
             }
         }
     }
@@ -135,18 +136,23 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
         setCanProcess(true);
         for (AnnotationAttachmentNode attachmentNode : annotations) {
             String annotationKey = attachmentNode.getAnnotationName().getValue();
-            switch (annotationKey) {
-                case "SVC":
-                    serviceModel = kubernetesAnnotationProcessor.processServiceAnnotation(endpointName,
-                            attachmentNode);
-                    kubernetesDataHolder.addServiceModel(endpointName, serviceModel);
-                    break;
-                case "Deployment":
-                    kubernetesDataHolder.setDeploymentModel(kubernetesAnnotationProcessor.processDeployment
-                            (attachmentNode));
-                    break;
-                default:
-                    break;
+            try {
+                switch (annotationKey) {
+                    case "SVC":
+                        serviceModel = kubernetesAnnotationProcessor.processServiceAnnotation(endpointName,
+                                attachmentNode);
+                        kubernetesDataHolder.addServiceModel(endpointName, serviceModel);
+                        break;
+                    case "Deployment":
+                        kubernetesDataHolder.setDeploymentModel(kubernetesAnnotationProcessor.processDeployment
+                                (attachmentNode));
+                        break;
+                    default:
+                        break;
+                }
+            } catch (KubernetesPluginException e) {
+                //TODO: Change null to endpointNode.getPosition() when ballerina is fixed
+                dlog.logDiagnostic(Diagnostic.Kind.ERROR, endpointNode.getPosition(), e.getMessage());
             }
         }
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
@@ -170,7 +176,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                         kubernetesDataHolder.addEndpointSecret(endpointName, secretModels);
                         kubernetesDataHolder.addSecrets(secretModels);
                     } catch (KubernetesPluginException e) {
-                        dlog.logDiagnostic(Diagnostic.Kind.ERROR, endpointNode.getPosition(), e.getMessage());
+                        dlog.logDiagnostic(Diagnostic.Kind.ERROR, null, e.getMessage());
                     }
                     break;
                 default:

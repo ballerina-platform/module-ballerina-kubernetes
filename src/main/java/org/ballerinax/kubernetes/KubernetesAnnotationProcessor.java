@@ -63,6 +63,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
+
 /**
  * Process Kubernetes Annotations and generate Artifacts.
  */
@@ -436,14 +438,14 @@ class KubernetesAnnotationProcessor {
      * @param attachmentNode annotation attachment node.
      * @return Deployment model object
      */
-    DeploymentModel processDeployment(AnnotationAttachmentNode attachmentNode) {
+    DeploymentModel processDeployment(AnnotationAttachmentNode attachmentNode) throws KubernetesPluginException {
         DeploymentModel deploymentModel = new DeploymentModel();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
             DeploymentConfiguration deploymentConfiguration =
                     DeploymentConfiguration.valueOf(keyValue.getKey().toString());
-            String annotationValue = keyValue.getValue().toString();
+            String annotationValue = resolveValue(keyValue.getValue().toString());
             switch (deploymentConfiguration) {
                 case name:
                     deploymentModel.setName(getValidName(annotationValue));
@@ -510,14 +512,15 @@ class KubernetesAnnotationProcessor {
      * @param attachmentNode annotation attachment node.
      * @return Service model object
      */
-    ServiceModel processServiceAnnotation(String endpointName, AnnotationAttachmentNode attachmentNode) {
+    ServiceModel processServiceAnnotation(String endpointName, AnnotationAttachmentNode attachmentNode) throws
+            KubernetesPluginException {
         ServiceModel serviceModel = new ServiceModel();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
             ServiceConfiguration serviceConfiguration =
                     ServiceConfiguration.valueOf(keyValue.getKey().toString());
-            String annotationValue = keyValue.getValue().toString();
+            String annotationValue = resolveValue(keyValue.getValue().toString());
             switch (serviceConfiguration) {
                 case name:
                     serviceModel.setName(getValidName(annotationValue));
@@ -547,14 +550,15 @@ class KubernetesAnnotationProcessor {
      * @param attachmentNode annotation attachment node.
      * @return Service model object
      */
-    PodAutoscalerModel processPodAutoscalerAnnotation(AnnotationAttachmentNode attachmentNode) {
+    PodAutoscalerModel processPodAutoscalerAnnotation(AnnotationAttachmentNode attachmentNode) throws
+            KubernetesPluginException {
         PodAutoscalerModel podAutoscalerModel = new PodAutoscalerModel();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
             PodAutoscalerConfiguration podAutoscalerConfiguration =
                     PodAutoscalerConfiguration.valueOf(keyValue.getKey().toString());
-            String annotationValue = keyValue.getValue().toString();
+            String annotationValue = resolveValue(keyValue.getValue().toString());
             switch (podAutoscalerConfiguration) {
                 case name:
                     podAutoscalerModel.setName(getValidName(annotationValue));
@@ -585,14 +589,15 @@ class KubernetesAnnotationProcessor {
      * @param attachmentNode annotation attachment node.
      * @return Ingress model object
      */
-    IngressModel processIngressAnnotation(String serviceName, AnnotationAttachmentNode attachmentNode) {
+    IngressModel processIngressAnnotation(String serviceName, AnnotationAttachmentNode attachmentNode) throws
+            KubernetesPluginException {
         IngressModel ingressModel = new IngressModel();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
             IngressConfiguration ingressConfiguration =
                     IngressConfiguration.valueOf(keyValue.getKey().toString());
-            String annotationValue = keyValue.getValue().toString();
+            String annotationValue = resolveValue(keyValue.getValue().toString());
             switch (ingressConfiguration) {
                 case name:
                     ingressModel.setName(getValidName(annotationValue));
@@ -631,7 +636,7 @@ class KubernetesAnnotationProcessor {
     /**
      * Extract key-store/trust-store file location from endpoint.
      *
-     * @param endpointName Endpoint name
+     * @param endpointName          Endpoint name
      * @param secureSocketKeyValues secureSocket annotation struct
      * @return List of @{@link SecretModel} objects
      */
@@ -738,7 +743,7 @@ class KubernetesAnnotationProcessor {
                 for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
                     VolumeMountConfig volumeMountConfig =
                             VolumeMountConfig.valueOf(annotation.getKey().toString());
-                    String annotationValue = annotation.getValue().toString();
+                    String annotationValue = resolveValue(annotation.getValue().toString());
                     switch (volumeMountConfig) {
                         case name:
                             secretModel.setName(getValidName(annotationValue));
@@ -782,7 +787,7 @@ class KubernetesAnnotationProcessor {
                 for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
                     VolumeMountConfig volumeMountConfig =
                             VolumeMountConfig.valueOf(annotation.getKey().toString());
-                    String annotationValue = annotation.getValue().toString();
+                    String annotationValue = resolveValue(annotation.getValue().toString());
                     switch (volumeMountConfig) {
                         case name:
                             configMapModel.setName(getValidName(annotationValue));
@@ -827,7 +832,7 @@ class KubernetesAnnotationProcessor {
                 for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
                     VolumeClaimConfig volumeMountConfig =
                             VolumeClaimConfig.valueOf(annotation.getKey().toString());
-                    String annotationValue = annotation.getValue().toString();
+                    String annotationValue = resolveValue(annotation.getValue().toString());
                     switch (volumeMountConfig) {
                         case name:
                             claimModel.setName(getValidName(annotationValue));
