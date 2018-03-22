@@ -9,9 +9,9 @@ endpoint http:ServiceEndpoint gceHelloWorldDEP {
 @kubernetes:Deployment{
     enableLiveness:"enable",
     push:true,
-    image:"index.docker.io/<username>/gce-sample:1.0",
-    username:"<username>",
-    password:"<password>"
+    image:"index.docker.io/$env{DOCKER_USERNAME}/gce-sample:1.0",
+    username:"$env{DOCKER_USERNAME}",
+    password:"$env{DOCKER_PASSWORD}"
 }
 @kubernetes:HPA{}
 @kubernetes:Ingress{

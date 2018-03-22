@@ -32,6 +32,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
+import java.util.Optional;
 
 /**
  * Util methods used for artifact generation.
@@ -172,5 +173,28 @@ public class KubernetesUtils {
             throw new KubernetesPluginException("Unable to delete directory: " + path, e);
         }
 
+    }
+
+    /**
+     * Resolve variable value from environment variable if $env{} is used. Else return the value.
+     *
+     * @param variable variable value
+     * @return Resolved variable
+     */
+    public static String resolveValue(String variable) throws KubernetesPluginException {
+        if (variable.contains("$env{")) {
+            //remove white spaces
+            variable = variable.replace(" ", "");
+            //extract variable name
+            final String envVariable = variable.substring(variable.lastIndexOf("$env{") + 5,
+                    variable.lastIndexOf("}"));
+            //resolve value
+            String value = Optional.ofNullable(System.getenv(envVariable)).orElseThrow(
+                    () -> new KubernetesPluginException("error resolving value: " + envVariable + " is not set in " +
+                            "the environment."));
+            // substitute value
+            return variable.replace("$env{" + envVariable + "}", value);
+        }
+        return variable;
     }
 }

@@ -26,15 +26,10 @@
 
 1. Configure [kubernetes cluster and ingress controller](https://cloud.google.com/community/tutorials/nginx-ingress-gke) in google cloud.
 
-2. Open hello_world_gce.bal and change username and password with docker hub credentials.
+2. Export docker registry username and password as envrionment variable.
 ```bash
-@kubernetes:Deployment{
-    enableLiveness:"enable",
-    push:true,
-    image:"index.docker.io/<username>/gce-sample:1.0",
-    username:"<username>",
-    password:"<password>"
-}
+export DOCKER_USERNAME=<username>
+export DOCKER_PASSWORD=<password>
 ```
 
 3. Compile the  hello_world_gce.bal file. Command to run kubernetes artifacts will be printed on success:
