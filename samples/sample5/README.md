@@ -35,23 +35,13 @@ export DOCKER_PASSWORD=<password>
 3. Compile the  hello_world_gce.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build hello_world_gce.bal
-
-info: Processing svc{} annotation for:helloWorld
-success: Service yaml generated.
-success: Ingress yaml generated.
-success: Horizontal pod autoscaler yaml generated.
-info: Creating Dockerfile ...
-success: Dockerfile generated.
-info: Creating docker image ...
-success: Docker image index.docker.io/anuruddhal/gce-sample:1.0 generated.
-info: Pushing docker image ...
-info: The push refers to repository [docker.io/anuruddhal/gce-sample]
-info: 1.0: digest: sha256:b28b52eaccad80c69f16f311601a4632f46505d785f6585ed3829c55fc5d83f4 size: 1368
-success: Done.
-success: Deployment yaml generated.
+@docker 				    - complete 3/3
+@kubernetes:HPA 			- complete 1/1
+@kubernetes:Deployment 	    - complete 1/1
+@kubernetes:Ingress 		- complete 1/1
 
 Run following command to deploy kubernetes artifacts:
-kubectl create -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample5/target/hello_world_gce/kubernetes
+kubectl apply -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample5/kubernetes/
 ```
 
 4. hello_world_gce.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
