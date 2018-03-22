@@ -96,7 +96,7 @@ from `kubectl get ingress` command.)_
  ```
 Use curl command with hostname to access the service.
 ```bash
-$> curl https://abc.com/HelloWorld/sayHello -k
+$> curl https://abc.com/helloWorld/sayHello -k
 Hello, World from service helloWorld !
 
 

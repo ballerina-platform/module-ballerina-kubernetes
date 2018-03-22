@@ -102,7 +102,7 @@ ballerina-config   1         7m
 
 - **Using ingress:**
 ```bash
-$>curl https://abc.com/HelloWorld/conf -k
+$>curl https://abc.com/helloWorld/conf -k
 conf resource: enableDebug=true;
 ```
 

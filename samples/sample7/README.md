@@ -106,13 +106,13 @@ helloworldep-keystore   Opaque                                1         1m
 
 - **Using ingress:**
 ```bash
-$>curl https://abc.com/HelloWorld/secret1 -k
+$>curl https://abc.com/helloWorld/secret1 -k
 Secret1 resource: Secret1
 
-$>curl https://abc.com/HelloWorld/secret2 -k
+$>curl https://abc.com/helloWorld/secret2 -k
 Secret2 resource: Secret2
 
-$>curl https://abc.com/HelloWorld/secret3 -k
+$>curl https://abc.com/helloWorld/secret3 -k
 Secret3 resource: Secret3
 ```
 
