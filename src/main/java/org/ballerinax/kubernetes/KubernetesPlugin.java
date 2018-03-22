@@ -141,6 +141,10 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                             attachmentNode);
                     kubernetesDataHolder.addServiceModel(endpointName, serviceModel);
                     break;
+                case "Deployment":
+                    kubernetesDataHolder.setDeploymentModel(kubernetesAnnotationProcessor.processDeployment
+                            (attachmentNode));
+                    break;
                 default:
                     break;
             }

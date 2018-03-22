@@ -41,7 +41,7 @@ public struct DeploymentConfiguration {
 }
 
 @Description {value:"Deployment annotation for Kubernetes"}
-public annotation <service> Deployment DeploymentConfiguration;
+public annotation <service,endpoint> Deployment DeploymentConfiguration;
 
 @Description {value:"Kubernetes service configuration"}
 @Field {value:"labels: Labels for service"}
