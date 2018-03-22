@@ -18,6 +18,7 @@
 package org.ballerinax.kubernetes.models;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -62,6 +63,9 @@ public class DeploymentModel {
         this.labels = new HashMap<>();
         this.setImagePullPolicy("IfNotPresent");
         this.dockerHost = "unix:///var/run/docker.sock";
+        secretModels = new HashSet<>();
+        configMapModels = new HashSet<>();
+        volumeClaimModels = new HashSet<>();
     }
 
     public String getName() {
