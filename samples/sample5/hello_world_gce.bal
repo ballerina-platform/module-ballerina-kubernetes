@@ -1,23 +1,23 @@
 import ballerina.net.http;
 import ballerinax.kubernetes;
 
-@kubernetes:svc{serviceType:"NodePort"}
+@kubernetes:SVC{serviceType:"NodePort"}
 endpoint http:ServiceEndpoint gceHelloWorldDEP {
     port:9090
 };
 
-@kubernetes:deployment{
+@kubernetes:Deployment{
     enableLiveness:"enable",
     push:true,
     image:"index.docker.io/<username>/gce-sample:1.0",
     username:"<username>",
     password:"<password>"
 }
-@kubernetes:hpa{}
-@kubernetes:ingress{
+@kubernetes:HPA{}
+@kubernetes:Ingress{
     hostname:"abc.com"
 }
-@http:serviceConfig {
+@http:ServiceConfig {
     basePath:"/helloWorld"
 }
 service<http:Service>  helloWorld bind gceHelloWorldDEP {

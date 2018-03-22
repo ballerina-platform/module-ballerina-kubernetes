@@ -28,7 +28,7 @@
 
 2. Open hello_world_gce.bal and change username and password with docker hub credentials.
 ```bash
-@kubernetes:deployment{
+@kubernetes:Deployment{
     enableLiveness:"enable",
     push:true,
     image:"index.docker.io/<username>/gce-sample:1.0",

@@ -1,12 +1,12 @@
 import ballerina.net.http;
 import ballerinax.kubernetes;
 
-@kubernetes:svc{serviceType:"NodePort"}
+@kubernetes:SVC{serviceType:"NodePort"}
 endpoint http:ServiceEndpoint helloWorldEP {
     port:9090
 };
 
-@http:serviceConfig {
+@http:ServiceConfig {
     basePath:"/helloWorld"
 }
 service<http:Service> helloWorld bind helloWorldEP {

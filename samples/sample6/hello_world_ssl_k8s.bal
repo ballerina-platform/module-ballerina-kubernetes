@@ -1,20 +1,21 @@
 import ballerina.net.http;
 import ballerinax.kubernetes;
 
-@kubernetes:svc{}
+@kubernetes:SVC{}
 endpoint http:ServiceEndpoint helloWorldSecuredEP {
     port:9090,
-    ssl:{
-        keyStoreFile:"${ballerina.home}/bre/security/ballerinaKeystore.p12",
-        keyStorePassword:"ballerina",
-        certPassword:"ballerina"
+    secureSocket: {
+        keyStore: {
+            filePath: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
+            password: "ballerina"
+        }
     }
 };
 
-@http:serviceConfig {
+@http:ServiceConfig {
     basePath:"/helloWorld"
 }
-@kubernetes:ingress{
+@kubernetes:Ingress{
     hostname:"abc.com"
 }
 service<http:Service> helloWorld bind helloWorldSecuredEP {

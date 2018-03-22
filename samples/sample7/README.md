@@ -4,7 +4,7 @@
 - K8S secret are intended to hold sensitive information, such as passwords, OAuth tokens, and ssh keys.
 - Putting this information in a secret is safer and more flexible than putting it verbatim in a pod definition or in a
   docker image.
-- @kubernetes:secret{} annotation will create k8s secrets. See [hello_world_secret_mount_k8s.bal](./hello_world_secret_mount_k8s.bal)  
+- @kubernetes:Secret{} annotation will create k8s secrets. See [hello_world_secret_mount_k8s.bal](./hello_world_secret_mount_k8s.bal)  
 - Following files will be generated from this sample.
     ``` 
     $> docker image
@@ -33,9 +33,9 @@
 ```bash
 $> ballerina build hello_world_secret_mount_k8s.bal
 @docker 			 - complete 3/3
-@kubernetes:deployment 		 - complete 1/1
-@kubernetes:service 		 - complete 1/1
-@kubernetes:secret  		 - complete 3/3
+@kubernetes:Deployment 		 - complete 1/1
+@kubernetes:Service 		 - complete 1/1
+@kubernetes:Secret  		 - complete 3/3
 
 Run following command to deploy kubernetes artifacts:
 kubectl apply -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample7/kubernetes/

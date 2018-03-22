@@ -6,7 +6,7 @@
  2. Nginx backend controllers deployed.
  3. Mini-kube users should configure following annotations in every sample with valid values: 
     ```bash
-    @kubernetes:deployment {
+    @kubernetes:Deployment {
         dockerHost:"tcp://192.168.99.100:2376", 
         dockerCertPath:"/Users/anuruddha/.minikube/certs"
     }

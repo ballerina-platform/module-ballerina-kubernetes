@@ -76,27 +76,27 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
         for (AnnotationAttachmentNode attachmentNode : annotations) {
             String annotationKey = attachmentNode.getAnnotationName().getValue();
             switch (annotationKey) {
-                case "ingress":
+                case "Ingress":
                     kubernetesDataHolder.addIngressModel(kubernetesAnnotationProcessor
                             .processIngressAnnotation
                                     (serviceNode.getName().getValue(), attachmentNode), endpoints);
                     break;
-                case "hpa":
+                case "HPA":
                     kubernetesDataHolder.setPodAutoscalerModel(kubernetesAnnotationProcessor
                             .processPodAutoscalerAnnotation(attachmentNode));
                     break;
-                case "deployment":
+                case "Deployment":
                     kubernetesDataHolder.setDeploymentModel(kubernetesAnnotationProcessor.processDeployment
                             (attachmentNode));
                     break;
-                case "secret":
+                case "Secret":
                     try {
                         kubernetesDataHolder.addSecrets(kubernetesAnnotationProcessor.processSecrets(attachmentNode));
                     } catch (KubernetesPluginException e) {
                         dlog.logDiagnostic(Diagnostic.Kind.ERROR, serviceNode.getPosition(), e.getMessage());
                     }
                     break;
-                case "configMap":
+                case "ConfigMap":
                     try {
                         kubernetesDataHolder.addConfigMaps(kubernetesAnnotationProcessor.processConfigMap
                                 (attachmentNode));
@@ -104,7 +104,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                         dlog.logDiagnostic(Diagnostic.Kind.ERROR, serviceNode.getPosition(), e.getMessage());
                     }
                     break;
-                case "persistentVolumeClaim":
+                case "PersistentVolumeClaim":
                     try {
                         kubernetesDataHolder.addPersistentVolumeClaims(
                                 kubernetesAnnotationProcessor.processPersistentVolumeClaim(attachmentNode));
@@ -136,7 +136,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
         for (AnnotationAttachmentNode attachmentNode : annotations) {
             String annotationKey = attachmentNode.getAnnotationName().getValue();
             switch (annotationKey) {
-                case "svc":
+                case "SVC":
                     serviceModel = kubernetesAnnotationProcessor.processServiceAnnotation(endpointName,
                             attachmentNode);
                     kubernetesDataHolder.addServiceModel(endpointName, serviceModel);
@@ -157,12 +157,12 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                         serviceModel.setPort(port);
                     }
                     break;
-                case "ssl":
+                case "secureSocket":
                     List<BLangRecordLiteral.BLangRecordKeyValue> sslKeyValues = ((BLangRecordLiteral) keyValue
                             .valueExpr).getKeyValuePairs();
                     try {
                         Set<SecretModel> secretModels = kubernetesAnnotationProcessor
-                                .processSSLAnnotation(endpointName, sslKeyValues);
+                                .processSecureSocketAnnotation(endpointName, sslKeyValues);
                         kubernetesDataHolder.addEndpointSecret(endpointName, secretModels);
                         kubernetesDataHolder.addSecrets(secretModels);
                     } catch (KubernetesPluginException e) {

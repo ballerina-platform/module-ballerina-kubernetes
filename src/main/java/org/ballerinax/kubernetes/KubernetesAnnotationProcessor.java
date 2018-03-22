@@ -143,7 +143,7 @@ class KubernetesAnnotationProcessor {
         deploymentModel.setVolumeClaimModels(kubernetesDataHolder.getPersistentVolumeClaims());
         generateDeployment(deploymentModel, balxFilePath, outputDir);
         out.println();
-        out.println("@kubernetes:deployment \t\t\t - complete 1/1");
+        out.println("@kubernetes:Deployment \t\t\t - complete 1/1");
 
         //svc
         Collection<ServiceModel> serviceModels = kubernetesDataHolder.getEndpointToServiceModelMap().values();
@@ -151,7 +151,7 @@ class KubernetesAnnotationProcessor {
         for (ServiceModel serviceModel : serviceModels) {
             count++;
             generateService(serviceModel, balxFilePath, outputDir);
-            out.print("@kubernetes:service \t\t\t - complete " + count + "/" + serviceModels.size() + "\r");
+            out.print("@kubernetes:Service \t\t\t - complete " + count + "/" + serviceModels.size() + "\r");
         }
 
         //ingress
@@ -178,7 +178,7 @@ class KubernetesAnnotationProcessor {
             }
             generateIngress(ingressModel, balxFilePath, outputDir);
             count++;
-            out.print("@kubernetes:ingress \t\t\t - complete " + count + "/" + size + "\r");
+            out.print("@kubernetes:Ingress \t\t\t - complete " + count + "/" + size + "\r");
             iterator.remove();
         }
 
@@ -191,7 +191,7 @@ class KubernetesAnnotationProcessor {
         for (SecretModel secretModel : secretModels) {
             count++;
             generateSecrets(secretModel, balxFilePath, outputDir);
-            out.print("@kubernetes:secret \t\t\t - complete " + count + "/" + secretModels.size() + "\r");
+            out.print("@kubernetes:Secret \t\t\t - complete " + count + "/" + secretModels.size() + "\r");
         }
 
         //configMap
@@ -203,7 +203,7 @@ class KubernetesAnnotationProcessor {
         for (ConfigMapModel configMapModel : configMapModels) {
             count++;
             generateConfigMaps(configMapModel, balxFilePath, outputDir);
-            out.print("@kubernetes:configMap \t\t\t - complete " + count + "/" + configMapModels.size() + "\r");
+            out.print("@kubernetes:ConfigMap \t\t\t - complete " + count + "/" + configMapModels.size() + "\r");
         }
 
         //volume mount
@@ -336,7 +336,7 @@ class KubernetesAnnotationProcessor {
             out.println();
             KubernetesUtils.writeToFile(serviceContent, outputDir + File
                     .separator + balxFileName + HPA_FILE_POSTFIX + YAML);
-            out.print("@kubernetes:hpa \t\t - complete 1/1");
+            out.print("@kubernetes:HPA \t\t\t - complete 1/1");
         } catch (IOException e) {
             throw new KubernetesPluginException("Error while writing HPA content", e);
         }
@@ -632,46 +632,91 @@ class KubernetesAnnotationProcessor {
      * Extract key-store/trust-store file location from endpoint.
      *
      * @param endpointName Endpoint name
-     * @param sslKeyValues SSL annotation struct
+     * @param secureSocketKeyValues secureSocket annotation struct
      * @return List of @{@link SecretModel} objects
      */
-    Set<SecretModel> processSSLAnnotation(String endpointName, List<BLangRecordLiteral.BLangRecordKeyValue>
-            sslKeyValues) throws KubernetesPluginException {
+    Set<SecretModel> processSecureSocketAnnotation(String endpointName, List<BLangRecordLiteral.BLangRecordKeyValue>
+            secureSocketKeyValues) throws KubernetesPluginException {
         Set<SecretModel> secrets = new HashSet<>();
-        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : sslKeyValues) {
+        String keyStoreFile = null;
+        String trustStoreFile = null;
+        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : secureSocketKeyValues) {
             //extract file paths.
             String key = keyValue.getKey().toString();
-            String value = keyValue.getValue().toString();
-            SecretModel secretModel;
-            if ("keyStoreFile".equals(key)) {
-                secretModel = new SecretModel();
-                secretModel.setName(getValidName(endpointName) + "-keystore");
-            } else if ("trustStoreFile".equals(key)) {
-                secretModel = new SecretModel();
-                secretModel.setName(getValidName(endpointName) + "-truststore");
-            } else {
-                continue;
+            if ("keyStore".equals(key)) {
+                keyStoreFile = extractFilePath(keyValue);
+            } else if ("trustStore".equals(key)) {
+                trustStoreFile = extractFilePath(keyValue);
             }
-            //TODO: Fix this
-            String secretFilePath = value;
-            String mountPath = value;
-            if (value.contains("${ballerina.home}")) {
-                // Resolve variable locally before reading file.
-                String ballerinaHome = System.getProperty("ballerina.home");
-                secretFilePath = value.replace("${ballerina.home}", ballerinaHome);
-                // replace mount path with container's ballerina.home
-                mountPath = value.replace("${ballerina.home}", "/ballerina/runtime");
+        }
+        if (keyStoreFile != null && trustStoreFile != null) {
+            if (getMountPath(keyStoreFile).equals(getMountPath(trustStoreFile))) {
+                // trust-store and key-store mount to same path
+                String keyStoreContent = readSecretFile(keyStoreFile);
+                String trustStoreContent = readSecretFile(trustStoreFile);
+                SecretModel secretModel = new SecretModel();
+                secretModel.setName(getValidName(endpointName) + "-secure-socket");
+                secretModel.setMountPath(getMountPath(keyStoreFile));
+                Map<String, String> dataMap = new HashMap<>();
+                dataMap.put(String.valueOf(Paths.get(keyStoreFile).getFileName()), keyStoreContent);
+                dataMap.put(String.valueOf(Paths.get(trustStoreFile).getFileName()), trustStoreContent);
+                secretModel.setData(dataMap);
+                secrets.add(secretModel);
+                return secrets;
             }
-            Path dataFilePath = Paths.get(secretFilePath);
-            mountPath = String.valueOf(Paths.get(mountPath).getParent());
+        }
+        if (keyStoreFile != null) {
+            String keyStoreContent = readSecretFile(keyStoreFile);
+            SecretModel secretModel = new SecretModel();
+            secretModel.setName(getValidName(endpointName) + "-keyStore");
+            secretModel.setMountPath(getMountPath(keyStoreFile));
             Map<String, String> dataMap = new HashMap<>();
-            String content = Base64.encodeBase64String(KubernetesUtils.readFileContent(dataFilePath));
-            dataMap.put(String.valueOf(dataFilePath.getFileName()), content);
+            dataMap.put(String.valueOf(Paths.get(keyStoreFile).getFileName()), keyStoreContent);
             secretModel.setData(dataMap);
-            secretModel.setMountPath(mountPath);
+            secrets.add(secretModel);
+        }
+        if (trustStoreFile != null) {
+            String trustStoreContent = readSecretFile(trustStoreFile);
+            SecretModel secretModel = new SecretModel();
+            secretModel.setName(getValidName(endpointName) + "-trustStore");
+            secretModel.setMountPath(getMountPath(trustStoreFile));
+            Map<String, String> dataMap = new HashMap<>();
+            dataMap.put(String.valueOf(Paths.get(trustStoreFile).getFileName()), trustStoreContent);
+            secretModel.setData(dataMap);
             secrets.add(secretModel);
         }
         return secrets;
+    }
+
+
+    private String readSecretFile(String filePath) throws KubernetesPluginException {
+        if (filePath.contains("${ballerina.home}")) {
+            // Resolve variable locally before reading file.
+            String ballerinaHome = System.getProperty("ballerina.home");
+            filePath = filePath.replace("${ballerina.home}", ballerinaHome);
+        }
+        Path dataFilePath = Paths.get(filePath);
+        return Base64.encodeBase64String(KubernetesUtils.readFileContent(dataFilePath));
+    }
+
+    private String getMountPath(String mountPath) {
+        if (mountPath.contains("${ballerina.home}")) {
+            // replace mount path with container's ballerina.home
+            mountPath = mountPath.replace("${ballerina.home}", "/ballerina/runtime");
+        }
+        return String.valueOf(Paths.get(mountPath).getParent());
+    }
+
+    private String extractFilePath(BLangRecordLiteral.BLangRecordKeyValue keyValue) {
+        List<BLangRecordLiteral.BLangRecordKeyValue> keyStoreConfigs = ((BLangRecordLiteral) keyValue
+                .valueExpr).getKeyValuePairs();
+        for (BLangRecordLiteral.BLangRecordKeyValue keyStoreConfig : keyStoreConfigs) {
+            String configKey = keyStoreConfig.getKey().toString();
+            if ("filePath".equals(configKey)) {
+                return keyStoreConfig.getValue().toString();
+            }
+        }
+        return null;
     }
 
     /**
