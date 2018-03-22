@@ -56,7 +56,8 @@ public class DeploymentModel {
         this.periodSeconds = 5;
         this.initialDelaySeconds = 10;
         this.buildImage = true;
-        this.baseImage = "ballerina/ballerina:latest";
+        String baseImageVersion = getClass().getPackage().getImplementationVersion();
+        this.baseImage = "ballerina/ballerina:" + baseImageVersion;
         this.push = false;
         this.labels = new HashMap<>();
         this.setImagePullPolicy("IfNotPresent");
