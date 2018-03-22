@@ -56,7 +56,7 @@ function readFile (string filePath, string permission, string encoding) returns 
             io:println(err);
         }
     }
-    var contentResult = sourceChannel.readCharacters(12);
+    var contentResult = sourceChannel.readCharacters(20);
     match contentResult {
         (string) res => {
             return res;
