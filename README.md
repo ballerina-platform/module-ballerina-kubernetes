@@ -108,8 +108,8 @@ The docker artifacts will be created in a folder called target with following st
     │      		├── deployment.yaml
     │       	├── ingress.yaml
     │       	├── secret.yaml
-    │       	├── config-map.yaml
-    │       	├── persistence-volume-claim.yaml
+    │       	├── config_map.yaml
+    │       	├── volume_claim.yaml
     │       	├── service.yaml
     │        	└── docker
     │	      		  └── Dockerfile
