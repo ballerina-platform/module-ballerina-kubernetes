@@ -673,7 +673,7 @@ class KubernetesAnnotationProcessor {
         if (keyStoreFile != null) {
             String keyStoreContent = readSecretFile(keyStoreFile);
             SecretModel secretModel = new SecretModel();
-            secretModel.setName(getValidName(endpointName) + "-keyStore");
+            secretModel.setName(getValidName(endpointName) + "-keystore");
             secretModel.setMountPath(getMountPath(keyStoreFile));
             Map<String, String> dataMap = new HashMap<>();
             dataMap.put(String.valueOf(Paths.get(keyStoreFile).getFileName()), keyStoreContent);
@@ -683,7 +683,7 @@ class KubernetesAnnotationProcessor {
         if (trustStoreFile != null) {
             String trustStoreContent = readSecretFile(trustStoreFile);
             SecretModel secretModel = new SecretModel();
-            secretModel.setName(getValidName(endpointName) + "-trustStore");
+            secretModel.setName(getValidName(endpointName) + "-truststore");
             secretModel.setMountPath(getMountPath(trustStoreFile));
             Map<String, String> dataMap = new HashMap<>();
             dataMap.put(String.valueOf(Paths.get(trustStoreFile).getFileName()), trustStoreContent);
