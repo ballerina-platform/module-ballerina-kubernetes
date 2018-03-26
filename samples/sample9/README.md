@@ -25,7 +25,7 @@
 1. Compile the  hello_world_persistence_volume_k8s.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build hello_world_persistence_volume_k8s.bal
-@docker 				 - complete 3/3
+@kubernetes:Docker 				 - complete 3/3
 @kubernetes:Deployment 			 - complete 1/1
 @kubernetes:Ingress 			 - complete 1/1
 @kubernetes:Secret 			 - complete 1/1

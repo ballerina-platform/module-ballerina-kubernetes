@@ -25,7 +25,7 @@
 ```bash
 $> ballerina build hello_world_k8s.bal
 
-@docker                     - complete 3/3
+@kubernetes:Docker                     - complete 3/3
 @kubernetes:Deployment      - complete 1/1
 @kubernetes:Service         - complete 1/1
 

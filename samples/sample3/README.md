@@ -26,7 +26,7 @@
 1. Compile the  pizzashack.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build pizzashack.bal
-@docker 			 - complete 3/3 
+@kubernetes:Docker 			 - complete 3/3 
 @kubernetes:HPA 		 - complete 1/1
 @kubernetes:Deployment 		 - complete 1/1
 @kubernetes:Service 		 - complete 1/1

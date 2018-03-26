@@ -86,7 +86,6 @@ class KubernetesAnnotationProcessor {
     private static final String YAML = ".yaml";
     private static final String DOCKER_LATEST_TAG = ":latest";
     private static final String INGRESS_HOSTNAME_POSTFIX = ".com";
-    private static final String DEFAULT_BASE_IMAGE = "ballerina/ballerina:latest";
     private PrintStream out = System.out;
 
     /**
@@ -217,7 +216,7 @@ class KubernetesAnnotationProcessor {
         for (PersistentVolumeClaimModel claimModel : volumeClaims) {
             count++;
             generatePersistentVolumeClaim(claimModel, balxFilePath, outputDir);
-            out.print("@kubernetes:volumeClaim \t\t - complete " + count + "/" + volumeClaims.size() + "\r");
+            out.print("@kubernetes:VolumeClaim \t\t - complete " + count + "/" + volumeClaims.size() + "\r");
         }
         out.println();
 
@@ -379,22 +378,22 @@ class KubernetesAnnotationProcessor {
         DockerHandler dockerArtifactHandler = new DockerHandler(dockerModel);
         String dockerContent = dockerArtifactHandler.generate();
         try {
-            out.print("@docker \t\t\t\t - complete 0/3 \r");
+            out.print("@kubernetes:Docker \t\t\t - complete 0/3 \r");
             KubernetesUtils.writeToFile(dockerContent, outputDir + File.separator + "Dockerfile");
-            out.print("@docker \t\t\t\t - complete 1/3 \r");
+            out.print("@kubernetes:Docker \t\t\t - complete 1/3 \r");
             String balxDestination = outputDir + File.separator + KubernetesUtils.extractBalxName
                     (balxFilePath) + BALX;
             KubernetesUtils.copyFile(balxFilePath, balxDestination);
             //check image build is enabled.
             if (dockerModel.isBuildImage()) {
                 dockerArtifactHandler.buildImage(dockerModel, outputDir);
-                out.print("@docker \t\t\t\t - complete 2/3 \r");
+                out.print("@kubernetes:Docker \t\t\t - complete 2/3 \r");
                 Files.delete(Paths.get(balxDestination));
                 //push only if image build is enabled.
                 if (dockerModel.isPush()) {
                     dockerArtifactHandler.pushImage(dockerModel);
                 }
-                out.print("@docker \t\t\t\t - complete 3/3");
+                out.print("@kubernetes:Docker \t\t\t - complete 3/3");
             }
         } catch (IOException e) {
             throw new KubernetesPluginException("Unable to write Dockerfile content to " + outputDir);
