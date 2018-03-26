@@ -23,7 +23,7 @@
 1. Compile the  hello_world_k8s_config.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build hello_world_k8s.bal
-@docker 			 - complete 3/3 
+@kubernetes:Docker 			 - complete 3/3 
 @kubernetes:Deployment 		 - complete 1/1
 @kubernetes:Service 		 - complete 1/1
 @kubernetes:Ingress 		 - complete 1/1

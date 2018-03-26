@@ -39,7 +39,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |password|Password for the docker registry|null|
 |baseImage|Base image to create the docker image|ballerina/ballerina:latest|
 
-### @kubernetes:SVC{}
+### @kubernetes:Service{}
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
 |name|Name of the Service|\<ballerina service name\>-service|
@@ -122,7 +122,7 @@ The docker artifacts will be created in a folder called target with following st
 import ballerina/net.http;
 import ballerinax/kubernetes;
 
-@kubernetes:SVC{name:"hello"}
+@kubernetes:Service{name:"hello"}
 endpoint http:ServiceEndpoint helloEP {
     port:9090
 };

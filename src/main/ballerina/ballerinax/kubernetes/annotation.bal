@@ -53,7 +53,7 @@ public struct ServiceConfiguration {
 }
 
 @Description {value:"Service annotation for Kubernetes"}
-public annotation <endpoint> SVC ServiceConfiguration;
+public annotation <endpoint> Service ServiceConfiguration;
 
 @Description {value:"Kubernetes ingress configuration"}
 @Field {value:"name: Name of the ingress"}

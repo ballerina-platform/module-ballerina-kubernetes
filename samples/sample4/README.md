@@ -26,7 +26,7 @@
 1. Compile the  foodstore.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build foodstore.bal
-@docker 			 - complete 3/3 
+@kubernetes:Docker 			 - complete 3/3 
 @kubernetes:Deployment 		 - complete 1/1
 @kubernetes:Service 		 - complete 2/2
 @kubernetes:Ingress 		 - complete 2/2

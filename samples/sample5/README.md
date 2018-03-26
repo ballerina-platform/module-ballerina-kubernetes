@@ -35,7 +35,7 @@ export DOCKER_PASSWORD=<password>
 3. Compile the  hello_world_gce.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build hello_world_gce.bal
-@docker 				    - complete 3/3
+@kubernetes:Docker 				    - complete 3/3
 @kubernetes:HPA 			- complete 1/1
 @kubernetes:Deployment 	    - complete 1/1
 @kubernetes:Ingress 		- complete 1/1

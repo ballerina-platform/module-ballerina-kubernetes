@@ -1,7 +1,7 @@
 import ballerina/net.http;
 import ballerinax/kubernetes;
 
-@kubernetes:SVC{}
+@kubernetes:Service{}
 endpoint http:ServiceEndpoint pizzaEP {
     port:9090
 };
