@@ -31,7 +31,6 @@ import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DockerModel;
 
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.concurrent.CountDownLatch;
 
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.printDebug;
@@ -165,23 +164,7 @@ public class DockerHandler implements ArtifactHandler {
      * @return Dockerfile content as a string
      */
     public String generate() {
-        String dockerBase = "# --------------------------------------------------------------------\n" +
-                "# Copyright (c) " + Calendar.getInstance().get(Calendar.YEAR)
-                + ", Ballerina (https://ballerina.io/) " +
-                "All Rights Reserved.\n" +
-                "#\n" +
-                "# Licensed under the Apache License, Version 2.0 (the \"License\");\n" +
-                "# you may not use this file except in compliance with the License.\n" +
-                "# You may obtain a copy of the License at\n" +
-                "#\n" +
-                "# http://www.apache.org/licenses/LICENSE-2.0\n" +
-                "#\n" +
-                "# Unless required by applicable law or agreed to in writing, software\n" +
-                "# distributed under the License is distributed on an \"AS IS\" BASIS,\n" +
-                "# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n" +
-                "# See the License for the specific language governing permissions and\n" +
-                "# limitations under the License.\n" +
-                "# -----------------------------------------------------------------------\n" +
+        String dockerBase = "# Auto Generated Dockerfile\n" +
                 "\n" +
                 "FROM " + dockerModel.getBaseImage() + "\n" +
                 "LABEL maintainer=\"dev@ballerina.io\"\n" +
@@ -199,6 +182,7 @@ public class DockerHandler implements ArtifactHandler {
         if (dockerModel.isEnableDebug()) {
             stringBuffer.append(" --debug ").append(dockerModel.getDebugPort());
         }
+        stringBuffer.append("\n");
         return stringBuffer.toString();
     }
 
