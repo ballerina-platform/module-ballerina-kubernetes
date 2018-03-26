@@ -147,7 +147,7 @@ class KubernetesAnnotationProcessor {
         out.println();
         out.println("@kubernetes:Deployment \t\t\t - complete 1/1");
 
-        //svc
+        // Service
         Collection<ServiceModel> serviceModels = kubernetesDataHolder.getEndpointToServiceModelMap().values();
         int count = 0;
         for (ServiceModel serviceModel : serviceModels) {
@@ -159,7 +159,7 @@ class KubernetesAnnotationProcessor {
         //ingress
         count = 0;
         Map<IngressModel, Set<String>> ingressModels = kubernetesDataHolder.getIngressToEndpointMap();
-        if (ingressModels.size() < 0) {
+        if (ingressModels.size() > 0) {
             out.println();
         }
         int size = ingressModels.size();

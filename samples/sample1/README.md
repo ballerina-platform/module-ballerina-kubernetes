@@ -1,7 +1,7 @@
 ## Sample1: Kubernetes Hello World
 
 - This sample runs simple ballerina hello world service in kubernetes cluster with minimal configurations. 
-- The endpoint is annotated with @kubernetes:SVC{} and passing serviceType as NodePort. 
+- The endpoint is annotated with @kubernetes:Service{} and passing serviceType as NodePort. 
 - Note that the @kubernetes:Deployment{} is optional. See [hello_world_k8s.bal](./hello_world_k8s.bal)
 - Default values for kubernetes annotation attributes will be used to create artifacts.
 - Following files will be generated from this sample.

@@ -138,7 +138,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
             String annotationKey = attachmentNode.getAnnotationName().getValue();
             try {
                 switch (annotationKey) {
-                    case "SVC":
+                    case "Service":
                         serviceModel = kubernetesAnnotationProcessor.processServiceAnnotation(endpointName,
                                 attachmentNode);
                         kubernetesDataHolder.addServiceModel(endpointName, serviceModel);

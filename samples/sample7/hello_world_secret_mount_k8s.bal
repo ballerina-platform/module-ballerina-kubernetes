@@ -2,7 +2,7 @@ import ballerina/net.http;
 import ballerinax/kubernetes;
 import ballerina.io;
 
-@kubernetes:SVC{}
+@kubernetes:Service{}
 endpoint http:ServiceEndpoint helloWorldEP {
     port:9090,
     secureSocket: {

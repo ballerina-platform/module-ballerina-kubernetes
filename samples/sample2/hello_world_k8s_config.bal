@@ -4,7 +4,7 @@ import ballerinax/kubernetes;
 @kubernetes:Deployment{
     enableLiveness:"enable"
 }
-@kubernetes:SVC{name:"hello"}
+@kubernetes:Service{name:"hello"}
 endpoint http:ServiceEndpoint helloEP {
     port:9090
 };
