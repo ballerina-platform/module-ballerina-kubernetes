@@ -39,6 +39,7 @@ public class DockerModel {
     private boolean isService;
     private String balxFileName;
     private String dockerCertPath;
+    private String commandArg;
 
     public DockerModel() {
         // Initialize with default values except for image name
@@ -189,5 +190,13 @@ public class DockerModel {
 
     public void setDockerCertPath(String dockerCertPath) {
         this.dockerCertPath = dockerCertPath;
+    }
+
+    public String getCommandArg() {
+        return commandArg;
+    }
+
+    public void setCommandArg(String commandArg) {
+        this.commandArg = commandArg;
     }
 }

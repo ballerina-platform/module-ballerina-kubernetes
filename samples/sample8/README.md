@@ -102,8 +102,10 @@ ballerina-config   1         7m
 
 - **Using ingress:**
 ```bash
-$>curl https://abc.com/helloWorld/conf -k
-conf resource: enableDebug=true;
+$>curl https://abc.com/helloWorld/config/john -k
+{userId: john@ballerina.com, groups: apim,esb}
+$>curl https://abc.com/helloWorld/config/jane -k
+{userId: jane3@ballerina.com, groups: esb}
 ```
 
 7. Undeploy sample:

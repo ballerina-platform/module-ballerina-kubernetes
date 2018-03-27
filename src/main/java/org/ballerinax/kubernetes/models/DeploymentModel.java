@@ -49,6 +49,7 @@ public class DeploymentModel {
     private Set<SecretModel> secretModels;
     private Set<ConfigMapModel> configMapModels;
     private Set<PersistentVolumeClaimModel> volumeClaimModels;
+    private String commandArgs;
 
     public DeploymentModel() {
         // Initialize with default values.
@@ -61,6 +62,7 @@ public class DeploymentModel {
         this.baseImage = "ballerina/ballerina:" + baseImageVersion;
         this.push = false;
         this.labels = new HashMap<>();
+        env = new HashMap<>();
         this.setImagePullPolicy("IfNotPresent");
         this.dockerHost = "unix:///var/run/docker.sock";
         secretModels = new HashSet<>();
@@ -208,6 +210,11 @@ public class DeploymentModel {
         this.labels.put(key, value);
     }
 
+    public void addEnv(String key, String value) {
+        env.put(key, value);
+    }
+
+
     public PodAutoscalerModel getPodAutoscalerModel() {
         return podAutoscalerModel;
     }
@@ -278,5 +285,13 @@ public class DeploymentModel {
 
     public void setDockerCertPath(String dockerCertPath) {
         this.dockerCertPath = dockerCertPath;
+    }
+
+    public String getCommandArgs() {
+        return commandArgs;
+    }
+
+    public void setCommandArgs(String commandArg) {
+        this.commandArgs = commandArg;
     }
 }
