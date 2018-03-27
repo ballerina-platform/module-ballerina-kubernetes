@@ -113,7 +113,7 @@ class KubernetesAnnotationProcessor {
      */
     private Map<String, String> getEnvVars(String env) {
         if (env == null) {
-            return null;
+            return new HashMap<>();
         }
         return Pattern.compile("\\s*,\\s*")
                 .splitAsStream(env.trim())
@@ -142,9 +142,6 @@ class KubernetesAnnotationProcessor {
         deploymentModel.setSecretModels(kubernetesDataHolder.getSecrets());
         deploymentModel.setConfigMapModels(kubernetesDataHolder.getConfigMaps());
         deploymentModel.setVolumeClaimModels(kubernetesDataHolder.getPersistentVolumeClaims());
-        generateDeployment(deploymentModel, balxFilePath, outputDir);
-        out.println();
-        out.println("@kubernetes:Deployment \t\t\t - complete 1/1");
 
         // Service
         Collection<ServiceModel> serviceModels = kubernetesDataHolder.getEndpointToServiceModelMap().values();
@@ -203,6 +200,14 @@ class KubernetesAnnotationProcessor {
         }
         for (ConfigMapModel configMapModel : configMapModels) {
             count++;
+            if (configMapModel.isBallerinaConf()) {
+                if (configMapModel.getData().size() != 1) {
+                    throw new KubernetesPluginException("There can be only 1 ballerina config file");
+                }
+                deploymentModel.setCommandArgs(" --config ${CONFIG_FILE} ");
+                deploymentModel.addEnv("CONFIG_FILE", configMapModel.getMountPath() + File.separator +
+                        configMapModel.getData().keySet().iterator().next());
+            }
             generateConfigMaps(configMapModel, balxFilePath, outputDir);
             out.print("@kubernetes:ConfigMap \t\t\t - complete " + count + "/" + configMapModels.size() + "\r");
         }
@@ -218,6 +223,10 @@ class KubernetesAnnotationProcessor {
             generatePersistentVolumeClaim(claimModel, balxFilePath, outputDir);
             out.print("@kubernetes:VolumeClaim \t\t - complete " + count + "/" + volumeClaims.size() + "\r");
         }
+        out.println();
+        generateDeployment(deploymentModel, balxFilePath, outputDir);
+        out.println();
+        out.println("@kubernetes:Deployment \t\t\t - complete 1/1");
         out.println();
 
         printKubernetesInstructions(outputDir);
@@ -374,6 +383,7 @@ class KubernetesAnnotationProcessor {
         dockerModel.setDockerHost(deploymentModel.getDockerHost());
         dockerModel.setDockerCertPath(deploymentModel.getDockerCertPath());
         dockerModel.setBuildImage(deploymentModel.isBuildImage());
+        dockerModel.setCommandArg(deploymentModel.getCommandArgs());
 
         DockerHandler dockerArtifactHandler = new DockerHandler(dockerModel);
         String dockerContent = dockerArtifactHandler.generate();
@@ -794,6 +804,9 @@ class KubernetesAnnotationProcessor {
                         case mountPath:
                             configMapModel.setMountPath(annotationValue);
                             break;
+                        case isBallerinaConf:
+                            configMapModel.setBallerinaConf(Boolean.parseBoolean(annotationValue));
+                            break;
                         case data:
                             List<BLangExpression> data = ((BLangArrayLiteral) annotation.valueExpr).exprs;
                             configMapModel.setData(getDataForConfigMap(data));
@@ -949,6 +962,7 @@ class KubernetesAnnotationProcessor {
         name,
         mountPath,
         readOnly,
+        isBallerinaConf,
         data
     }
 

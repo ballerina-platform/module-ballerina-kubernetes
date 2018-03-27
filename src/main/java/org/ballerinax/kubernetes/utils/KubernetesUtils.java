@@ -175,6 +175,15 @@ public class KubernetesUtils {
 
     }
 
+    /* Checks if a String is empty ("") or null.
+    *
+    * @param str the String to check, may be null
+    * @return true if the String is empty or null
+    */
+    public static boolean isEmpty(String str) {
+        return str == null || str.length() == 0;
+    }
+
     /**
      * Resolve variable value from environment variable if $env{} is used. Else return the value.
      *

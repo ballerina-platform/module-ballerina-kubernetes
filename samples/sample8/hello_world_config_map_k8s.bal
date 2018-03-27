@@ -1,3 +1,4 @@
+import ballerina/config;
 import ballerina/net.http;
 import ballerinax/kubernetes;
 import ballerina/io;
@@ -19,7 +20,7 @@ endpoint http:ServiceEndpoint helloWorldEP {
 
 @kubernetes:ConfigMap{
     configMaps:[
-		{name:"ballerina-config", mountPath:"/home/ballerina/conf",
+		{name:"ballerina-config", mountPath:"/home/ballerina/conf", isBallerinaConf:true,
 			data:["./conf/ballerina.conf"]
 		}
 	]
@@ -31,40 +32,26 @@ endpoint http:ServiceEndpoint helloWorldEP {
     basePath:"/helloWorld"
 }
 service<http:Service> helloWorld bind helloWorldEP {
-	@http:ResourceConfig {
+    @http:ResourceConfig {
         methods:["GET"],
-        path:"/conf"
+        path:"/config/{user}"
     }
-    getConf (endpoint outboundEP, http:Request request) {
+    getConfig (endpoint outboundEP, http:Request request,string user) {
         http:Response response = {};
-		string payload = readFile("./conf/ballerina.conf", "r", "UTF-8");
-        response.setStringPayload("conf resource: "+ payload +"\n");
+        string userId = getConfigValue(user, "userid");
+        string groups = getConfigValue(user, "groups");
+        string payload = "{userId: "+userId+", groups: "+groups+"}";
+        response.setStringPayload(payload +"\n");
         _ = outboundEP -> respond(response);
     }
 }
 
-
-function readFile (string filePath, string permission, string encoding) returns (string) {
-    io:ByteChannel channel = io:openFile(filePath, permission);
-    var characterChannelResult = io:createCharacterChannel(channel, encoding);
-    io:CharacterChannel sourceChannel={};
-    match characterChannelResult {  
-        (io:CharacterChannel) res => {
-            sourceChannel = res;
+function getConfigValue (string instanceId, string property) returns (string) {
+    match config:getAsString(instanceId + "." + property) {
+        string value => {
+            return value == null ? "Invalid user" : value;
         }
-        error err => {
-            io:println(err);
-        }
+        any|null => return "Invalid user";
     }
-    var contentResult = sourceChannel.readCharacters(20);
-    match contentResult {
-        (string) res => {
-            return res;
-        }
-        error err => {
-            io:println(err);
-            return err.message;
-        }
-    }
-    
 }
+

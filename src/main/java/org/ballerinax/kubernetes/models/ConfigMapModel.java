@@ -27,6 +27,7 @@ public class ConfigMapModel {
     private Map<String, String> data;
     private String mountPath;
     private boolean readOnly;
+    private boolean isBallerinaConf;
 
     public ConfigMapModel() {
         this.readOnly = true;
@@ -62,5 +63,13 @@ public class ConfigMapModel {
 
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
+    }
+
+    public boolean isBallerinaConf() {
+        return isBallerinaConf;
+    }
+
+    public void setBallerinaConf(boolean ballerinaConf) {
+        isBallerinaConf = ballerinaConf;
     }
 }

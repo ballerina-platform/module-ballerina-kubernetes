@@ -29,6 +29,7 @@ import io.fabric8.docker.dsl.EventListener;
 import io.fabric8.docker.dsl.OutputHandle;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DockerModel;
+import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
@@ -176,6 +177,9 @@ public class DockerHandler implements ArtifactHandler {
             stringBuffer.append("EXPOSE ");
             dockerModel.getPorts().forEach(port -> stringBuffer.append(" ").append(port));
             stringBuffer.append("\n\nCMD ballerina run -s ").append(dockerModel.getBalxFileName());
+            if (!KubernetesUtils.isEmpty(dockerModel.getCommandArg())) {
+                stringBuffer.append(dockerModel.getCommandArg());
+            }
         } else {
             stringBuffer.append("CMD ballerina run ").append(dockerModel.getBalxFileName());
         }
