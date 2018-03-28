@@ -18,6 +18,7 @@
 package org.ballerinax.kubernetes.models;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Model class to hold kubernetes secret data.
@@ -62,5 +63,18 @@ public class SecretModel {
 
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SecretModel that = (SecretModel) o;
+        return Objects.equals(mountPath, that.mountPath);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mountPath);
     }
 }

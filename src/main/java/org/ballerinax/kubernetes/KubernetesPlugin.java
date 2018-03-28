@@ -42,6 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
 
 /**
@@ -151,7 +152,6 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                         break;
                 }
             } catch (KubernetesPluginException e) {
-                //TODO: Change null to endpointNode.getPosition() when ballerina is fixed
                 dlog.logDiagnostic(Diagnostic.Kind.ERROR, endpointNode.getPosition(), e.getMessage());
             }
         }
@@ -193,6 +193,11 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
             KubernetesAnnotationProcessor kubernetesAnnotationProcessor = new KubernetesAnnotationProcessor();
             String filePath = binaryPath.toAbsolutePath().toString();
             String userDir = new File(filePath).getParentFile().getAbsolutePath();
+            if (userDir.endsWith("target")) {
+                //Compiling package
+                //append balx file name to kubernetes artifact dir path
+                userDir = userDir + File.separator + extractBalxName(filePath);
+            }
             String targetPath = userDir + File.separator + "kubernetes" + File
                     .separator;
             try {
