@@ -99,8 +99,11 @@ ballerina-config   1         7m
 
 6. Access the hello world service with curl command:
 
-
 - **Using ingress:**
+Add /etc/host entry to match hostname. 
+_(127.0.0.1 is only applicable to docker for mac users. Other users should map the hostname with correct ip address 
+from `kubectl get ingress` command.)_
+
 ```bash
 $>curl https://abc.com/helloWorld/config/john -k
 {userId: john@ballerina.com, groups: apim,esb}
