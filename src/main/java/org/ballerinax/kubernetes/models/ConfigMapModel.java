@@ -22,8 +22,7 @@ import java.util.Map;
 /**
  * Model class to hold kubernetes config map data.
  */
-public class ConfigMapModel {
-    private String name;
+public class ConfigMapModel extends KubernetesModel {
     private Map<String, String> data;
     private String mountPath;
     private boolean readOnly;
@@ -31,14 +30,6 @@ public class ConfigMapModel {
 
     public ConfigMapModel() {
         this.readOnly = true;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Map<String, String> getData() {

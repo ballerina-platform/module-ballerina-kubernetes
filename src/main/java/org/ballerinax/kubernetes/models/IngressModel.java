@@ -25,8 +25,7 @@ import java.util.Map;
 /**
  * Kubernetes ingress annotations model class.
  */
-public class IngressModel {
-    private String name;
+public class IngressModel extends KubernetesModel{
     private Map<String, String> labels;
     private String hostname;
     private String path;
@@ -43,14 +42,6 @@ public class IngressModel {
         this.ingressClass = "nginx";
         this.serviceModelList = new ArrayList<>();
         this.labels = new HashMap<>();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Map<String, String> getLabels() {
@@ -120,7 +111,7 @@ public class IngressModel {
     @Override
     public String toString() {
         return "IngressModel{" +
-                "name='" + name + '\'' +
+                "name='" + getName() + '\'' +
                 ", labels=" + labels +
                 ", hostname='" + hostname + '\'' +
                 ", path='" + path + '\'' +

@@ -27,6 +27,7 @@ import java.util.Set;
  * Model class to store kubernetes artifacts.
  */
 public class KubernetesDataHolder {
+    Map<String, Set<KubernetesModel>> models;
     private DeploymentModel deploymentModel;
     private PodAutoscalerModel podAutoscalerModel;
     private Map<String, ServiceModel> endpointToServiceModelMap;
@@ -36,8 +37,10 @@ public class KubernetesDataHolder {
     private Set<SecretModel> secrets;
     private Set<ConfigMapModel> configMaps;
     private Set<PersistentVolumeClaimModel> persistentVolumeClaims;
+    private static KubernetesDataHolder kubernetesDataHolder;
 
-    public KubernetesDataHolder() {
+    private KubernetesDataHolder() {
+        models = new HashMap<>();
         endpointToServiceModelMap = new HashMap<>();
         ingressToEndpointMap = new HashMap();
         ports = new HashSet<>();
@@ -45,6 +48,13 @@ public class KubernetesDataHolder {
         secrets = new HashSet<>();
         configMaps = new HashSet<>();
         persistentVolumeClaims = new HashSet<>();
+    }
+
+    public static synchronized KubernetesDataHolder getInstance() {
+        if (kubernetesDataHolder == null) {
+            kubernetesDataHolder = new KubernetesDataHolder();
+        }
+        return kubernetesDataHolder;
     }
 
     public DeploymentModel getDeploymentModel() {
@@ -118,5 +128,9 @@ public class KubernetesDataHolder {
 
     public void addPersistentVolumeClaims(Set<PersistentVolumeClaimModel> persistentVolumeClaims) {
         this.persistentVolumeClaims.addAll(persistentVolumeClaims);
+    }
+
+    public void addModels(String entityName, Set<KubernetesModel> models) {
+        this.models.put(entityName, models);
     }
 }

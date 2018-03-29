@@ -25,8 +25,7 @@ import java.util.Set;
 /**
  * Kubernetes deployment annotations model class.
  */
-public class DeploymentModel {
-    private String name;
+public class DeploymentModel extends KubernetesModel {
     private Map<String, String> labels;
     private int replicas;
     private String enableLiveness;
@@ -68,14 +67,6 @@ public class DeploymentModel {
         secretModels = new HashSet<>();
         configMapModels = new HashSet<>();
         volumeClaimModels = new HashSet<>();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Map<String, String> getLabels() {
@@ -226,7 +217,7 @@ public class DeploymentModel {
     @Override
     public String toString() {
         return "DeploymentModel{" +
-                "name='" + name + '\'' +
+                "name='" + getName() + '\'' +
                 ", labels=" + labels +
                 ", replicas=" + replicas +
                 ", enableLiveness='" + enableLiveness + '\'' +

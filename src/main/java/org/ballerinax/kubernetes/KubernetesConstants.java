@@ -28,4 +28,8 @@ public class KubernetesConstants {
     public static final String DEPLOYMENT_NAMESPACE_DEFAULT = "default";
     public static final String DEPLOYMENT_IMAGE_PULL_POLICY_DEFAULT = "IfNotPresent";
     public static final String DEPLOYMENT_LIVENESS_DISABLE = "disable";
+    public static final String INGRESS_POSTFIX = "-ingress";
+    public static final String INGRESS_FILE_POSTFIX = "_ingress";
+    public static final String INGRESS_HOSTNAME_POSTFIX = ".com";
+    public static String SVC_POSTFIX = "-svc";
 }

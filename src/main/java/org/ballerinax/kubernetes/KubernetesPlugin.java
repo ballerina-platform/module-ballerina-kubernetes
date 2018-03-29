@@ -29,6 +29,7 @@ import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.models.SecretModel;
 import org.ballerinax.kubernetes.models.ServiceModel;
+import org.ballerinax.kubernetes.processors.AnnotationProcessorFactory;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.wso2.ballerinalang.compiler.tree.BLangEndpoint;
 import org.wso2.ballerinalang.compiler.tree.BLangService;
@@ -53,11 +54,11 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
 )
 public class KubernetesPlugin extends AbstractCompilerPlugin {
 
-    private static KubernetesDataHolder kubernetesDataHolder = new KubernetesDataHolder();
+    private KubernetesDataHolder kubernetesDataHolder;
     private static boolean canProcess;
     private KubernetesAnnotationProcessor kubernetesAnnotationProcessor;
     private DiagnosticLog dlog;
-    private PrintStream out = System.out;
+    private PrintStream out;
 
     private static synchronized void setCanProcess(boolean val) {
         canProcess = val;
@@ -65,9 +66,11 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
 
     @Override
     public void init(DiagnosticLog diagnosticLog) {
+        kubernetesDataHolder = KubernetesDataHolder.getInstance();
         this.dlog = diagnosticLog;
         setCanProcess(false);
         this.kubernetesAnnotationProcessor = new KubernetesAnnotationProcessor();
+        out = System.out;
     }
 
     @Override
@@ -77,43 +80,8 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
         for (AnnotationAttachmentNode attachmentNode : annotations) {
             String annotationKey = attachmentNode.getAnnotationName().getValue();
             try {
-                switch (annotationKey) {
-                    case "Ingress":
-                        kubernetesDataHolder.addIngressModel(kubernetesAnnotationProcessor
-                                .processIngressAnnotation
-                                        (serviceNode.getName().getValue(), attachmentNode), endpoints);
-                        break;
-                    case "HPA":
-                        kubernetesDataHolder.setPodAutoscalerModel(kubernetesAnnotationProcessor
-                                .processPodAutoscalerAnnotation(attachmentNode));
-                        break;
-                    case "Deployment":
-                        kubernetesDataHolder.setDeploymentModel(kubernetesAnnotationProcessor.processDeployment
-                                (attachmentNode));
-                        break;
-                    case "Secret":
-                        kubernetesDataHolder.addSecrets(kubernetesAnnotationProcessor.processSecrets
-                                (attachmentNode));
-                        break;
-                    case "ConfigMap":
-                        try {
-                            kubernetesDataHolder.addConfigMaps(kubernetesAnnotationProcessor.processConfigMap
-                                    (attachmentNode));
-                        } catch (KubernetesPluginException e) {
-                            dlog.logDiagnostic(Diagnostic.Kind.ERROR, serviceNode.getPosition(), e.getMessage());
-                        }
-                        break;
-                    case "PersistentVolumeClaim":
-                        try {
-                            kubernetesDataHolder.addPersistentVolumeClaims(
-                                    kubernetesAnnotationProcessor.processPersistentVolumeClaim(attachmentNode));
-                        } catch (KubernetesPluginException e) {
-                            dlog.logDiagnostic(Diagnostic.Kind.ERROR, serviceNode.getPosition(), e.getMessage());
-                        }
-                        break;
-                    default:
-                        break;
-                }
+                AnnotationProcessorFactory.getAnnotationProcessorInstance(annotationKey).processAnnotation
+                        (serviceNode.getName().getValue(), attachmentNode);
             } catch (KubernetesPluginException e) {
                 dlog.logDiagnostic(Diagnostic.Kind.ERROR, serviceNode.getPosition(), e.getMessage());
             }
@@ -138,19 +106,9 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
         for (AnnotationAttachmentNode attachmentNode : annotations) {
             String annotationKey = attachmentNode.getAnnotationName().getValue();
             try {
-                switch (annotationKey) {
-                    case "Service":
-                        serviceModel = kubernetesAnnotationProcessor.processServiceAnnotation(endpointName,
-                                attachmentNode);
-                        kubernetesDataHolder.addServiceModel(endpointName, serviceModel);
-                        break;
-                    case "Deployment":
-                        kubernetesDataHolder.setDeploymentModel(kubernetesAnnotationProcessor.processDeployment
-                                (attachmentNode));
-                        break;
-                    default:
-                        break;
-                }
+                AnnotationProcessorFactory.getAnnotationProcessorInstance(annotationKey).processAnnotation
+                        (endpointNode.getName().getValue(), attachmentNode);
+
             } catch (KubernetesPluginException e) {
                 dlog.logDiagnostic(Diagnostic.Kind.ERROR, endpointNode.getPosition(), e.getMessage());
             }
