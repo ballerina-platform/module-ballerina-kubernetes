@@ -21,7 +21,7 @@ package ballerinax.kubernetes;
 @Field {value:"dockerCertPath: Docker cert path."}
 public struct DeploymentConfiguration {
     string name;
-    string labels;
+    map labels;
     int replicas;
     string enableLiveness;
     int livenessPort;
@@ -30,7 +30,7 @@ public struct DeploymentConfiguration {
     string imagePullPolicy;
     string namespace;
     string image;
-    string env;
+    map env;
     boolean buildImage;
     string dockerHost;
     string username;
@@ -48,7 +48,7 @@ public annotation <service,endpoint> Deployment DeploymentConfiguration;
 @Field {value:"serviceType: Service type of the service"}
 public struct ServiceConfiguration {
     string name;
-    string labels;
+    map labels;
     string serviceType;
 }
 
@@ -65,7 +65,7 @@ public annotation <endpoint> Service ServiceConfiguration;
 @Field {value:"enableTLS: Enable ingress TLS"}
 public struct IngressConfiguration {
     string name;
-    string labels;
+    map labels;
     string hostname;
     string path;
     string targetPath;
@@ -83,7 +83,7 @@ public annotation <service> Ingress IngressConfiguration;
 @Field {value:"cpuPercentage: CPU percentage to start scaling"}
 public struct PodAutoscalerConfig {
     string name;
-    string labels;
+    map labels;
     int minReplicas;
     int maxReplicas;
     int cpuPercentage;

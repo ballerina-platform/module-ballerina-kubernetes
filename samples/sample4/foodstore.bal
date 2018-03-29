@@ -13,7 +13,7 @@ endpoint http:ServiceEndpoint burgerEP {
 @kubernetes:Deployment {
     name:"foodstore",
     replicas:3,
-    labels:"location:SL,city:COLOMBO",
+    labels:{"location":"SL","city":"COLOMBO"},
     enableLiveness:"enable",
     livenessPort:9099
 }

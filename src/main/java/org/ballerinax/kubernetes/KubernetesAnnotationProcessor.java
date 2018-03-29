@@ -60,8 +60,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
@@ -89,38 +87,20 @@ class KubernetesAnnotationProcessor {
     private PrintStream out = System.out;
 
     /**
-     * Generate label map by splitting the labels string.
+     * Generate map by splitting keyValues.
      *
-     * @param labels labels string.
-     * @return Map of labels with selector.
+     * @param keyValues key value paris.
+     * @return Map of key values.
      */
-    private Map<String, String> getLabelMap(String labels) {
-        Map<String, String> labelMap = new HashMap<>();
-        if (labels != null) {
-            labelMap = Pattern.compile("\\s*,\\s*")
-                    .splitAsStream(labels.trim())
-                    .map(s -> s.split(":", 2))
-                    .collect(Collectors.toMap(a -> a[0], a -> a.length > 1 ? a[1] : ""));
+    private Map<String, String> getMap(List<BLangRecordLiteral.BLangRecordKeyValue> keyValues) {
+        Map<String, String> map = new HashMap<>();
+        if (keyValues != null) {
+            keyValues.forEach(keyValue -> {
+                map.put(keyValue.getKey().toString(), keyValue.getValue().toString());
+            });
         }
-        return labelMap;
+        return map;
     }
-
-    /**
-     * Generate environment variable map by splitting the env string.
-     *
-     * @param env env string.
-     * @return Map of environment variables.
-     */
-    private Map<String, String> getEnvVars(String env) {
-        if (env == null) {
-            return new HashMap<>();
-        }
-        return Pattern.compile("\\s*,\\s*")
-                .splitAsStream(env.trim())
-                .map(s -> s.split(":", 2))
-                .collect(Collectors.toMap(a -> a[0], a -> a.length > 1 ? a[1] : ""));
-    }
-
 
     /**
      * Generate kubernetes artifacts.
@@ -433,7 +413,7 @@ class KubernetesAnnotationProcessor {
         int defaultReplicas = 1;
         deploymentModel.setReplicas(defaultReplicas);
         deploymentModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxName);
-        deploymentModel.setEnv(getEnvVars(null));
+        deploymentModel.setEnv(getMap(null));
         deploymentModel.setImage(balxName + DOCKER_LATEST_TAG);
         deploymentModel.setBuildImage(true);
         deploymentModel.setPush(false);
@@ -460,7 +440,7 @@ class KubernetesAnnotationProcessor {
                     deploymentModel.setName(getValidName(annotationValue));
                     break;
                 case labels:
-                    deploymentModel.setLabels(getLabelMap(annotationValue));
+                    deploymentModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
                 case enableLiveness:
                     deploymentModel.setEnableLiveness(annotationValue);
@@ -478,7 +458,7 @@ class KubernetesAnnotationProcessor {
                     deploymentModel.setUsername(annotationValue);
                     break;
                 case env:
-                    deploymentModel.setEnv(getEnvVars(annotationValue));
+                    deploymentModel.setEnv(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
                 case password:
                     deploymentModel.setPassword(annotationValue);
@@ -535,7 +515,7 @@ class KubernetesAnnotationProcessor {
                     serviceModel.setName(getValidName(annotationValue));
                     break;
                 case labels:
-                    serviceModel.setLabels(getLabelMap(annotationValue));
+                    serviceModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
                 case serviceType:
                     serviceModel.setServiceType(annotationValue);
@@ -573,7 +553,7 @@ class KubernetesAnnotationProcessor {
                     podAutoscalerModel.setName(getValidName(annotationValue));
                     break;
                 case labels:
-                    podAutoscalerModel.setLabels(getLabelMap(annotationValue));
+                    podAutoscalerModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
                 case cpuPercentage:
                     podAutoscalerModel.setCpuPercentage(Integer.parseInt(annotationValue));
@@ -612,7 +592,7 @@ class KubernetesAnnotationProcessor {
                     ingressModel.setName(getValidName(annotationValue));
                     break;
                 case labels:
-                    ingressModel.setLabels(getLabelMap(annotationValue));
+                    ingressModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
                 case path:
                     ingressModel.setPath(annotationValue);

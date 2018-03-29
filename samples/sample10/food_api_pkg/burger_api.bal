@@ -4,7 +4,13 @@ import ballerinax/kubernetes;
 
 @kubernetes:Service{}
 endpoint http:ServiceEndpoint burgerEP {
-    port:9096
+    port:9096,
+    secureSocket:{
+        keyStore:{
+            filePath:"${ballerina.home}/bre/security/ballerinaKeystore.p12",
+            password:"ballerina"
+        }
+    }
 };
 
 @kubernetes:Ingress {

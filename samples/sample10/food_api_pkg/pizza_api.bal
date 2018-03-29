@@ -5,13 +5,19 @@ import ballerinax/kubernetes;
 
 @kubernetes:Service{}
 endpoint http:ServiceEndpoint pizzaEP {
-    port:9099
+    port:9099,
+    secureSocket: {
+        keyStore: {
+          filePath: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
+          password: "ballerina"
+        }
+    }
 };
 
 @kubernetes:Deployment {
     name:"foodstore",
     replicas:3,
-    labels:"location:SL,city:COLOMBO",
+    labels:{"location":"SL","city":"COLOMBO"}
     enableLiveness:"enable",
     livenessPort:9099
 }

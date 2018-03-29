@@ -22,7 +22,7 @@
 
 1. Compile the  food_api_pkg file. Command to run kubernetes artifacts will be printed on success:
 ```bash
-$> ballerina build hello_world_persistence_volume_k8s.bal
+$> ballerina build food_api_pkg
 @kubernetes:Service 			 - complete 2/2
 @kubernetes:Ingress 			 - complete 2/2
 @kubernetes:Docker 			     - complete 3/3
@@ -104,10 +104,10 @@ _(127.0.0.1 is only applicable to docker for mac users. Other users should map t
 from `kubectl get ingress` command.)_
 
 ```bash
-$> curl http://pizza.com/pizzastore/pizza/menu
+$> curl https://pizza.com/menu -k
 Pizza menu
 
-$>curl http://burger.com/menu
+$>curl https://burger.com/menu -k
 Burger menu
 ```
 
