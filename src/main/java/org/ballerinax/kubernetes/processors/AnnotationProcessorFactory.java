@@ -19,7 +19,7 @@ public class AnnotationProcessorFactory {
             case "PersistentVolumeClaim":
                 return new VolumeClaimAnnotationProcessor();
             default:
-                throw new KubernetesPluginException("Error while getting annotation proccessor for" + type);
+                throw new KubernetesPluginException("Error while getting annotation processor for" + type);
         }
     }
 }

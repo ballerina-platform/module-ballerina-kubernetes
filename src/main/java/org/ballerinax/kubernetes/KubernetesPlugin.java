@@ -100,18 +100,21 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
 
     @Override
     public void process(EndpointNode endpointNode, List<AnnotationAttachmentNode> annotations) {
-        String endpointName = endpointNode.getName().getValue();
-        ServiceModel serviceModel = null;
         setCanProcess(true);
+        String endpointName = endpointNode.getName().getValue();
         for (AnnotationAttachmentNode attachmentNode : annotations) {
             String annotationKey = attachmentNode.getAnnotationName().getValue();
             try {
                 AnnotationProcessorFactory.getAnnotationProcessorInstance(annotationKey).processAnnotation
                         (endpointNode.getName().getValue(), attachmentNode);
-
             } catch (KubernetesPluginException e) {
                 dlog.logDiagnostic(Diagnostic.Kind.ERROR, endpointNode.getPosition(), e.getMessage());
             }
+        }
+        ServiceModel serviceModel = KubernetesDataHolder.getInstance().getServiceModel(endpointName);
+        if (serviceModel == null) {
+            dlog.logDiagnostic(Diagnostic.Kind.ERROR, endpointNode.getPosition(), "Error while processing " +
+                    "endpoint annotations");
         }
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangEndpoint) endpointNode).configurationExpr).getKeyValuePairs();
@@ -120,10 +123,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
             switch (key) {
                 case "port":
                     int port = Integer.parseInt(keyValue.getValue().toString());
-                    kubernetesDataHolder.addPort(port);
-                    if (serviceModel != null) {
-                        serviceModel.setPort(port);
-                    }
+                    serviceModel.setPort(port);
                     break;
                 case "secureSocket":
                     List<BLangRecordLiteral.BLangRecordKeyValue> sslKeyValues = ((BLangRecordLiteral) keyValue

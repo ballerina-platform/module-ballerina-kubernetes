@@ -2,14 +2,12 @@ package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.KubernetesModel;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.models.ServiceModel;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.SVC_POSTFIX;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
@@ -37,9 +35,8 @@ public class ServiceAnnotationProcessor implements AnnotationProcessor {
      *
      * @param entityName     ballerina service name
      * @param attachmentNode annotation attachment node.
-     * @return Service model object
      */
-    public Set<KubernetesModel> processAnnotation(String entityName, AnnotationAttachmentNode attachmentNode) throws
+    public void processAnnotation(String entityName, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         ServiceModel serviceModel = new ServiceModel();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
@@ -68,8 +65,6 @@ public class ServiceAnnotationProcessor implements AnnotationProcessor {
         if (serviceModel.getName() == null) {
             serviceModel.setName(getValidName(entityName) + SVC_POSTFIX);
         }
-        Set<KubernetesModel> models = new HashSet<>();
-        models.add(serviceModel);
-        return models;
+        KubernetesDataHolder.getInstance().addBEndpointToK8sServiceMap(entityName, serviceModel);
     }
 }

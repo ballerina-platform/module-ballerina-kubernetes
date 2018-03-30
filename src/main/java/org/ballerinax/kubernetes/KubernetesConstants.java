@@ -32,4 +32,11 @@ public class KubernetesConstants {
     public static final String INGRESS_FILE_POSTFIX = "_ingress";
     public static final String INGRESS_HOSTNAME_POSTFIX = ".com";
     public static String SVC_POSTFIX = "-svc";
+    public static String DEPLOYMENT = "deployment";
+    public static String CONFIG_MAP = "config_map";
+    public static String SECRET = "secret";
+    public static String HPA = "hpa";
+    public static String INGRESS = "ingress";
+    public static String SERVICE = "service";
+    public static String VOLUME_CLAIM = "volume_claim";
 }

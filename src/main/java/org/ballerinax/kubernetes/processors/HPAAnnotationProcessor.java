@@ -2,14 +2,12 @@ package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.KubernetesModel;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.models.PodAutoscalerModel;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
@@ -35,9 +33,8 @@ public class HPAAnnotationProcessor implements AnnotationProcessor {
      * Process annotations and create service model object.
      *
      * @param attachmentNode annotation attachment node.
-     * @return Service model object
      */
-    public Set<KubernetesModel> processAnnotation(String entityName, AnnotationAttachmentNode attachmentNode) throws
+    public void processAnnotation(String entityName, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         PodAutoscalerModel podAutoscalerModel = new PodAutoscalerModel();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
@@ -66,8 +63,6 @@ public class HPAAnnotationProcessor implements AnnotationProcessor {
                     break;
             }
         }
-        Set<KubernetesModel> models = new HashSet<>();
-        models.add(podAutoscalerModel);
-        return models;
+        KubernetesDataHolder.getInstance().setPodAutoscalerModel(podAutoscalerModel);
     }
 }

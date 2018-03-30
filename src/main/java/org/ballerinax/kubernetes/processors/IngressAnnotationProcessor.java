@@ -3,13 +3,11 @@ package org.ballerinax.kubernetes.processors;
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.IngressModel;
-import org.ballerinax.kubernetes.models.KubernetesModel;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.INGRESS_HOSTNAME_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.INGRESS_POSTFIX;
@@ -41,9 +39,8 @@ public class IngressAnnotationProcessor implements AnnotationProcessor {
      *
      * @param entityName     Ballerina service name
      * @param attachmentNode annotation attachment node.
-     * @return Ingress model object
      */
-    public Set<KubernetesModel> processAnnotation(String entityName, AnnotationAttachmentNode attachmentNode) throws
+    public void processAnnotation(String entityName, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         IngressModel ingressModel = new IngressModel();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
@@ -84,8 +81,6 @@ public class IngressAnnotationProcessor implements AnnotationProcessor {
         if (ingressModel.getHostname() == null || ingressModel.getHostname().length() == 0) {
             ingressModel.setHostname(getValidName(entityName) + INGRESS_HOSTNAME_POSTFIX);
         }
-        Set<KubernetesModel> models = new HashSet<>();
-        models.add(ingressModel);
-        return models;
+        KubernetesDataHolder.getInstance().addBServiceToIngressMap(entityName, ingressModel);
     }
 }

@@ -27,34 +27,34 @@ import java.util.Set;
  * Model class to store kubernetes artifacts.
  */
 public class KubernetesDataHolder {
-    Map<String, Set<KubernetesModel>> models;
     private DeploymentModel deploymentModel;
     private PodAutoscalerModel podAutoscalerModel;
-    private Map<String, ServiceModel> endpointToServiceModelMap;
-    private Map<IngressModel, Set<String>> ingressToEndpointMap;
-    private Set<Integer> ports;
+    private Map<String, ServiceModel> bEndpointToK8sServiceMap;
+    private Map<String, IngressModel> bServiceToIngressMap;
     private Map<String, Set<SecretModel>> endPointToSecretMap;
-    private Set<SecretModel> secrets;
-    private Set<ConfigMapModel> configMaps;
-    private Set<PersistentVolumeClaimModel> persistentVolumeClaims;
-    private static KubernetesDataHolder kubernetesDataHolder;
+    private Set<SecretModel> secretModelSet;
+    private Set<ConfigMapModel> configMapModelSet;
+    private Set<PersistentVolumeClaimModel> volumeClaimModelSet;
+    private static KubernetesDataHolder instance;
 
     private KubernetesDataHolder() {
-        models = new HashMap<>();
-        endpointToServiceModelMap = new HashMap<>();
-        ingressToEndpointMap = new HashMap();
-        ports = new HashSet<>();
+        this.bEndpointToK8sServiceMap = new HashMap<>();
+        this.bServiceToIngressMap = new HashMap<>();
         endPointToSecretMap = new HashMap<>();
-        secrets = new HashSet<>();
-        configMaps = new HashSet<>();
-        persistentVolumeClaims = new HashSet<>();
+        secretModelSet = new HashSet<>();
+        configMapModelSet = new HashSet<>();
+        volumeClaimModelSet = new HashSet<>();
     }
 
-    public static synchronized KubernetesDataHolder getInstance() {
-        if (kubernetesDataHolder == null) {
-            kubernetesDataHolder = new KubernetesDataHolder();
+    public static KubernetesDataHolder getInstance() {
+        if (instance == null) {
+            synchronized (KubernetesDataHolder.class) {
+                if (instance == null) {
+                    instance = new KubernetesDataHolder();
+                }
+            }
         }
-        return kubernetesDataHolder;
+        return instance;
     }
 
     public DeploymentModel getDeploymentModel() {
@@ -73,64 +73,55 @@ public class KubernetesDataHolder {
         this.podAutoscalerModel = podAutoscalerModel;
     }
 
-    public Set<Integer> getPorts() {
-        return ports;
-    }
-
-    public void addPort(int port) {
-        this.ports.add(port);
-    }
-
-    public Map<IngressModel, Set<String>> getIngressToEndpointMap() {
-        return ingressToEndpointMap;
-    }
-
-    public void addIngressModel(IngressModel ingressModel, Set<String> endpoints) {
-        this.ingressToEndpointMap.put(ingressModel, endpoints);
-    }
-
-    public Map<String, ServiceModel> getEndpointToServiceModelMap() {
-        return endpointToServiceModelMap;
-    }
-
-    public void addServiceModel(String endpointName, ServiceModel serviceModel) {
-        this.endpointToServiceModelMap.put(endpointName, serviceModel);
-    }
-
     public Map<String, Set<SecretModel>> getSecretModels() {
         return endPointToSecretMap;
     }
-
 
     public void addEndpointSecret(String endpointName, Set<SecretModel> secretModel) {
         this.endPointToSecretMap.put(endpointName, secretModel);
     }
 
-    public Set<SecretModel> getSecrets() {
-        return secrets;
+    public Set<SecretModel> getSecretModelSet() {
+        return secretModelSet;
     }
 
     public void addSecrets(Set<SecretModel> secrets) {
-        this.secrets.addAll(secrets);
+        this.secretModelSet.addAll(secrets);
     }
 
-    public Set<ConfigMapModel> getConfigMaps() {
-        return configMaps;
+    public Set<ConfigMapModel> getConfigMapModelSet() {
+        return configMapModelSet;
     }
 
     public void addConfigMaps(Set<ConfigMapModel> configMaps) {
-        this.configMaps.addAll(configMaps);
+        this.configMapModelSet.addAll(configMaps);
     }
 
-    public Set<PersistentVolumeClaimModel> getPersistentVolumeClaims() {
-        return persistentVolumeClaims;
+    public Set<PersistentVolumeClaimModel> getVolumeClaimModelSet() {
+        return volumeClaimModelSet;
     }
 
     public void addPersistentVolumeClaims(Set<PersistentVolumeClaimModel> persistentVolumeClaims) {
-        this.persistentVolumeClaims.addAll(persistentVolumeClaims);
+        this.volumeClaimModelSet.addAll(persistentVolumeClaims);
     }
 
-    public void addModels(String entityName, Set<KubernetesModel> models) {
-        this.models.put(entityName, models);
+    public Map<String, ServiceModel> getbEndpointToK8sServiceMap() {
+        return bEndpointToK8sServiceMap;
+    }
+
+    public void addBEndpointToK8sServiceMap(String endpointName, ServiceModel serviceModel) {
+        this.bEndpointToK8sServiceMap.put(endpointName, serviceModel);
+    }
+
+    public Map<String, IngressModel> getbServiceToIngressMap() {
+        return bServiceToIngressMap;
+    }
+
+    public void addBServiceToIngressMap(String ballerinaServiceName, IngressModel ingressModel) {
+        this.bServiceToIngressMap.put(ballerinaServiceName, ingressModel);
+    }
+
+    public ServiceModel getServiceModel(String endpointName){
+        return bEndpointToK8sServiceMap.get(endpointName);
     }
 }

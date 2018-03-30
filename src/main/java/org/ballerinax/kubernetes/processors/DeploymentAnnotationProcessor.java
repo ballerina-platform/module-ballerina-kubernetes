@@ -3,13 +3,11 @@ package org.ballerinax.kubernetes.processors;
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
-import org.ballerinax.kubernetes.models.KubernetesModel;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
@@ -45,7 +43,7 @@ public class DeploymentAnnotationProcessor implements AnnotationProcessor {
     }
 
     @Override
-    public Set<KubernetesModel> processAnnotation(String entityName, AnnotationAttachmentNode attachmentNode) throws
+    public void processAnnotation(String entityName, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         DeploymentModel deploymentModel = new DeploymentModel();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
@@ -110,8 +108,6 @@ public class DeploymentAnnotationProcessor implements AnnotationProcessor {
                     break;
             }
         }
-        Set<KubernetesModel> models = new HashSet<>();
-        models.add(deploymentModel);
-        return models;
+        KubernetesDataHolder.getInstance().setDeploymentModel(deploymentModel);
     }
 }

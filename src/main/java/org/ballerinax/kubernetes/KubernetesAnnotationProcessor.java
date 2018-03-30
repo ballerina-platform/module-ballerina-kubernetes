@@ -92,14 +92,14 @@ class KubernetesAnnotationProcessor {
             deploymentModel = getDefaultDeploymentModel(balxFilePath);
         }
         kubernetesDataHolder.setDeploymentModel(deploymentModel);
-        deploymentModel.setPorts(kubernetesDataHolder.getPorts());
+//        deploymentModel.setPorts(kubernetesDataHolder.getPorts());
         deploymentModel.setPodAutoscalerModel(kubernetesDataHolder.getPodAutoscalerModel());
-        deploymentModel.setSecretModels(kubernetesDataHolder.getSecrets());
-        deploymentModel.setConfigMapModels(kubernetesDataHolder.getConfigMaps());
-        deploymentModel.setVolumeClaimModels(kubernetesDataHolder.getPersistentVolumeClaims());
+        deploymentModel.setSecretModels(kubernetesDataHolder.getSecretModelSet());
+        deploymentModel.setConfigMapModels(kubernetesDataHolder.getConfigMapModelSet());
+        deploymentModel.setVolumeClaimModels(kubernetesDataHolder.getVolumeClaimModelSet());
 
         // Service
-        Collection<ServiceModel> serviceModels = kubernetesDataHolder.getEndpointToServiceModelMap().values();
+        Collection<ServiceModel> serviceModels = kubernetesDataHolder.getbEndpointToK8sServiceMap().values();
         int count = 0;
         for (ServiceModel serviceModel : serviceModels) {
             count++;
@@ -108,36 +108,36 @@ class KubernetesAnnotationProcessor {
         }
 
         //ingress
-        count = 0;
-        Map<IngressModel, Set<String>> ingressModels = kubernetesDataHolder.getIngressToEndpointMap();
-        if (ingressModels.size() > 0) {
-            out.println();
-        }
-        int size = ingressModels.size();
-        Map<String, ServiceModel> endpointMap = kubernetesDataHolder.getEndpointToServiceModelMap();
-        Iterator<Map.Entry<IngressModel, Set<String>>> iterator = ingressModels.entrySet().iterator();
-        Map<String, Set<SecretModel>> secretModelsMap = kubernetesDataHolder.getSecretModels();
-        while (iterator.hasNext()) {
-            Map.Entry<IngressModel, Set<String>> pair = iterator.next();
-            IngressModel ingressModel = pair.getKey();
-            Set<String> endpoints = pair.getValue();
-            for (String endpointName : endpoints) {
-                ServiceModel serviceModel = endpointMap.get(endpointName);
-                ingressModel.setServiceName(serviceModel.getName());
-                ingressModel.setServicePort(serviceModel.getPort());
-                if (secretModelsMap.get(endpointName) != null && secretModelsMap.get(endpointName).size() != 0) {
-                    ingressModel.setEnableTLS(true);
-                }
-            }
-            generateIngress(ingressModel, balxFilePath, outputDir);
-            count++;
-            out.print("@kubernetes:Ingress \t\t\t - complete " + count + "/" + size + "\r");
-            iterator.remove();
-        }
+//        count = 0;
+//        Map<IngressModel, Set<String>> ingressModels = kubernetesDataHolder.getbServiceToIngressMap();
+//        if (ingressModels.size() > 0) {
+//            out.println();
+//        }
+//        int size = ingressModels.size();
+//        Map<String, ServiceModel> endpointMap = kubernetesDataHolder.getEndpointToServiceModelMap();
+//        Iterator<Map.Entry<IngressModel, Set<String>>> iterator = ingressModels.entrySet().iterator();
+//        Map<String, Set<SecretModel>> secretModelsMap = kubernetesDataHolder.getSecretModels();
+//        while (iterator.hasNext()) {
+//            Map.Entry<IngressModel, Set<String>> pair = iterator.next();
+//            IngressModel ingressModel = pair.getKey();
+//            Set<String> endpoints = pair.getValue();
+//            for (String endpointName : endpoints) {
+//                ServiceModel serviceModel = endpointMap.get(endpointName);
+//                ingressModel.setBalxName(serviceModel.getName());
+//                ingressModel.setServicePort(serviceModel.getPort());
+//                if (secretModelsMap.get(endpointName) != null && secretModelsMap.get(endpointName).size() != 0) {
+//                    ingressModel.setEnableTLS(true);
+//                }
+//            }
+//            generateIngress(ingressModel, balxFilePath, outputDir);
+//            count++;
+//            out.print("@kubernetes:Ingress \t\t\t - complete " + count + "/" + size + "\r");
+//            iterator.remove();
+//        }
 
         //secret
         count = 0;
-        Collection<SecretModel> secretModels = kubernetesDataHolder.getSecrets();
+        Collection<SecretModel> secretModels = kubernetesDataHolder.getSecretModelSet();
         if (secretModels.size() > 0) {
             out.println();
         }
@@ -149,7 +149,7 @@ class KubernetesAnnotationProcessor {
 
         //configMap
         count = 0;
-        Collection<ConfigMapModel> configMapModels = kubernetesDataHolder.getConfigMaps();
+        Collection<ConfigMapModel> configMapModels = kubernetesDataHolder.getConfigMapModelSet();
         if (configMapModels.size() > 0) {
             out.println();
         }
@@ -169,7 +169,7 @@ class KubernetesAnnotationProcessor {
 
         //volume mount
         count = 0;
-        Collection<PersistentVolumeClaimModel> volumeClaims = kubernetesDataHolder.getPersistentVolumeClaims();
+        Collection<PersistentVolumeClaimModel> volumeClaims = kubernetesDataHolder.getVolumeClaimModelSet();
         if (volumeClaims.size() > 0) {
             out.println();
         }

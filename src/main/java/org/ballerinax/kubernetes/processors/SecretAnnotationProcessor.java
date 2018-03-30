@@ -3,6 +3,7 @@ package org.ballerinax.kubernetes.processors;
 import org.apache.commons.codec.binary.Base64;
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.models.KubernetesModel;
 import org.ballerinax.kubernetes.models.SecretModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.SECRET;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
@@ -42,11 +44,10 @@ public class SecretAnnotationProcessor implements AnnotationProcessor {
      * Process Secrets annotations.
      *
      * @param attachmentNode Attachment Node
-     * @return List of @{@link SecretModel} objects
      */
-    public Set<KubernetesModel> processAnnotation(String entity, AnnotationAttachmentNode attachmentNode) throws
+    public void processAnnotation(String entityName, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
-        Set<KubernetesModel> secrets = new HashSet<>();
+        Set<SecretModel> secrets = new HashSet<>();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
@@ -80,7 +81,7 @@ public class SecretAnnotationProcessor implements AnnotationProcessor {
                 secrets.add(secretModel);
             }
         }
-        return secrets;
+        KubernetesDataHolder.getInstance().addSecrets(secrets);
     }
 
     private Map<String, String> getDataForSecret(List<BLangExpression> data) throws KubernetesPluginException {

@@ -2,8 +2,7 @@ package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.ConfigMapModel;
-import org.ballerinax.kubernetes.models.KubernetesModel;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
@@ -37,11 +36,10 @@ public class VolumeClaimAnnotationProcessor implements AnnotationProcessor {
      * Process PersistentVolumeClaim annotations.
      *
      * @param attachmentNode Attachment Node
-     * @return Set of @{@link ConfigMapModel} objects
      */
-    public Set<KubernetesModel> processAnnotation(String entityName, AnnotationAttachmentNode attachmentNode) throws
+    public void processAnnotation(String entityName, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
-        Set<KubernetesModel> volumeClaimModels = new HashSet<>();
+        Set<PersistentVolumeClaimModel> volumeClaimModels = new HashSet<>();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
@@ -77,7 +75,7 @@ public class VolumeClaimAnnotationProcessor implements AnnotationProcessor {
                 volumeClaimModels.add(claimModel);
             }
         }
-        return volumeClaimModels;
+        KubernetesDataHolder.getInstance().addPersistentVolumeClaims(volumeClaimModels);
     }
 
 }
