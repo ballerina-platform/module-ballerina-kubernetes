@@ -1,4 +1,4 @@
-import ballerina/net.http;
+import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:Service{}
