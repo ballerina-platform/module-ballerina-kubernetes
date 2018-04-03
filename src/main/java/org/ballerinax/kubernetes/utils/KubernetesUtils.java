@@ -229,7 +229,7 @@ public class KubernetesUtils {
     }
 
     /**
-     * Returns valid kubernetes name
+     * Returns valid kubernetes name.
      * @param name actual value
      * @return valid name
      */

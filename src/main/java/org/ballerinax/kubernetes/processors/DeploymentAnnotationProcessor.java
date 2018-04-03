@@ -1,6 +1,8 @@
 package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
+import org.ballerinalang.model.tree.EndpointNode;
+import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
@@ -43,8 +45,18 @@ public class DeploymentAnnotationProcessor implements AnnotationProcessor {
     }
 
     @Override
-    public void processAnnotation(String entityName, AnnotationAttachmentNode attachmentNode) throws
+    public void processAnnotation(ServiceNode entityName, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
+        processDeployment(attachmentNode);
+    }
+
+    @Override
+    public void processAnnotation(EndpointNode endpointNode, AnnotationAttachmentNode attachmentNode)
+            throws KubernetesPluginException {
+        processDeployment(attachmentNode);
+    }
+
+    private void processDeployment(AnnotationAttachmentNode attachmentNode) throws KubernetesPluginException {
         DeploymentModel deploymentModel = new DeploymentModel();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();

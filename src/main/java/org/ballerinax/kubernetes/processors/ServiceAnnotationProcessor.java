@@ -1,10 +1,13 @@
 package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
+import org.ballerinalang.model.tree.EndpointNode;
+import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.models.ServiceModel;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
+import org.wso2.ballerinalang.compiler.tree.BLangEndpoint;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
 import java.util.List;
@@ -12,6 +15,7 @@ import java.util.List;
 import static org.ballerinax.kubernetes.KubernetesConstants.SVC_POSTFIX;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.isEmpty;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
@@ -30,13 +34,8 @@ public class ServiceAnnotationProcessor implements AnnotationProcessor {
     }
 
 
-    /**
-     * Process annotations and create service model object.
-     *
-     * @param entityName     ballerina service name
-     * @param attachmentNode annotation attachment node.
-     */
-    public void processAnnotation(String entityName, AnnotationAttachmentNode attachmentNode) throws
+    @Override
+    public void processAnnotation(EndpointNode endpointNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         ServiceModel serviceModel = new ServiceModel();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
@@ -62,9 +61,24 @@ public class ServiceAnnotationProcessor implements AnnotationProcessor {
                     break;
             }
         }
-        if (serviceModel.getName() == null) {
-            serviceModel.setName(getValidName(entityName) + SVC_POSTFIX);
+        if (isEmpty(serviceModel.getName())) {
+            serviceModel.setName(getValidName(endpointNode.getName().getValue()) + SVC_POSTFIX);
         }
-        KubernetesDataHolder.getInstance().addBEndpointToK8sServiceMap(entityName, serviceModel);
+        List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =
+                ((BLangRecordLiteral) ((BLangEndpoint) endpointNode).configurationExpr).getKeyValuePairs();
+        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : endpointConfig) {
+            String key = keyValue.getKey().toString();
+            if ("port".equals(key)) {
+                int port = Integer.parseInt(keyValue.getValue().toString());
+                serviceModel.setPort(port);
+            }
+        }
+        KubernetesDataHolder.getInstance().addBEndpointToK8sServiceMap(endpointNode.getName().getValue(), serviceModel);
+    }
+
+    @Override
+    public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode) throws
+            KubernetesPluginException {
+        throw new UnsupportedOperationException();
     }
 }

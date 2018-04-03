@@ -2,9 +2,10 @@ package org.ballerinax.kubernetes.processors;
 
 import org.apache.commons.codec.binary.Base64;
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
+import org.ballerinalang.model.tree.EndpointNode;
+import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
-import org.ballerinax.kubernetes.models.KubernetesModel;
 import org.ballerinax.kubernetes.models.SecretModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
@@ -21,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.ballerinax.kubernetes.KubernetesConstants.SECRET;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
@@ -40,12 +40,8 @@ public class SecretAnnotationProcessor implements AnnotationProcessor {
         data
     }
 
-    /**
-     * Process Secrets annotations.
-     *
-     * @param attachmentNode Attachment Node
-     */
-    public void processAnnotation(String entityName, AnnotationAttachmentNode attachmentNode) throws
+    @Override
+    public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         Set<SecretModel> secrets = new HashSet<>();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
@@ -57,10 +53,10 @@ public class SecretAnnotationProcessor implements AnnotationProcessor {
                 List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
                         ((BLangRecordLiteral) bLangExpression).getKeyValuePairs();
                 for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
-                    SecretMountConfig volumeMountConfig =
+                    SecretMountConfig secretMountConfig =
                             SecretMountConfig.valueOf(annotation.getKey().toString());
                     String annotationValue = resolveValue(annotation.getValue().toString());
-                    switch (volumeMountConfig) {
+                    switch (secretMountConfig) {
                         case name:
                             secretModel.setName(getValidName(annotationValue));
                             break;
@@ -93,5 +89,11 @@ public class SecretAnnotationProcessor implements AnnotationProcessor {
             dataMap.put(key, content);
         }
         return dataMap;
+    }
+
+    @Override
+    public void processAnnotation(EndpointNode endpointNode, AnnotationAttachmentNode attachmentNode) throws
+            KubernetesPluginException {
+        throw new UnsupportedOperationException();
     }
 }

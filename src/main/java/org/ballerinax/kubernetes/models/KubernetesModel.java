@@ -1,5 +1,8 @@
 package org.ballerinax.kubernetes.models;
 
+/**
+ * Kubernetes Model class.
+ */
 public abstract class KubernetesModel {
     private String name;
 

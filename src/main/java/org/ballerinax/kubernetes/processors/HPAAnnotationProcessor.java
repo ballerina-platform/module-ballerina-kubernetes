@@ -1,6 +1,8 @@
 package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
+import org.ballerinalang.model.tree.EndpointNode;
+import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.models.PodAutoscalerModel;
@@ -29,12 +31,8 @@ public class HPAAnnotationProcessor implements AnnotationProcessor {
         cpuPercentage
     }
 
-    /**
-     * Process annotations and create service model object.
-     *
-     * @param attachmentNode annotation attachment node.
-     */
-    public void processAnnotation(String entityName, AnnotationAttachmentNode attachmentNode) throws
+    @Override
+    public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         PodAutoscalerModel podAutoscalerModel = new PodAutoscalerModel();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
@@ -64,5 +62,11 @@ public class HPAAnnotationProcessor implements AnnotationProcessor {
             }
         }
         KubernetesDataHolder.getInstance().setPodAutoscalerModel(podAutoscalerModel);
+    }
+
+    @Override
+    public void processAnnotation(EndpointNode endpointNode, AnnotationAttachmentNode attachmentNode)
+            throws KubernetesPluginException {
+        throw new UnsupportedOperationException();
     }
 }

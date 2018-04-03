@@ -31,9 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Generates kubernetes Service from annotations.
@@ -48,15 +46,13 @@ public class KubernetesDeploymentGeneratorTests {
         deploymentModel.setName("MyDeployment");
         Map<String, String> labels = new HashMap<>();
         labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, "TestAPP");
-        Set<Integer> ports = new HashSet<>();
-        ports.add(9090);
-        ports.add(9091);
-        ports.add(9092);
+        deploymentModel.addPort(9090);
+        deploymentModel.addPort(9091);
+        deploymentModel.addPort(9092);
         deploymentModel.setLabels(labels);
         deploymentModel.setImage("SampleImage:v1.0.0");
         deploymentModel.setImagePullPolicy("Always");
         deploymentModel.setReplicas(3);
-        deploymentModel.setPorts(ports);
 
         try {
             String deploymentYAML = new DeploymentHandler(deploymentModel).generate();

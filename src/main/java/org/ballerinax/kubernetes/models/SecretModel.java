@@ -23,7 +23,7 @@ import java.util.Objects;
 /**
  * Model class to hold kubernetes secret data.
  */
-public class SecretModel extends KubernetesModel{
+public class SecretModel extends KubernetesModel {
     private Map<String, String> data;
     private String mountPath;
     private boolean readOnly;

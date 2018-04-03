@@ -30,28 +30,26 @@ public class KubernetesDataHolder {
     private DeploymentModel deploymentModel;
     private PodAutoscalerModel podAutoscalerModel;
     private Map<String, ServiceModel> bEndpointToK8sServiceMap;
-    private Map<String, IngressModel> bServiceToIngressMap;
     private Map<String, Set<SecretModel>> endPointToSecretMap;
     private Set<SecretModel> secretModelSet;
+    private Set<IngressModel> ingressModelSet;
     private Set<ConfigMapModel> configMapModelSet;
     private Set<PersistentVolumeClaimModel> volumeClaimModelSet;
     private static KubernetesDataHolder instance;
 
     private KubernetesDataHolder() {
         this.bEndpointToK8sServiceMap = new HashMap<>();
-        this.bServiceToIngressMap = new HashMap<>();
-        endPointToSecretMap = new HashMap<>();
-        secretModelSet = new HashSet<>();
-        configMapModelSet = new HashSet<>();
-        volumeClaimModelSet = new HashSet<>();
+        this.endPointToSecretMap = new HashMap<>();
+        this.secretModelSet = new HashSet<>();
+        this.configMapModelSet = new HashSet<>();
+        this.volumeClaimModelSet = new HashSet<>();
+        ingressModelSet = new HashSet<>();
     }
 
     public static KubernetesDataHolder getInstance() {
-        if (instance == null) {
-            synchronized (KubernetesDataHolder.class) {
-                if (instance == null) {
-                    instance = new KubernetesDataHolder();
-                }
+        synchronized (KubernetesDataHolder.class) {
+            if (instance == null) {
+                instance = new KubernetesDataHolder();
             }
         }
         return instance;
@@ -113,15 +111,16 @@ public class KubernetesDataHolder {
         this.bEndpointToK8sServiceMap.put(endpointName, serviceModel);
     }
 
-    public Map<String, IngressModel> getbServiceToIngressMap() {
-        return bServiceToIngressMap;
-    }
 
-    public void addBServiceToIngressMap(String ballerinaServiceName, IngressModel ingressModel) {
-        this.bServiceToIngressMap.put(ballerinaServiceName, ingressModel);
-    }
-
-    public ServiceModel getServiceModel(String endpointName){
+    public ServiceModel getServiceModel(String endpointName) {
         return bEndpointToK8sServiceMap.get(endpointName);
+    }
+
+    public Set<IngressModel> getIngressModelSet() {
+        return ingressModelSet;
+    }
+
+    public void addIngressModel(IngressModel ingressModel) {
+        this.ingressModelSet.add(ingressModel);
     }
 }

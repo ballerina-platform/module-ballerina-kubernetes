@@ -2,10 +2,15 @@ package org.ballerinax.kubernetes.processors;
 
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 
+/**
+ * Annotation processor factory.
+ */
 public class AnnotationProcessorFactory {
 
     public static AnnotationProcessor getAnnotationProcessorInstance(String type) throws KubernetesPluginException {
         switch (type) {
+            case "Service":
+                return new ServiceAnnotationProcessor();
             case "Ingress":
                 return new IngressAnnotationProcessor();
             case "HPA":
@@ -19,7 +24,7 @@ public class AnnotationProcessorFactory {
             case "PersistentVolumeClaim":
                 return new VolumeClaimAnnotationProcessor();
             default:
-                throw new KubernetesPluginException("Error while getting annotation processor for" + type);
+                throw new KubernetesPluginException("Error while getting annotation processor for type: " + type);
         }
     }
 }

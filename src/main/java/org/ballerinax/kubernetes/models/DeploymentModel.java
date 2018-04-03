@@ -61,12 +61,13 @@ public class DeploymentModel extends KubernetesModel {
         this.baseImage = "ballerina/ballerina:" + baseImageVersion;
         this.push = false;
         this.labels = new HashMap<>();
-        env = new HashMap<>();
+        this.env = new HashMap<>();
         this.setImagePullPolicy("IfNotPresent");
         this.dockerHost = "unix:///var/run/docker.sock";
-        secretModels = new HashSet<>();
-        configMapModels = new HashSet<>();
-        volumeClaimModels = new HashSet<>();
+        this.ports = new HashSet<>();
+        this.secretModels = new HashSet<>();
+        this.configMapModels = new HashSet<>();
+        this.volumeClaimModels = new HashSet<>();
     }
 
     public Map<String, String> getLabels() {
@@ -137,8 +138,8 @@ public class DeploymentModel extends KubernetesModel {
         return ports;
     }
 
-    public void setPorts(Set<Integer> ports) {
-        this.ports = ports;
+    public void addPort(int port) {
+        this.ports.add(port);
     }
 
     public Map<String, String> getEnv() {

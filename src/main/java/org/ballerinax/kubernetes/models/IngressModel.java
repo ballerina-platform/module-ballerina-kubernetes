@@ -17,30 +17,28 @@
  */
 package org.ballerinax.kubernetes.models;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * Kubernetes ingress annotations model class.
  */
-public class IngressModel extends KubernetesModel{
+public class IngressModel extends KubernetesModel {
     private Map<String, String> labels;
     private String hostname;
     private String path;
     private String ingressClass;
+    private String endpointName;
+    private Map<String, String> annotations;
     private String serviceName;
     private int servicePort;
     private String targetPath;
     private boolean enableTLS;
-    private List<ServiceModel> serviceModelList;
 
     public IngressModel() {
         this.path = "/";
         this.enableTLS = false;
         this.ingressClass = "nginx";
-        this.serviceModelList = new ArrayList<>();
         this.labels = new HashMap<>();
     }
 
@@ -123,15 +121,23 @@ public class IngressModel extends KubernetesModel{
                 '}';
     }
 
-    public List<ServiceModel> getServiceModelList() {
-        return serviceModelList;
-    }
-
-    public void addServiceModel(ServiceModel serviceModel) {
-        this.serviceModelList.add(serviceModel);
-    }
-
     public void addLabel(String key, String value) {
         this.labels.put(key, value);
+    }
+
+    public String getEndpointName() {
+        return endpointName;
+    }
+
+    public void setEndpointName(String endpointName) {
+        this.endpointName = endpointName;
+    }
+
+    public Map<String, String> getAnnotations() {
+        return annotations;
+    }
+
+    public void setAnnotations(Map<String, String> annotations) {
+        this.annotations = annotations;
     }
 }

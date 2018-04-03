@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * Kubernetes Pod Autoscaler annotations model class.
  */
-public class PodAutoscalerModel extends KubernetesModel{
+public class PodAutoscalerModel extends KubernetesModel {
     private Map<String, String> labels;
     private int minReplicas;
     private int maxReplicas;
