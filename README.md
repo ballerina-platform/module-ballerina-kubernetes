@@ -119,7 +119,7 @@ The docker artifacts will be created in a folder called target with following st
 
 ### Annotation Usage Sample:
 ```ballerina
-import ballerina/net.http;
+import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:Service{name:"hello"}
