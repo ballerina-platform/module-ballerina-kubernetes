@@ -1,9 +1,9 @@
 ## Sample3: Ballerina program with multiple services with different ports
 
-- This sample deploy ballerina program 2 services with single endpoint.
+- This sample deploy ballerina program with http and https urls.
 - The ingress is configured so that two APIs can be accessed as following.
-    http://pizzashack.com/customer
-    http://order.com/orders
+    http://internal.pizzashack.com/customer
+    https://pizzashack.com/customer
 - Following artifacts will be generated from this sample.
     ``` 
     $> docker image
@@ -26,11 +26,12 @@
 1. Compile the  pizzashack.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build pizzashack.bal
-@kubernetes:Docker 			 - complete 3/3 
-@kubernetes:HPA 		 - complete 1/1
-@kubernetes:Deployment 		 - complete 1/1
-@kubernetes:Service 		 - complete 1/1
-@kubernetes:Ingress 		 - complete 2/2
+@kubernetes:Service 			 - complete 2/2
+@kubernetes:Ingress 			 - complete 2/2
+@kubernetes:Secret 			     - complete 1/1
+@kubernetes:Docker 			     - complete 3/3
+@kubernetes:HPA 			     - complete 1/1
+@kubernetes:Deployment 			 - complete 1/1
 Run following command to deploy kubernetes artifacts: 
 kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample3/kubernetes/
 
@@ -65,8 +66,10 @@ ballerina.com/pizzashack     2.1.0              df83ae43f69b        2 minutes ag
 $> kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample3/kubernetes/
 deployment "pizzashack-deployment" created
 horizontalpodautoscaler "pizzashack-hpa" created
-ingress "customer-ingress" created
-ingress "order-ingress" created
+ingress "pizzaep-ingress" created
+ingress "pizzaepsecured-ingress" created
+secret "pizzaepsecured-keystore" created
+service "pizzaepsecured-svc" created
 service "pizzaep-svc" created
 
 ```
@@ -85,9 +88,9 @@ pizzaep-svc                                       ClusterIP      10.99.151.55   
 
 
 $> kubectl get ingress
-NAME               HOSTS            ADDRESS   PORTS     AGE
-customer-ingress   pizzashack.com             80, 443   2m
-order-ingress      order.com                  80, 443   2m
+NAME                     HOSTS                      ADDRESS   PORTS     AGE
+pizzaep-ingress          internal.pizzashack.com             80, 443   37s
+pizzaepsecured-ingress   pizzashack.com                      80, 443   37s
 ```
 
 6. Access the hello world service with curl command:
@@ -98,15 +101,15 @@ Add /etc/host entry to match hostname.
 _(127.0.0.1 is only applicable to docker for mac users. Other users should map the hostname with correct ip address 
 from `kubectl get ingress` command.)_
  ```
- 127.0.0.1 order.com
+ 127.0.0.1 internal.pizzashack.com
  127.0.0.1 pizzashack.com
  ```
 Use curl command with hostname to access the service.
 ```bash
-$> curl http://order.com/orders
-Get order resource !!!!
+$> curl http://internal.pizzashack.com/customer
+Get Customer resource !!!!
 
-$>curl http://pizzashack.com/customer
+$>curl https://pizzashack.com/customer -k
 Get Customer resource !!!!
 ```
 

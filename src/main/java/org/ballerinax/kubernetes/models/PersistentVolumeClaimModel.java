@@ -20,8 +20,7 @@ package org.ballerinax.kubernetes.models;
 /**
  * Model class to hold kubernetes Persistent Volume Claim.
  */
-public class PersistentVolumeClaimModel {
-    private String name;
+public class PersistentVolumeClaimModel extends KubernetesModel {
     private String mountPath;
     private boolean readOnly;
     private String accessMode;
@@ -29,14 +28,6 @@ public class PersistentVolumeClaimModel {
 
     public PersistentVolumeClaimModel() {
         this.accessMode = "ReadWriteOnce";
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getMountPath() {

@@ -20,6 +20,7 @@ package org.ballerinax.kubernetes.utils;
 
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,6 +33,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -206,4 +211,30 @@ public class KubernetesUtils {
         }
         return variable;
     }
+
+    /**
+     * Generate map by splitting keyValues.
+     *
+     * @param keyValues key value paris.
+     * @return Map of key values.
+     */
+    public static Map<String, String> getMap(List<BLangRecordLiteral.BLangRecordKeyValue> keyValues) {
+        Map<String, String> map = new HashMap<>();
+        if (keyValues != null) {
+            keyValues.forEach(keyValue -> {
+                map.put(keyValue.getKey().toString(), keyValue.getValue().toString());
+            });
+        }
+        return map;
+    }
+
+    /**
+     * Returns valid kubernetes name.
+     * @param name actual value
+     * @return valid name
+     */
+    public static String getValidName(String name) {
+        return name.toLowerCase(Locale.ENGLISH).replace("_", "-");
+    }
+
 }

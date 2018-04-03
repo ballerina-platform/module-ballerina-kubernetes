@@ -25,8 +25,7 @@ import java.util.Set;
 /**
  * Kubernetes deployment annotations model class.
  */
-public class DeploymentModel {
-    private String name;
+public class DeploymentModel extends KubernetesModel {
     private Map<String, String> labels;
     private int replicas;
     private String enableLiveness;
@@ -62,20 +61,13 @@ public class DeploymentModel {
         this.baseImage = "ballerina/ballerina:" + baseImageVersion;
         this.push = false;
         this.labels = new HashMap<>();
-        env = new HashMap<>();
+        this.env = new HashMap<>();
         this.setImagePullPolicy("IfNotPresent");
         this.dockerHost = "unix:///var/run/docker.sock";
-        secretModels = new HashSet<>();
-        configMapModels = new HashSet<>();
-        volumeClaimModels = new HashSet<>();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        this.ports = new HashSet<>();
+        this.secretModels = new HashSet<>();
+        this.configMapModels = new HashSet<>();
+        this.volumeClaimModels = new HashSet<>();
     }
 
     public Map<String, String> getLabels() {
@@ -146,8 +138,8 @@ public class DeploymentModel {
         return ports;
     }
 
-    public void setPorts(Set<Integer> ports) {
-        this.ports = ports;
+    public void addPort(int port) {
+        this.ports.add(port);
     }
 
     public Map<String, String> getEnv() {
@@ -226,7 +218,7 @@ public class DeploymentModel {
     @Override
     public String toString() {
         return "DeploymentModel{" +
-                "name='" + name + '\'' +
+                "name='" + getName() + '\'' +
                 ", labels=" + labels +
                 ", replicas=" + replicas +
                 ", enableLiveness='" + enableLiveness + '\'' +

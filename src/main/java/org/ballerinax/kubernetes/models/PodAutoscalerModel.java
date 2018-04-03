@@ -24,8 +24,7 @@ import java.util.Map;
 /**
  * Kubernetes Pod Autoscaler annotations model class.
  */
-public class PodAutoscalerModel {
-    private String name;
+public class PodAutoscalerModel extends KubernetesModel {
     private Map<String, String> labels;
     private int minReplicas;
     private int maxReplicas;
@@ -35,14 +34,6 @@ public class PodAutoscalerModel {
     public PodAutoscalerModel() {
         this.cpuPercentage = 50;
         labels = new HashMap<>();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public int getMinReplicas() {

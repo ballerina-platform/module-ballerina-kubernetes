@@ -3,6 +3,9 @@ import ballerinax/kubernetes;
 import ballerina/io;
 
 @kubernetes:Service{}
+@kubernetes:Ingress{
+    hostname:"abc.com"
+}
 endpoint http:ServiceEndpoint helloWorldEP {
     port:9090,
     secureSocket: {
@@ -27,9 +30,7 @@ endpoint http:ServiceEndpoint helloWorldEP {
         }
     ]
 }
-@kubernetes:Ingress{
-    hostname:"abc.com"
-}
+
 @http:ServiceConfig {
     basePath:"/helloWorld"
 }

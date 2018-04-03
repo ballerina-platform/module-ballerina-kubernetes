@@ -23,8 +23,7 @@ import java.util.Map;
 /**
  * Kubernetes service annotations model class.
  */
-public class ServiceModel {
-    private String name;
+public class ServiceModel extends KubernetesModel {
     private Map<String, String> labels;
     private String serviceType;
     private int port;
@@ -33,14 +32,6 @@ public class ServiceModel {
     public ServiceModel() {
         serviceType = "ClusterIP";
         labels = new HashMap<>();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Map<String, String> getLabels() {
@@ -82,7 +73,7 @@ public class ServiceModel {
     @Override
     public String toString() {
         return "ServiceModel{" +
-                "name='" + name + '\'' +
+                "name='" + getName() + '\'' +
                 ", labels=" + labels +
                 ", serviceType='" + serviceType + '\'' +
                 ", port=" + port +

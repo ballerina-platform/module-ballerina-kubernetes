@@ -27,20 +27,13 @@ import org.ballerinalang.util.diagnostic.Diagnostic;
 import org.ballerinalang.util.diagnostic.DiagnosticLog;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
-import org.ballerinax.kubernetes.models.SecretModel;
-import org.ballerinax.kubernetes.models.ServiceModel;
+import org.ballerinax.kubernetes.processors.AnnotationProcessorFactory;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
-import org.wso2.ballerinalang.compiler.tree.BLangEndpoint;
-import org.wso2.ballerinalang.compiler.tree.BLangService;
-import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
-import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
 
 import java.io.File;
 import java.io.PrintStream;
 import java.nio.file.Path;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
@@ -53,11 +46,9 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
 )
 public class KubernetesPlugin extends AbstractCompilerPlugin {
 
-    private static KubernetesDataHolder kubernetesDataHolder = new KubernetesDataHolder();
     private static boolean canProcess;
-    private KubernetesAnnotationProcessor kubernetesAnnotationProcessor;
     private DiagnosticLog dlog;
-    private PrintStream out = System.out;
+    private PrintStream out;
 
     private static synchronized void setCanProcess(boolean val) {
         canProcess = val;
@@ -67,53 +58,17 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     public void init(DiagnosticLog diagnosticLog) {
         this.dlog = diagnosticLog;
         setCanProcess(false);
-        this.kubernetesAnnotationProcessor = new KubernetesAnnotationProcessor();
+        out = System.out;
     }
 
     @Override
     public void process(ServiceNode serviceNode, List<AnnotationAttachmentNode> annotations) {
         setCanProcess(true);
-        Set<String> endpoints = extractEndpointName(serviceNode);
         for (AnnotationAttachmentNode attachmentNode : annotations) {
             String annotationKey = attachmentNode.getAnnotationName().getValue();
             try {
-                switch (annotationKey) {
-                    case "Ingress":
-                        kubernetesDataHolder.addIngressModel(kubernetesAnnotationProcessor
-                                .processIngressAnnotation
-                                        (serviceNode.getName().getValue(), attachmentNode), endpoints);
-                        break;
-                    case "HPA":
-                        kubernetesDataHolder.setPodAutoscalerModel(kubernetesAnnotationProcessor
-                                .processPodAutoscalerAnnotation(attachmentNode));
-                        break;
-                    case "Deployment":
-                        kubernetesDataHolder.setDeploymentModel(kubernetesAnnotationProcessor.processDeployment
-                                (attachmentNode));
-                        break;
-                    case "Secret":
-                        kubernetesDataHolder.addSecrets(kubernetesAnnotationProcessor.processSecrets
-                                (attachmentNode));
-                        break;
-                    case "ConfigMap":
-                        try {
-                            kubernetesDataHolder.addConfigMaps(kubernetesAnnotationProcessor.processConfigMap
-                                    (attachmentNode));
-                        } catch (KubernetesPluginException e) {
-                            dlog.logDiagnostic(Diagnostic.Kind.ERROR, serviceNode.getPosition(), e.getMessage());
-                        }
-                        break;
-                    case "PersistentVolumeClaim":
-                        try {
-                            kubernetesDataHolder.addPersistentVolumeClaims(
-                                    kubernetesAnnotationProcessor.processPersistentVolumeClaim(attachmentNode));
-                        } catch (KubernetesPluginException e) {
-                            dlog.logDiagnostic(Diagnostic.Kind.ERROR, serviceNode.getPosition(), e.getMessage());
-                        }
-                        break;
-                    default:
-                        break;
-                }
+                AnnotationProcessorFactory.getAnnotationProcessorInstance(annotationKey).processAnnotation
+                        (serviceNode, attachmentNode);
             } catch (KubernetesPluginException e) {
                 dlog.logDiagnostic(Diagnostic.Kind.ERROR, serviceNode.getPosition(), e.getMessage());
             }
@@ -121,69 +76,19 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     }
 
 
-    private Set<String> extractEndpointName(ServiceNode serviceNode) {
-        Set<String> endpoints = new HashSet<>();
-        List<BLangSimpleVarRef> endpointList = ((BLangService) serviceNode).boundEndpoints;
-        for (BLangSimpleVarRef var : endpointList) {
-            endpoints.add(var.variableName.getValue());
-        }
-        return endpoints;
-    }
-
     @Override
     public void process(EndpointNode endpointNode, List<AnnotationAttachmentNode> annotations) {
-        String endpointName = endpointNode.getName().getValue();
-        ServiceModel serviceModel = null;
         setCanProcess(true);
         for (AnnotationAttachmentNode attachmentNode : annotations) {
             String annotationKey = attachmentNode.getAnnotationName().getValue();
             try {
-                switch (annotationKey) {
-                    case "Service":
-                        serviceModel = kubernetesAnnotationProcessor.processServiceAnnotation(endpointName,
-                                attachmentNode);
-                        kubernetesDataHolder.addServiceModel(endpointName, serviceModel);
-                        break;
-                    case "Deployment":
-                        kubernetesDataHolder.setDeploymentModel(kubernetesAnnotationProcessor.processDeployment
-                                (attachmentNode));
-                        break;
-                    default:
-                        break;
-                }
+                AnnotationProcessorFactory.getAnnotationProcessorInstance(annotationKey).processAnnotation
+                        (endpointNode, attachmentNode);
             } catch (KubernetesPluginException e) {
                 dlog.logDiagnostic(Diagnostic.Kind.ERROR, endpointNode.getPosition(), e.getMessage());
             }
         }
-        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                ((BLangRecordLiteral) ((BLangEndpoint) endpointNode).configurationExpr).getKeyValuePairs();
-        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
-            String key = keyValue.getKey().toString();
-            switch (key) {
-                case "port":
-                    int port = Integer.parseInt(keyValue.getValue().toString());
-                    kubernetesDataHolder.addPort(port);
-                    if (serviceModel != null) {
-                        serviceModel.setPort(port);
-                    }
-                    break;
-                case "secureSocket":
-                    List<BLangRecordLiteral.BLangRecordKeyValue> sslKeyValues = ((BLangRecordLiteral) keyValue
-                            .valueExpr).getKeyValuePairs();
-                    try {
-                        Set<SecretModel> secretModels = kubernetesAnnotationProcessor
-                                .processSecureSocketAnnotation(endpointName, sslKeyValues);
-                        kubernetesDataHolder.addEndpointSecret(endpointName, secretModels);
-                        kubernetesDataHolder.addSecrets(secretModels);
-                    } catch (KubernetesPluginException e) {
-                        dlog.logDiagnostic(Diagnostic.Kind.ERROR, null, e.getMessage());
-                    }
-                    break;
-                default:
-                    break;
 
-            }
-        }
     }
 
 
@@ -203,7 +108,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
             try {
                 KubernetesUtils.deleteDirectory(targetPath);
                 kubernetesAnnotationProcessor.
-                        createArtifacts(kubernetesDataHolder, filePath, targetPath);
+                        createArtifacts(KubernetesDataHolder.getInstance(), filePath, targetPath);
             } catch (KubernetesPluginException e) {
                 out.println();
                 printError(e.getMessage());

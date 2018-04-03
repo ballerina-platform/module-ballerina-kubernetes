@@ -23,8 +23,7 @@ import java.util.Set;
 /**
  * Docker annotations model class.
  */
-public class DockerModel {
-    private String name;
+public class DockerModel extends KubernetesModel {
     private String registry;
     private String tag;
     private boolean push;
@@ -51,14 +50,6 @@ public class DockerModel {
         this.enableDebug = false;
         this.debugPort = 5005;
         this.dockerHost = "unix:///var/run/docker.sock";
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getRegistry() {
@@ -168,7 +159,7 @@ public class DockerModel {
     @Override
     public String toString() {
         return "DockerModel{" +
-                "name='" + name + '\'' +
+                "name='" + getName() + '\'' +
                 ", registry='" + registry + '\'' +
                 ", tag='" + tag + '\'' +
                 ", push=" + push +

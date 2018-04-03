@@ -2,6 +2,9 @@ import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:Service{}
+@kubernetes:Ingress{
+    hostname:"abc.com"
+}
 endpoint http:ServiceEndpoint helloWorldEP {
     port:9090,
 	secureSocket: {
@@ -16,9 +19,6 @@ endpoint http:ServiceEndpoint helloWorldEP {
 	volumeClaims:[
 		{name:"local-pv-2",mountPath:"/home/ballerina/tmp",readOnly:false,accessMode:"ReadWriteOnce",volumeClaimSize:"1Gi"}
 	]
-}
-@kubernetes:Ingress{
-	hostname:"abc.com"
 }
 @http:ServiceConfig {
     basePath:"/helloWorld"

@@ -3,6 +3,11 @@ import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:Service{}
+@kubernetes:Ingress {
+    hostname:"burger.com",
+    path:"/",
+    targetPath:"/burger"
+}
 endpoint http:ServiceEndpoint burgerEP {
     port:9096,
     secureSocket:{
@@ -13,11 +18,7 @@ endpoint http:ServiceEndpoint burgerEP {
     }
 };
 
-@kubernetes:Ingress {
-    hostname:"burger.com",
-    path:"/",
-    targetPath:"/burger"
-}
+
 @http:ServiceConfig {
     basePath:"/burger"
 }

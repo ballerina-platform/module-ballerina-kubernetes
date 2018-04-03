@@ -57,7 +57,9 @@ public annotation <endpoint> Service ServiceConfiguration;
 
 @Description {value:"Kubernetes ingress configuration"}
 @Field {value:"name: Name of the ingress"}
+@Field {value:"endpointName: Name of the endpoint ingress attached"}
 @Field {value:"labels: Labels for ingress"}
+@Field {value:"annotations: Map of additional annotations"}
 @Field {value:"hostname: Host name of the ingress"}
 @Field {value:"path: Resource path"}
 @Field {value:"targetPath: Target path for url rewrite"}
@@ -65,15 +67,18 @@ public annotation <endpoint> Service ServiceConfiguration;
 @Field {value:"enableTLS: Enable ingress TLS"}
 public struct IngressConfiguration {
     string name;
+    string endpointName;
     map labels;
+    map annotations;
     string hostname;
     string path;
     string targetPath;
     string ingressClass;
     boolean enableTLS;
 }
+
 @Description {value:"Ingress annotation for Kubernetes"}
-public annotation <service> Ingress IngressConfiguration;
+public annotation <endpoint> Ingress IngressConfiguration;
 
 @Description {value:"Kubernetes Horizontal Pod Autoscaler configuration"}
 @Field {value:"name: Name of the Autoscaler"}

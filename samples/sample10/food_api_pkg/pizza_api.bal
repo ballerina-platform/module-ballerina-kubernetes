@@ -2,7 +2,11 @@ package food_api_pkg;
 import ballerina/http;
 import ballerinax/kubernetes;
 
-
+@kubernetes:Ingress {
+    hostname:"pizza.com",
+    path:"/pizzastore",
+    targetPath:"/"
+}
 @kubernetes:Service{}
 endpoint http:ServiceEndpoint pizzaEP {
     port:9099,
@@ -20,11 +24,6 @@ endpoint http:ServiceEndpoint pizzaEP {
     labels:{"location":"SL","city":"COLOMBO"}
     enableLiveness:"enable",
     livenessPort:9099
-}
-@kubernetes:Ingress {
-    hostname:"pizza.com",
-    path:"/pizzastore",
-    targetPath:"/"
 }
 @http:ServiceConfig {
     basePath:"/pizza"

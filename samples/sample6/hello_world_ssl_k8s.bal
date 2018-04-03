@@ -2,6 +2,9 @@ import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:Service{}
+@kubernetes:Ingress{
+    hostname:"abc.com"
+}
 endpoint http:ServiceEndpoint helloWorldSecuredEP {
     port:9090,
     secureSocket: {
@@ -15,13 +18,10 @@ endpoint http:ServiceEndpoint helloWorldSecuredEP {
 @http:ServiceConfig {
     basePath:"/helloWorld"
 }
-@kubernetes:Ingress{
-    hostname:"abc.com"
-}
 service<http:Service> helloWorld bind helloWorldSecuredEP {
      sayHello (endpoint outboundEP, http:Request request) {
         http:Response response = {};
-        response.setStringPayload("Hello, World from service helloWorld ! ");
+        response.setStringPayload("Hello, World from secured service ! \n");
         _ = outboundEP -> respond(response);
     }
 }

@@ -2,14 +2,16 @@ import ballerina/http;
 import ballerinax/kubernetes;
 
 
+@kubernetes:Ingress {
+    hostname:"pizza.com",
+    path:"/pizzastore",
+    targetPath:"/"
+}
 @kubernetes:Service{}
 endpoint http:ServiceEndpoint pizzaEP {
     port:9099
 };
-@kubernetes:Service{}
-endpoint http:ServiceEndpoint burgerEP {
-    port:9096
-};
+
 @kubernetes:Deployment {
     name:"foodstore",
     replicas:3,
@@ -17,11 +19,7 @@ endpoint http:ServiceEndpoint burgerEP {
     enableLiveness:"enable",
     livenessPort:9099
 }
-@kubernetes:Ingress {
-    hostname:"pizza.com",
-    path:"/pizzastore",
-    targetPath:"/"
-}
+
 @http:ServiceConfig {
     basePath:"/pizza"
 }
@@ -32,16 +30,22 @@ service<http:Service> PizzaAPI bind pizzaEP{
     }
     getPizzaMenu (endpoint outboundEP, http:Request req) {
         http:Response response = {};
-        response.setStringPayload("Pizza menu ");
+        response.setStringPayload("Pizza menu \n");
         _ = outboundEP -> respond(response);
     }
 }
+
+
 
 @kubernetes:Ingress {
     hostname:"burger.com",
     path:"/",
     targetPath:"/burger"
 }
+@kubernetes:Service{}
+endpoint http:ServiceEndpoint burgerEP {
+    port:9096
+};
 @http:ServiceConfig {
     basePath:"/burger"
 }
@@ -52,7 +56,7 @@ service<http:Service> BurgerAPI bind burgerEP {
     }
     getBurgerMenu (endpoint outboundEP, http:Request req) {
         http:Response response = {};
-        response.setStringPayload("Burger menu ");
+        response.setStringPayload("Burger menu \n");
         _ = outboundEP -> respond(response);
     }
 }
