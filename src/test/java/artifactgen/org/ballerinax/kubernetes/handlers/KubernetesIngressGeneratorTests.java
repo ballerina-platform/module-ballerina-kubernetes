@@ -16,12 +16,12 @@
  * under the License.
  */
 
-package org.ballerinalang.artifactgen;
+package artifactgen.org.ballerinax.kubernetes.handlers;
 
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.handlers.ServiceHandler;
-import org.ballerinax.kubernetes.models.ServiceModel;
+import org.ballerinax.kubernetes.handlers.IngressHandler;
+import org.ballerinax.kubernetes.models.IngressModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -36,35 +36,37 @@ import java.util.Map;
 /**
  * Generates kubernetes Service from annotations.
  */
-public class KubernetesServiceGeneratorTests {
+public class KubernetesIngressGeneratorTests {
 
-    private final Logger log = LoggerFactory.getLogger(KubernetesServiceGeneratorTests.class);
+    private final Logger log = LoggerFactory.getLogger(KubernetesIngressGeneratorTests.class);
 
     @Test
-    public void testServiceGenerate() {
-        ServiceModel serviceModel = new ServiceModel();
-        serviceModel.setName("MyService");
-        serviceModel.setPort(9090);
-        serviceModel.setServiceType("NodePort");
-        serviceModel.setSelector("MyAPP");
+    public void testIngressGenerator() {
+        IngressModel ingressModel = new IngressModel();
+        ingressModel.setName("MyIngress");
+        ingressModel.setHostname("abc.com");
+        ingressModel.setPath("/helloworld");
+        ingressModel.setServicePort(9090);
+        ingressModel.setIngressClass("nginx");
+        ingressModel.setServiceName("HelloWorldService");
         Map<String, String> labels = new HashMap<>();
         labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, "TestAPP");
-        serviceModel.setLabels(labels);
-        ServiceHandler kubernetesServiceGenerator = new ServiceHandler(serviceModel);
+        ingressModel.setLabels(labels);
+        IngressHandler kubernetesIngressGenerator = new IngressHandler(ingressModel);
         try {
-            String serviceYAML = kubernetesServiceGenerator.generate();
-            Assert.assertNotNull(serviceYAML);
+            String ingressYaml = kubernetesIngressGenerator.generate();
+            Assert.assertNotNull(ingressYaml);
             File artifactLocation = new File("target/kubernetes");
             artifactLocation.mkdir();
-            File tempFile = File.createTempFile("temp", serviceModel.getName() + ".yaml", artifactLocation);
-            KubernetesUtils.writeToFile(serviceYAML, tempFile.getPath());
-            log.info("Generated YAML: \n" + serviceYAML);
+            File tempFile = File.createTempFile("temp", ingressModel.getName() + ".yaml", artifactLocation);
+            KubernetesUtils.writeToFile(ingressYaml, tempFile.getPath());
+            log.info("Generated YAML: \n" + ingressYaml);
             Assert.assertTrue(tempFile.exists());
-            //tempFile.deleteOnExit();
+            // tempFile.deleteOnExit();
         } catch (IOException e) {
             Assert.fail("Unable to write to file");
         } catch (KubernetesPluginException e) {
-            Assert.fail("Unable to generate yaml from service");
+            Assert.fail("Unable to generate yaml from ingress");
         }
     }
 }

@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.ballerinalang.artifactgen;
+package artifactgen.org.ballerinax.kubernetes.handlers;
 
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
