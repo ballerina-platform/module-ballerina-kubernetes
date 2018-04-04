@@ -26,7 +26,6 @@ import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.util.diagnostic.Diagnostic;
 import org.ballerinalang.util.diagnostic.DiagnosticLog;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.processors.AnnotationProcessorFactory;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
@@ -95,20 +94,19 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     @Override
     public void codeGenerated(Path binaryPath) {
         if (canProcess) {
-            KubernetesAnnotationProcessor kubernetesAnnotationProcessor = new KubernetesAnnotationProcessor();
+
             String filePath = binaryPath.toAbsolutePath().toString();
             String userDir = new File(filePath).getParentFile().getAbsolutePath();
             if (userDir.endsWith("target")) {
-                //Compiling package
-                //append balx file name to kubernetes artifact dir path
+                //Compiling package therefore append balx file name to kubernetes artifact dir path
                 userDir = userDir + File.separator + extractBalxName(filePath);
             }
             String targetPath = userDir + File.separator + "kubernetes" + File
                     .separator;
+            ArtifactManager artifactManager = new ArtifactManager(filePath, targetPath);
             try {
                 KubernetesUtils.deleteDirectory(targetPath);
-                kubernetesAnnotationProcessor.
-                        createArtifacts(KubernetesDataHolder.getInstance(), filePath, targetPath);
+                artifactManager.createArtifacts();
             } catch (KubernetesPluginException e) {
                 out.println();
                 printError(e.getMessage());
