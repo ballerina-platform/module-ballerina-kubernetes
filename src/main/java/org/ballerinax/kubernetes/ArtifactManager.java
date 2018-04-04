@@ -65,25 +65,30 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isEmpty;
 
 /**
- * Process Kubernetes Annotations and generate Artifacts.
+ * Generate and write artifacts to files.
  */
-class KubernetesAnnotationProcessor {
+class ArtifactManager {
 
     private PrintStream out = System.out;
+    private String balxFilePath;
+    private String outputDir;
+    private KubernetesDataHolder kubernetesDataHolder;
+
+    ArtifactManager(String balxFilePath, String outputDir) {
+        this.balxFilePath = balxFilePath;
+        this.outputDir = outputDir;
+        this.kubernetesDataHolder = KubernetesDataHolder.getInstance();
+    }
 
     /**
      * Generate kubernetes artifacts.
      *
-     * @param kubernetesDataHolder Kubernetes data holder object
-     * @param balxFilePath         ballerina file path
-     * @param outputDir            output directory to save artifacts
-     * @throws KubernetesPluginException if an error ocurrs while generating artifacts
+     * @throws KubernetesPluginException if an error occurs while generating artifacts
      */
-    void createArtifacts(KubernetesDataHolder kubernetesDataHolder, String balxFilePath,
-                         String outputDir) throws KubernetesPluginException {
+    void createArtifacts() throws KubernetesPluginException {
         DeploymentModel deploymentModel = kubernetesDataHolder.getDeploymentModel();
         if (deploymentModel == null) {
-            deploymentModel = getDefaultDeploymentModel(balxFilePath);
+            deploymentModel = getDefaultDeploymentModel();
         }
         kubernetesDataHolder.setDeploymentModel(deploymentModel);
         deploymentModel.setPodAutoscalerModel(kubernetesDataHolder.getPodAutoscalerModel());
@@ -96,13 +101,12 @@ class KubernetesAnnotationProcessor {
         int count = 0;
         for (ServiceModel serviceModel : serviceModels.values()) {
             count++;
-            generateService(serviceModel, balxFilePath, outputDir);
+            generateService(serviceModel);
             deploymentModel.addPort(serviceModel.getPort());
             out.print("@kubernetes:Service \t\t\t - complete " + count + "/" + serviceModels.size() + "\r");
         }
         // ingress
         count = 0;
-
         Set<IngressModel> ingressModels = kubernetesDataHolder.getIngressModelSet();
         int size = ingressModels.size();
         if (size > 0) {
@@ -117,7 +121,7 @@ class KubernetesAnnotationProcessor {
                     .getEndpointName()).size() != 0) {
                 ingressModel.setEnableTLS(true);
             }
-            generateIngress(ingressModel, balxFilePath, outputDir);
+            generateIngress(ingressModel);
             count++;
             out.print("@kubernetes:Ingress \t\t\t - complete " + count + "/" + size + "\r");
         }
@@ -150,7 +154,7 @@ class KubernetesAnnotationProcessor {
                 deploymentModel.addEnv("CONFIG_FILE", configMapModel.getMountPath() + File.separator +
                         configMapModel.getData().keySet().iterator().next());
             }
-            generateConfigMaps(configMapModel, balxFilePath, outputDir);
+            generateConfigMaps(configMapModel);
             out.print("@kubernetes:ConfigMap \t\t\t - complete " + count + "/" + configMapModels.size() + "\r");
         }
 
@@ -162,11 +166,11 @@ class KubernetesAnnotationProcessor {
         }
         for (PersistentVolumeClaimModel claimModel : volumeClaims) {
             count++;
-            generatePersistentVolumeClaim(claimModel, balxFilePath, outputDir);
+            generatePersistentVolumeClaim(claimModel);
             out.print("@kubernetes:VolumeClaim \t\t - complete " + count + "/" + volumeClaims.size() + "\r");
         }
         out.println();
-        generateDeployment(deploymentModel, balxFilePath, outputDir);
+        generateDeployment(deploymentModel);
         out.println();
         out.println("@kubernetes:Deployment \t\t\t - complete 1/1");
 
@@ -174,8 +178,7 @@ class KubernetesAnnotationProcessor {
     }
 
 
-    private void generateDeployment(DeploymentModel deploymentModel, String balxFilePath, String outputDir) throws
-            KubernetesPluginException {
+    private void generateDeployment(DeploymentModel deploymentModel) throws KubernetesPluginException {
         String balxFileName = KubernetesUtils.extractBalxName(balxFilePath);
         if (isEmpty(deploymentModel.getName())) {
             deploymentModel.setName(getValidName(balxFileName) + DEPLOYMENT_POSTFIX);
@@ -193,16 +196,15 @@ class KubernetesAnnotationProcessor {
             KubernetesUtils.writeToFile(deploymentContent, outputDir + File
                     .separator + balxFileName + DEPLOYMENT_FILE_POSTFIX + YAML);
             //generate dockerfile and docker image
-            generateDocker(deploymentModel, balxFilePath, outputDir + File.separator + DOCKER);
+            generateDocker(deploymentModel);
             // generate HPA
-            generatePodAutoscaler(deploymentModel, balxFilePath, outputDir);
+            generatePodAutoscaler(deploymentModel);
         } catch (IOException e) {
             throw new KubernetesPluginException("Error while writing deployment content", e);
         }
     }
 
-    private void generateService(ServiceModel serviceModel, String balxFilePath, String outputDir) throws
-            KubernetesPluginException {
+    private void generateService(ServiceModel serviceModel) throws KubernetesPluginException {
         String balxFileName = KubernetesUtils.extractBalxName(balxFilePath);
         serviceModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
         serviceModel.setSelector(balxFileName);
@@ -227,7 +229,7 @@ class KubernetesAnnotationProcessor {
         }
     }
 
-    private void generateConfigMaps(ConfigMapModel configMapModel, String balxFilePath, String outputDir) throws
+    private void generateConfigMaps(ConfigMapModel configMapModel) throws
             KubernetesPluginException {
         String balxFileName = KubernetesUtils.extractBalxName(balxFilePath);
         String configMapContent = new ConfigMapHandler(configMapModel).generate();
@@ -239,8 +241,8 @@ class KubernetesAnnotationProcessor {
         }
     }
 
-    private void generatePersistentVolumeClaim(PersistentVolumeClaimModel volumeClaimModel, String balxFilePath,
-                                               String outputDir) throws KubernetesPluginException {
+    private void generatePersistentVolumeClaim(PersistentVolumeClaimModel volumeClaimModel) throws
+            KubernetesPluginException {
         String balxFileName = KubernetesUtils.extractBalxName(balxFilePath);
         String configMapContent = new PersistentVolumeClaimHandler(volumeClaimModel).generate();
         try {
@@ -251,8 +253,7 @@ class KubernetesAnnotationProcessor {
         }
     }
 
-    private void generateIngress(IngressModel ingressModel, String balxFilePath, String outputDir) throws
-            KubernetesPluginException {
+    private void generateIngress(IngressModel ingressModel) throws KubernetesPluginException {
         String balxFileName = KubernetesUtils.extractBalxName(balxFilePath);
         ingressModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
         String serviceContent = new IngressHandler(ingressModel).generate();
@@ -264,8 +265,7 @@ class KubernetesAnnotationProcessor {
         }
     }
 
-    private void generatePodAutoscaler(DeploymentModel deploymentModel, String balxFilePath, String outputDir)
-            throws KubernetesPluginException {
+    private void generatePodAutoscaler(DeploymentModel deploymentModel) throws KubernetesPluginException {
         PodAutoscalerModel podAutoscalerModel = deploymentModel.getPodAutoscalerModel();
         if (podAutoscalerModel == null) {
             return;
@@ -302,11 +302,9 @@ class KubernetesAnnotationProcessor {
      * Create docker artifacts.
      *
      * @param deploymentModel Deployment model
-     * @param balxFilePath    output ballerina file path
-     * @param outputDir       output directory which data should be written
      * @throws KubernetesPluginException If an error occurs while generating artifacts
      */
-    private void generateDocker(DeploymentModel deploymentModel, String balxFilePath, String outputDir)
+    private void generateDocker(DeploymentModel deploymentModel)
             throws KubernetesPluginException {
         DockerModel dockerModel = new DockerModel();
         String dockerImage = deploymentModel.getImage();
@@ -330,14 +328,15 @@ class KubernetesAnnotationProcessor {
         String dockerContent = dockerArtifactHandler.generate();
         try {
             out.print("@kubernetes:Docker \t\t\t - complete 0/3 \r");
-            KubernetesUtils.writeToFile(dockerContent, outputDir + File.separator + "Dockerfile");
+            String dockerOutputDir = outputDir + File.separator + DOCKER;
+            KubernetesUtils.writeToFile(dockerContent, dockerOutputDir + File.separator + "Dockerfile");
             out.print("@kubernetes:Docker \t\t\t - complete 1/3 \r");
-            String balxDestination = outputDir + File.separator + KubernetesUtils.extractBalxName
+            String balxDestination = dockerOutputDir + File.separator + KubernetesUtils.extractBalxName
                     (balxFilePath) + BALX;
             KubernetesUtils.copyFile(balxFilePath, balxDestination);
             //check image build is enabled.
             if (dockerModel.isBuildImage()) {
-                dockerArtifactHandler.buildImage(dockerModel, outputDir);
+                dockerArtifactHandler.buildImage(dockerModel, dockerOutputDir);
                 out.print("@kubernetes:Docker \t\t\t - complete 2/3 \r");
                 Files.delete(Paths.get(balxDestination));
                 //push only if image build is enabled.
@@ -347,7 +346,7 @@ class KubernetesAnnotationProcessor {
                 out.print("@kubernetes:Docker \t\t\t - complete 3/3");
             }
         } catch (IOException e) {
-            throw new KubernetesPluginException("Unable to write Dockerfile content to " + outputDir);
+            throw new KubernetesPluginException("Unable to write Dockerfile content");
         } catch (InterruptedException e) {
             throw new KubernetesPluginException("Unable to create docker images " + e.getMessage());
         }
@@ -357,10 +356,9 @@ class KubernetesAnnotationProcessor {
     /**
      * Get DeploymentModel object with default values.
      *
-     * @param balxFilePath ballerina file path
      * @return DeploymentModel object with default values
      */
-    private DeploymentModel getDefaultDeploymentModel(String balxFilePath) {
+    private DeploymentModel getDefaultDeploymentModel() {
         DeploymentModel deploymentModel = new DeploymentModel();
         String balxName = KubernetesUtils.extractBalxName(balxFilePath);
         String deploymentName = balxName + DEPLOYMENT_POSTFIX;

@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Model class to store kubernetes artifacts.
+ * Singleton class to store kubernetes models.
  */
 public class KubernetesDataHolder {
     private DeploymentModel deploymentModel;
@@ -110,7 +110,6 @@ public class KubernetesDataHolder {
     public void addBEndpointToK8sServiceMap(String endpointName, ServiceModel serviceModel) {
         this.bEndpointToK8sServiceMap.put(endpointName, serviceModel);
     }
-
 
     public ServiceModel getServiceModel(String endpointName) {
         return bEndpointToK8sServiceMap.get(endpointName);

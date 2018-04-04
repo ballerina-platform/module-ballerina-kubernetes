@@ -5,6 +5,7 @@ package org.ballerinax.kubernetes.models;
  */
 public abstract class KubernetesModel {
     private String name;
+    private String version;
 
     public String getName() {
         return name;
@@ -12,5 +13,13 @@ public abstract class KubernetesModel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }
