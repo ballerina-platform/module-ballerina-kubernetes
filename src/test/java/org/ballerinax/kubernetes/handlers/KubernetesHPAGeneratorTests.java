@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Test kubernetes HPA.
+ * Test kubernetes HPA generation.
  */
 public class KubernetesHPAGeneratorTests {
 

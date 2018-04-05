@@ -32,7 +32,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Generates kubernetes Secret from annotations.
+ * Test kubernetes volume claim generation.
  */
 public class KubernetesVolumeClaimGeneratorTests {
 

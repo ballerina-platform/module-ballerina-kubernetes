@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Generates kubernetes Secret from annotations.
+ * Test config map generation.
  */
 public class KubernetesConfigMapGeneratorTests {
 

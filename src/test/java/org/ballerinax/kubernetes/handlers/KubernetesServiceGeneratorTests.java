@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Generates kubernetes Service from annotations.
+ * Test kubernetes Service generation.
  */
 public class KubernetesServiceGeneratorTests {
 
