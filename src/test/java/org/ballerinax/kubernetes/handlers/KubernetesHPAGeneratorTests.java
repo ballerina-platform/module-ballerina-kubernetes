@@ -16,11 +16,12 @@
  * under the License.
  */
 
-package artifactgen.org.ballerinax.kubernetes.handlers;
+package org.ballerinax.kubernetes.handlers;
 
+import io.fabric8.kubernetes.api.KubernetesHelper;
+import io.fabric8.kubernetes.api.model.HorizontalPodAutoscaler;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.handlers.HPAHandler;
 import org.ballerinax.kubernetes.models.PodAutoscalerModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.junit.Assert;
@@ -39,20 +40,26 @@ import java.util.Map;
 public class KubernetesHPAGeneratorTests {
 
     private final Logger log = LoggerFactory.getLogger(KubernetesHPAGeneratorTests.class);
+    private final String hpaName = "MyHPA";
+    private final String deploymentName = "MyDeployment";
+    private final String selector = "TestAPP";
+    private final int cpuPercentage = 90;
+    private final int maxReplicas = 10;
+    private final int minReplicas = 2;
 
     @Test
     public void testHPAGenerate() {
         PodAutoscalerModel podAutoscalerModel = new PodAutoscalerModel();
-        podAutoscalerModel.setName("MyHPA");
-        podAutoscalerModel.setCpuPercentage(90);
-        podAutoscalerModel.setMaxReplicas(10);
-        podAutoscalerModel.setMinReplicas(2);
+        podAutoscalerModel.setName(hpaName);
+        podAutoscalerModel.setCpuPercentage(cpuPercentage);
+        podAutoscalerModel.setMaxReplicas(maxReplicas);
+        podAutoscalerModel.setMinReplicas(minReplicas);
+        podAutoscalerModel.setDeployment(deploymentName);
         Map<String, String> labels = new HashMap<>();
-        labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, "TestAPP");
+        labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, selector);
         podAutoscalerModel.setLabels(labels);
-        HPAHandler hpaHandler = new HPAHandler(podAutoscalerModel);
         try {
-            String serviceYAML = hpaHandler.generate();
+            String serviceYAML = new HPAHandler(podAutoscalerModel).generate();
             Assert.assertNotNull(serviceYAML);
             File artifactLocation = new File("target/kubernetes");
             artifactLocation.mkdir();
@@ -60,11 +67,23 @@ public class KubernetesHPAGeneratorTests {
             KubernetesUtils.writeToFile(serviceYAML, tempFile.getPath());
             log.info("Generated YAML: \n" + serviceYAML);
             Assert.assertTrue(tempFile.exists());
-            //tempFile.deleteOnExit();
+            assertGeneratedYAML(tempFile);
+            tempFile.deleteOnExit();
         } catch (IOException e) {
             Assert.fail("Unable to write to file");
         } catch (KubernetesPluginException e) {
             Assert.fail("Unable to generate yaml from service");
         }
+    }
+
+    private void assertGeneratedYAML(File yamlFile) throws IOException {
+        HorizontalPodAutoscaler podAutoscaler = KubernetesHelper.loadYaml(yamlFile);
+        Assert.assertEquals(hpaName, podAutoscaler.getMetadata().getName());
+        Assert.assertEquals(selector, podAutoscaler.getMetadata().getLabels().get(KubernetesConstants
+                .KUBERNETES_SELECTOR_KEY));
+        Assert.assertEquals(maxReplicas, podAutoscaler.getSpec().getMaxReplicas().intValue());
+        Assert.assertEquals(minReplicas, podAutoscaler.getSpec().getMinReplicas().intValue());
+        Assert.assertEquals(cpuPercentage, podAutoscaler.getSpec().getTargetCPUUtilizationPercentage().intValue());
+        Assert.assertEquals(deploymentName, podAutoscaler.getSpec().getScaleTargetRef().getName());
     }
 }

@@ -16,10 +16,11 @@
  * under the License.
  */
 
-package artifactgen.org.ballerinax.kubernetes.handlers;
+package org.ballerinax.kubernetes.handlers;
 
+import io.fabric8.kubernetes.api.KubernetesHelper;
+import io.fabric8.kubernetes.api.model.Secret;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.handlers.SecretHandler;
 import org.ballerinax.kubernetes.models.SecretModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.junit.Assert;
@@ -29,6 +30,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Generates kubernetes Secret from annotations.
@@ -36,13 +39,20 @@ import java.io.IOException;
 public class KubernetesSecretGeneratorTests {
 
     private final Logger log = LoggerFactory.getLogger(KubernetesSecretGeneratorTests.class);
+    private final String secretName = "MySecret";
+    private final boolean readOnly = true;
+    private final String mountPath = "/user/dir";
 
     @Test
     public void testSecretGenerate() {
         SecretModel secretModel = new SecretModel();
-        secretModel.setName("MySecret");
-        secretModel.setReadOnly(true);
-        secretModel.setMountPath("/user/dir");
+        secretModel.setName(secretName);
+        secretModel.setReadOnly(readOnly);
+        secretModel.setMountPath(mountPath);
+        Map<String, String> data = new HashMap<>();
+        data.put("hello", "world");
+        data.put("test", "test1");
+        secretModel.setData(data);
         SecretHandler secretHandler = new SecretHandler(secretModel);
         try {
             String secretYaml = secretHandler.generate();
@@ -53,11 +63,20 @@ public class KubernetesSecretGeneratorTests {
             KubernetesUtils.writeToFile(secretYaml, tempFile.getPath());
             log.info("Generated YAML: \n" + secretYaml);
             Assert.assertTrue(tempFile.exists());
-            //tempFile.deleteOnExit();
+            assertGeneratedYAML(tempFile);
+            tempFile.deleteOnExit();
         } catch (IOException e) {
             Assert.fail("Unable to write to file");
         } catch (KubernetesPluginException e) {
             Assert.fail("Unable to generate yaml from service");
         }
+    }
+
+    private void assertGeneratedYAML(File yamlFile) throws IOException {
+        Secret secret = KubernetesHelper.loadYaml(yamlFile);
+        Assert.assertEquals(secretName, secret.getMetadata().getName());
+        Assert.assertEquals(2, secret.getData().size());
+        Assert.assertEquals("world", secret.getData().get("hello"));
+        Assert.assertEquals("test1", secret.getData().get("test"));
     }
 }
