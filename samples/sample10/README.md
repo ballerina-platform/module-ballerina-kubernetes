@@ -104,7 +104,7 @@ _(127.0.0.1 is only applicable to docker for mac users. Other users should map t
 from `kubectl get ingress` command.)_
 
 ```bash
-$> curl https://pizza.com/menu -k
+$> curl http://pizza.com/pizzastore/pizza/menu
 Pizza menu
 
 $>curl https://burger.com/menu -k

@@ -16,11 +16,12 @@
  * under the License.
  */
 
-package org.ballerinalang.artifactgen;
+package org.ballerinax.kubernetes.handlers;
 
+import io.fabric8.kubernetes.api.KubernetesHelper;
+import io.fabric8.kubernetes.api.model.Service;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.handlers.ServiceHandler;
 import org.ballerinax.kubernetes.models.ServiceModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.junit.Assert;
@@ -34,25 +35,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Generates kubernetes Service from annotations.
+ * Test kubernetes Service generation.
  */
 public class KubernetesServiceGeneratorTests {
 
     private final Logger log = LoggerFactory.getLogger(KubernetesServiceGeneratorTests.class);
+    private final String serviceName = "MyService";
+    private final String selector = "TestAPP";
+    private final String serviceType = "NodePort";
+    private final int port = 9090;
 
     @Test
     public void testServiceGenerate() {
         ServiceModel serviceModel = new ServiceModel();
-        serviceModel.setName("MyService");
-        serviceModel.setPort(9090);
-        serviceModel.setServiceType("NodePort");
-        serviceModel.setSelector("MyAPP");
+        serviceModel.setName(serviceName);
+        serviceModel.setPort(port);
+        serviceModel.setServiceType(serviceType);
+        serviceModel.setSelector(selector);
         Map<String, String> labels = new HashMap<>();
-        labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, "TestAPP");
+        labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, selector);
         serviceModel.setLabels(labels);
-        ServiceHandler kubernetesServiceGenerator = new ServiceHandler(serviceModel);
         try {
-            String serviceYAML = kubernetesServiceGenerator.generate();
+            String serviceYAML = new ServiceHandler(serviceModel).generate();
             Assert.assertNotNull(serviceYAML);
             File artifactLocation = new File("target/kubernetes");
             artifactLocation.mkdir();
@@ -60,11 +64,23 @@ public class KubernetesServiceGeneratorTests {
             KubernetesUtils.writeToFile(serviceYAML, tempFile.getPath());
             log.info("Generated YAML: \n" + serviceYAML);
             Assert.assertTrue(tempFile.exists());
-            //tempFile.deleteOnExit();
+            assertGeneratedYAML(tempFile);
+            tempFile.deleteOnExit();
         } catch (IOException e) {
-            Assert.fail("Unable to write to file");
+            Assert.fail("Unable to read/write service content");
         } catch (KubernetesPluginException e) {
             Assert.fail("Unable to generate yaml from service");
         }
+    }
+
+    private void assertGeneratedYAML(File yamlFile) throws IOException {
+        Service service = KubernetesHelper.loadYaml(yamlFile);
+        Assert.assertEquals(serviceName, service.getMetadata().getName());
+        Assert.assertEquals(selector, service.getMetadata().getLabels().get(KubernetesConstants
+                .KUBERNETES_SELECTOR_KEY));
+        Assert.assertEquals(serviceType, service.getSpec().getType());
+        Assert.assertEquals(1, service.getSpec().getPorts().size());
+        Assert.assertEquals(port, service.getSpec().getPorts().get(0).getPort().intValue());
+
     }
 }
