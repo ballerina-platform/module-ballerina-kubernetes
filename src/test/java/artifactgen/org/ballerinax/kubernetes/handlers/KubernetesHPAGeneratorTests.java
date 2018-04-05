@@ -20,8 +20,8 @@ package artifactgen.org.ballerinax.kubernetes.handlers;
 
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.handlers.ServiceHandler;
-import org.ballerinax.kubernetes.models.ServiceModel;
+import org.ballerinax.kubernetes.handlers.HPAHandler;
+import org.ballerinax.kubernetes.models.PodAutoscalerModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,29 +34,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Generates kubernetes Service from annotations.
+ * Test kubernetes HPA.
  */
-public class KubernetesServiceGeneratorTests {
+public class KubernetesHPAGeneratorTests {
 
-    private final Logger log = LoggerFactory.getLogger(KubernetesServiceGeneratorTests.class);
+    private final Logger log = LoggerFactory.getLogger(KubernetesHPAGeneratorTests.class);
 
     @Test
-    public void testServiceGenerate() {
-        ServiceModel serviceModel = new ServiceModel();
-        serviceModel.setName("MyService");
-        serviceModel.setPort(9090);
-        serviceModel.setServiceType("NodePort");
-        serviceModel.setSelector("MyAPP");
+    public void testHPAGenerate() {
+        PodAutoscalerModel podAutoscalerModel = new PodAutoscalerModel();
+        podAutoscalerModel.setName("MyHPA");
+        podAutoscalerModel.setCpuPercentage(90);
+        podAutoscalerModel.setMaxReplicas(10);
+        podAutoscalerModel.setMinReplicas(2);
         Map<String, String> labels = new HashMap<>();
         labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, "TestAPP");
-        serviceModel.setLabels(labels);
-        ServiceHandler kubernetesServiceGenerator = new ServiceHandler(serviceModel);
+        podAutoscalerModel.setLabels(labels);
+        HPAHandler hpaHandler = new HPAHandler(podAutoscalerModel);
         try {
-            String serviceYAML = kubernetesServiceGenerator.generate();
+            String serviceYAML = hpaHandler.generate();
             Assert.assertNotNull(serviceYAML);
             File artifactLocation = new File("target/kubernetes");
             artifactLocation.mkdir();
-            File tempFile = File.createTempFile("temp", serviceModel.getName() + ".yaml", artifactLocation);
+            File tempFile = File.createTempFile("temp", podAutoscalerModel.getName() + ".yaml", artifactLocation);
             KubernetesUtils.writeToFile(serviceYAML, tempFile.getPath());
             log.info("Generated YAML: \n" + serviceYAML);
             Assert.assertTrue(tempFile.exists());

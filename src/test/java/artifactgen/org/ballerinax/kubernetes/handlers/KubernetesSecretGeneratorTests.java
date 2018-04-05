@@ -45,15 +45,15 @@ public class KubernetesSecretGeneratorTests {
         secretModel.setMountPath("/user/dir");
         SecretHandler secretHandler = new SecretHandler(secretModel);
         try {
-            String serviceYAML = secretHandler.generate();
-            Assert.assertNotNull(serviceYAML);
+            String secretYaml = secretHandler.generate();
+            Assert.assertNotNull(secretYaml);
             File artifactLocation = new File("target/kubernetes");
             artifactLocation.mkdir();
             File tempFile = File.createTempFile("temp", secretModel.getName() + ".yaml", artifactLocation);
-            KubernetesUtils.writeToFile(serviceYAML, tempFile.getPath());
-            log.info("Generated YAML: \n" + serviceYAML);
+            KubernetesUtils.writeToFile(secretYaml, tempFile.getPath());
+            log.info("Generated YAML: \n" + secretYaml);
             Assert.assertTrue(tempFile.exists());
-            tempFile.deleteOnExit();
+            //tempFile.deleteOnExit();
         } catch (IOException e) {
             Assert.fail("Unable to write to file");
         } catch (KubernetesPluginException e) {
