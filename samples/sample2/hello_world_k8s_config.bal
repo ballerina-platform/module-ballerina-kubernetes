@@ -13,7 +13,6 @@ endpoint http:ServiceEndpoint helloEP {
 };
 
 
-
 @http:ServiceConfig {
     basePath:"/helloWorld"
 }

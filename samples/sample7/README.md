@@ -104,7 +104,7 @@ helloworldep-keystore   Opaque                                1         1m
 6. Access the hello world service with curl command:
 
 - **Using ingress:**
-Add /etc/host entry to match hostname. 
+Add /etc/hosts entry to match hostname. 
 _(127.0.0.1 is only applicable to docker for mac users. Other users should map the hostname with correct ip address 
 from `kubectl get ingress` command.)_
 

@@ -107,7 +107,7 @@ local-pv-2   Bound     pvc-d26dd46d-2c46-11e8-b313-025000000001   1Gi        RWO
 7. Access the hello world service with curl command:
 
 - **Using ingress:**
-Add /etc/host entry to match hostname. 
+Add /etc/hosts entry to match hostname. 
 _(127.0.0.1 is only applicable to docker for mac users. Other users should map the hostname with correct ip address 
 from `kubectl get ingress` command.)_
 

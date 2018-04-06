@@ -88,7 +88,7 @@ helloworldsecuredep-keystore   Opaque                                1         2
 
 - **Using ingress**
 
-Add /etc/host entry to match hostname.
+Add /etc/hosts entry to match hostname.
 _(127.0.0.1 is only applicable to docker for mac users. Other users should map the hostname with correct ip address 
 from `kubectl get ingress` command.)_
  ```

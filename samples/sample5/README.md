@@ -102,7 +102,7 @@ helloworld   Deployment/hello_world_gce-deployment   1% / 50%   1         2     
 
 - **Using ingress**
 
-Add /etc/host entry to match hostname.
+Add /etc/hosts entry to match hostname.
 _(35.188.183.218 is the external ip address from `kubectl get ingress` command.)_
  ```
  35.188.183.218 abc.com

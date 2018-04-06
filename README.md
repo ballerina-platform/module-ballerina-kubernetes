@@ -18,6 +18,8 @@ Annotation based kubernetes extension implementation for ballerina.
 ## Supported Annotations:
 
 ### @kubernetes:Deployment{}
+- Can be added to ballerina service or an endpoint.
+
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
 |name|Name of the deployment|\<outputfilename\>-deployment|
@@ -40,6 +42,8 @@ Annotation based kubernetes extension implementation for ballerina.
 |baseImage|Base image to create the docker image|ballerina/ballerina:latest|
 
 ### @kubernetes:Service{}
+- Can be added to a ballerina endpoint.
+
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
 |name|Name of the Service|\<ballerina service name\>-service|
@@ -48,6 +52,8 @@ Annotation based kubernetes extension implementation for ballerina.
 |port|Service port|Port of the ballerina service|
 
 ### @kubernetes:Ingress{}
+- Can be added to a ballerina endpoint.
+
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
 |name|Name of the Ingress|\<ballerina service name\>-ingress
@@ -59,6 +65,8 @@ Annotation based kubernetes extension implementation for ballerina.
 |enableTLS|Enable ingress TLS|false
 
 ### @kubernetes:HPA{}
+- Can be added to a ballerina service.
+
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
 |name|Name of the Horizontal Pod Autoscaler|\<ballerina service name\>-hpa|
@@ -68,6 +76,8 @@ Annotation based kubernetes extension implementation for ballerina.
 |cpuPrecentage|CPU percentage to start scaling|50|
 
 ### @kubernetes:Secret{}
+- Can be added to a ballerina service.
+
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
 |name|Name secret mount|null|
@@ -76,6 +86,8 @@ Annotation based kubernetes extension implementation for ballerina.
 |data|Paths to data files|null|
 
 ### @kubernetes:ConfigMap{}
+- Can be added to a ballerina service.
+
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
 |name|Name secret mount|null|
@@ -84,6 +96,8 @@ Annotation based kubernetes extension implementation for ballerina.
 |data|Paths to data files|null|
 
 ### @kubernetes:PersistentVolumeClaim{}
+- Can be added to a ballerina service.
+
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
 |name|Name secret mount|null|
@@ -103,16 +117,15 @@ Annotation based kubernetes extension implementation for ballerina.
 
 The docker artifacts will be created in a folder called target with following structure.
 ```bash
-    target/
     └── kubernetes
-    │      		├── deployment.yaml
-    │       	├── ingress.yaml
-    │       	├── secret.yaml
-    │       	├── config_map.yaml
-    │       	├── volume_claim.yaml
-    │       	├── service.yaml
-    │        	└── docker
-    │	      		  └── Dockerfile
+    │           ├── deployment.yaml
+    │           ├── ingress.yaml
+    │           ├── secret.yaml
+    │           ├── config_map.yaml
+    │           ├── volume_claim.yaml
+    │           ├── service.yaml
+    │           └── docker
+    │	        	  └── Dockerfile
     │  	
     └── outputfilename.balx	
 ```
