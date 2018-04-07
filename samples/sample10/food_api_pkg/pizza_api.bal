@@ -28,7 +28,7 @@ service<http:Service> PizzaAPI bind pizzaEP{
         path:"/menu"
     }
     getPizzaMenu (endpoint outboundEP, http:Request req) {
-        http:Response response = {};
+        http:Response response = new;
         response.setStringPayload("Pizza menu \n");
         _ = outboundEP -> respond(response);
     }

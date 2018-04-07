@@ -28,7 +28,7 @@ service<http:Service> BurgerAPI bind burgerEP {
         path:"/menu"
     }
     getBurgerMenu (endpoint outboundEP, http:Request req) {
-        http:Response response = {};
+        http:Response response = new;
         response.setStringPayload("Burger menu \n");
         _ = outboundEP -> respond(response);
     }

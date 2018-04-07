@@ -29,7 +29,7 @@ service<http:Service> PizzaAPI bind pizzaEP{
         path:"/menu"
     }
     getPizzaMenu (endpoint outboundEP, http:Request req) {
-        http:Response response = {};
+        http:Response response = new;
         response.setStringPayload("Pizza menu \n");
         _ = outboundEP -> respond(response);
     }
@@ -55,7 +55,7 @@ service<http:Service> BurgerAPI bind burgerEP {
         path:"/menu"
     }
     getBurgerMenu (endpoint outboundEP, http:Request req) {
-        http:Response response = {};
+        http:Response response = new;
         response.setStringPayload("Burger menu \n");
         _ = outboundEP -> respond(response);
     }

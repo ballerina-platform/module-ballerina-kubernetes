@@ -24,11 +24,10 @@ endpoint http:ServiceEndpoint pizzaEPSecured {
     }
 };
 
+
 @kubernetes:Deployment {
     image:"ballerina.com/pizzashack:2.1.0"
 }
-
-
 @kubernetes:HPA{}
 @http:ServiceConfig {
     basePath:"/customer"
@@ -39,7 +38,7 @@ service<http:Service> Customer bind pizzaEP,pizzaEPSecured{
         path:"/"
     }
     getCustomer (endpoint outboundEP, http:Request request) {
-        http:Response response = {};
+        http:Response response = new;
         response.setStringPayload("Get Customer resource !!!!\n");
         _ = outboundEP -> respond(response);
     }
