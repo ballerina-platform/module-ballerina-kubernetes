@@ -18,7 +18,7 @@ Annotation based kubernetes extension implementation for ballerina.
 ## Supported Annotations:
 
 ### @kubernetes:Deployment{}
-- Can be added to ballerina service or an endpoint.
+- Supported with ballerina services or endpoints.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
@@ -42,7 +42,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |baseImage|Base image to create the docker image|ballerina/ballerina:latest|
 
 ### @kubernetes:Service{}
-- Can be added to a ballerina endpoint.
+- Supported with ballerina endpoints.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
@@ -52,7 +52,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |port|Service port|Port of the ballerina service|
 
 ### @kubernetes:Ingress{}
-- Can be added to a ballerina endpoint.
+- Supported with ballerina endpoints.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
@@ -65,7 +65,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |enableTLS|Enable ingress TLS|false
 
 ### @kubernetes:HPA{}
-- Can be added to a ballerina service.
+- Supported with ballerina services.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
@@ -76,7 +76,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |cpuPrecentage|CPU percentage to start scaling|50|
 
 ### @kubernetes:Secret{}
-- Can be added to a ballerina service.
+- Supported with ballerina service.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
@@ -86,7 +86,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |data|Paths to data files|null|
 
 ### @kubernetes:ConfigMap{}
-- Can be added to a ballerina service.
+- Supported with ballerina services.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
@@ -96,7 +96,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |data|Paths to data files|null|
 
 ### @kubernetes:PersistentVolumeClaim{}
-- Can be added to a ballerina service.
+- Supported with ballerina services.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
@@ -151,7 +151,7 @@ endpoint http:ServiceEndpoint helloEP {
 }
 service<http:Service> helloWorld bind helloEP {
     sayHello (endpoint outboundEP, http:Request request) {
-        http:Response response = {};
+        http:Response response = new;
         response.setStringPayload("Hello, World from service helloWorld ! ");
         _ = outboundEP -> respond(response);
     }
