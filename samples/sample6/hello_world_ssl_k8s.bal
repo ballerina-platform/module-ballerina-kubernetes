@@ -20,7 +20,7 @@ endpoint http:ServiceEndpoint helloWorldSecuredEP {
 }
 service<http:Service> helloWorld bind helloWorldSecuredEP {
      sayHello (endpoint outboundEP, http:Request request) {
-        http:Response response = {};
+        http:Response response = new;
         response.setStringPayload("Hello, World from secured service ! \n");
         _ = outboundEP -> respond(response);
     }

@@ -29,7 +29,7 @@ service<http:Service> helloWorld bind helloWorldEP {
         path:"/sayHello"
     }
     sayHello (endpoint outboundEP, http:Request request) {
-        http:Response response = {};
+        http:Response response = new;
         response.setStringPayload("Hello World\n");
         _ = outboundEP -> respond(response);
     }

@@ -25,7 +25,6 @@ public class KubernetesConstants {
     public static final String ENABLE_DEBUG_LOGS = "debugKubernetes";
     public static final String KUBERNETES_SVC_PROTOCOL = "TCP";
     public static final String KUBERNETES_SELECTOR_KEY = "app";
-    public static final String DEPLOYMENT_NAMESPACE_DEFAULT = "default";
     public static final String DEPLOYMENT_IMAGE_PULL_POLICY_DEFAULT = "IfNotPresent";
     public static final String DEPLOYMENT_LIVENESS_DISABLE = "disable";
     public static final String INGRESS_POSTFIX = "-ingress";

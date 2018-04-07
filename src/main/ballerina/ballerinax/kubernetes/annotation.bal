@@ -19,7 +19,7 @@ package ballerinax.kubernetes;
 @Field {value:"baseImage: Base image for docker image building"}
 @Field {value:"push: Push to remote registry"}
 @Field {value:"dockerCertPath: Docker cert path."}
-public struct DeploymentConfiguration {
+public type DeploymentConfiguration {
     string name;
     map labels;
     int replicas;
@@ -38,7 +38,7 @@ public struct DeploymentConfiguration {
     string baseImage;
     boolean push;
     string dockerCertPath;
-}
+};
 
 @Description {value:"Deployment annotation for Kubernetes"}
 public annotation <service,endpoint> Deployment DeploymentConfiguration;
@@ -46,11 +46,11 @@ public annotation <service,endpoint> Deployment DeploymentConfiguration;
 @Description {value:"Kubernetes service configuration"}
 @Field {value:"labels: Labels for service"}
 @Field {value:"serviceType: Service type of the service"}
-public struct ServiceConfiguration {
+public type ServiceConfiguration {
     string name;
     map labels;
     string serviceType;
-}
+};
 
 @Description {value:"Service annotation for Kubernetes"}
 public annotation <endpoint> Service ServiceConfiguration;
@@ -65,7 +65,7 @@ public annotation <endpoint> Service ServiceConfiguration;
 @Field {value:"targetPath: Target path for url rewrite"}
 @Field {value:"ingressClass: Ingress class"}
 @Field {value:"enableTLS: Enable ingress TLS"}
-public struct IngressConfiguration {
+public type IngressConfiguration {
     string name;
     string endpointName;
     map labels;
@@ -75,7 +75,7 @@ public struct IngressConfiguration {
     string targetPath;
     string ingressClass;
     boolean enableTLS;
-}
+};
 
 @Description {value:"Ingress annotation for Kubernetes"}
 public annotation <endpoint> Ingress IngressConfiguration;
@@ -86,13 +86,13 @@ public annotation <endpoint> Ingress IngressConfiguration;
 @Field {value:"minReplicas: Minimum number of replicas"}
 @Field {value:"maxReplicas: Maximum number of replicas"}
 @Field {value:"cpuPercentage: CPU percentage to start scaling"}
-public struct PodAutoscalerConfig {
+public type PodAutoscalerConfig {
     string name;
     map labels;
     int minReplicas;
     int maxReplicas;
     int cpuPercentage;
-}
+};
 
 @Description {value:"Pod Autoscaler annotation for Kubernetes"}
 public annotation <service> HPA PodAutoscalerConfig;
@@ -103,16 +103,16 @@ public annotation <service> HPA PodAutoscalerConfig;
 @Field {value:"mountPath: Mount path"}
 @Field {value:"readOnly: Is mount read only"}
 @Field {value:"data: Paths to data files"}
-public struct Secret {
+public type Secret {
     string name;
     string mountPath;
     boolean readOnly;
     string[] data;
-}
+};
 
-public struct  SecretMount{
+public type  SecretMount{
     Secret[] secrets;
-}
+};
 
 @Description {value:"Secret volumes annotation for Kubernetes"}
 public annotation <service> Secret SecretMount;
@@ -123,16 +123,16 @@ public annotation <service> Secret SecretMount;
 @Field {value:"readOnly: Is mount read only"}
 @Field {value:"isBallerinaConf: Is file a ballerina config"}
 @Field {value:"data: Paths to data files"}
-public struct ConfigMap {
+public type ConfigMap {
     string name;
     string mountPath;
     boolean readOnly;
     boolean isBallerinaConf;
     string[] data;
-}
-public struct  ConfigMapMount{
+};
+public type  ConfigMapMount{
     ConfigMap[] configMaps;
-}
+};
 
 @Description {value:"ConfigMap volumes annotation for Kubernetes"}
 public annotation <service> ConfigMap ConfigMapMount;
@@ -143,16 +143,16 @@ public annotation <service> ConfigMap ConfigMapMount;
 @Field {value:"accessMode: Access mode"}
 @Field {value:"volumeClaimSize: Size of the volume claim"}
 @Field {value:"readOnly: Is mount read only"}
-public struct PersistentVolumeClaimConfig {
+public type PersistentVolumeClaimConfig {
     string name;
     string mountPath;
     string accessMode;
     string volumeClaimSize;
     boolean readOnly;
-}
-public struct  PersistentVolumeClaims{
+};
+public type  PersistentVolumeClaims{
     PersistentVolumeClaimConfig[] volumeClaims;
-}
+};
 
 @Description {value:"ConfigMap volumes annotation for Kubernetes"}
 public annotation <service> PersistentVolumeClaim PersistentVolumeClaims;

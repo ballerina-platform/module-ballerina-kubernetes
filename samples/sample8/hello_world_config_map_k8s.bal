@@ -37,7 +37,7 @@ service<http:Service> helloWorld bind helloWorldEP {
         path:"/config/{user}"
     }
     getConfig (endpoint outboundEP, http:Request request,string user) {
-        http:Response response = {};
+        http:Response response = new;
         string userId = getConfigValue(user, "userid");
         string groups = getConfigValue(user, "groups");
         string payload = "{userId: "+userId+", groups: "+groups+"}";
@@ -51,7 +51,7 @@ function getConfigValue (string instanceId, string property) returns (string) {
         string value => {
             return value == null ? "Invalid user" : value;
         }
-        any|null => return "Invalid user";
+        () => return "Invalid user";
     }
 }
 

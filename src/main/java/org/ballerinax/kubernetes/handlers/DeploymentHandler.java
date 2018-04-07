@@ -187,7 +187,6 @@ public class DeploymentHandler implements ArtifactHandler {
         Deployment deployment = new DeploymentBuilder()
                 .withNewMetadata()
                 .withName(deploymentModel.getName())
-                .withNamespace(deploymentModel.getNamespace())
                 .withLabels(deploymentModel.getLabels())
                 .endMetadata()
                 .withNewSpec()

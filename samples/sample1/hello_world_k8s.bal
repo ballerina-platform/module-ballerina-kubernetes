@@ -11,7 +11,7 @@ endpoint http:ServiceEndpoint helloWorldEP {
 }
 service<http:Service> helloWorld bind helloWorldEP {
      sayHello (endpoint outboundEP, http:Request request) {
-        http:Response response = {};
+        http:Response response = new;
         response.setStringPayload("Hello, World from service helloWorld ! \n");
         _ = outboundEP -> respond(response);
     }

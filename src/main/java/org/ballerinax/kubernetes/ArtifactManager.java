@@ -363,7 +363,6 @@ class ArtifactManager {
         String balxName = KubernetesUtils.extractBalxName(balxFilePath);
         String deploymentName = balxName + DEPLOYMENT_POSTFIX;
         deploymentModel.setName(getValidName(deploymentName));
-        deploymentModel.setNamespace(KubernetesConstants.DEPLOYMENT_NAMESPACE_DEFAULT);
         deploymentModel.setImagePullPolicy(KubernetesConstants.DEPLOYMENT_IMAGE_PULL_POLICY_DEFAULT);
         deploymentModel.setEnableLiveness(KubernetesConstants.DEPLOYMENT_LIVENESS_DISABLE);
         int defaultReplicas = 1;
