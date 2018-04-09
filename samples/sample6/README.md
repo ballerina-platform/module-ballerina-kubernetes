@@ -1,108 +1,126 @@
-## Sample6: Kubernetes SSL
+## Sample5: Kubernetes Hello World in Google Cloud Environment
 
-- This sample runs simple ballerina hello world service in kubernetes cluster with https. Keystore will 
-  automatically passed into relevant POD by using k8s secret volume mount.
-- The endpoint is annotated with @kubernetes:Service{} and without passing serviceType as NodePort. 
-- Note that the @kubernetes:Deployment{} is optional.
-- Default values for kubernetes annotation attributes will be used to create artifacts.
+- This sample runs  ballerina hello world service in GCE kubernetes cluster with enableLiveness probe and  hostname
+ mapping for ingress. 
+- This sample will build the docker image and push it to docker-hub. 
+- Kubernetes cluster will pull the image from docker registry.
 - Following files will be generated from this sample.
     ``` 
     $> docker image
-    hello_world_k8s:latest
+    anuruddhal/gce-sample:1.0
     
     $> tree
         .
-        ├── README.md
-        ├── hello_world_ssl_k8s.bal
-        ├── hello_world_ssl_k8s.balx
-        └── kubernetes
-            ├── docker
-            │   └── Dockerfile
-            ├── hello_world_ssl_k8s_deployment.yaml
-            ├── hello_world_ssl_k8s_ingress.yaml
-            ├── hello_world_ssl_k8s_secret.yaml
-            └── hello_world_ssl_k8s_svc.yaml
+        ├── hello_world_gce.balx
+        └── target
+            └── hello_world_gce
+                └── kubernetes
+                    ├── docker
+                    │   └── Dockerfile
+                    ├── hello_world_gce-deployment.yaml
+                    ├── helloWorld-hpa.yaml
+                    ├── helloWorld-ingress.yaml
+                    └── helloWorld-svc.yaml
     ```
 ### How to run:
 
-1. Compile the  hello_world_ssl_k8s.bal file. Command to run kubernetes artifacts will be printed on success:
+1. Configure [kubernetes cluster and ingress controller](https://cloud.google.com/community/tutorials/nginx-ingress-gke) in google cloud.
+
+2. Export docker registry username and password as envrionment variable.
 ```bash
-$> ballerina build hello_world_ssl_k8s.bal
-@kubernetes:Docker 			 - complete 3/3 
-@kubernetes:Deployment 		 - complete 1/1
-@kubernetes:Service 		 - complete 1/1
-@kubernetes:Secret 		 - complete 1/1
-@kubernetes:Ingress 		 - complete 1/1
-Run following command to deploy kubernetes artifacts: 
-kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample6/kubernetes/
+export DOCKER_USERNAME=<username>
+export DOCKER_PASSWORD=<password>
 ```
 
-2. hello_world_ssl_k8s.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
+3. Compile the  hello_world_gce.bal file. Command to run kubernetes artifacts will be printed on success:
+```bash
+$> ballerina build hello_world_gce.bal
+@kubernetes:Docker 				    - complete 3/3
+@kubernetes:HPA 			- complete 1/1
+@kubernetes:Deployment 	    - complete 1/1
+@kubernetes:Ingress 		- complete 1/1
+
+Run following command to deploy kubernetes artifacts:
+kubectl apply -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample5/kubernetes/
+```
+
+4. hello_world_gce.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
 .
-├── README.md
-├── hello_world_ssl_k8s.bal
-├── hello_world_ssl_k8s.balx
-└── kubernetes
-    ├── docker
-    │   └── Dockerfile
-    ├── hello_world_ssl_k8s_deployment.yaml
-    ├── hello_world_ssl_k8s_ingress.yaml
-    ├── hello_world_ssl_k8s_secret.yaml
-    └── hello_world_ssl_k8s_svc.yaml
+├── hello_world_gce.balx
+└── target
+    └── hello_world_gce
+        └── kubernetes
+            ├── docker
+            │   └── Dockerfile
+            ├── hello_world_gce-deployment.yaml
+            ├── helloWorld-hpa.yaml
+            ├── helloWorld-ingress.yaml
+            └── helloWorld-svc.yaml
 ```
 
-3. Verify the docker image is created:
+5. Verify the docker image is created:
 ```bash
 $> docker images
-REPOSITORY             TAG                 IMAGE ID            CREATED             SIZE
-hello_world_ssl_k8s       latest              df83ae43f69b        2 minutes ago        103MB
+REPOSITORY                   TAG                 IMAGE ID            CREATED             SIZE
+anuruddhal/gce-sample        1.0                 88cabd203149        4 minutes ago       102MB
 
 ```
 
-4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
+6. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample6/kubernetes/
-ingress "helloworld-ingress" created
-secret "helloworldsecuredep-keystore" created
-service "helloworldsecuredep-svc" created
+$> kubectl create -f target/hello_world_gce/kubernetes
+deployment "hello_world_gce-deployment" created
+horizontalpodautoscaler "helloworld" created
+ingress "helloworld" created
+service "helloworld" created
 ```
 
-5. Verify kubernetes deployment,service,secret and ingress is deployed:
+7. Verify kubernetes deployment,service and ingress is running:
 ```bash
 $> kubectl get pods
 NAME                                         READY     STATUS    RESTARTS   AGE
-hello-world-k8s-deployment-bf8f98c7c-twwf9   1/1       Running   0          0s
+hello_world_gce-deployment-8477c9c446-h4dnr   1/1       Running   0          8s
+
 
 $> kubectl get svc
-NAME                    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
-helloworldep           ClusterIP    10.96.118.214    <none>        9090/TCP         1m
+NAME         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
+helloworld   NodePort    10.11.255.30   <none>        9090:30949/TCP   2m
 
-$> kubectl get secret
-NAME                           TYPE                                  DATA      AGE
-helloworldsecuredep-keystore   Opaque                                1         21m
+
+$> kubectl get ingress
+NAME         HOSTS     ADDRESS          PORTS     AGE
+helloworld   abc.com   35.188.183.218   80, 443   1m
+
+$> kubectl get hpa
+NAME         REFERENCE                               TARGETS    MINPODS   MAXPODS   REPLICAS   AGE
+helloworld   Deployment/hello_world_gce-deployment   1% / 50%   1         2         1          2m
 ```
 
-6. Access the hello world service with curl command:
+8. Access the hello world service with curl command:
 
 - **Using ingress**
 
 Add /etc/hosts entry to match hostname.
-_(127.0.0.1 is only applicable to docker for mac users. Other users should map the hostname with correct ip address 
-from `kubectl get ingress` command.)_
+_(35.188.183.218 is the external ip address from `kubectl get ingress` command.)_
  ```
- 127.0.0.1 abc.com
+ 35.188.183.218 abc.com
  ```
 Use curl command with hostname to access the service.
 ```bash
-$> curl https://abc.com/helloWorld/sayHello -k
+$> curl http://abc.com/helloWorld/sayHello
 Hello, World from service helloWorld !
+```
 
-
-7. Undeploy sample:
+9. Undeploy sample:
 ```bash
-$> kubectl delete -f /Users/lakmal/ballerina/kubernetes/samples/sample6/kubernetes/
-
-
+$> kubectl delete -f ./target/hello_world_gce/kubernetes
+```
+## Troubleshooting
+- Run following commands to deploy ingress backend and controller
+```bash
+$> helm init
+$> kubectl create clusterrolebinding permissive-binding --clusterrole=cluster-admin --user=admin --user=kubelet --group=system:serviceaccounts;
+$> helm install --name nginx-ingress stable/nginx-ingress --set rbac.create=true
 ```
