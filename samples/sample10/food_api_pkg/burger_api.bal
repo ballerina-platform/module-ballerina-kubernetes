@@ -8,7 +8,7 @@ import ballerinax/kubernetes;
     path:"/",
     targetPath:"/burger"
 }
-endpoint http:ServiceEndpoint burgerEP {
+endpoint http:Listener burgerEP {
     port:9096,
     secureSocket:{
         keyStore:{

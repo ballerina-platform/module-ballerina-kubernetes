@@ -8,7 +8,7 @@ import ballerinax/kubernetes;
     hostname:"abc.com"
 }
 @kubernetes:Service{name:"hello"}
-endpoint http:ServiceEndpoint helloEP {
+endpoint http:Listener helloEP {
     port:9090
 };
 

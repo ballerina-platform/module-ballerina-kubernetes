@@ -157,7 +157,7 @@ import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:Service{name:"hello"}
-endpoint http:ServiceEndpoint helloEP {
+endpoint http:Listener helloEP {
     port:9090
 };
 

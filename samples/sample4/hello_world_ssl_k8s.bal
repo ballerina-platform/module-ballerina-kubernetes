@@ -5,7 +5,7 @@ import ballerinax/kubernetes;
 @kubernetes:Ingress{
     hostname:"abc.com"
 }
-endpoint http:ServiceEndpoint helloWorldSecuredEP {
+endpoint http:Listener helloWorldSecuredEP {
     port:9090,
     secureSocket: {
         keyStore: {

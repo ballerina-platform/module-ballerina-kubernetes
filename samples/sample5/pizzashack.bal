@@ -5,7 +5,7 @@ import ballerinax/kubernetes;
     hostname:"internal.pizzashack.com"
 }
 @kubernetes:Service{}
-endpoint http:ServiceEndpoint pizzaEP {
+endpoint http:Listener pizzaEP {
     port:9090
 };
 
@@ -14,7 +14,7 @@ endpoint http:ServiceEndpoint pizzaEP {
 @kubernetes:Ingress{
     hostname:"pizzashack.com"
 }
-endpoint http:ServiceEndpoint pizzaEPSecured {
+endpoint http:Listener pizzaEPSecured {
     port:9095,
     secureSocket: {
         keyStore: {

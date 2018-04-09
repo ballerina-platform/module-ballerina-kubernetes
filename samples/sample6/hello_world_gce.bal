@@ -5,7 +5,7 @@ import ballerinax/kubernetes;
     hostname:"abc.com"
 }
 @kubernetes:Service{serviceType:"NodePort"}
-endpoint http:ServiceEndpoint gceHelloWorldDEP {
+endpoint http:Listener gceHelloWorldDEP {
     port:9090
 };
 
