@@ -21,7 +21,6 @@ package org.ballerinax.kubernetes.processors;
 import org.apache.commons.codec.binary.Base64;
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.EndpointNode;
-import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.IngressModel;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
@@ -49,7 +48,7 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 /**
  * Ingress annotation processor.
  */
-public class IngressAnnotationProcessor implements AnnotationProcessor {
+public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
 
 
     /**
@@ -132,12 +131,6 @@ public class IngressAnnotationProcessor implements AnnotationProcessor {
             }
         }
         KubernetesDataHolder.getInstance().addIngressModel(ingressModel);
-    }
-
-    @Override
-    public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode) throws
-            KubernetesPluginException {
-        throw new UnsupportedOperationException();
     }
 
     /**

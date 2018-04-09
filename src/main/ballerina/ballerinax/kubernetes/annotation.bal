@@ -9,7 +9,6 @@ package ballerinax.kubernetes;
 @Field {value:"initialDelaySeconds: Initial delay in seconds before performing the first probe"}
 @Field {value:"periodSeconds: Liveness probe interval"}
 @Field {value:"imagePullPolicy: Docker image pull policy"}
-@Field {value:"namespace: Kubernetes namespace"}
 @Field {value:"image: Docker image with tag"}
 @Field {value:"envVars: Environment varialbes for container"}
 @Field {value:"buildImage: Docker image to be build or not"}
@@ -28,7 +27,6 @@ public type DeploymentConfiguration {
     int initialDelaySeconds;
     int periodSeconds;
     string imagePullPolicy;
-    string namespace;
     string image;
     map env;
     boolean buildImage;
@@ -156,3 +154,41 @@ public type  PersistentVolumeClaims{
 
 @Description {value:"ConfigMap volumes annotation for Kubernetes"}
 public annotation <service> PersistentVolumeClaim PersistentVolumeClaims;
+
+@Description {value:"Kubernetes job configuration"}
+@Field {value:"name: Name of the job"}
+@Field {value:"labels: Labels for job"}
+@Field {value:"restartPolicy: Restart policy "}
+@Field {value:"backoffLimit: Backoff limit"}
+@Field {value:"activeDeadlineSeconds: Active deadline seconds"}
+@Field {value:"schedule: Schedule for cron jobs"}
+@Field {value:"image: Docker image with tag"}
+@Field {value:"envVars: Environment varialbes for container"}
+@Field {value:"buildImage: Docker image to be build or not"}
+@Field {value:"dockerHost: Docker host IP and docker PORT. (e.g minikube IP and docker PORT)"}
+@Field {value:"username: Username for docker registry"}
+@Field {value:"password: Password for docker registry"}
+@Field {value:"baseImage: Base image for docker image building"}
+@Field {value:"push: Push to remote registry"}
+@Field {value:"dockerCertPath: Docker cert path."}
+public type JobConfig {
+    string name;
+    map labels;
+    string restartPolicy;
+    string backoffLimit;
+    string activeDeadlineSeconds;
+    string schedule;
+    map env;
+    string imagePullPolicy;
+    string image;
+    boolean buildImage;
+    string dockerHost;
+    string username;
+    string password;
+    string baseImage;
+    boolean push;
+    string dockerCertPath;
+};
+
+@Description {value:"Job annotation for Kubernetes"}
+public annotation <function> Job JobConfig;

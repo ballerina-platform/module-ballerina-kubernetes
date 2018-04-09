@@ -1,11 +1,10 @@
 /*
  * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
- * You may obtain a copy of the License at
  *
+ * You may obtain a copy of the License at
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
@@ -15,14 +14,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
-import org.ballerinalang.model.tree.ServiceNode;
+import org.ballerinalang.model.tree.FunctionNode;
+import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.JobModel;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
-import org.ballerinax.kubernetes.models.PodAutoscalerModel;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
@@ -33,51 +32,55 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
- * HPA annotation processor.
+ * Job Annotation processor.
  */
-public class HPAAnnotationProcessor extends AbstractAnnotationProcessor {
+public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
 
     /**
-     * Enum class for pod autoscaler configurations.
+     * Enum class for JobConfiguration.
      */
-    private enum PodAutoscalerConfiguration {
+    private enum JobConfiguration {
         name,
         labels,
-        minReplicas,
-        maxReplicas,
-        cpuPercentage
+        restartPolicy,
+        backoffLimit,
+        activeDeadlineSeconds,
+        schedule
     }
 
-    @Override
-    public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode) throws
+
+    public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
-        PodAutoscalerModel podAutoscalerModel = new PodAutoscalerModel();
+        JobModel jobModel = new JobModel();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
-            PodAutoscalerConfiguration podAutoscalerConfiguration =
-                    PodAutoscalerConfiguration.valueOf(keyValue.getKey().toString());
+            JobConfiguration jobConfiguration =
+                    JobConfiguration.valueOf(keyValue.getKey().toString());
             String annotationValue = resolveValue(keyValue.getValue().toString());
-            switch (podAutoscalerConfiguration) {
+            switch (jobConfiguration) {
                 case name:
-                    podAutoscalerModel.setName(getValidName(annotationValue));
+                    jobModel.setName(getValidName(annotationValue));
                     break;
                 case labels:
-                    podAutoscalerModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    jobModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
-                case cpuPercentage:
-                    podAutoscalerModel.setCpuPercentage(Integer.parseInt(annotationValue));
+                case restartPolicy:
+                    jobModel.setRestartPolicy(KubernetesConstants.RestartPolicy.valueOf(annotationValue).name());
                     break;
-                case minReplicas:
-                    podAutoscalerModel.setMinReplicas(Integer.parseInt(annotationValue));
+                case backoffLimit:
+                    jobModel.setBackoffLimit(Integer.parseInt(annotationValue));
                     break;
-                case maxReplicas:
-                    podAutoscalerModel.setMaxReplicas(Integer.parseInt(annotationValue));
+                case activeDeadlineSeconds:
+                    jobModel.setActiveDeadlineSeconds(Integer.parseInt(annotationValue));
+                    break;
+                case schedule:
+                    jobModel.setSchedule(annotationValue);
                     break;
                 default:
                     break;
             }
         }
-        KubernetesDataHolder.getInstance().setPodAutoscalerModel(podAutoscalerModel);
+        KubernetesDataHolder.getInstance().setJobModel(jobModel);
     }
 }

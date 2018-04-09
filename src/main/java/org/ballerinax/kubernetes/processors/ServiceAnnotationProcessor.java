@@ -20,7 +20,6 @@ package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.EndpointNode;
-import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.models.ServiceModel;
@@ -39,7 +38,7 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 /**
  * Service annotation processor.
  */
-public class ServiceAnnotationProcessor implements AnnotationProcessor {
+public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
 
     /**
      * Enum for Service configurations.
@@ -92,11 +91,5 @@ public class ServiceAnnotationProcessor implements AnnotationProcessor {
             }
         }
         KubernetesDataHolder.getInstance().addBEndpointToK8sServiceMap(endpointNode.getName().getValue(), serviceModel);
-    }
-
-    @Override
-    public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode) throws
-            KubernetesPluginException {
-        throw new UnsupportedOperationException();
     }
 }

@@ -22,6 +22,7 @@ import org.ballerinalang.compiler.plugins.AbstractCompilerPlugin;
 import org.ballerinalang.compiler.plugins.SupportedAnnotationPackages;
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.EndpointNode;
+import org.ballerinalang.model.tree.FunctionNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.util.diagnostic.Diagnostic;
 import org.ballerinalang.util.diagnostic.DiagnosticLog;
@@ -85,6 +86,21 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                         (endpointNode, attachmentNode);
             } catch (KubernetesPluginException e) {
                 dlog.logDiagnostic(Diagnostic.Kind.ERROR, endpointNode.getPosition(), e.getMessage());
+            }
+        }
+
+    }
+
+    @Override
+    public void process(FunctionNode functionNode, List<AnnotationAttachmentNode> annotations) {
+        setCanProcess(true);
+        for (AnnotationAttachmentNode attachmentNode : annotations) {
+            String annotationKey = attachmentNode.getAnnotationName().getValue();
+            try {
+                AnnotationProcessorFactory.getAnnotationProcessorInstance(annotationKey).processAnnotation
+                        (functionNode, attachmentNode);
+            } catch (KubernetesPluginException e) {
+                dlog.logDiagnostic(Diagnostic.Kind.ERROR, functionNode.getPosition(), e.getMessage());
             }
         }
 
