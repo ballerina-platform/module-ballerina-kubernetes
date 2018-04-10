@@ -34,6 +34,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.LISTENER;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
 
@@ -76,6 +77,11 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     @Override
     public void process(EndpointNode endpointNode, List<AnnotationAttachmentNode> annotations) {
         setCanProcess(true);
+        if (!LISTENER.equals(endpointNode.getEndPointType().getTypeName().getValue())) {
+            dlog.logDiagnostic(Diagnostic.Kind.ERROR, endpointNode.getPosition(), "@kubernetes annotations are only " +
+                    "supported by Listener endpoints.");
+            return;
+        }
         for (AnnotationAttachmentNode attachmentNode : annotations) {
             String annotationKey = attachmentNode.getAnnotationName().getValue();
             try {
