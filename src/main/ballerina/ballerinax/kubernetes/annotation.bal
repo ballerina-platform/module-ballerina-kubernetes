@@ -51,7 +51,7 @@ public type ServiceConfiguration {
 };
 
 @Description {value:"Service annotation for Kubernetes"}
-public annotation <endpoint> Service ServiceConfiguration;
+public annotation <endpoint,service> Service ServiceConfiguration;
 
 @Description {value:"Kubernetes ingress configuration"}
 @Field {value:"name: Name of the ingress"}
@@ -76,7 +76,7 @@ public type IngressConfiguration {
 };
 
 @Description {value:"Ingress annotation for Kubernetes"}
-public annotation <endpoint> Ingress IngressConfiguration;
+public annotation <service,endpoint> Ingress IngressConfiguration;
 
 @Description {value:"Kubernetes Horizontal Pod Autoscaler configuration"}
 @Field {value:"name: Name of the Autoscaler"}

@@ -126,6 +126,10 @@ class ArtifactManager {
         Map<String, Set<SecretModel>> secretModelsMap = kubernetesDataHolder.getSecretModels();
         for (IngressModel ingressModel : ingressModels) {
             ServiceModel serviceModel = kubernetesDataHolder.getServiceModel(ingressModel.getEndpointName());
+            if (serviceModel == null) {
+                throw new KubernetesPluginException("@kubernetes:Ingress annotation should be followed by " +
+                        "@kubernetes:Service annotation.");
+            }
             ingressModel.setServiceName(serviceModel.getName());
             ingressModel.setServicePort(serviceModel.getPort());
             if (secretModelsMap.get(ingressModel.getEndpointName()) != null && secretModelsMap.get(ingressModel
@@ -207,7 +211,7 @@ class ArtifactManager {
             KubernetesUtils.writeToFile(deploymentContent, outputDir + File
                     .separator + balxFileName + DEPLOYMENT_FILE_POSTFIX + YAML);
             //generate dockerfile and docker image
-            generateDocker(deploymentModel);
+            generateDocker(getDockerModel(deploymentModel));
             // generate HPA
             generatePodAutoscaler(deploymentModel);
         } catch (IOException e) {
@@ -229,7 +233,7 @@ class ArtifactManager {
             KubernetesUtils.writeToFile(content, outputDir + File
                     .separator + balxFileName + JOB_FILE_POSTFIX + YAML);
             //generate dockerfile and docker image
-            generateDocker(jobModel);
+            generateDocker(getDockerModel(jobModel));
         } catch (IOException e) {
             throw new KubernetesPluginException("Error while writing job content", e);
         }
@@ -329,21 +333,7 @@ class ArtifactManager {
         KubernetesUtils.printInstruction("kubectl apply -f " + outputDir);
     }
 
-    private void generateDocker(JobModel jobModel) throws KubernetesPluginException {
-        DockerModel dockerModel = new DockerModel();
-        String dockerImage = jobModel.getImage();
-        String imageTag = dockerImage.substring(dockerImage.lastIndexOf(":") + 1, dockerImage.length());
-        dockerModel.setBaseImage(jobModel.getBaseImage());
-        dockerModel.setName(dockerImage);
-        dockerModel.setTag(imageTag);
-        dockerModel.setUsername(jobModel.getUsername());
-        dockerModel.setPassword(jobModel.getPassword());
-        dockerModel.setPush(jobModel.isPush());
-        dockerModel.setBalxFileName(KubernetesUtils.extractBalxName(balxFilePath) + BALX);
-        dockerModel.setService(false);
-        dockerModel.setDockerHost(jobModel.getDockerHost());
-        dockerModel.setDockerCertPath(jobModel.getDockerCertPath());
-
+    private void generateDocker(DockerModel dockerModel) throws KubernetesPluginException {
         DockerHandler dockerArtifactHandler = new DockerHandler(dockerModel);
         String dockerContent = dockerArtifactHandler.generate();
         try {
@@ -372,14 +362,30 @@ class ArtifactManager {
         }
     }
 
+    private DockerModel getDockerModel(JobModel jobModel) {
+        DockerModel dockerModel = new DockerModel();
+        String dockerImage = jobModel.getImage();
+        String imageTag = dockerImage.substring(dockerImage.lastIndexOf(":") + 1, dockerImage.length());
+        dockerModel.setBaseImage(jobModel.getBaseImage());
+        dockerModel.setName(dockerImage);
+        dockerModel.setTag(imageTag);
+        dockerModel.setUsername(jobModel.getUsername());
+        dockerModel.setPassword(jobModel.getPassword());
+        dockerModel.setPush(jobModel.isPush());
+        dockerModel.setBalxFileName(KubernetesUtils.extractBalxName(balxFilePath) + BALX);
+        dockerModel.setService(false);
+        dockerModel.setDockerHost(jobModel.getDockerHost());
+        dockerModel.setDockerCertPath(jobModel.getDockerCertPath());
+        return dockerModel;
+    }
+
     /**
      * Create docker artifacts.
      *
      * @param deploymentModel Deployment model
      * @throws KubernetesPluginException If an error occurs while generating artifacts
      */
-    private void generateDocker(DeploymentModel deploymentModel)
-            throws KubernetesPluginException {
+    private DockerModel getDockerModel(DeploymentModel deploymentModel) {
         DockerModel dockerModel = new DockerModel();
         String dockerImage = deploymentModel.getImage();
         String imageTag = dockerImage.substring(dockerImage.lastIndexOf(":") + 1, dockerImage.length());
@@ -397,33 +403,7 @@ class ArtifactManager {
         dockerModel.setDockerCertPath(deploymentModel.getDockerCertPath());
         dockerModel.setBuildImage(deploymentModel.isBuildImage());
         dockerModel.setCommandArg(deploymentModel.getCommandArgs());
-
-        DockerHandler dockerArtifactHandler = new DockerHandler(dockerModel);
-        String dockerContent = dockerArtifactHandler.generate();
-        try {
-            out.print("@kubernetes:Docker \t\t\t - complete 0/3 \r");
-            String dockerOutputDir = outputDir + File.separator + DOCKER;
-            KubernetesUtils.writeToFile(dockerContent, dockerOutputDir + File.separator + "Dockerfile");
-            out.print("@kubernetes:Docker \t\t\t - complete 1/3 \r");
-            String balxDestination = dockerOutputDir + File.separator + KubernetesUtils.extractBalxName
-                    (balxFilePath) + BALX;
-            KubernetesUtils.copyFile(balxFilePath, balxDestination);
-            //check image build is enabled.
-            if (dockerModel.isBuildImage()) {
-                dockerArtifactHandler.buildImage(dockerModel, dockerOutputDir);
-                out.print("@kubernetes:Docker \t\t\t - complete 2/3 \r");
-                Files.delete(Paths.get(balxDestination));
-                //push only if image build is enabled.
-                if (dockerModel.isPush()) {
-                    dockerArtifactHandler.pushImage(dockerModel);
-                }
-                out.print("@kubernetes:Docker \t\t\t - complete 3/3");
-            }
-        } catch (IOException e) {
-            throw new KubernetesPluginException("Unable to write Dockerfile content");
-        } catch (InterruptedException e) {
-            throw new KubernetesPluginException("Unable to create docker images " + e.getMessage());
-        }
+        return dockerModel;
     }
 
 
