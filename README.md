@@ -30,7 +30,6 @@ Annotation based kubernetes extension implementation for ballerina.
 |periodSeconds|Liveness probe interval|5s|
 |livenessPort|Port which the Liveness probe check|\<ServicePort\>|
 |imagePullPolicy|Docker image pull policy|IfNotPresent|
-|namespace|Kubernetes namespace|default|
 |image|Docker image with tag|<output file name>:latest|
 |env|List of environment variables|null|
 |buildImage|Building docker image|true|
@@ -106,6 +105,28 @@ Annotation based kubernetes extension implementation for ballerina.
 |accessMode|Access mode|ReadWriteOnce|
 |volumeClaimSize|Size of the volume claim|null|
 
+### @kubernetes:Job{}
+- Supported with ballerina main function.
+
+|**Annotation Name**|**Description**|**Default value**|
+|--|--|--|
+|name| Name of the job|\<output file name\>-job|
+|labels| Labels for job|"app: \<outputfilename\>"|
+|restartPolicy| Restart policy|Never|
+|backoffLimit| Backoff limit|3|
+|activeDeadlineSeconds| Active deadline seconds|20|
+|schedule| Schedule for cron jobs|none|
+|imagePullPolicy|Docker image pull policy|IfNotPresent|
+|image|Docker image with tag|\<output file name\>:latest|
+|env|List of environment variables|null|
+|buildImage|Building docker image|true|
+|dockerHost|Docker host IP and docker PORT.(e.g "tcp://192.168.99.100:2376")|null|
+|dockerCertPath|Docker cert path|null|
+|push|Push docker image to registry. This can only be true if image build is true.|false|
+|username|Username for the docker registry|null|
+|password|Password for the docker registry|null|
+|baseImage|Base image to create the docker image|ballerina/ballerina:latest|
+
 
 ## How to run
 
@@ -136,7 +157,7 @@ import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:Service{name:"hello"}
-endpoint http:ServiceEndpoint helloEP {
+endpoint http:Listener helloEP {
     port:9090
 };
 

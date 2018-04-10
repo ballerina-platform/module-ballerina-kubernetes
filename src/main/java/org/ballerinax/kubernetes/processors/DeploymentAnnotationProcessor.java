@@ -35,7 +35,7 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 /**
  * Deployment Annotation processor.
  */
-public class DeploymentAnnotationProcessor implements AnnotationProcessor {
+public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
 
     /**
      * Enum class for DeploymentConfiguration.

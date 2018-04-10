@@ -35,6 +35,7 @@ public class KubernetesDataHolder {
     private Set<IngressModel> ingressModelSet;
     private Set<ConfigMapModel> configMapModelSet;
     private Set<PersistentVolumeClaimModel> volumeClaimModelSet;
+    private JobModel jobModel;
     private static KubernetesDataHolder instance;
 
     private KubernetesDataHolder() {
@@ -121,5 +122,13 @@ public class KubernetesDataHolder {
 
     public void addIngressModel(IngressModel ingressModel) {
         this.ingressModelSet.add(ingressModel);
+    }
+
+    public JobModel getJobModel() {
+        return jobModel;
+    }
+
+    public void setJobModel(JobModel jobModel) {
+        this.jobModel = jobModel;
     }
 }

@@ -41,6 +41,8 @@ public class AnnotationProcessorFactory {
                 return new ConfigMapAnnotationProcessor();
             case "PersistentVolumeClaim":
                 return new VolumeClaimAnnotationProcessor();
+            case "Job":
+                return new JobAnnotationProcessor();
             default:
                 throw new KubernetesPluginException("Error while getting annotation processor for type: " + type);
         }

@@ -20,7 +20,6 @@ package org.ballerinax.kubernetes.processors;
 
 import org.apache.commons.codec.binary.Base64;
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
-import org.ballerinalang.model.tree.EndpointNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
@@ -46,7 +45,7 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 /**
  * Secrets annotation processor.
  */
-public class SecretAnnotationProcessor implements AnnotationProcessor {
+public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
 
     /**
      * Enum class for volume configurations.
@@ -107,11 +106,5 @@ public class SecretAnnotationProcessor implements AnnotationProcessor {
             dataMap.put(key, content);
         }
         return dataMap;
-    }
-
-    @Override
-    public void processAnnotation(EndpointNode endpointNode, AnnotationAttachmentNode attachmentNode) throws
-            KubernetesPluginException {
-        throw new UnsupportedOperationException();
     }
 }

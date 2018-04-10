@@ -8,7 +8,7 @@ import ballerinax/kubernetes;
     targetPath:"/"
 }
 @kubernetes:Service{}
-endpoint http:ServiceEndpoint pizzaEP {
+endpoint http:Listener pizzaEP {
     port:9099
 };
 
@@ -43,7 +43,7 @@ service<http:Service> PizzaAPI bind pizzaEP{
     targetPath:"/burger"
 }
 @kubernetes:Service{}
-endpoint http:ServiceEndpoint burgerEP {
+endpoint http:Listener burgerEP {
     port:9096
 };
 @http:ServiceConfig {

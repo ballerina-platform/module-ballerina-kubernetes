@@ -19,7 +19,6 @@
 package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
-import org.ballerinalang.model.tree.EndpointNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.ConfigMapModel;
@@ -46,7 +45,7 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 /**
  * ConfigMap annotation processor.
  */
-public class ConfigMapAnnotationProcessor implements AnnotationProcessor {
+public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
 
     /**
      * Enum class for volume configurations.
@@ -100,12 +99,6 @@ public class ConfigMapAnnotationProcessor implements AnnotationProcessor {
             }
         }
         KubernetesDataHolder.getInstance().addConfigMaps(configMapModels);
-    }
-
-    @Override
-    public void processAnnotation(EndpointNode endpointNode, AnnotationAttachmentNode attachmentNode)
-            throws KubernetesPluginException {
-        throw new UnsupportedOperationException();
     }
 
     private Map<String, String> getDataForConfigMap(List<BLangExpression> data) throws KubernetesPluginException {

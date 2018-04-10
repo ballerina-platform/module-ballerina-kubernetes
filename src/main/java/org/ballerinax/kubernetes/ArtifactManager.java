@@ -24,6 +24,7 @@ import org.ballerinax.kubernetes.handlers.DeploymentHandler;
 import org.ballerinax.kubernetes.handlers.DockerHandler;
 import org.ballerinax.kubernetes.handlers.HPAHandler;
 import org.ballerinax.kubernetes.handlers.IngressHandler;
+import org.ballerinax.kubernetes.handlers.JobHandler;
 import org.ballerinax.kubernetes.handlers.PersistentVolumeClaimHandler;
 import org.ballerinax.kubernetes.handlers.SecretHandler;
 import org.ballerinax.kubernetes.handlers.ServiceHandler;
@@ -31,6 +32,7 @@ import org.ballerinax.kubernetes.models.ConfigMapModel;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.DockerModel;
 import org.ballerinax.kubernetes.models.IngressModel;
+import org.ballerinax.kubernetes.models.JobModel;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
 import org.ballerinax.kubernetes.models.PodAutoscalerModel;
@@ -57,6 +59,8 @@ import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_LATEST_TAG;
 import static org.ballerinax.kubernetes.KubernetesConstants.HPA_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.HPA_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.INGRESS_FILE_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.JOB_FILE_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.JOB_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.SECRET_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.SVC_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.VOLUME_CLAIM_FILE_POSTFIX;
@@ -86,6 +90,13 @@ class ArtifactManager {
      * @throws KubernetesPluginException if an error occurs while generating artifacts
      */
     void createArtifacts() throws KubernetesPluginException {
+        if (kubernetesDataHolder.getJobModel() != null) {
+            generateJob(kubernetesDataHolder.getJobModel());
+            out.println();
+            out.println("@kubernetes:Job \t\t\t - complete 1/1");
+            printKubernetesInstructions(outputDir);
+            return;
+        }
         DeploymentModel deploymentModel = kubernetesDataHolder.getDeploymentModel();
         if (deploymentModel == null) {
             deploymentModel = getDefaultDeploymentModel();
@@ -204,6 +215,26 @@ class ArtifactManager {
         }
     }
 
+    private void generateJob(JobModel jobModel) throws KubernetesPluginException {
+        String balxFileName = KubernetesUtils.extractBalxName(balxFilePath);
+        if (isEmpty(jobModel.getName())) {
+            jobModel.setName(getValidName(balxFileName) + JOB_POSTFIX);
+        }
+        if (isEmpty(jobModel.getImage())) {
+            jobModel.setImage(balxFileName + DOCKER_LATEST_TAG);
+        }
+        jobModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
+        String content = new JobHandler(jobModel).generate();
+        try {
+            KubernetesUtils.writeToFile(content, outputDir + File
+                    .separator + balxFileName + JOB_FILE_POSTFIX + YAML);
+            //generate dockerfile and docker image
+            generateDocker(jobModel);
+        } catch (IOException e) {
+            throw new KubernetesPluginException("Error while writing job content", e);
+        }
+    }
+
     private void generateService(ServiceModel serviceModel) throws KubernetesPluginException {
         String balxFileName = KubernetesUtils.extractBalxName(balxFilePath);
         serviceModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
@@ -296,6 +327,49 @@ class ArtifactManager {
     private void printKubernetesInstructions(String outputDir) {
         KubernetesUtils.printInstruction("\nRun following command to deploy kubernetes artifacts: ");
         KubernetesUtils.printInstruction("kubectl apply -f " + outputDir);
+    }
+
+    private void generateDocker(JobModel jobModel) throws KubernetesPluginException {
+        DockerModel dockerModel = new DockerModel();
+        String dockerImage = jobModel.getImage();
+        String imageTag = dockerImage.substring(dockerImage.lastIndexOf(":") + 1, dockerImage.length());
+        dockerModel.setBaseImage(jobModel.getBaseImage());
+        dockerModel.setName(dockerImage);
+        dockerModel.setTag(imageTag);
+        dockerModel.setUsername(jobModel.getUsername());
+        dockerModel.setPassword(jobModel.getPassword());
+        dockerModel.setPush(jobModel.isPush());
+        dockerModel.setBalxFileName(KubernetesUtils.extractBalxName(balxFilePath) + BALX);
+        dockerModel.setService(false);
+        dockerModel.setDockerHost(jobModel.getDockerHost());
+        dockerModel.setDockerCertPath(jobModel.getDockerCertPath());
+
+        DockerHandler dockerArtifactHandler = new DockerHandler(dockerModel);
+        String dockerContent = dockerArtifactHandler.generate();
+        try {
+            out.print("@kubernetes:Docker \t\t\t - complete 0/3 \r");
+            String dockerOutputDir = outputDir + File.separator + DOCKER;
+            KubernetesUtils.writeToFile(dockerContent, dockerOutputDir + File.separator + "Dockerfile");
+            out.print("@kubernetes:Docker \t\t\t - complete 1/3 \r");
+            String balxDestination = dockerOutputDir + File.separator + KubernetesUtils.extractBalxName
+                    (balxFilePath) + BALX;
+            KubernetesUtils.copyFile(balxFilePath, balxDestination);
+            //check image build is enabled.
+            if (dockerModel.isBuildImage()) {
+                dockerArtifactHandler.buildImage(dockerModel, dockerOutputDir);
+                out.print("@kubernetes:Docker \t\t\t - complete 2/3 \r");
+                Files.delete(Paths.get(balxDestination));
+                //push only if image build is enabled.
+                if (dockerModel.isPush()) {
+                    dockerArtifactHandler.pushImage(dockerModel);
+                }
+                out.print("@kubernetes:Docker \t\t\t - complete 3/3");
+            }
+        } catch (IOException e) {
+            throw new KubernetesPluginException("Unable to write Dockerfile content");
+        } catch (InterruptedException e) {
+            throw new KubernetesPluginException("Unable to create docker images " + e.getMessage());
+        }
     }
 
     /**
