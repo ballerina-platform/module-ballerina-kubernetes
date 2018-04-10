@@ -45,3 +45,4 @@ nginx-ingress   nginx-5667df56c8-8d8ct                       1/1       Running  
 1. [Sample8: Mount config map volumes to deployment](sample8)
 1. [Sample9: Mount PersistentVolumeClaim to deployment](sample9)
 1. [Sample10: Ballerina package with kubernetes annotations](sample10)
+1. [Sample11: Kubernetes Hello World with Ballerina Function](sample11)

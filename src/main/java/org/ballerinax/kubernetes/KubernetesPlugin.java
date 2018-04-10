@@ -31,7 +31,6 @@ import org.ballerinax.kubernetes.processors.AnnotationProcessorFactory;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.File;
-import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -48,7 +47,6 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
 
     private static boolean canProcess;
     private DiagnosticLog dlog;
-    private PrintStream out;
 
     private static synchronized void setCanProcess(boolean val) {
         canProcess = val;
@@ -58,7 +56,6 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     public void init(DiagnosticLog diagnosticLog) {
         this.dlog = diagnosticLog;
         setCanProcess(false);
-        out = System.out;
     }
 
     @Override
@@ -110,7 +107,6 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     @Override
     public void codeGenerated(Path binaryPath) {
         if (canProcess) {
-
             String filePath = binaryPath.toAbsolutePath().toString();
             String userDir = new File(filePath).getParentFile().getAbsolutePath();
             if (userDir.endsWith("target")) {
@@ -124,7 +120,6 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                 KubernetesUtils.deleteDirectory(targetPath);
                 artifactManager.createArtifacts();
             } catch (KubernetesPluginException e) {
-                out.println();
                 printError(e.getMessage());
                 dlog.logDiagnostic(Diagnostic.Kind.ERROR, null, e.getMessage());
                 try {

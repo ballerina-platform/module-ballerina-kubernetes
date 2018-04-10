@@ -20,6 +20,8 @@ package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.EndpointNode;
+import org.ballerinalang.model.tree.ServiceNode;
+import org.ballerinalang.model.tree.expressions.RecordLiteralNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.models.ServiceModel;
@@ -40,19 +42,49 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
  */
 public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
 
-    /**
-     * Enum for Service configurations.
-     */
-    private enum ServiceConfiguration {
-        name,
-        labels,
-        serviceType,
-        port
-    }
-
-
     @Override
     public void processAnnotation(EndpointNode endpointNode, AnnotationAttachmentNode attachmentNode) throws
+            KubernetesPluginException {
+        ServiceModel serviceModel = getServiceModelFromAnnotation(attachmentNode);
+        if (isEmpty(serviceModel.getName())) {
+            serviceModel.setName(getValidName(endpointNode.getName().getValue()) + SVC_POSTFIX);
+        }
+        List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =
+                ((BLangRecordLiteral) ((BLangEndpoint) endpointNode).configurationExpr).getKeyValuePairs();
+        serviceModel.setPort(extractPort(endpointConfig));
+        KubernetesDataHolder.getInstance().addBEndpointToK8sServiceMap(endpointNode.getName().getValue(), serviceModel);
+    }
+
+    @Override
+    public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode) throws
+            KubernetesPluginException {
+        RecordLiteralNode anonymousEndpoint = serviceNode.getAnonymousEndpointBind();
+        if (anonymousEndpoint == null) {
+            throw new KubernetesPluginException("Adding @kubernetes:Service{} annotation to a service is only " +
+                    "supported when service is bind to an anonymous endpoint");
+        }
+        ServiceModel serviceModel = getServiceModelFromAnnotation(attachmentNode);
+        if (isEmpty(serviceModel.getName())) {
+            serviceModel.setName(getValidName(serviceNode.getName().getValue()) + SVC_POSTFIX);
+        }
+        List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =
+                ((BLangRecordLiteral) anonymousEndpoint).getKeyValuePairs();
+        serviceModel.setPort(extractPort(endpointConfig));
+        KubernetesDataHolder.getInstance().addBEndpointToK8sServiceMap(serviceNode.getName().getValue(), serviceModel);
+    }
+
+    private int extractPort(List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig) throws
+            KubernetesPluginException {
+        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : endpointConfig) {
+            String key = keyValue.getKey().toString();
+            if ("port".equals(key)) {
+                return Integer.parseInt(keyValue.getValue().toString());
+            }
+        }
+        throw new KubernetesPluginException("Unable to extract port from endpoint");
+    }
+
+    private ServiceModel getServiceModelFromAnnotation(AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         ServiceModel serviceModel = new ServiceModel();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
@@ -78,18 +110,16 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
                     break;
             }
         }
-        if (isEmpty(serviceModel.getName())) {
-            serviceModel.setName(getValidName(endpointNode.getName().getValue()) + SVC_POSTFIX);
-        }
-        List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =
-                ((BLangRecordLiteral) ((BLangEndpoint) endpointNode).configurationExpr).getKeyValuePairs();
-        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : endpointConfig) {
-            String key = keyValue.getKey().toString();
-            if ("port".equals(key)) {
-                int port = Integer.parseInt(keyValue.getValue().toString());
-                serviceModel.setPort(port);
-            }
-        }
-        KubernetesDataHolder.getInstance().addBEndpointToK8sServiceMap(endpointNode.getName().getValue(), serviceModel);
+        return serviceModel;
+    }
+
+    /**
+     * Enum for Service configurations.
+     */
+    private enum ServiceConfiguration {
+        name,
+        labels,
+        serviceType,
+        port
     }
 }

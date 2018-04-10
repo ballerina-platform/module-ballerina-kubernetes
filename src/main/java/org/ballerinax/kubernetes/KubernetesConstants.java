@@ -19,7 +19,7 @@
 package org.ballerinax.kubernetes;
 
 /**
- * Constants used in kuberina.
+ * Constants used in kubernetes extension.
  */
 public class KubernetesConstants {
     public static final String ENABLE_DEBUG_LOGS = "debugKubernetes";
@@ -28,6 +28,7 @@ public class KubernetesConstants {
     public static final String DEPLOYMENT_IMAGE_PULL_POLICY_DEFAULT = "IfNotPresent";
     public static final String DEPLOYMENT_LIVENESS_DISABLE = "disable";
     public static final String INGRESS_POSTFIX = "-ingress";
+    public static final String ANONYMOUS_POSTFIX = "-anonymous";
     public static final String INGRESS_FILE_POSTFIX = "_ingress";
     public static final String INGRESS_HOSTNAME_POSTFIX = ".com";
     public static final String SVC_POSTFIX = "-svc";

@@ -1,4 +1,4 @@
-## Sample1: Kubernetes Hello World Function
+## Sample1: Kubernetes Hello World with Ballerina function
 
 - This sample runs ballerina main function in kubernetes as a job. 
 - The function is annotated with @kubernetes:Job{}. 

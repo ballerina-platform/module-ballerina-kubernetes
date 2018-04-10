@@ -131,7 +131,7 @@ public class KubernetesUtils {
     public static void printError(String msg) {
         String ansiReset = "\u001B[0m";
         String ansiRed = "\u001B[31m";
-        error.println(ansiRed + msg + ansiReset);
+        error.println(ansiRed + "error: " + msg + ansiReset);
     }
 
     /**
@@ -181,10 +181,10 @@ public class KubernetesUtils {
     }
 
     /* Checks if a String is empty ("") or null.
-    *
-    * @param str the String to check, may be null
-    * @return true if the String is empty or null
-    */
+     *
+     * @param str the String to check, may be null
+     * @return true if the String is empty or null
+     */
     public static boolean isEmpty(String str) {
         return str == null || str.length() == 0;
     }
@@ -230,6 +230,7 @@ public class KubernetesUtils {
 
     /**
      * Returns valid kubernetes name.
+     *
      * @param name actual value
      * @return valid name
      */
