@@ -80,13 +80,13 @@ public class DockerHandler implements ArtifactHandler {
 
                     @Override
                     public void onError(String message) {
-                        dockerError.setErrorMsg("error building docker image: " + message);
+                        dockerError.setErrorMsg("Unable to build docker image: " + message);
                         buildDone.countDown();
                     }
 
                     @Override
                     public void onError(Throwable t) {
-                        dockerError.setErrorMsg("error building docker image: " + t.getMessage());
+                        dockerError.setErrorMsg("Unable to build docker image: " + t.getMessage());
                         buildDone.countDown();
                     }
 
@@ -137,13 +137,13 @@ public class DockerHandler implements ArtifactHandler {
                     @Override
                     public void onError(String message) {
                         pushDone.countDown();
-                        dockerError.setErrorMsg("error pushing docker image: " + message);
+                        dockerError.setErrorMsg("Unable to push docker image: " + message);
                     }
 
                     @Override
                     public void onError(Throwable t) {
                         pushDone.countDown();
-                        dockerError.setErrorMsg("error pushing docker image: " + t.getMessage());
+                        dockerError.setErrorMsg("Unable to push docker image: " + t.getMessage());
                     }
 
                     @Override
