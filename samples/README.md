@@ -12,6 +12,9 @@
         dockerCertPath:"/Users/anuruddha/.minikube/certs"
     }
     ```
+ 4. [Heapster](https://github.com/kubernetes/heapster) monitoring configured.
+    (This is **optional** and required only if Horizontal Pod Autoscaler are used. If you are running on GCE, heapster monitoring will be turned-on by default.)
+    
 #### Setting up nginx
 
 1. Run the following command to deploy nginx backend and controller.
