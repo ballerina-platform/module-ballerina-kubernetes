@@ -47,11 +47,6 @@ service<http:Service> helloWorld bind helloWorldEP {
 }
 
 function getConfigValue (string instanceId, string property) returns (string) {
-    match config:getAsString(instanceId + "." + property) {
-        string value => {
-            return value == null ? "Invalid user" : value;
-        }
-        () => return "Invalid user";
-    }
+    return config:getAsString(instanceId + "." + property, default = "Invalid User");
 }
 
