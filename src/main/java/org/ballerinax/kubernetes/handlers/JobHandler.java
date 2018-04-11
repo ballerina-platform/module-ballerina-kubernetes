@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.isEmpty;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 
 /**
  * Job generator.
@@ -48,7 +48,7 @@ public class JobHandler implements ArtifactHandler {
     @Override
     public String generate() throws KubernetesPluginException {
         try {
-            if (isEmpty(jobModel.getSchedule())) {
+            if (isBlank(jobModel.getSchedule())) {
                 return SerializationUtils.dumpWithoutRuntimeStateAsYaml(getJob());
             }
             return SerializationUtils.dumpWithoutRuntimeStateAsYaml(getCronJob());
