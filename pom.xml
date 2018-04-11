@@ -176,6 +176,13 @@
         </snapshotRepository>
     </distributionManagement>
 
+    <scm>
+        <url>https://github.com/ballerinax/kubernetes.git</url>
+        <developerConnection>scm:git:https://github.com/ballerinax/kubernetes.git</developerConnection>
+        <connection>scm:git:https://github.com/ballerinax/kubernetes.git</connection>
+        <tag>HEAD</tag>
+    </scm>
+
     <build>
         <resources>
             <resource>
