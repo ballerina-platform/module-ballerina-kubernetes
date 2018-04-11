@@ -177,7 +177,7 @@ public class DockerHandler implements ArtifactHandler {
             stringBuffer.append("EXPOSE ");
             dockerModel.getPorts().forEach(port -> stringBuffer.append(" ").append(port));
             stringBuffer.append("\n\nCMD ballerina run -s ").append(dockerModel.getBalxFileName());
-            if (!KubernetesUtils.isEmpty(dockerModel.getCommandArg())) {
+            if (!KubernetesUtils.isBlank(dockerModel.getCommandArg())) {
                 stringBuffer.append(dockerModel.getCommandArg());
             }
         } else {

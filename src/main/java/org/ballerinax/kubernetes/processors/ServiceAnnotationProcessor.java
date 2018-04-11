@@ -34,7 +34,7 @@ import java.util.List;
 import static org.ballerinax.kubernetes.KubernetesConstants.SVC_POSTFIX;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.isEmpty;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
@@ -46,7 +46,7 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
     public void processAnnotation(EndpointNode endpointNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         ServiceModel serviceModel = getServiceModelFromAnnotation(attachmentNode);
-        if (isEmpty(serviceModel.getName())) {
+        if (isBlank(serviceModel.getName())) {
             serviceModel.setName(getValidName(endpointNode.getName().getValue()) + SVC_POSTFIX);
         }
         List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =
@@ -64,7 +64,7 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
                     "supported when service is bind to an anonymous endpoint");
         }
         ServiceModel serviceModel = getServiceModelFromAnnotation(attachmentNode);
-        if (isEmpty(serviceModel.getName())) {
+        if (isBlank(serviceModel.getName())) {
             serviceModel.setName(getValidName(serviceNode.getName().getValue()) + SVC_POSTFIX);
         }
         List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =

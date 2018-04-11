@@ -66,7 +66,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.SVC_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.VOLUME_CLAIM_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.isEmpty;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 
 /**
  * Generate and write artifacts to files.
@@ -195,10 +195,10 @@ class ArtifactManager {
 
     private void generateDeployment(DeploymentModel deploymentModel) throws KubernetesPluginException {
         String balxFileName = KubernetesUtils.extractBalxName(balxFilePath);
-        if (isEmpty(deploymentModel.getName())) {
+        if (isBlank(deploymentModel.getName())) {
             deploymentModel.setName(getValidName(balxFileName) + DEPLOYMENT_POSTFIX);
         }
-        if (isEmpty(deploymentModel.getImage())) {
+        if (isBlank(deploymentModel.getImage())) {
             deploymentModel.setImage(balxFileName + DOCKER_LATEST_TAG);
         }
         deploymentModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
@@ -221,10 +221,10 @@ class ArtifactManager {
 
     private void generateJob(JobModel jobModel) throws KubernetesPluginException {
         String balxFileName = KubernetesUtils.extractBalxName(balxFilePath);
-        if (isEmpty(jobModel.getName())) {
+        if (isBlank(jobModel.getName())) {
             jobModel.setName(getValidName(balxFileName) + JOB_POSTFIX);
         }
-        if (isEmpty(jobModel.getImage())) {
+        if (isBlank(jobModel.getImage())) {
             jobModel.setImage(balxFileName + DOCKER_LATEST_TAG);
         }
         jobModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);

@@ -45,7 +45,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.INGRESS_HOSTNAME_POS
 import static org.ballerinax.kubernetes.KubernetesConstants.INGRESS_POSTFIX;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.isEmpty;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
@@ -58,10 +58,10 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
             KubernetesPluginException {
         IngressModel ingressModel = getIngressModelFromAnnotation(attachmentNode);
         String endpointName = endpointNode.getName().getValue();
-        if (isEmpty(ingressModel.getName())) {
+        if (isBlank(ingressModel.getName())) {
             ingressModel.setName(getValidName(endpointName) + INGRESS_POSTFIX);
         }
-        if (isEmpty(ingressModel.getHostname())) {
+        if (isBlank(ingressModel.getHostname())) {
             ingressModel.setHostname(getValidName(endpointName) + INGRESS_HOSTNAME_POSTFIX);
         }
         ingressModel.setEndpointName(endpointName);
@@ -234,10 +234,10 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
 
         //processing anonymous endpoint
         String endpointName = serviceNode.getName().getValue();
-        if (isEmpty(ingressModel.getName())) {
+        if (isBlank(ingressModel.getName())) {
             ingressModel.setName(getValidName(endpointName) + ANONYMOUS_POSTFIX + INGRESS_POSTFIX);
         }
-        if (isEmpty(ingressModel.getHostname())) {
+        if (isBlank(ingressModel.getHostname())) {
             ingressModel.setHostname(getValidName(endpointName) + INGRESS_HOSTNAME_POSTFIX);
         }
         ingressModel.setEndpointName(endpointName);
