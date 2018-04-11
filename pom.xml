@@ -24,6 +24,7 @@
         <version>0.970.0-alpha5-SNAPSHOT</version>
     </parent>
 
+    <groupId>org.ballerainax.kubernetes</groupId>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>kubernetes-extension</artifactId>
     <packaging>jar</packaging>
