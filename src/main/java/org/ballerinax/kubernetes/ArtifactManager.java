@@ -65,6 +65,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.SECRET_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.SVC_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.VOLUME_CLAIM_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 
@@ -73,12 +74,13 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
  */
 class ArtifactManager {
 
-    private PrintStream out = System.out;
-    private String balxFilePath;
-    private String outputDir;
+    private final String balxFilePath;
+    private final String outputDir;
+    private PrintStream out;
     private KubernetesDataHolder kubernetesDataHolder;
 
     ArtifactManager(String balxFilePath, String outputDir) {
+        this.out = System.out;
         this.balxFilePath = balxFilePath;
         this.outputDir = outputDir;
         this.kubernetesDataHolder = KubernetesDataHolder.getInstance();
@@ -338,7 +340,12 @@ class ArtifactManager {
         String dockerContent = dockerArtifactHandler.generate();
         try {
             out.print("@kubernetes:Docker \t\t\t - complete 0/3 \r");
-            String dockerOutputDir = outputDir + File.separator + DOCKER;
+            String dockerOutputDir = outputDir;
+            if (dockerOutputDir.endsWith("target" + File.separator + "kubernetes" + File.separator)) {
+                //Compiling package therefore append balx file name to docker artifact dir path
+                dockerOutputDir = dockerOutputDir + File.separator + extractBalxName(balxFilePath);
+            }
+            dockerOutputDir = dockerOutputDir + File.separator + DOCKER;
             KubernetesUtils.writeToFile(dockerContent, dockerOutputDir + File.separator + "Dockerfile");
             out.print("@kubernetes:Docker \t\t\t - complete 1/3 \r");
             String balxDestination = dockerOutputDir + File.separator + KubernetesUtils.extractBalxName
@@ -383,7 +390,6 @@ class ArtifactManager {
      * Create docker artifacts.
      *
      * @param deploymentModel Deployment model
-     * @throws KubernetesPluginException If an error occurs while generating artifacts
      */
     private DockerModel getDockerModel(DeploymentModel deploymentModel) {
         DockerModel dockerModel = new DockerModel();
