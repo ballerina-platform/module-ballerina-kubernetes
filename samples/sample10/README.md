@@ -20,6 +20,12 @@
     ```
 ### How to run:
 
+1. Initialize ballerina project.
+```bash
+sample10$> ballerina init
+Ballerina project initialized
+```
+
 1. Compile the  food_api_pkg file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build food_api_pkg
