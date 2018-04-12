@@ -102,7 +102,7 @@ do
 	if [[ number -eq 10 ]]; then
 	    ballerina init
 		ballerina build food_api_pkg
-		kubectl apply -f ./target/food_api_pkg/kubernetes
+		kubectl apply -f ./target/kubernetes
 		sleep 10
 		curl http://pizza.com/pizzastore/pizza/menu
 		curl https://burger.com/menu -k
