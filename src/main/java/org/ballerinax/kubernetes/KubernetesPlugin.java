@@ -35,7 +35,6 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.LISTENER;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
 
 /**
@@ -115,12 +114,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
         if (canProcess) {
             String filePath = binaryPath.toAbsolutePath().toString();
             String userDir = new File(filePath).getParentFile().getAbsolutePath();
-            if (userDir.endsWith("target")) {
-                //Compiling package therefore append balx file name to kubernetes artifact dir path
-                userDir = userDir + File.separator + extractBalxName(filePath);
-            }
-            String targetPath = userDir + File.separator + "kubernetes" + File
-                    .separator;
+            String targetPath = userDir + File.separator + "kubernetes" + File.separator;
             ArtifactManager artifactManager = new ArtifactManager(filePath, targetPath);
             try {
                 KubernetesUtils.deleteDirectory(targetPath);

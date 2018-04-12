@@ -100,6 +100,7 @@ do
 	fi
 
 	if [[ number -eq 10 ]]; then
+	    ballerina init
 		ballerina build food_api_pkg
 		kubectl apply -f ./target/food_api_pkg/kubernetes
 		sleep 10

@@ -8,17 +8,24 @@
     
     $> tree
       └── target
-          ├── food_api_pkg
-          │   └── kubernetes
-          │       ├── docker
-          │       │   └── Dockerfile
-          │       ├── food_api_pkg_deployment.yaml
-          │       ├── food_api_pkg_ingress.yaml
-          │       └── food_api_pkg_svc.yaml
-          └── food_api_pkg.balx
+          ├── food_api_pkg.balx
+          └── kubernetes
+              ├── food_api_pkg
+              │   └── docker
+              │       └── Dockerfile
+              ├── food_api_pkg_deployment.yaml
+              ├── food_api_pkg_ingress.yaml
+              ├── food_api_pkg_secret.yaml
+              └── food_api_pkg_svc.yaml
   
     ```
 ### How to run:
+
+1. Initialize ballerina project.
+```bash
+sample10$> ballerina init
+Ballerina project initialized
+```
 
 1. Compile the  food_api_pkg file. Command to run kubernetes artifacts will be printed on success:
 ```bash
@@ -37,20 +44,16 @@ kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample
 ```bash
 $> tree
 .
-├── Ballerina.toml
-├── README.md
-├── food_api_pkg
-│   ├── burger_api.bal
-│   └── pizza_api.bal
 └── target
-    ├── food_api_pkg
-    │   └── kubernetes
-    │       ├── docker
-    │       │   └── Dockerfile
-    │       ├── food_api_pkg_deployment.yaml
-    │       ├── food_api_pkg_ingress.yaml
-    │       └── food_api_pkg_svc.yaml
-    └── food_api_pkg.balx
+    ├── food_api_pkg.balx
+    └── kubernetes
+        ├── food_api_pkg
+        │   └── docker
+        │       └── Dockerfile
+        ├── food_api_pkg_deployment.yaml
+        ├── food_api_pkg_ingress.yaml
+        ├── food_api_pkg_secret.yaml
+        └── food_api_pkg_svc.yaml
 
 ```
 
@@ -61,14 +64,9 @@ REPOSITORY                    TAG                       IMAGE ID            CREA
 food_api_pkg                 latest                    dacc0a8cff85        About a minute ago   122MB
 ```
 
-4. Create sample kubernetes volume using following command.
- ```bash
-kubectl create -f ./volumes/persistent-volume.yaml
-```
-
 5. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$>  kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample10/target/food_api_pkg/kubernetes/
+$>  kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample10/target/kubernetes/
 deployment "foodstore" created
 ingress "pizzaapi-ingress" created
 ingress "burgerapi-ingress" created
@@ -113,6 +111,6 @@ Burger menu
 
 8. Undeploy sample:
 ```bash
-$> kubectl delete -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample9/kubernetes/
+$> kubectl delete -f target/kubernetes/
 
 ```
