@@ -85,8 +85,8 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
                                             " ballerina runtime: " + BALLERINA_RUNTIME);
                                 }
                             } catch (IOException e) {
-                                throw new KubernetesPluginException("@kubernetes:ConfigMap{} Mount path cannot be" +
-                                        " ballerina runtime: " + BALLERINA_RUNTIME);
+                                throw new KubernetesPluginException("@kubernetes:ConfigMap{} Invalid mount path: " +
+                                        annotationValue);
                             }
                             configMapModel.setMountPath(annotationValue);
                             break;
