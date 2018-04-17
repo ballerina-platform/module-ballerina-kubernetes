@@ -12,3 +12,9 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
 -->
+<FindBugsFilter>
+    <Match>
+        <Class name="org.ballerinax.kubernetes.processors.ConfigMapAnnotationProcessor"/>
+        <Bug pattern="DMI_HARDCODED_ABSOLUTE_FILENAME"/>
+    </Match>
+</FindBugsFilter>

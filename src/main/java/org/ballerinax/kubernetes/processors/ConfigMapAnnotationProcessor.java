@@ -30,7 +30,9 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -39,6 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_HOME;
+import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_RUNTIME;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
@@ -46,17 +50,6 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
  * ConfigMap annotation processor.
  */
 public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
-
-    /**
-     * Enum class for volume configurations.
-     */
-    private enum ConfigMapMountConfig {
-        name,
-        mountPath,
-        readOnly,
-        isBallerinaConf,
-        data
-    }
 
     @Override
     public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode) throws
@@ -79,6 +72,22 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
                             configMapModel.setName(getValidName(annotationValue));
                             break;
                         case mountPath:
+                            final Path mountPath = Paths.get(annotationValue);
+                            final Path homePath = Paths.get(BALLERINA_HOME);
+                            final Path runtimePath = Paths.get(BALLERINA_RUNTIME);
+                            try {
+                                if (Files.isSameFile(mountPath, homePath)) {
+                                    throw new KubernetesPluginException("@kubernetes:ConfigMap{} Mount path cannot be" +
+                                            " ballerina home: " + BALLERINA_HOME);
+                                }
+                                if (Files.isSameFile(mountPath, runtimePath)) {
+                                    throw new KubernetesPluginException("@kubernetes:ConfigMap{} Mount path cannot be" +
+                                            " ballerina runtime: " + BALLERINA_RUNTIME);
+                                }
+                            } catch (IOException e) {
+                                throw new KubernetesPluginException("@kubernetes:ConfigMap{} Invalid mount path: " +
+                                        annotationValue);
+                            }
                             configMapModel.setMountPath(annotationValue);
                             break;
                         case isBallerinaConf:
@@ -110,5 +119,16 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
             dataMap.put(key, content);
         }
         return dataMap;
+    }
+
+    /**
+     * Enum class for volume configurations.
+     */
+    private enum ConfigMapMountConfig {
+        name,
+        mountPath,
+        readOnly,
+        isBallerinaConf,
+        data
     }
 }
