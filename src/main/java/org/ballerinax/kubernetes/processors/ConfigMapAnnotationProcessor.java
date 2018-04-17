@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_HOME;
+import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_RUNTIME;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
@@ -46,17 +48,6 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
  * ConfigMap annotation processor.
  */
 public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
-
-    /**
-     * Enum class for volume configurations.
-     */
-    private enum ConfigMapMountConfig {
-        name,
-        mountPath,
-        readOnly,
-        isBallerinaConf,
-        data
-    }
 
     @Override
     public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode) throws
@@ -80,6 +71,14 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
                             break;
                         case mountPath:
                             configMapModel.setMountPath(annotationValue);
+                            if (BALLERINA_HOME.equals(annotationValue)) {
+                                throw new KubernetesPluginException("@kubernetes:ConfigMap{} Mount path cannot be " +
+                                        "ballerina home: " + BALLERINA_HOME);
+                            }
+                            if (BALLERINA_RUNTIME.equals(annotationValue)) {
+                                throw new KubernetesPluginException("@kubernetes:ConfigMap{} Mount path cannot be " +
+                                        "ballerina runtime: " + BALLERINA_RUNTIME);
+                            }
                             break;
                         case isBallerinaConf:
                             configMapModel.setBallerinaConf(Boolean.parseBoolean(annotationValue));
@@ -110,5 +109,16 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
             dataMap.put(key, content);
         }
         return dataMap;
+    }
+
+    /**
+     * Enum class for volume configurations.
+     */
+    private enum ConfigMapMountConfig {
+        name,
+        mountPath,
+        readOnly,
+        isBallerinaConf,
+        data
     }
 }
