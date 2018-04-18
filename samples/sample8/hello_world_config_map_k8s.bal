@@ -22,13 +22,11 @@ endpoint http:Listener helloWorldEP {
 };
 
 @kubernetes:ConfigMap {
+    ballerinaConf:"./conf/ballerina.conf",
     configMaps:[
         {
             mountPath:"/home/ballerina/data",
             data:["./conf/data.txt"]
-        },
-        {
-            ballerinaConf:"./conf/ballerina.conf"
         }
     ]
 }

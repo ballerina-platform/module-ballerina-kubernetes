@@ -65,7 +65,6 @@ public class ConfigMapModel extends KubernetesModel {
         this.ballerinaConf = ballerinaConf;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
