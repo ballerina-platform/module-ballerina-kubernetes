@@ -109,6 +109,8 @@ $>curl https://abc.com/helloWorld/config/john -k
 {userId: john@ballerina.com, groups: apim,esb}
 $>curl https://abc.com/helloWorld/config/jane -k
 {userId: jane3@ballerina.com, groups: esb}
+$>curl https://abc.com/helloWorld/data -k
+Data: Lorem ipsum dolor sit amet.
 ```
 
 7. Undeploy sample:

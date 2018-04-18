@@ -32,7 +32,8 @@ public class KubernetesConstants {
     public static final String INGRESS_FILE_POSTFIX = "_ingress";
     public static final String INGRESS_HOSTNAME_POSTFIX = ".com";
     public static final String SVC_POSTFIX = "-svc";
-    public static final String CONFIG_MAP_POSTFIX = "-svc";
+    public static final String CONFIG_MAP_POSTFIX = "-config-map";
+    public static final String SECRET_POSTFIX = "-secret";
     public static final String HPA = "hpa";
     public static final String DOCKER = "docker";
     public static final String BALX = ".balx";
@@ -51,7 +52,8 @@ public class KubernetesConstants {
     public static final String LISTENER = "Listener";
     public static final String BALLERINA_HOME = "/home/ballerina";
     public static final String BALLERINA_RUNTIME = "/home/runtime";
-    public static final int DEFAULT_LISTENER_PORT = 9090;
+    public static final String BALLERINA_CONF_MOUNT_PATH = "/home/ballerina/conf/";
+    public static final String BALLERINA_CONF_FILE_NAME = "ballerina.conf";
 
     /**
      * Restart policy enum.

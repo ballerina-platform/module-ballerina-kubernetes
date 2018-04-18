@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_CONF_FILE_NAME;
 import static org.ballerinax.kubernetes.KubernetesConstants.BALX;
 import static org.ballerinax.kubernetes.KubernetesConstants.CONFIG_MAP_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_FILE_POSTFIX;
@@ -163,13 +164,12 @@ class ArtifactManager {
         }
         for (ConfigMapModel configMapModel : configMapModels) {
             count++;
-            if (configMapModel.isBallerinaConf()) {
+            if (!isBlank(configMapModel.getBallerinaConf())) {
                 if (configMapModel.getData().size() != 1) {
                     throw new KubernetesPluginException("There can be only 1 ballerina config file");
                 }
                 deploymentModel.setCommandArgs(" --config ${CONFIG_FILE} ");
-                deploymentModel.addEnv("CONFIG_FILE", configMapModel.getMountPath() + File.separator +
-                        configMapModel.getData().keySet().iterator().next());
+                deploymentModel.addEnv("CONFIG_FILE", configMapModel.getMountPath() + BALLERINA_CONF_FILE_NAME);
             }
             generateConfigMaps(configMapModel);
             out.print("@kubernetes:ConfigMap \t\t\t - complete " + count + "/" + configMapModels.size() + "\r");

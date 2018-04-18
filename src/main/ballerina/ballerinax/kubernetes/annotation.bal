@@ -39,7 +39,7 @@ public type DeploymentConfiguration {
 };
 
 @Description {value:"Deployment annotation for Kubernetes"}
-public annotation <service,endpoint> Deployment DeploymentConfiguration;
+public annotation < service, endpoint > Deployment DeploymentConfiguration;
 
 @Description {value:"Kubernetes service configuration"}
 @Field {value:"labels: Labels for service"}
@@ -51,7 +51,7 @@ public type ServiceConfiguration {
 };
 
 @Description {value:"Service annotation for Kubernetes"}
-public annotation <endpoint,service> Service ServiceConfiguration;
+public annotation < endpoint, service > Service ServiceConfiguration;
 
 @Description {value:"Kubernetes ingress configuration"}
 @Field {value:"name: Name of the ingress"}
@@ -76,7 +76,7 @@ public type IngressConfiguration {
 };
 
 @Description {value:"Ingress annotation for Kubernetes"}
-public annotation <service,endpoint> Ingress IngressConfiguration;
+public annotation < service, endpoint > Ingress IngressConfiguration;
 
 @Description {value:"Kubernetes Horizontal Pod Autoscaler configuration"}
 @Field {value:"name: Name of the Autoscaler"}
@@ -93,7 +93,7 @@ public type PodAutoscalerConfig {
 };
 
 @Description {value:"Pod Autoscaler annotation for Kubernetes"}
-public annotation <service> HPA PodAutoscalerConfig;
+public annotation < service > HPA PodAutoscalerConfig;
 
 
 @Description {value:"Kubernetes secret volume mount"}
@@ -108,32 +108,32 @@ public type Secret {
     string[] data;
 };
 
-public type  SecretMount{
+public type  SecretMount {
     Secret[] secrets;
 };
 
 @Description {value:"Secret volumes annotation for Kubernetes"}
-public annotation <service> Secret SecretMount;
+public annotation < service > Secret SecretMount;
 
 @Description {value:"Kubernetes Config Map volume mount"}
 @Field {value:"name: Name of the volume mount"}
 @Field {value:"mountPath: Mount path"}
 @Field {value:"readOnly: Is mount read only"}
-@Field {value:"isBallerinaConf: Is file a ballerina config"}
+@Field {value:"ballerinaConf: Ballerina conf file location"}
 @Field {value:"data: Paths to data files"}
 public type ConfigMap {
     string name;
     string mountPath;
     boolean readOnly;
-    boolean isBallerinaConf;
+    string ballerinaConf;
     string[] data;
 };
-public type  ConfigMapMount{
+public type  ConfigMapMount {
     ConfigMap[] configMaps;
 };
 
 @Description {value:"ConfigMap volumes annotation for Kubernetes"}
-public annotation <service> ConfigMap ConfigMapMount;
+public annotation < service > ConfigMap ConfigMapMount;
 
 @Description {value:"Kubernetes Persistent Volume Claim"}
 @Field {value:"name: Name of the volume claim"}
@@ -148,12 +148,12 @@ public type PersistentVolumeClaimConfig {
     string volumeClaimSize;
     boolean readOnly;
 };
-public type  PersistentVolumeClaims{
+public type  PersistentVolumeClaims {
     PersistentVolumeClaimConfig[] volumeClaims;
 };
 
 @Description {value:"ConfigMap volumes annotation for Kubernetes"}
-public annotation <service> PersistentVolumeClaim PersistentVolumeClaims;
+public annotation < service > PersistentVolumeClaim PersistentVolumeClaims;
 
 @Description {value:"Kubernetes job configuration"}
 @Field {value:"name: Name of the job"}
@@ -191,4 +191,4 @@ public type JobConfig {
 };
 
 @Description {value:"Job annotation for Kubernetes"}
-public annotation <function> Job JobConfig;
+public annotation < function > Job JobConfig;

@@ -243,7 +243,7 @@ public class KubernetesUtils {
      * @return valid name
      */
     public static String getValidName(String name) {
-        return name.toLowerCase(Locale.getDefault()).replace("_", "-");
+        return name.toLowerCase(Locale.getDefault()).replace("_", "-").replace(".", "-");
     }
 
 }

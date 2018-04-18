@@ -32,7 +32,6 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import java.util.List;
 
 import static org.ballerinalang.net.http.HttpConstants.HTTP_DEFAULT_PORT;
-import static org.ballerinax.kubernetes.KubernetesConstants.DEFAULT_LISTENER_PORT;
 import static org.ballerinax.kubernetes.KubernetesConstants.SVC_POSTFIX;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;

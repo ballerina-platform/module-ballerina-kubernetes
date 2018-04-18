@@ -81,7 +81,7 @@ Annotation based kubernetes extension implementation for ballerina.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
-|name|Name secret mount|null|
+|name|Name secret mount|\<service_name\>-secret|
 |mountPath|Path to mount on container|null|
 |readOnly|Is mount read only|true|
 |data|Paths to data files|null|
@@ -91,9 +91,10 @@ Annotation based kubernetes extension implementation for ballerina.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
-|name|Name secret mount|null|
+|name|Name config map mount|\<service_name\>-config-map|
 |mountPath|Path to mount on container|null|
 |readOnly|Is mount read only|true|
+|ballerinaConf|Ballerina conf file location|null|
 |data|Paths to data files|null|
 
 ### @kubernetes:PersistentVolumeClaim{}

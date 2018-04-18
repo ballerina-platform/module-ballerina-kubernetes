@@ -39,23 +39,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.SECRET_POSTFIX;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
  * Secrets annotation processor.
  */
 public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
-
-    /**
-     * Enum class for volume configurations.
-     */
-    private enum SecretMountConfig {
-        name,
-        mountPath,
-        readOnly,
-        data
-    }
 
     @Override
     public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode) throws
@@ -91,6 +83,9 @@ public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
                             break;
                     }
                 }
+                if (isBlank(secretModel.getName())) {
+                    secretModel.setName(getValidName(serviceNode.getName().getValue()) + SECRET_POSTFIX);
+                }
                 secrets.add(secretModel);
             }
         }
@@ -106,5 +101,15 @@ public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
             dataMap.put(key, content);
         }
         return dataMap;
+    }
+
+    /**
+     * Enum class for volume configurations.
+     */
+    private enum SecretMountConfig {
+        name,
+        mountPath,
+        readOnly,
+        data
     }
 }
