@@ -119,16 +119,17 @@ public annotation < service > Secret SecretMount;
 @Field {value:"name: Name of the volume mount"}
 @Field {value:"mountPath: Mount path"}
 @Field {value:"readOnly: Is mount read only"}
-@Field {value:"ballerinaConf: Ballerina conf file location"}
 @Field {value:"data: Paths to data files"}
 public type ConfigMap {
     string name;
     string mountPath;
     boolean readOnly;
-    string ballerinaConf;
     string[] data;
 };
+
+@Field {value:"ballerinaConf: Ballerina conf file location"}
 public type  ConfigMapMount {
+    string ballerinaConf;
     ConfigMap[] configMaps;
 };
 
