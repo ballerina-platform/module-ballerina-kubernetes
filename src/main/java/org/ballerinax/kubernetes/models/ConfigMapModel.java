@@ -18,6 +18,7 @@
 package org.ballerinax.kubernetes.models;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Model class to hold kubernetes config map data.
@@ -26,7 +27,7 @@ public class ConfigMapModel extends KubernetesModel {
     private Map<String, String> data;
     private String mountPath;
     private boolean readOnly;
-    private boolean isBallerinaConf;
+    private String ballerinaConf;
 
     public ConfigMapModel() {
         this.readOnly = true;
@@ -56,11 +57,29 @@ public class ConfigMapModel extends KubernetesModel {
         this.readOnly = readOnly;
     }
 
-    public boolean isBallerinaConf() {
-        return isBallerinaConf;
+    public String getBallerinaConf() {
+        return ballerinaConf;
     }
 
-    public void setBallerinaConf(boolean ballerinaConf) {
-        isBallerinaConf = ballerinaConf;
+    public void setBallerinaConf(String ballerinaConf) {
+        this.ballerinaConf = ballerinaConf;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ConfigMapModel)) {
+            return false;
+        }
+        ConfigMapModel that = (ConfigMapModel) o;
+        return Objects.equals(getMountPath(), that.getMountPath());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getMountPath());
     }
 }

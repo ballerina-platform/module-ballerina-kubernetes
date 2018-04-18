@@ -30,9 +30,7 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -41,9 +39,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_CONF_FILE_NAME;
+import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_CONF_MOUNT_PATH;
 import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_HOME;
 import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_RUNTIME;
+import static org.ballerinax.kubernetes.KubernetesConstants.CONFIG_MAP_POSTFIX;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
@@ -72,26 +74,29 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
                             configMapModel.setName(getValidName(annotationValue));
                             break;
                         case mountPath:
+                            // validate mount path is not set to ballerina home or ballerina runtime
                             final Path mountPath = Paths.get(annotationValue);
                             final Path homePath = Paths.get(BALLERINA_HOME);
                             final Path runtimePath = Paths.get(BALLERINA_RUNTIME);
-                            try {
-                                if (Files.isSameFile(mountPath, homePath)) {
-                                    throw new KubernetesPluginException("@kubernetes:ConfigMap{} Mount path cannot be" +
-                                            " ballerina home: " + BALLERINA_HOME);
-                                }
-                                if (Files.isSameFile(mountPath, runtimePath)) {
-                                    throw new KubernetesPluginException("@kubernetes:ConfigMap{} Mount path cannot be" +
-                                            " ballerina runtime: " + BALLERINA_RUNTIME);
-                                }
-                            } catch (IOException e) {
-                                throw new KubernetesPluginException("@kubernetes:ConfigMap{} Invalid mount path: " +
-                                        annotationValue);
+                            final Path confPath = Paths.get(BALLERINA_CONF_MOUNT_PATH);
+                            if (mountPath.equals(homePath)) {
+                                throw new KubernetesPluginException("@kubernetes:ConfigMap{} Mount path cannot be" +
+                                        " ballerina home: " + BALLERINA_HOME);
+                            }
+                            if (mountPath.equals(runtimePath)) {
+                                throw new KubernetesPluginException("@kubernetes:ConfigMap{} Mount path cannot be" +
+                                        " ballerina runtime: " + BALLERINA_RUNTIME);
+                            }
+                            if (mountPath.equals(confPath)) {
+                                throw new KubernetesPluginException("@kubernetes:ConfigMap{} Mount path cannot be" +
+                                        " ballerina conf file mount path: " + BALLERINA_CONF_MOUNT_PATH);
                             }
                             configMapModel.setMountPath(annotationValue);
                             break;
-                        case isBallerinaConf:
-                            configMapModel.setBallerinaConf(Boolean.parseBoolean(annotationValue));
+                        case ballerinaConf:
+                            //create a new config map model with ballerina conf and add it to data holder.
+                            configMapModels.add(getBallerinaConfConfigMap(annotationValue, serviceNode.getName()
+                                    .getValue()));
                             break;
                         case data:
                             List<BLangExpression> data = ((BLangArrayLiteral) annotation.valueExpr).exprs;
@@ -104,7 +109,12 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
                             break;
                     }
                 }
-                configMapModels.add(configMapModel);
+                if (isBlank(configMapModel.getName())) {
+                    configMapModel.setName(getValidName(serviceNode.getName().getValue()) + CONFIG_MAP_POSTFIX);
+                }
+                if (configMapModel.getData() != null && configMapModel.getData().size() > 0) {
+                    configMapModels.add(configMapModel);
+                }
             }
         }
         KubernetesDataHolder.getInstance().addConfigMaps(configMapModels);
@@ -121,6 +131,22 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
         return dataMap;
     }
 
+    private ConfigMapModel getBallerinaConfConfigMap(String configFilePath, String serviceName) throws
+            KubernetesPluginException {
+        //create a new config map model with ballerina conf
+        ConfigMapModel configMapModel = new ConfigMapModel();
+        configMapModel.setName(getValidName(serviceName) + "-ballerina-conf" + CONFIG_MAP_POSTFIX);
+        configMapModel.setMountPath(BALLERINA_CONF_MOUNT_PATH);
+        Path dataFilePath = Paths.get(configFilePath);
+        String content = new String(KubernetesUtils.readFileContent(dataFilePath), StandardCharsets.UTF_8);
+        Map<String, String> dataMap = new HashMap<>();
+        dataMap.put(BALLERINA_CONF_FILE_NAME, content);
+        configMapModel.setData(dataMap);
+        configMapModel.setBallerinaConf(configFilePath);
+        configMapModel.setReadOnly(false);
+        return configMapModel;
+    }
+
     /**
      * Enum class for volume configurations.
      */
@@ -128,7 +154,7 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
         name,
         mountPath,
         readOnly,
-        isBallerinaConf,
+        ballerinaConf,
         data
     }
 }
