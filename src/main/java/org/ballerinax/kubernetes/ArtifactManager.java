@@ -31,6 +31,7 @@ import org.ballerinax.kubernetes.handlers.ServiceHandler;
 import org.ballerinax.kubernetes.models.ConfigMapModel;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.DockerModel;
+import org.ballerinax.kubernetes.models.ExternalFileModel;
 import org.ballerinax.kubernetes.models.IngressModel;
 import org.ballerinax.kubernetes.models.JobModel;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
@@ -66,6 +67,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.SECRET_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.SVC_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.VOLUME_CLAIM_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.copyFile;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
@@ -350,7 +352,13 @@ class ArtifactManager {
             out.print("@kubernetes:Docker \t\t\t - complete 1/3 \r");
             String balxDestination = dockerOutputDir + File.separator + KubernetesUtils.extractBalxName
                     (balxFilePath) + BALX;
-            KubernetesUtils.copyFile(balxFilePath, balxDestination);
+            copyFile(balxFilePath, balxDestination);
+            for (ExternalFileModel copyFileModel : dockerModel.getExternalFiles()) {
+                // Copy external files to docker folder
+                String target = dockerOutputDir + File.separator + String.valueOf(Paths.get(copyFileModel.getSource())
+                        .getFileName());
+                copyFile(copyFileModel.getSource(), target);
+            }
             //check image build is enabled.
             if (dockerModel.isBuildImage()) {
                 dockerArtifactHandler.buildImage(dockerModel, dockerOutputDir);
@@ -409,6 +417,7 @@ class ArtifactManager {
         dockerModel.setDockerCertPath(deploymentModel.getDockerCertPath());
         dockerModel.setBuildImage(deploymentModel.isBuildImage());
         dockerModel.setCommandArg(deploymentModel.getCommandArgs());
+        dockerModel.setExternalFiles(deploymentModel.getExternalFiles());
         return dockerModel;
     }
 

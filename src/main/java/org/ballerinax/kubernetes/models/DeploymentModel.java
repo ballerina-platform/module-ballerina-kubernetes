@@ -47,6 +47,7 @@ public class DeploymentModel extends KubernetesModel {
     private Set<SecretModel> secretModels;
     private Set<ConfigMapModel> configMapModels;
     private Set<PersistentVolumeClaimModel> volumeClaimModels;
+    private Set<ExternalFileModel> externalFiles;
     private String commandArgs;
 
     public DeploymentModel() {
@@ -67,6 +68,7 @@ public class DeploymentModel extends KubernetesModel {
         this.secretModels = new HashSet<>();
         this.configMapModels = new HashSet<>();
         this.volumeClaimModels = new HashSet<>();
+        this.externalFiles = new HashSet<>();
     }
 
     public Map<String, String> getLabels() {
@@ -275,5 +277,13 @@ public class DeploymentModel extends KubernetesModel {
 
     public void setCommandArgs(String commandArg) {
         this.commandArgs = commandArg;
+    }
+
+    public Set<ExternalFileModel> getExternalFiles() {
+        return externalFiles;
+    }
+
+    public void setExternalFiles(Set<ExternalFileModel> externalFiles) {
+        this.externalFiles = externalFiles;
     }
 }

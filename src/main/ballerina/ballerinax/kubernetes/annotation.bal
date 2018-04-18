@@ -1,5 +1,13 @@
 package ballerinax.kubernetes;
 
+@Description {value:"External files for docker images"}
+@Field {value:"source: source path of the file (in your machine)"}
+@Field {value:"target: target path (inside container)"}
+public type FileConfig {
+    string source;
+    string target;
+};
+
 @Description {value:"Kubernetes deployment configuration"}
 @Field {value:"name: Name of the deployment"}
 @Field {value:"labels: Labels for deployment"}
@@ -18,6 +26,7 @@ package ballerinax.kubernetes;
 @Field {value:"baseImage: Base image for docker image building"}
 @Field {value:"push: Push to remote registry"}
 @Field {value:"dockerCertPath: Docker cert path."}
+@Field {value:"copyFiles: External files for Docker image"}
 public type DeploymentConfiguration {
     string name;
     map labels;
@@ -36,6 +45,7 @@ public type DeploymentConfiguration {
     string baseImage;
     boolean push;
     string dockerCertPath;
+    FileConfig[] copyFiles;
 };
 
 @Description {value:"Deployment annotation for Kubernetes"}

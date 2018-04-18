@@ -22,44 +22,26 @@ import org.ballerinalang.model.tree.EndpointNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
+import org.ballerinax.kubernetes.models.ExternalFileModel;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
  * Deployment Annotation processor.
  */
 public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
-
-    /**
-     * Enum class for DeploymentConfiguration.
-     */
-    private enum DeploymentConfiguration {
-        name,
-        labels,
-        replicas,
-        enableLiveness,
-        livenessPort,
-        initialDelaySeconds,
-        periodSeconds,
-        imagePullPolicy,
-        namespace,
-        image,
-        env,
-        buildImage,
-        dockerHost,
-        username,
-        password,
-        baseImage,
-        push,
-        dockerCertPath
-    }
 
     @Override
     public void processAnnotation(ServiceNode entityName, AnnotationAttachmentNode attachmentNode) throws
@@ -133,10 +115,71 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 case replicas:
                     deploymentModel.setReplicas(Integer.parseInt(annotationValue));
                     break;
+                case copyFiles:
+                    deploymentModel.setExternalFiles(getExternalFileMap(keyValue));
+                    break;
                 default:
                     break;
             }
         }
         KubernetesDataHolder.getInstance().setDeploymentModel(deploymentModel);
+    }
+
+    private Set<ExternalFileModel> getExternalFileMap(BLangRecordLiteral.BLangRecordKeyValue keyValue) throws
+            KubernetesPluginException {
+        Set<ExternalFileModel> externalFiles = new HashSet<>();
+        List<BLangExpression> configAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
+        for (BLangExpression bLangExpression : configAnnotation) {
+            List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
+                    ((BLangRecordLiteral) bLangExpression).getKeyValuePairs();
+            ExternalFileModel externalFileModel = new ExternalFileModel();
+            for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
+                String annotationValue = resolveValue(annotation.getValue().toString());
+                switch (annotation.getKey().toString()) {
+                    case "source":
+                        externalFileModel.setSource(annotationValue);
+                        break;
+                    case "target":
+                        externalFileModel.setTarget(annotationValue);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (isBlank(externalFileModel.getSource())) {
+                throw new KubernetesPluginException("@kubernetes:Deployment copyFiles source cannot be empty.");
+            }
+            if (isBlank(externalFileModel.getTarget())) {
+                throw new KubernetesPluginException("@kubernetes:Deployment copyFiles target cannot be empty.");
+            }
+            externalFiles.add(externalFileModel);
+        }
+        return externalFiles;
+
+    }
+
+    /**
+     * Enum class for DeploymentConfiguration.
+     */
+    private enum DeploymentConfiguration {
+        name,
+        labels,
+        replicas,
+        enableLiveness,
+        livenessPort,
+        initialDelaySeconds,
+        periodSeconds,
+        imagePullPolicy,
+        namespace,
+        image,
+        env,
+        buildImage,
+        dockerHost,
+        username,
+        password,
+        baseImage,
+        push,
+        dockerCertPath,
+        copyFiles
     }
 }

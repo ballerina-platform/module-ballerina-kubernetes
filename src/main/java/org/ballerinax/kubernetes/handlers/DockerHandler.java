@@ -32,6 +32,7 @@ import org.ballerinax.kubernetes.models.DockerModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.concurrent.CountDownLatch;
 
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.printDebug;
@@ -173,6 +174,15 @@ public class DockerHandler implements ArtifactHandler {
                 "COPY " + dockerModel.getBalxFileName() + " /home/ballerina \n\n";
 
         StringBuilder stringBuffer = new StringBuilder(dockerBase);
+        dockerModel.getExternalFiles().forEach(file -> {
+            // Extract the source filename relative to docker folder.
+            String sourceFileName = String.valueOf(Paths.get(file.getSource()).getFileName());
+            stringBuffer.append("COPY ")
+                    .append(sourceFileName)
+                    .append(" ")
+                    .append(file.getTarget())
+                    .append("\n");
+        });
         if (dockerModel.isService()) {
             stringBuffer.append("EXPOSE ");
             dockerModel.getPorts().forEach(port -> stringBuffer.append(" ").append(port));
