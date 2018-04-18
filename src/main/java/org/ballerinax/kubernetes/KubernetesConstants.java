@@ -32,6 +32,7 @@ public class KubernetesConstants {
     public static final String INGRESS_FILE_POSTFIX = "_ingress";
     public static final String INGRESS_HOSTNAME_POSTFIX = ".com";
     public static final String SVC_POSTFIX = "-svc";
+    public static final String CONFIG_MAP_POSTFIX = "-svc";
     public static final String HPA = "hpa";
     public static final String DOCKER = "docker";
     public static final String BALX = ".balx";

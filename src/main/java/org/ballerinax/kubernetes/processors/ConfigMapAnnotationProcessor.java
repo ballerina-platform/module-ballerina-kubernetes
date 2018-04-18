@@ -43,7 +43,9 @@ import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_HOME;
 import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_RUNTIME;
+import static org.ballerinax.kubernetes.KubernetesConstants.CONFIG_MAP_POSTFIX;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
@@ -103,6 +105,9 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
                         default:
                             break;
                     }
+                }
+                if (isBlank(configMapModel.getName())) {
+                    configMapModel.setName(getValidName(serviceNode.getName().getValue()) + CONFIG_MAP_POSTFIX);
                 }
                 configMapModels.add(configMapModel);
             }
