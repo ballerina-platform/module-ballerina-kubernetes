@@ -18,7 +18,7 @@ kubernetes_sample_dir=$(pwd)
 #export DOCKER_USERNAME=<user_name>
 #export DOCKER_PASSWORD=<password>
 
-for number in {1..10}
+for number in {1..12}
 do
 	echo "======================== Testing sample-$number ========================"
 	pushd "$kubernetes_sample_dir"/sample"$number"
@@ -106,7 +106,15 @@ do
 		sleep 10
 		curl http://pizza.com/pizzastore/pizza/menu
 		curl https://burger.com/menu -k
-		kubectl delete -f ./target/food_api_pkg/kubernetes
+		kubectl delete -f ./target/kubernetes
+	fi
+
+	if [[ number -eq 12 ]]; then
+		ballerina build hello_world_copy_file.bal
+		kubectl apply -f ./kubernetes
+		sleep 5
+		curl https://abc.com/helloWorld/data -k
+		kubectl delete -f ./kubernetes
 	fi
 	echo "======================== End of sample-$number ========================"
 	popd

@@ -18,6 +18,7 @@
 
 package org.ballerinax.kubernetes.models;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -39,6 +40,7 @@ public class DockerModel extends KubernetesModel {
     private String balxFileName;
     private String dockerCertPath;
     private String commandArg;
+    private Set<ExternalFileModel> externalFiles;
 
     public DockerModel() {
         // Initialize with default values except for image name
@@ -50,6 +52,7 @@ public class DockerModel extends KubernetesModel {
         this.enableDebug = false;
         this.debugPort = 5005;
         this.dockerHost = "unix:///var/run/docker.sock";
+        externalFiles = new HashSet<>();
     }
 
     public String getRegistry() {
@@ -189,5 +192,13 @@ public class DockerModel extends KubernetesModel {
 
     public void setCommandArg(String commandArg) {
         this.commandArg = commandArg;
+    }
+
+    public Set<ExternalFileModel> getExternalFiles() {
+        return externalFiles;
+    }
+
+    public void setExternalFiles(Set<ExternalFileModel> externalFiles) {
+        this.externalFiles = externalFiles;
     }
 }

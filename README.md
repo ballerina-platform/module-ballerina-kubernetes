@@ -35,6 +35,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |image|Docker image with tag|<output file name>:latest|
 |env|List of environment variables|null|
 |buildImage|Building docker image|true|
+|copyFiles|Copy external files for Docker image|null|
 |dockerHost|Docker host IP and docker PORT.(e.g "tcp://192.168.99.100:2376")|null|
 |dockerCertPath|Docker cert path|null|
 |push|Push docker image to registry. This can only be true if image build is true.|false|
