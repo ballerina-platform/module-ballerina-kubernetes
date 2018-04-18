@@ -231,9 +231,7 @@ public class KubernetesUtils {
     public static Map<String, String> getMap(List<BLangRecordLiteral.BLangRecordKeyValue> keyValues) {
         Map<String, String> map = new HashMap<>();
         if (keyValues != null) {
-            keyValues.forEach(keyValue -> {
-                map.put(keyValue.getKey().toString(), keyValue.getValue().toString());
-            });
+            keyValues.forEach(keyValue -> map.put(keyValue.getKey().toString(), keyValue.getValue().toString()));
         }
         return map;
     }

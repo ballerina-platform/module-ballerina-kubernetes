@@ -50,6 +50,7 @@ public class KubernetesConstants {
     public static final String LISTENER = "Listener";
     public static final String BALLERINA_HOME = "/home/ballerina";
     public static final String BALLERINA_RUNTIME = "/home/runtime";
+    public static final int DEFAULT_LISTENER_PORT = 9090;
 
     /**
      * Restart policy enum.
