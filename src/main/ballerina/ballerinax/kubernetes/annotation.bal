@@ -1,32 +1,34 @@
 package ballerinax.kubernetes;
 
-@Description {value:"External files for docker images"}
-@Field {value:"source: source path of the file (in your machine)"}
-@Field {value:"target: target path (inside container)"}
+documentation {External file type for docker
+    F{{source}} - source path of the file (in your machine)
+    F{{target}} - target path (inside container)
+}
 public type FileConfig {
     string source;
     string target;
 };
 
-@Description {value:"Kubernetes deployment configuration"}
-@Field {value:"name: Name of the deployment"}
-@Field {value:"labels: Labels for deployment"}
-@Field {value:"replicas: Number of replicas"}
-@Field {value:"enableLiveness: Enable or disable enableLiveness probe"}
-@Field {value:"livenessPort: Port to check the enableLiveness"}
-@Field {value:"initialDelaySeconds: Initial delay in seconds before performing the first probe"}
-@Field {value:"periodSeconds: Liveness probe interval"}
-@Field {value:"imagePullPolicy: Docker image pull policy"}
-@Field {value:"image: Docker image with tag"}
-@Field {value:"envVars: Environment varialbes for container"}
-@Field {value:"buildImage: Docker image to be build or not"}
-@Field {value:"dockerHost: Docker host IP and docker PORT. (e.g minikube IP and docker PORT)"}
-@Field {value:"username: Username for docker registry"}
-@Field {value:"password: Password for docker registry"}
-@Field {value:"baseImage: Base image for docker image building"}
-@Field {value:"push: Push to remote registry"}
-@Field {value:"dockerCertPath: Docker cert path."}
-@Field {value:"copyFiles: External files for Docker image"}
+documentation {Kubernetes deployment configuration
+    F{{name}} - Name of the deployment
+    F{{labels}} - Map of labels for deployment
+    F{{replicas}} - Number of replicas
+    F{{enableLiveness}} - Enable/Disable liveness probe
+    F{{livenessPort}} - Port to check the liveness
+    F{{initialDelaySeconds}} - Initial delay in seconds before performing the first probe
+    F{{periodSeconds}} - Liveness probe interval
+    F{{imagePullPolicy}} - Kubernetes image pull policy
+    F{{image}} - Docker image with tag
+    F{{env}} - Environment varialbe map for containers
+    F{{buildImage}} - Docker image to be build or not
+    F{{dockerHost}} - Docker host IP and docker PORT. (e.g minikube IP and docker PORT)
+    F{{username}} - Username for docker registry
+    F{{password}} - Password for docker registry
+    F{{baseImage}} - Base image for docker image building
+    F{{push}} - Push to remote registry
+    F{{dockerCertPath}} - Docker certificate path
+    F{{copyFiles}} - Array of [External files](kubernetes#FileConfig) for docker image
+}
 public type DeploymentConfiguration {
     string name;
     map labels;
@@ -48,31 +50,37 @@ public type DeploymentConfiguration {
     FileConfig[] copyFiles;
 };
 
-@Description {value:"Deployment annotation for Kubernetes"}
+documentation {@kubernetes:Deployment annotation to configure deplyoment yaml
+}
 public annotation < service, endpoint > Deployment DeploymentConfiguration;
 
-@Description {value:"Kubernetes service configuration"}
-@Field {value:"labels: Labels for service"}
-@Field {value:"serviceType: Service type of the service"}
+
+documentation {Kubernetes service configuration
+    F{{name}} - Name of the service
+    F{{labels}} - Map of labels for deployment
+    F{{serviceType}} - Service type of the service
+}
 public type ServiceConfiguration {
     string name;
     map labels;
     string serviceType;
 };
 
-@Description {value:"Service annotation for Kubernetes"}
+documentation {@kubernetes:Service annotation to configure service yaml
+}
 public annotation < endpoint, service > Service ServiceConfiguration;
 
-@Description {value:"Kubernetes ingress configuration"}
-@Field {value:"name: Name of the ingress"}
-@Field {value:"endpointName: Name of the endpoint ingress attached"}
-@Field {value:"labels: Labels for ingress"}
-@Field {value:"annotations: Map of additional annotations"}
-@Field {value:"hostname: Host name of the ingress"}
-@Field {value:"path: Resource path"}
-@Field {value:"targetPath: Target path for url rewrite"}
-@Field {value:"ingressClass: Ingress class"}
-@Field {value:"enableTLS: Enable ingress TLS"}
+documentation{Kubernetes ingress configuration
+    F{{name}} - Name of the ingress
+    F{{endpointName}} - Name of the endpoint ingress attached
+    F{{labels}} - Label map for ingress
+    F{{annotations}} - Map of additional annotations
+    F{{hostname}} - Host name of the ingress
+    F{{path}} - Resource path
+    F{{targetPath}} - Target path for url rewrite
+    F{{ingressClass}} - Ingress class
+    F{{enableTLS}} - Enable/Disable ingress TLS
+}
 public type IngressConfiguration {
     string name;
     string endpointName;
@@ -85,15 +93,17 @@ public type IngressConfiguration {
     boolean enableTLS;
 };
 
-@Description {value:"Ingress annotation for Kubernetes"}
+documentation {@kubernetes:Ingress annotation to configure ingress yaml
+}
 public annotation < service, endpoint > Ingress IngressConfiguration;
 
-@Description {value:"Kubernetes Horizontal Pod Autoscaler configuration"}
-@Field {value:"name: Name of the Autoscaler"}
-@Field {value:"labels: Labels for Autoscaler"}
-@Field {value:"minReplicas: Minimum number of replicas"}
-@Field {value:"maxReplicas: Maximum number of replicas"}
-@Field {value:"cpuPercentage: CPU percentage to start scaling"}
+documentation {Kubernetes Horizontal Pod Autoscaler configuration
+    F{{name}} - Name of the Autoscaler
+    F{{labels}} - Labels for Autoscaler
+    F{{minReplicas}} - Minimum number of replicas
+    F{{maxReplicas}} - Maximum number of replicas
+    F{{cpuPercentage}} - CPU percentage to start scaling
+}
 public type PodAutoscalerConfig {
     string name;
     map labels;
@@ -102,15 +112,17 @@ public type PodAutoscalerConfig {
     int cpuPercentage;
 };
 
-@Description {value:"Pod Autoscaler annotation for Kubernetes"}
+documentation {@kubernetes:HPA annotation to configure horizontal pod autoscaler yaml
+}
 public annotation < service > HPA PodAutoscalerConfig;
 
 
-@Description {value:"Kubernetes secret volume mount"}
-@Field {value:"name: Name of the volume mount"}
-@Field {value:"mountPath: Mount path"}
-@Field {value:"readOnly: Is mount read only"}
-@Field {value:"data: Paths to data files"}
+documentation {Kubernetes secret volume mount
+    F{{name}} - Name of the volume mount
+    F{{mountPath}} - Mount path
+    F{{readOnly}} - Is mount read only
+    F{{data}} - Paths to data files as an array
+}
 public type Secret {
     string name;
     string mountPath;
@@ -118,18 +130,23 @@ public type Secret {
     string[] data;
 };
 
+documentation {Secret volume mount configurations for kubernetes
+    F{{secrets}} - Array of [Secret](kubernetes.html#Secret)
+}
 public type  SecretMount {
     Secret[] secrets;
 };
 
-@Description {value:"Secret volumes annotation for Kubernetes"}
+documentation {@kubernetes:Secret annotation to configure secrets
+}
 public annotation < service > Secret SecretMount;
 
-@Description {value:"Kubernetes Config Map volume mount"}
-@Field {value:"name: Name of the volume mount"}
-@Field {value:"mountPath: Mount path"}
-@Field {value:"readOnly: Is mount read only"}
-@Field {value:"data: Paths to data files"}
+documentation {Kubernetes Config Map volume mount
+    F{{name}} - Name of the volume mount
+    F{{mountPath}} - Mount path
+    F{{readOnly}} - Is mount read only
+    F{{data}} - Paths to data files
+}
 public type ConfigMap {
     string name;
     string mountPath;
@@ -137,21 +154,26 @@ public type ConfigMap {
     string[] data;
 };
 
-@Field {value:"ballerinaConf: Ballerina conf file location"}
+documentation {Secret volume mount configurations for kubernetes
+    F{{ballerinaConf}} - path to ballerina configuration file
+    F{{configMaps}} - Array of [ConfigMap](kubernetes.html#ConfigMap)
+}
 public type  ConfigMapMount {
     string ballerinaConf;
     ConfigMap[] configMaps;
 };
 
-@Description {value:"ConfigMap volumes annotation for Kubernetes"}
+documentation {@kubernetes:ConfigMap annotation to configure config maps
+}
 public annotation < service > ConfigMap ConfigMapMount;
 
-@Description {value:"Kubernetes Persistent Volume Claim"}
-@Field {value:"name: Name of the volume claim"}
-@Field {value:"mountPath: Mount Path"}
-@Field {value:"accessMode: Access mode"}
-@Field {value:"volumeClaimSize: Size of the volume claim"}
-@Field {value:"readOnly: Is mount read only"}
+documentation {Kubernetes Persistent Volume Claim
+    F{{name}} - Name of the volume claim
+    F{{mountPath}} - Mount Path
+    F{{accessMode}} - Access mode
+    F{{volumeClaimSize}} - Size of the volume claim
+    F{{readOnly}} - Is mount read only
+}
 public type PersistentVolumeClaimConfig {
     string name;
     string mountPath;
@@ -159,29 +181,35 @@ public type PersistentVolumeClaimConfig {
     string volumeClaimSize;
     boolean readOnly;
 };
+
+documentation {Persistent Volume Claims configurations for kubernetes
+    F{{volumeClaims}} - Array of [PersistentVolumeClaimConfig](kubernetes.html#PersistentVolumeClaimConfig)
+}
 public type  PersistentVolumeClaims {
     PersistentVolumeClaimConfig[] volumeClaims;
 };
 
-@Description {value:"ConfigMap volumes annotation for Kubernetes"}
+documentation {@kubernetes:PersistentVolumeClaim annotation to configure Persistent Volume Claims
+}
 public annotation < service > PersistentVolumeClaim PersistentVolumeClaims;
 
-@Description {value:"Kubernetes job configuration"}
-@Field {value:"name: Name of the job"}
-@Field {value:"labels: Labels for job"}
-@Field {value:"restartPolicy: Restart policy "}
-@Field {value:"backoffLimit: Backoff limit"}
-@Field {value:"activeDeadlineSeconds: Active deadline seconds"}
-@Field {value:"schedule: Schedule for cron jobs"}
-@Field {value:"image: Docker image with tag"}
-@Field {value:"envVars: Environment varialbes for container"}
-@Field {value:"buildImage: Docker image to be build or not"}
-@Field {value:"dockerHost: Docker host IP and docker PORT. (e.g minikube IP and docker PORT)"}
-@Field {value:"username: Username for docker registry"}
-@Field {value:"password: Password for docker registry"}
-@Field {value:"baseImage: Base image for docker image building"}
-@Field {value:"push: Push to remote registry"}
-@Field {value:"dockerCertPath: Docker cert path."}
+documentation {value:"Kubernetes job configuration
+    F{{name}} - Name of the job
+    F{{labels}} - Labels for job
+    F{{restartPolicy}} - Restart policy
+    F{{backoffLimit}} - Backoff limit
+    F{{activeDeadlineSeconds}} - Active deadline seconds
+    F{{schedule}} - Schedule for cron jobs
+    F{{image}} - Docker image with tag
+    F{{env}} - Environment varialbes for container
+    F{{buildImage}} - Docker image to be build or not
+    F{{dockerHost}} - Docker host IP and docker PORT. (e.g minikube IP and docker PORT)
+    F{{username}} - Username for docker registry
+    F{{password}} - Password for docker registry
+    F{{baseImage}} - Base image for docker image building
+    F{{push}} - Push to remote registry
+    F{{dockerCertPath}} - Docker cert path
+}
 public type JobConfig {
     string name;
     map labels;
@@ -201,5 +229,6 @@ public type JobConfig {
     string dockerCertPath;
 };
 
-@Description {value:"Job annotation for Kubernetes"}
+documentation {@kubernetes:Job annotation to configure kubernetes jobs
+}
 public annotation < function > Job JobConfig;
