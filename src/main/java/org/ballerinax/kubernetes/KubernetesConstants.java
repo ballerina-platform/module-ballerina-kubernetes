@@ -51,9 +51,10 @@ public class KubernetesConstants {
     public static final String DOCKER_LATEST_TAG = ":latest";
     public static final String LISTENER = "Listener";
     public static final String BALLERINA_HOME = "/home/ballerina";
-    public static final String BALLERINA_RUNTIME = "/home/runtime";
+    public static final String BALLERINA_RUNTIME = "/ballerina/runtime";
     public static final String BALLERINA_CONF_MOUNT_PATH = "/home/ballerina/conf/";
     public static final String BALLERINA_CONF_FILE_NAME = "ballerina.conf";
+    public static final String ENDPOINT_PATH_VARIABLE = "path";
 
     /**
      * Restart policy enum.

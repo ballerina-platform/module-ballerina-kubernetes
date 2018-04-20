@@ -2,7 +2,7 @@ package food_api_pkg;
 import ballerina/http;
 import ballerinax/kubernetes;
 
-@kubernetes:Service{}
+@kubernetes:Service {}
 @kubernetes:Ingress {
     hostname:"burger.com",
     path:"/",
@@ -12,7 +12,7 @@ endpoint http:Listener burgerEP {
     port:9096,
     secureSocket:{
         keyStore:{
-            filePath:"${ballerina.home}/bre/security/ballerinaKeystore.p12",
+            path:"${ballerina.home}/bre/security/ballerinaKeystore.p12",
             password:"ballerina"
         }
     }
@@ -27,9 +27,9 @@ service<http:Service> BurgerAPI bind burgerEP {
         methods:["GET"],
         path:"/menu"
     }
-    getBurgerMenu (endpoint outboundEP, http:Request req) {
+    getBurgerMenu(endpoint outboundEP, http:Request req) {
         http:Response response = new;
         response.setStringPayload("Burger menu \n");
-        _ = outboundEP -> respond(response);
+        _ = outboundEP->respond(response);
     }
 }

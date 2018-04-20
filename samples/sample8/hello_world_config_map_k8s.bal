@@ -11,11 +11,11 @@ endpoint http:Listener helloWorldEP {
     port:9090,
     secureSocket:{
         keyStore:{
-            filePath:"${ballerina.home}/bre/security/ballerinaKeystore.p12",
+            path:"${ballerina.home}/bre/security/ballerinaKeystore.p12",
             password:"ballerina"
         },
         trustStore:{
-            filePath:"${ballerina.home}/bre/security/ballerinaTruststore.p12",
+            path:"${ballerina.home}/bre/security/ballerinaTruststore.p12",
             password:"ballerina"
         }
     }
@@ -44,7 +44,7 @@ service<http:Service> helloWorld bind helloWorldEP {
         string groups = getConfigValue(user, "groups");
         string payload = "{userId: " + userId + ", groups: " + groups + "}";
         response.setStringPayload(payload + "\n");
-        _ = outboundEP -> respond(response);
+        _ = outboundEP->respond(response);
     }
     @http:ResourceConfig {
         methods:["GET"],
@@ -52,9 +52,9 @@ service<http:Service> helloWorld bind helloWorldEP {
     }
     getData(endpoint outboundEP, http:Request request) {
         http:Response response = new;
-        string payload = readFile("./data/data.txt", "r", "UTF-8");
-        response.setStringPayload("Data1: " + payload + "\n");
-        _ = outboundEP -> respond(response);
+        string payload = readFile("./data/data.txt");
+        response.setStringPayload("Data: " + payload + "\n");
+        _ = outboundEP->respond(response);
     }
 }
 
@@ -63,27 +63,17 @@ function getConfigValue(string instanceId, string property) returns (string) {
     return config:getAsString(key, default = "Invalid User");
 }
 
-function readFile(string filePath, string permission, string encoding) returns (string) {
-    io:ByteChannel channel = io:openFile(filePath, permission);
-    var characterChannelResult = io:createCharacterChannel(channel, encoding);
-    io:CharacterChannel sourceChannel = new;
-    match characterChannelResult {
-        (io:CharacterChannel) res => {
-            sourceChannel = res;
+function readFile(string filePath) returns (string) {
+    io:Mode permission = "r";
+    io:ByteChannel bchannel = io:openFile(filePath, permission);
+    io:CharacterChannel channel = new io:CharacterChannel(bchannel, "UTF-8");
+
+    var readOutput = channel.read(50);
+    match readOutput {
+        string text => {
+            return text;
         }
-        error err => {
-            io:println(err);
-        }
-    }
-    var contentResult = sourceChannel.readCharacters(50);
-    match contentResult {
-        (string) res => {
-            return res;
-        }
-        error err => {
-            io:println(err);
-            return err.message;
-        }
+        error ioError => return "Error: Unable to read file";
     }
 }
 

@@ -1,29 +1,29 @@
 import ballerina/http;
 import ballerinax/kubernetes;
 
-@kubernetes:Ingress{
+@kubernetes:Ingress {
     hostname:"abc.com"
 }
-@kubernetes:Service{serviceType:"NodePort"}
+@kubernetes:Service {serviceType:"NodePort"}
 endpoint http:Listener gceHelloWorldDEP {
     port:9090
 };
 
-@kubernetes:Deployment{
+@kubernetes:Deployment {
     enableLiveness:"enable",
     push:true,
     image:"index.docker.io/$env{DOCKER_USERNAME}/gce-sample:1.0",
     username:"$env{DOCKER_USERNAME}",
     password:"$env{DOCKER_PASSWORD}"
 }
-@kubernetes:HPA{}
+@kubernetes:HPA {}
 @http:ServiceConfig {
     basePath:"/helloWorld"
 }
-service<http:Service>  helloWorld bind gceHelloWorldDEP {
-    sayHello (endpoint outboundEP, http:Request request) {
+service<http:Service> helloWorld bind gceHelloWorldDEP {
+    sayHello(endpoint outboundEP, http:Request request) {
         http:Response response = new;
         response.setStringPayload("Hello, World from service helloWorld! \n");
-        _ = outboundEP -> respond(response);
+        _ = outboundEP->respond(response);
     }
 }

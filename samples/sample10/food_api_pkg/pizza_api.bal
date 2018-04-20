@@ -7,7 +7,7 @@ import ballerinax/kubernetes;
     path:"/pizzastore",
     targetPath:"/"
 }
-@kubernetes:Service{}
+@kubernetes:Service {}
 endpoint http:Listener pizzaEP {
     port:9099
 };
@@ -15,21 +15,21 @@ endpoint http:Listener pizzaEP {
 @kubernetes:Deployment {
     name:"foodstore",
     replicas:3,
-    labels:{"location":"SL","city":"COLOMBO"},
+    labels:{"location":"SL", "city":"COLOMBO"},
     enableLiveness:"enable",
     livenessPort:9099
 }
 @http:ServiceConfig {
     basePath:"/pizza"
 }
-service<http:Service> PizzaAPI bind pizzaEP{
+service<http:Service> PizzaAPI bind pizzaEP {
     @http:ResourceConfig {
         methods:["GET"],
         path:"/menu"
     }
-    getPizzaMenu (endpoint outboundEP, http:Request req) {
+    getPizzaMenu(endpoint outboundEP, http:Request req) {
         http:Response response = new;
         response.setStringPayload("Pizza menu \n");
-        _ = outboundEP -> respond(response);
+        _ = outboundEP->respond(response);
     }
 }

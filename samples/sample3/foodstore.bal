@@ -7,7 +7,7 @@ import ballerinax/kubernetes;
     path:"/pizzastore",
     targetPath:"/"
 }
-@kubernetes:Service{}
+@kubernetes:Service {}
 endpoint http:Listener pizzaEP {
     port:9099
 };
@@ -15,7 +15,7 @@ endpoint http:Listener pizzaEP {
 @kubernetes:Deployment {
     name:"foodstore",
     replicas:3,
-    labels:{"location":"SL","city":"COLOMBO"},
+    labels:{"location":"SL", "city":"COLOMBO"},
     enableLiveness:"enable",
     livenessPort:9099
 }
@@ -23,15 +23,15 @@ endpoint http:Listener pizzaEP {
 @http:ServiceConfig {
     basePath:"/pizza"
 }
-service<http:Service> PizzaAPI bind pizzaEP{
+service<http:Service> PizzaAPI bind pizzaEP {
     @http:ResourceConfig {
         methods:["GET"],
         path:"/menu"
     }
-    getPizzaMenu (endpoint outboundEP, http:Request req) {
+    getPizzaMenu(endpoint outboundEP, http:Request req) {
         http:Response response = new;
         response.setStringPayload("Pizza menu \n");
-        _ = outboundEP -> respond(response);
+        _ = outboundEP->respond(response);
     }
 }
 
@@ -42,7 +42,7 @@ service<http:Service> PizzaAPI bind pizzaEP{
     path:"/",
     targetPath:"/burger"
 }
-@kubernetes:Service{}
+@kubernetes:Service {}
 endpoint http:Listener burgerEP {
     port:9096
 };
@@ -54,9 +54,9 @@ service<http:Service> BurgerAPI bind burgerEP {
         methods:["GET"],
         path:"/menu"
     }
-    getBurgerMenu (endpoint outboundEP, http:Request req) {
+    getBurgerMenu(endpoint outboundEP, http:Request req) {
         http:Response response = new;
         response.setStringPayload("Burger menu \n");
-        _ = outboundEP -> respond(response);
+        _ = outboundEP->respond(response);
     }
 }
