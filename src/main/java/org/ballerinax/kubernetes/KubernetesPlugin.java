@@ -35,6 +35,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.LISTENER;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
 
 /**
@@ -76,9 +77,10 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     @Override
     public void process(EndpointNode endpointNode, List<AnnotationAttachmentNode> annotations) {
         setCanProcess(true);
-        if (!LISTENER.equals(endpointNode.getEndPointType().getTypeName().getValue())) {
+        String endpointType = endpointNode.getEndPointType().getTypeName().getValue();
+        if (isBlank(endpointType) || !endpointType.endsWith(LISTENER)) {
             dlog.logDiagnostic(Diagnostic.Kind.ERROR, endpointNode.getPosition(), "@kubernetes annotations are only " +
-                    "supported by Listener endpoints.");
+                    "supported with Listener endpoints.");
             return;
         }
         for (AnnotationAttachmentNode attachmentNode : annotations) {
