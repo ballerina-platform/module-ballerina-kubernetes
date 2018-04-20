@@ -339,7 +339,7 @@
 
     <properties>
         <mvn.processor.plugin.version>2.2.4</mvn.processor.plugin.version>
-        <ballerina.lang.version>0.970.0-beta4</ballerina.lang.version>
+        <ballerina.lang.version>0.970.0-beta5</ballerina.lang.version>
         <fabric8.kubernetes.client.version>3.1.10</fabric8.kubernetes.client.version>
         <fabric8.kubernetes.api.version>3.0.11</fabric8.kubernetes.api.version>
         <fabric8.kubernetes.api.version>3.0.8</fabric8.kubernetes.api.version>
