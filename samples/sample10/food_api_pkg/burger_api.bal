@@ -1,4 +1,3 @@
-package food_api_pkg;
 import ballerina/http;
 import ballerinax/kubernetes;
 
