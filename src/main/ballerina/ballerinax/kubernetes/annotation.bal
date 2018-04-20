@@ -1,4 +1,18 @@
-package ballerinax.kubernetes;
+// Copyright (c) 2018 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+//
+// WSO2 Inc. licenses this file to you under the Apache License,
+// Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
 
 documentation {External file type for docker
     F{{source}} - source path of the file (in your machine)
@@ -52,7 +66,7 @@ public type DeploymentConfiguration {
 
 documentation {@kubernetes:Deployment annotation to configure deplyoment yaml
 }
-public annotation < service, endpoint > Deployment DeploymentConfiguration;
+public annotation<service, endpoint> Deployment DeploymentConfiguration;
 
 
 documentation {Kubernetes service configuration
@@ -68,7 +82,7 @@ public type ServiceConfiguration {
 
 documentation {@kubernetes:Service annotation to configure service yaml
 }
-public annotation < endpoint, service > Service ServiceConfiguration;
+public annotation<endpoint, service> Service ServiceConfiguration;
 
 documentation{Kubernetes ingress configuration
     F{{name}} - Name of the ingress
@@ -95,7 +109,7 @@ public type IngressConfiguration {
 
 documentation {@kubernetes:Ingress annotation to configure ingress yaml
 }
-public annotation < service, endpoint > Ingress IngressConfiguration;
+public annotation<service, endpoint> Ingress IngressConfiguration;
 
 documentation {Kubernetes Horizontal Pod Autoscaler configuration
     F{{name}} - Name of the Autoscaler
@@ -114,7 +128,7 @@ public type PodAutoscalerConfig {
 
 documentation {@kubernetes:HPA annotation to configure horizontal pod autoscaler yaml
 }
-public annotation < service > HPA PodAutoscalerConfig;
+public annotation<service> HPA PodAutoscalerConfig;
 
 
 documentation {Kubernetes secret volume mount
@@ -139,7 +153,7 @@ public type  SecretMount {
 
 documentation {@kubernetes:Secret annotation to configure secrets
 }
-public annotation < service > Secret SecretMount;
+public annotation<service> Secret SecretMount;
 
 documentation {Kubernetes Config Map volume mount
     F{{name}} - Name of the volume mount
@@ -165,7 +179,7 @@ public type  ConfigMapMount {
 
 documentation {@kubernetes:ConfigMap annotation to configure config maps
 }
-public annotation < service > ConfigMap ConfigMapMount;
+public annotation<service> ConfigMap ConfigMapMount;
 
 documentation {Kubernetes Persistent Volume Claim
     F{{name}} - Name of the volume claim
@@ -191,7 +205,7 @@ public type  PersistentVolumeClaims {
 
 documentation {@kubernetes:PersistentVolumeClaim annotation to configure Persistent Volume Claims
 }
-public annotation < service > PersistentVolumeClaim PersistentVolumeClaims;
+public annotation<service> PersistentVolumeClaim PersistentVolumeClaims;
 
 documentation {value:"Kubernetes job configuration
     F{{name}} - Name of the job
@@ -231,4 +245,4 @@ public type JobConfig {
 
 documentation {@kubernetes:Job annotation to configure kubernetes jobs
 }
-public annotation < function > Job JobConfig;
+public annotation<function> Job JobConfig;
