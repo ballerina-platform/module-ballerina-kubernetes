@@ -1,7 +1,7 @@
 import ballerina/io;
 import ballerinax/kubernetes;
 
-@kubernetes:Job{}
+@kubernetes:Job {}
 public function main(string[] args) {
     io:println("hello world");
 }

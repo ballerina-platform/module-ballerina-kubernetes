@@ -41,6 +41,8 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.ANONYMOUS_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_RUNTIME;
+import static org.ballerinax.kubernetes.KubernetesConstants.ENDPOINT_PATH_VARIABLE;
 import static org.ballerinax.kubernetes.KubernetesConstants.INGRESS_HOSTNAME_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.INGRESS_POSTFIX;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
@@ -144,7 +146,7 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
     private String getMountPath(String mountPath) {
         if (mountPath.contains("${ballerina.home}")) {
             // replace mount path with container's ballerina.home
-            mountPath = mountPath.replace("${ballerina.home}", "/ballerina/runtime");
+            mountPath = mountPath.replace("${ballerina.home}", BALLERINA_RUNTIME);
         }
         return String.valueOf(Paths.get(mountPath).getParent());
     }
@@ -154,7 +156,7 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
                 .valueExpr).getKeyValuePairs();
         for (BLangRecordLiteral.BLangRecordKeyValue keyStoreConfig : keyStoreConfigs) {
             String configKey = keyStoreConfig.getKey().toString();
-            if ("filePath".equals(configKey)) {
+            if (ENDPOINT_PATH_VARIABLE.equals(configKey)) {
                 return keyStoreConfig.getValue().toString();
             }
         }

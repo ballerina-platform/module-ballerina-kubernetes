@@ -1,13 +1,13 @@
 import ballerina/http;
 import ballerinax/kubernetes;
 
-@kubernetes:Deployment{
+@kubernetes:Deployment {
     enableLiveness:"enable"
 }
-@kubernetes:Ingress{
+@kubernetes:Ingress {
     hostname:"abc.com"
 }
-@kubernetes:Service{name:"hello"}
+@kubernetes:Service {name:"hello"}
 endpoint http:Listener helloEP {
     port:9090
 };
@@ -17,9 +17,9 @@ endpoint http:Listener helloEP {
     basePath:"/helloWorld"
 }
 service<http:Service> helloWorld bind helloEP {
-    sayHello (endpoint outboundEP, http:Request request) {
+    sayHello(endpoint outboundEP, http:Request request) {
         http:Response response = new;
         response.setStringPayload("Hello, World from service helloWorld ! \n");
-        _ = outboundEP -> respond(response);
+        _ = outboundEP->respond(response);
     }
 }
