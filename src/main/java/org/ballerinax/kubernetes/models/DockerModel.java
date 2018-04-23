@@ -21,6 +21,8 @@ package org.ballerinax.kubernetes.models;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.DEFAULT_DOCKER_HOST;
+
 /**
  * Docker annotations model class.
  */
@@ -51,7 +53,7 @@ public class DockerModel extends KubernetesModel {
         this.baseImage = "ballerina/ballerina:" + baseImageVersion;
         this.enableDebug = false;
         this.debugPort = 5005;
-        this.dockerHost = "unix:///var/run/docker.sock";
+        this.dockerHost = DEFAULT_DOCKER_HOST;
         externalFiles = new HashSet<>();
     }
 

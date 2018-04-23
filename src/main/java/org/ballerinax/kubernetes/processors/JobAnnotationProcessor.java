@@ -26,7 +26,9 @@ import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
 import java.util.List;
+import java.util.Locale;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.DEFAULT_DOCKER_HOST;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
@@ -35,19 +37,6 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
  * Job Annotation processor.
  */
 public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
-
-    /**
-     * Enum class for JobConfiguration.
-     */
-    private enum JobConfiguration {
-        name,
-        labels,
-        restartPolicy,
-        backoffLimit,
-        activeDeadlineSeconds,
-        schedule
-    }
-
 
     public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
@@ -81,6 +70,25 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
                     break;
             }
         }
+        String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
+        if (operatingSystem.contains("win") && DEFAULT_DOCKER_HOST.equals(jobModel.getDockerHost())) {
+            // Windows users must specify docker host
+            throw new KubernetesPluginException("Windows users must specify dockerHost parameter in " +
+                    "@kubernetes:Deployment{} annotation.");
+        }
         KubernetesDataHolder.getInstance().setJobModel(jobModel);
+    }
+
+
+    /**
+     * Enum class for JobConfiguration.
+     */
+    private enum JobConfiguration {
+        name,
+        labels,
+        restartPolicy,
+        backoffLimit,
+        activeDeadlineSeconds,
+        schedule
     }
 }

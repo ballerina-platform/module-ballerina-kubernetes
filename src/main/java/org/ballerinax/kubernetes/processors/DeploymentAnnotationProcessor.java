@@ -31,8 +31,10 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.DEFAULT_DOCKER_HOST;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
@@ -121,6 +123,12 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 default:
                     break;
             }
+        }
+        String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
+        if (operatingSystem.contains("win") && DEFAULT_DOCKER_HOST.equals(deploymentModel.getDockerHost())) {
+            // Windows users must specify docker host
+            throw new KubernetesPluginException("Windows users must specify dockerHost parameter in " +
+                    "@kubernetes:Deployment{} annotation.");
         }
         KubernetesDataHolder.getInstance().setDeploymentModel(deploymentModel);
     }

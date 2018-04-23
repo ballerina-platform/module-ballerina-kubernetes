@@ -22,6 +22,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.DEFAULT_DOCKER_HOST;
+
 /**
  * Kubernetes deployment annotations model class.
  */
@@ -63,7 +65,7 @@ public class DeploymentModel extends KubernetesModel {
         this.labels = new HashMap<>();
         this.env = new HashMap<>();
         this.setImagePullPolicy("IfNotPresent");
-        this.dockerHost = "unix:///var/run/docker.sock";
+        this.dockerHost = DEFAULT_DOCKER_HOST;
         this.ports = new HashSet<>();
         this.secretModels = new HashSet<>();
         this.configMapModels = new HashSet<>();

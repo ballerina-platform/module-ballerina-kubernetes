@@ -55,6 +55,7 @@ public class KubernetesConstants {
     public static final String BALLERINA_CONF_MOUNT_PATH = "/home/ballerina/conf/";
     public static final String BALLERINA_CONF_FILE_NAME = "ballerina.conf";
     public static final String ENDPOINT_PATH_VARIABLE = "path";
+    public static final String DEFAULT_DOCKER_HOST = "unix:///var/run/docker.sock";
 
     /**
      * Restart policy enum.
