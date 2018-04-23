@@ -19,6 +19,7 @@
 package org.ballerinax.kubernetes.processors;
 
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 
 /**
  * Annotation processor factory.
@@ -26,25 +27,40 @@ import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 public class AnnotationProcessorFactory {
 
     public static AnnotationProcessor getAnnotationProcessorInstance(String type) throws KubernetesPluginException {
-        switch (type) {
-            case "Service":
+        // set can process to true so that this value can be accessed from code generated method.
+        KubernetesDataHolder.getInstance().setCanProcess(true);
+        KubernetesAnnotation kubernetesAnnotation = KubernetesAnnotation.valueOf(type);
+        switch (kubernetesAnnotation) {
+            case Service:
                 return new ServiceAnnotationProcessor();
-            case "Ingress":
+            case Ingress:
                 return new IngressAnnotationProcessor();
-            case "HPA":
+            case HPA:
                 return new HPAAnnotationProcessor();
-            case "Deployment":
+            case Deployment:
                 return new DeploymentAnnotationProcessor();
-            case "Secret":
+            case Secret:
                 return new SecretAnnotationProcessor();
-            case "ConfigMap":
+            case ConfigMap:
                 return new ConfigMapAnnotationProcessor();
-            case "PersistentVolumeClaim":
+            case PersistentVolumeClaim:
                 return new VolumeClaimAnnotationProcessor();
-            case "Job":
+            case Job:
                 return new JobAnnotationProcessor();
             default:
+                KubernetesDataHolder.getInstance().setCanProcess(false);
                 throw new KubernetesPluginException("Error while getting annotation processor for type: " + type);
         }
+    }
+
+    private enum KubernetesAnnotation {
+        Service,
+        Ingress,
+        HPA,
+        Deployment,
+        Secret,
+        ConfigMap,
+        PersistentVolumeClaim,
+        Job
     }
 }
