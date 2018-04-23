@@ -31,7 +31,6 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
 import java.util.List;
 
-import static org.ballerinalang.net.http.HttpConstants.HTTP_DEFAULT_PORT;
 import static org.ballerinax.kubernetes.KubernetesConstants.SVC_POSTFIX;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
@@ -74,14 +73,15 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         KubernetesDataHolder.getInstance().addBEndpointToK8sServiceMap(serviceNode.getName().getValue(), serviceModel);
     }
 
-    private int extractPort(List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig) {
+    private int extractPort(List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig) throws
+            KubernetesPluginException {
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : endpointConfig) {
             String key = keyValue.getKey().toString();
             if ("port".equals(key)) {
                 return Integer.parseInt(keyValue.getValue().toString());
             }
         }
-        return HTTP_DEFAULT_PORT;
+        throw new KubernetesPluginException("Unable to extract port from endpoint");
     }
 
     private ServiceModel getServiceModelFromAnnotation(AnnotationAttachmentNode attachmentNode) throws
