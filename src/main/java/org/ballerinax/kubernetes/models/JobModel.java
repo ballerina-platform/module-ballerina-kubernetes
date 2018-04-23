@@ -21,7 +21,11 @@ package org.ballerinax.kubernetes.models;
 import org.ballerinax.kubernetes.KubernetesConstants;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+
+import static org.ballerinax.kubernetes.KubernetesConstants.UNIX_DEFAULT_DOCKER_HOST;
+import static org.ballerinax.kubernetes.KubernetesConstants.WINDOWS_DEFAULT_DOCKER_HOST;
 
 /**
  * Job model class.
@@ -53,7 +57,12 @@ public class JobModel extends KubernetesModel {
         this.labels = new HashMap<>();
         this.setEnv(new HashMap<>());
         this.setImagePullPolicy("IfNotPresent");
-        this.setDockerHost("unix:///var/run/docker.sock");
+        String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
+        if (operatingSystem.contains("win")) {
+            this.dockerHost = WINDOWS_DEFAULT_DOCKER_HOST;
+        } else {
+            this.dockerHost = UNIX_DEFAULT_DOCKER_HOST;
+        }
         this.activeDeadlineSeconds = 20;
     }
 

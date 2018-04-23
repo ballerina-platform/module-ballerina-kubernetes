@@ -31,10 +31,11 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
-import static org.ballerinax.kubernetes.KubernetesConstants.DEFAULT_DOCKER_HOST;
+
+import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_CERT_PATH;
+import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_HOST;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
@@ -124,11 +125,14 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                     break;
             }
         }
-        String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
-        if (operatingSystem.contains("win") && DEFAULT_DOCKER_HOST.equals(deploymentModel.getDockerHost())) {
-            // Windows users must specify docker host
-            throw new KubernetesPluginException("Windows users must specify dockerHost parameter in " +
-                    "@kubernetes:Deployment{} annotation.");
+
+        String dockerHost = System.getenv(DOCKER_HOST);
+        if (!isBlank(dockerHost)) {
+            deploymentModel.setDockerHost(dockerHost);
+        }
+        String dockerCertPath = System.getenv(DOCKER_CERT_PATH);
+        if (!isBlank(dockerCertPath)) {
+            deploymentModel.setDockerCertPath(dockerCertPath);
         }
         KubernetesDataHolder.getInstance().setDeploymentModel(deploymentModel);
     }
