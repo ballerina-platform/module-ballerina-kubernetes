@@ -120,7 +120,7 @@ public class KubernetesUtils {
      */
     public static String extractBalxName(String balxFilePath) {
         if (balxFilePath.contains(".balx")) {
-            return balxFilePath.substring(balxFilePath.lastIndexOf(File.separator) + 1, balxFilePath.lastIndexOf("" +
+            return balxFilePath.substring(balxFilePath.lastIndexOf(File.separator) + 1, balxFilePath.lastIndexOf(
                     ".balx"));
         }
         return null;
@@ -132,9 +132,7 @@ public class KubernetesUtils {
      * @param msg message to be printed
      */
     public static void printError(String msg) {
-        String ansiReset = "\u001B[0m";
-        String ansiRed = "\u001B[31m";
-        error.println(ansiRed + "error: " + msg + ansiReset);
+        error.println("error [k8s plugin]: " + msg);
     }
 
     /**
@@ -143,10 +141,8 @@ public class KubernetesUtils {
      * @param msg message to be printed
      */
     public static void printDebug(String msg) {
-        String ansiReset = "\u001B[0m";
-        String ansiBlue = "\u001B[34m";
         if (debugEnabled) {
-            out.println(ansiBlue + "debug: " + msg + ansiReset);
+            out.println("debug [k8s plugin]: " + msg);
         }
     }
 
@@ -156,9 +152,7 @@ public class KubernetesUtils {
      * @param msg message to be printed
      */
     public static void printInstruction(String msg) {
-        String ansiReset = "\u001B[0m";
-        String ansiCyan = "\u001B[36m";
-        out.println(ansiCyan + msg + ansiReset);
+        out.println(msg);
     }
 
     /**
