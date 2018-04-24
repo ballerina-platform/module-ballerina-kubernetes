@@ -64,7 +64,7 @@ do
 	fi
 
 	if [[ number -eq 6 ]]; then
-		ballerina build hello_world_gce.bal.bal
+		ballerina build hello_world_gce.bal
 		kubectl apply -f ./kubernetes
 		sleep 5
 		curl http://abc.com/helloWorld/sayHello	
