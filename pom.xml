@@ -40,7 +40,7 @@
         </dependency>
         <dependency>
             <groupId>org.ballerinalang</groupId>
-            <artifactId>ballerina-http</artifactId>
+            <artifactId>ballerina-lang</artifactId>
             <version>${ballerina.lang.version}</version>
         </dependency>
         <dependency>
