@@ -19,8 +19,12 @@ package org.ballerinax.kubernetes.models;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
+import static org.ballerinax.kubernetes.KubernetesConstants.UNIX_DEFAULT_DOCKER_HOST;
+import static org.ballerinax.kubernetes.KubernetesConstants.WINDOWS_DEFAULT_DOCKER_HOST;
 
 /**
  * Kubernetes deployment annotations model class.
@@ -63,7 +67,12 @@ public class DeploymentModel extends KubernetesModel {
         this.labels = new HashMap<>();
         this.env = new HashMap<>();
         this.setImagePullPolicy("IfNotPresent");
-        this.dockerHost = "unix:///var/run/docker.sock";
+        String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
+        if (operatingSystem.contains("win")) {
+            this.dockerHost = WINDOWS_DEFAULT_DOCKER_HOST;
+        } else {
+            this.dockerHost = UNIX_DEFAULT_DOCKER_HOST;
+        }
         this.ports = new HashSet<>();
         this.secretModels = new HashSet<>();
         this.configMapModels = new HashSet<>();

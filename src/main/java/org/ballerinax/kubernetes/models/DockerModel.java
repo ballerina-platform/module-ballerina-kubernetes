@@ -19,7 +19,11 @@
 package org.ballerinax.kubernetes.models;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
+
+import static org.ballerinax.kubernetes.KubernetesConstants.UNIX_DEFAULT_DOCKER_HOST;
+import static org.ballerinax.kubernetes.KubernetesConstants.WINDOWS_DEFAULT_DOCKER_HOST;
 
 /**
  * Docker annotations model class.
@@ -51,7 +55,12 @@ public class DockerModel extends KubernetesModel {
         this.baseImage = "ballerina/ballerina:" + baseImageVersion;
         this.enableDebug = false;
         this.debugPort = 5005;
-        this.dockerHost = "unix:///var/run/docker.sock";
+        String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
+        if (operatingSystem.contains("win")) {
+            this.dockerHost = WINDOWS_DEFAULT_DOCKER_HOST;
+        } else {
+            this.dockerHost = UNIX_DEFAULT_DOCKER_HOST;
+        }
         externalFiles = new HashSet<>();
     }
 

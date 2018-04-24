@@ -27,6 +27,7 @@ import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.util.diagnostic.Diagnostic;
 import org.ballerinalang.util.diagnostic.DiagnosticLog;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.processors.AnnotationProcessorFactory;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
@@ -45,23 +46,15 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
         value = "ballerinax.kubernetes"
 )
 public class KubernetesPlugin extends AbstractCompilerPlugin {
-
-    private static boolean canProcess;
     private DiagnosticLog dlog;
-
-    private static synchronized void setCanProcess(boolean val) {
-        canProcess = val;
-    }
 
     @Override
     public void init(DiagnosticLog diagnosticLog) {
         this.dlog = diagnosticLog;
-        setCanProcess(false);
     }
 
     @Override
     public void process(ServiceNode serviceNode, List<AnnotationAttachmentNode> annotations) {
-        setCanProcess(true);
         for (AnnotationAttachmentNode attachmentNode : annotations) {
             String annotationKey = attachmentNode.getAnnotationName().getValue();
             try {
@@ -76,7 +69,6 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
 
     @Override
     public void process(EndpointNode endpointNode, List<AnnotationAttachmentNode> annotations) {
-        setCanProcess(true);
         String endpointType = endpointNode.getEndPointType().getTypeName().getValue();
         if (isBlank(endpointType) || !endpointType.endsWith(LISTENER)) {
             dlog.logDiagnostic(Diagnostic.Kind.ERROR, endpointNode.getPosition(), "@kubernetes annotations are only " +
@@ -97,7 +89,6 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
 
     @Override
     public void process(FunctionNode functionNode, List<AnnotationAttachmentNode> annotations) {
-        setCanProcess(true);
         for (AnnotationAttachmentNode attachmentNode : annotations) {
             String annotationKey = attachmentNode.getAnnotationName().getValue();
             try {
@@ -113,7 +104,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
 
     @Override
     public void codeGenerated(Path binaryPath) {
-        if (canProcess) {
+        if (KubernetesDataHolder.getInstance().isCanProcess()) {
             String filePath = binaryPath.toAbsolutePath().toString();
             String userDir = new File(filePath).getParentFile().getAbsolutePath();
             String targetPath = userDir + File.separator + "kubernetes" + File.separator;

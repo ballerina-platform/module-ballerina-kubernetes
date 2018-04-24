@@ -2,7 +2,7 @@
 
 
 ### Prerequisites
- 1. Install a recent version of Docker for Mac and [enable Kubernetes](https://docs.docker.com/docker-for-mac/#kubernetes) OR
+ 1. Install a recent version of Docker for Mac/Windows and [enable Kubernetes](https://docs.docker.com/docker-for-mac/#kubernetes) OR
     [Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) is installed and running.
  2. [Nginx backend and controller deployed](#setting-up-nginx).
  3. Mini-kube users should configure following annotations in every sample with valid values: 
@@ -12,8 +12,13 @@
         dockerCertPath:"/Users/anuruddha/.minikube/certs"
     }
     ```
- 4. [Heapster](https://github.com/kubernetes/heapster) monitoring configured.
+ 4. Docker for windows users should enable remote access to the API.
+ (If DOCKER_HOST and DOCKER_CERT_PATH are exported as environment variables, priority will be given to environment variables.)
+ ![alt tag](./images/docker_for_windows.png)
+    
+ 5. [Heapster](https://github.com/kubernetes/heapster) monitoring configured.
     (This is **optional** and required only if Horizontal Pod Autoscaler are used. If you are running on GCE, heapster monitoring will be turned-on by default.)
+    
     
 #### Setting up nginx
 

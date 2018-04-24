@@ -23,7 +23,7 @@ endpoint http:Listener gceHelloWorldDEP {
 service<http:Service> helloWorld bind gceHelloWorldDEP {
     sayHello(endpoint outboundEP, http:Request request) {
         http:Response response = new;
-        response.setStringPayload("Hello, World from service helloWorld! \n");
+        response.setTextPayload("Hello, World from service helloWorld! \n");
         _ = outboundEP->respond(response);
     }
 }

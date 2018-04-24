@@ -27,6 +27,7 @@ import java.util.Set;
  * Singleton class to store kubernetes models.
  */
 public class KubernetesDataHolder {
+    private boolean canProcess;
     private DeploymentModel deploymentModel;
     private PodAutoscalerModel podAutoscalerModel;
     private Map<String, ServiceModel> bEndpointToK8sServiceMap;
@@ -130,5 +131,13 @@ public class KubernetesDataHolder {
 
     public void setJobModel(JobModel jobModel) {
         this.jobModel = jobModel;
+    }
+
+    public boolean isCanProcess() {
+        return canProcess;
+    }
+
+    public void setCanProcess(boolean canProcess) {
+        this.canProcess = canProcess;
     }
 }

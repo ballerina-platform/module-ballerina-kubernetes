@@ -27,27 +27,17 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
 import java.util.List;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_CERT_PATH;
+import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_HOST;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
  * Job Annotation processor.
  */
 public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
-
-    /**
-     * Enum class for JobConfiguration.
-     */
-    private enum JobConfiguration {
-        name,
-        labels,
-        restartPolicy,
-        backoffLimit,
-        activeDeadlineSeconds,
-        schedule
-    }
-
 
     public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
@@ -81,6 +71,27 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
                     break;
             }
         }
+        String dockerHost = System.getenv(DOCKER_HOST);
+        if (!isBlank(dockerHost)) {
+            jobModel.setDockerHost(dockerHost);
+        }
+        String dockerCertPath = System.getenv(DOCKER_CERT_PATH);
+        if (!isBlank(dockerCertPath)) {
+            jobModel.setDockerCertPath(dockerCertPath);
+        }
         KubernetesDataHolder.getInstance().setJobModel(jobModel);
+    }
+
+
+    /**
+     * Enum class for JobConfiguration.
+     */
+    private enum JobConfiguration {
+        name,
+        labels,
+        restartPolicy,
+        backoffLimit,
+        activeDeadlineSeconds,
+        schedule
     }
 }

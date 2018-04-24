@@ -33,6 +33,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
+import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_CERT_PATH;
+import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_HOST;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
@@ -121,6 +124,15 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 default:
                     break;
             }
+        }
+
+        String dockerHost = System.getenv(DOCKER_HOST);
+        if (!isBlank(dockerHost)) {
+            deploymentModel.setDockerHost(dockerHost);
+        }
+        String dockerCertPath = System.getenv(DOCKER_CERT_PATH);
+        if (!isBlank(dockerCertPath)) {
+            deploymentModel.setDockerCertPath(dockerCertPath);
         }
         KubernetesDataHolder.getInstance().setDeploymentModel(deploymentModel);
     }
