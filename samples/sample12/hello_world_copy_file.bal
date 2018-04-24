@@ -40,7 +40,7 @@ service<http:Service> helloWorld bind helloWorldEP {
     getData(endpoint outboundEP, http:Request request) {
         http:Response response = new;
         string payload = readFile("./data/data.txt");
-        response.setStringPayload("Data: " + payload + "\n");
+        response.setTextPayload("Data: " + payload + "\n");
         _ = outboundEP->respond(response);
     }
 }

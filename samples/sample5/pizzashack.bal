@@ -39,7 +39,7 @@ service<http:Service> Customer bind pizzaEP, pizzaEPSecured {
     }
     getCustomer(endpoint outboundEP, http:Request request) {
         http:Response response = new;
-        response.setStringPayload("Get Customer resource !!!!\n");
+        response.setTextPayload("Get Customer resource !!!!\n");
         _ = outboundEP->respond(response);
     }
 }
