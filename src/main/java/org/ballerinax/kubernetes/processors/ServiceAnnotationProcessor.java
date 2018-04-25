@@ -78,7 +78,12 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : endpointConfig) {
             String key = keyValue.getKey().toString();
             if ("port".equals(key)) {
-                return Integer.parseInt(keyValue.getValue().toString());
+                try {
+                    return Integer.parseInt(keyValue.getValue().toString());
+                } catch (NumberFormatException e) {
+                    throw new KubernetesPluginException("Listener endpoint port must be an integer to use " +
+                            "@kubernetes annotations.");
+                }
             }
         }
         throw new KubernetesPluginException("Unable to extract port from endpoint");
@@ -104,7 +109,12 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
                     serviceModel.setServiceType(annotationValue);
                     break;
                 case port:
-                    serviceModel.setPort(Integer.parseInt(annotationValue));
+                    try {
+                        serviceModel.setPort(Integer.parseInt(annotationValue));
+                    } catch (NumberFormatException e) {
+                        throw new KubernetesPluginException("Listener endpoint port must be an integer to use " +
+                                "@kubernetes annotations.");
+                    }
                     break;
                 default:
                     break;
