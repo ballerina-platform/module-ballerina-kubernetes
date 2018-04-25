@@ -24,7 +24,7 @@
     </parent>
 
     <groupId>org.ballerinax.kubernetes</groupId>
-    <version>0.970.0-beta15</version>
+    <version>0.970.0-beta16-SNAPSHOT</version>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>kubernetes-extension</artifactId>
     <packaging>jar</packaging>
@@ -148,7 +148,7 @@
         <url>https://github.com/ballerinax/kubernetes.git</url>
         <developerConnection>scm:git:https://github.com/ballerinax/kubernetes.git</developerConnection>
         <connection>scm:git:https://github.com/ballerinax/kubernetes.git</connection>
-        <tag>v0.970.0-beta15</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <build>
