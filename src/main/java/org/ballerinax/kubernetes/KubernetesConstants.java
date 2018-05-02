@@ -26,7 +26,7 @@ public class KubernetesConstants {
     public static final String KUBERNETES_SVC_PROTOCOL = "TCP";
     public static final String KUBERNETES_SELECTOR_KEY = "app";
     public static final String DEPLOYMENT_IMAGE_PULL_POLICY_DEFAULT = "IfNotPresent";
-    public static final String DEPLOYMENT_LIVENESS_DISABLE = "disable";
+    public static final boolean DEPLOYMENT_LIVENESS_DISABLE = false;
     public static final String INGRESS_POSTFIX = "-ingress";
     public static final String ANONYMOUS_POSTFIX = "-anonymous";
     public static final String INGRESS_FILE_POSTFIX = "_ingress";

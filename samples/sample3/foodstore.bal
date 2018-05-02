@@ -16,7 +16,7 @@ endpoint http:Listener pizzaEP {
     name:"foodstore",
     replicas:3,
     labels:{"location":"SL", "city":"COLOMBO"},
-    enableLiveness:"enable",
+    enableLiveness:true,
     livenessPort:9099
 }
 
