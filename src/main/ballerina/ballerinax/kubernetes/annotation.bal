@@ -47,7 +47,7 @@ public type DeploymentConfiguration {
     string name;
     map labels;
     int replicas;
-    string enableLiveness;
+    boolean enableLiveness;
     int livenessPort;
     int initialDelaySeconds;
     int periodSeconds;

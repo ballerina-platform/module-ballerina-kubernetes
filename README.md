@@ -27,7 +27,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |name|Name of the deployment|\<outputfilename\>-deployment|
 |labels|Labels for deployment|"app: \<outputfilename\>"|
 |replicas|Number of replicas|1|
-|enableLiveness|Enable or disable liveness probe|disable|
+|enableLiveness|Enable or disable liveness probe|false|
 |initialDelaySeconds|Initial delay in seconds before performing the first probe|10s|
 |periodSeconds|Liveness probe interval|5s|
 |livenessPort|Port which the Liveness probe check|\<ServicePort\>|
@@ -166,7 +166,7 @@ endpoint http:Listener helloEP {
 };
 
 @kubernetes:Deployment{
-    enableLiveness:"enable"
+    enableLiveness:true
 }
 @kubernetes:Ingress{
     hostname:"abc.com"

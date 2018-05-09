@@ -10,7 +10,7 @@ endpoint http:Listener gceHelloWorldDEP {
 };
 
 @kubernetes:Deployment {
-    enableLiveness:"enable",
+    enableLiveness:true,
     push:true,
     image:"index.docker.io/$env{DOCKER_USERNAME}/gce-sample:1.0",
     username:"$env{DOCKER_USERNAME}",

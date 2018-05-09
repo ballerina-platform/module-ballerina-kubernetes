@@ -60,7 +60,7 @@ public class KubernetesDeploymentGeneratorTests {
         deploymentModel.setLabels(labels);
         deploymentModel.setImage(imageName);
         deploymentModel.setImagePullPolicy(imagePullPolicy);
-        deploymentModel.setEnableLiveness("enable");
+        deploymentModel.setEnableLiveness(true);
         deploymentModel.setLivenessPort(9090);
         Map<String, String> env = new HashMap<>();
         env.put("ENV_VAR", "ENV");

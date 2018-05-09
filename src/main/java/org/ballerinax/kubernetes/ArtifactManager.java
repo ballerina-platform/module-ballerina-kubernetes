@@ -206,7 +206,7 @@ class ArtifactManager {
             deploymentModel.setImage(balxFileName + DOCKER_LATEST_TAG);
         }
         deploymentModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
-        if ("enable".equals(deploymentModel.getEnableLiveness()) && deploymentModel.getLivenessPort() == 0) {
+        if (deploymentModel.isEnableLiveness() && deploymentModel.getLivenessPort() == 0) {
             //set first port as liveness port
             deploymentModel.setLivenessPort(deploymentModel.getPorts().iterator().next());
         }

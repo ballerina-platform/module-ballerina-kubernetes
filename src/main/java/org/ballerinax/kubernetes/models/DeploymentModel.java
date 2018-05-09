@@ -32,7 +32,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.WINDOWS_DEFAULT_DOCK
 public class DeploymentModel extends KubernetesModel {
     private Map<String, String> labels;
     private int replicas;
-    private String enableLiveness;
+    private boolean enableLiveness;
     private int livenessPort;
     private int initialDelaySeconds;
     private int periodSeconds;
@@ -57,7 +57,7 @@ public class DeploymentModel extends KubernetesModel {
     public DeploymentModel() {
         // Initialize with default values.
         this.replicas = 1;
-        this.enableLiveness = "disable";
+        this.enableLiveness = false;
         this.periodSeconds = 5;
         this.initialDelaySeconds = 10;
         this.buildImage = true;
@@ -96,11 +96,11 @@ public class DeploymentModel extends KubernetesModel {
         this.replicas = replicas;
     }
 
-    public String getEnableLiveness() {
+    public boolean isEnableLiveness() {
         return enableLiveness;
     }
 
-    public void setEnableLiveness(String enableLiveness) {
+    public void setEnableLiveness(boolean enableLiveness) {
         this.enableLiveness = enableLiveness;
     }
 
