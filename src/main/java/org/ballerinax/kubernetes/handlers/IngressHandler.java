@@ -81,7 +81,13 @@ public class IngressHandler implements ArtifactHandler {
         if (ingressModel.getTargetPath() != null) {
             annotationMap.put("nginx.ingress.kubernetes.io/rewrite-target", ingressModel.getTargetPath());
         }
-        //ingressModel.getAnnotations().forEach(annotationMap::putIfAbsent);
+
+        //Add user defined ingress annotations to yaml.
+        Map<String, String> userDefinedAnnotationMap = ingressModel.getAnnotations();
+        if (userDefinedAnnotationMap != null) {
+            userDefinedAnnotationMap.forEach(annotationMap::putIfAbsent);
+        }
+
         //generate ingress
         Ingress ingress = new IngressBuilder()
                 .withNewMetadata()
