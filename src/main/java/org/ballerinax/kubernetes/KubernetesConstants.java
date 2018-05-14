@@ -68,4 +68,14 @@ public class KubernetesConstants {
         Never,
         OnFailure
     }
+
+    /**
+     * Service type enum.
+     */
+    public enum ServiceType {
+        ClusterIP,
+        NodePort,
+        LoadBalancer,
+        ExternalName
+    }
 }

@@ -58,13 +58,14 @@ Annotation based kubernetes extension implementation for ballerina.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
-|name|Name of the Ingress|\<ballerina service name\>-ingress
-|labels|Labels for service|"app: \<outputfilename\>"
-|hostname|Host name of the ingress|\<ballerina service name\>.com
-|path|Resource path.|/
-|targetPath|This will use for URL rewrite.|null
-|ingressClass|Ingress class|nginx
-|enableTLS|Enable ingress TLS|false
+|name|Name of the Ingress|\<ballerina service name\>-ingress|
+|labels|Labels for service|"app: \<outputfilename\>"|
+|hostname|Host name of the ingress|\<ballerina service name\>.com|
+|annotations|Map of additional annotations|null|
+|path|Resource path.|/|
+|targetPath|This will use for URL rewrite.|null|
+|ingressClass|Ingress class|nginx|
+|enableTLS|Enable ingress TLS|false|
 
 ### @kubernetes:HPA{}
 - Supported with ballerina services.
