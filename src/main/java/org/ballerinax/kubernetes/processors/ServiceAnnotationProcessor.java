@@ -22,6 +22,7 @@ import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.EndpointNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.expressions.RecordLiteralNode;
+import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.models.ServiceModel;
@@ -106,7 +107,7 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
                     serviceModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
                 case serviceType:
-                    serviceModel.setServiceType(annotationValue);
+                    serviceModel.setServiceType(KubernetesConstants.ServiceType.valueOf(annotationValue).name());
                     break;
                 case port:
                     try {

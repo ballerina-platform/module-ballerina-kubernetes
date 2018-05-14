@@ -17,6 +17,8 @@
  */
 package org.ballerinax.kubernetes.models;
 
+import org.ballerinax.kubernetes.KubernetesConstants;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +32,7 @@ public class ServiceModel extends KubernetesModel {
     private String selector;
 
     public ServiceModel() {
-        serviceType = "ClusterIP";
+        serviceType = KubernetesConstants.ServiceType.ClusterIP.name();
         labels = new HashMap<>();
     }
 
