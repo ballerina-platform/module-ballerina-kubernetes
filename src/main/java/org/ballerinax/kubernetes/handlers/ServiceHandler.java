@@ -28,7 +28,6 @@ import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.models.ServiceModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
@@ -45,10 +44,9 @@ public class ServiceHandler implements ArtifactHandler {
     /**
      * Generate kubernetes service definition from annotation.
      *
-     * @return Generated kubernetes service yaml as a string
      * @throws KubernetesPluginException If an error occurs while generating artifact.
      */
-    private String generate(ServiceModel serviceModel) throws KubernetesPluginException {
+    private void generate(ServiceModel serviceModel) throws KubernetesPluginException {
         Service service = new ServiceBuilder()
                 .withNewMetadata()
                 .withName(serviceModel.getName())
@@ -64,17 +62,14 @@ public class ServiceHandler implements ArtifactHandler {
                 .withType(serviceModel.getServiceType())
                 .endSpec()
                 .build();
-        String serviceYAML;
         try {
-            serviceYAML = SerializationUtils.dumpWithoutRuntimeStateAsYaml(service);
-            KubernetesUtils.writeToFile(serviceYAML, KUBERNETES_DATA_HOLDER.getOutputDir() + File
-                    .separator + KubernetesUtils.extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath()) +
-                    SVC_FILE_POSTFIX + YAML);
+            String serviceYAML = SerializationUtils.dumpWithoutRuntimeStateAsYaml(service);
+            KubernetesUtils.writeToFile(serviceYAML, SVC_FILE_POSTFIX + YAML);
         } catch (IOException e) {
             String errorMessage = "Error while generating yaml file for service: " + serviceModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
-        return serviceYAML;
+
     }
 
     @Override

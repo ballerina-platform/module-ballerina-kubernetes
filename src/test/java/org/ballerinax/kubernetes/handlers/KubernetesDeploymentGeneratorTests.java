@@ -66,7 +66,8 @@ public class KubernetesDeploymentGeneratorTests {
         KubernetesDataHolder.getInstance().setDeploymentModel(deploymentModel);
         try {
             new DeploymentHandler().createArtifacts();
-            File tempFile = new File("target/kubernetes/hello_deployment.yaml");
+            File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_deployment" +
+                    ".yaml");
             Assert.assertTrue(tempFile.exists());
             testGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

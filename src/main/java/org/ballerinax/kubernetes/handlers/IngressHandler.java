@@ -34,7 +34,6 @@ import org.ballerinax.kubernetes.models.SecretModel;
 import org.ballerinax.kubernetes.models.ServiceModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -112,9 +111,7 @@ public class IngressHandler implements ArtifactHandler {
         String ingressYAML;
         try {
             ingressYAML = SerializationUtils.dumpWithoutRuntimeStateAsYaml(ingress);
-            KubernetesUtils.writeToFile(ingressYAML, KUBERNETES_DATA_HOLDER.getOutputDir() + File
-                    .separator + KubernetesUtils.extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath()) +
-                    INGRESS_FILE_POSTFIX + YAML);
+            KubernetesUtils.writeToFile(ingressYAML, INGRESS_FILE_POSTFIX + YAML);
         } catch (IOException e) {
             String errorMessage = "Error while generating yaml file for ingress: " + ingressModel.getName();
             throw new KubernetesPluginException(errorMessage, e);

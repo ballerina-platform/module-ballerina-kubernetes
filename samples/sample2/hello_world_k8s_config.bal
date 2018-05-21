@@ -2,19 +2,20 @@ import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:Deployment {
-    enableLiveness:true
+    enableLiveness: true,
+    singleYAML: true
 }
 @kubernetes:Ingress {
-    hostname:"abc.com"
+    hostname: "abc.com"
 }
-@kubernetes:Service {name:"hello"}
+@kubernetes:Service {name: "hello"}
 endpoint http:Listener helloEP {
-    port:9090
+    port: 9090
 };
 
 
 @http:ServiceConfig {
-    basePath:"/helloWorld"
+    basePath: "/helloWorld"
 }
 service<http:Service> helloWorld bind helloEP {
     sayHello(endpoint outboundEP, http:Request request) {

@@ -27,13 +27,11 @@ import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.PodAutoscalerModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
-import java.io.File;
 import java.io.IOException;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.HPA_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.HPA_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 
 /**
@@ -56,8 +54,7 @@ public class HPAHandler implements ArtifactHandler {
                 .build();
         try {
             String serviceContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(horizontalPodAutoscaler);
-            KubernetesUtils.writeToFile(serviceContent, KUBERNETES_DATA_HOLDER.getOutputDir() + File
-                    .separator + extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath()) + HPA_FILE_POSTFIX + YAML);
+            KubernetesUtils.writeToFile(serviceContent, HPA_FILE_POSTFIX + YAML);
         } catch (IOException e) {
             String errorMessage = "Error while generating yaml file for autoscaler: " + podAutoscalerModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
@@ -83,9 +80,7 @@ public class HPAHandler implements ArtifactHandler {
         if (podAutoscalerModel.getName() == null || podAutoscalerModel.getName().length() == 0) {
             podAutoscalerModel.setName(getValidName(balxFileName) + HPA_POSTFIX);
         }
-
-        OUT.println();
         generate(podAutoscalerModel);
-        OUT.print("@kubernetes:HPA \t\t\t - complete 1/1");
+        OUT.println("@kubernetes:HPA \t\t\t - complete 1/1");
     }
 }

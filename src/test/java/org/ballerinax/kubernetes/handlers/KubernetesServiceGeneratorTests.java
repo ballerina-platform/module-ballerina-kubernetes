@@ -55,7 +55,7 @@ public class KubernetesServiceGeneratorTests {
         KubernetesDataHolder.getInstance().addBEndpointToK8sServiceMap("HelloWorldService", serviceModel);
         try {
             new ServiceHandler().createArtifacts();
-            File tempFile = new File("target/kubernetes/hello_svc.yaml");
+            File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_svc.yaml");
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

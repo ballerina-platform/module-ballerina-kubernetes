@@ -30,7 +30,6 @@ import org.ballerinax.kubernetes.models.DockerModel;
 import org.ballerinax.kubernetes.models.JobModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +40,6 @@ import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_LATEST_TAG;
 import static org.ballerinax.kubernetes.KubernetesConstants.JOB_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.JOB_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 
@@ -59,8 +57,7 @@ public class JobHandler implements ArtifactHandler {
             } else {
                 jobContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(getCronJob(jobModel));
             }
-            KubernetesUtils.writeToFile(jobContent, KUBERNETES_DATA_HOLDER.getOutputDir() + File
-                    .separator + extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath()) + JOB_FILE_POSTFIX + YAML);
+            KubernetesUtils.writeToFile(jobContent, JOB_FILE_POSTFIX + YAML);
         } catch (IOException e) {
             String errorMessage = "Error while generating yaml file for job " + jobModel.getName();
             throw new KubernetesPluginException(errorMessage, e);

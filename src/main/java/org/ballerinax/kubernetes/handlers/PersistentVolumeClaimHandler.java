@@ -27,7 +27,6 @@ import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -60,8 +59,7 @@ public class PersistentVolumeClaimHandler implements ArtifactHandler {
                 .build();
         try {
             String claimContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(claim);
-            KubernetesUtils.writeToFile(claimContent, KUBERNETES_DATA_HOLDER.getOutputDir() + File
-                    .separator + KubernetesUtils.extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath()) +
+            KubernetesUtils.writeToFile(claimContent,
                     VOLUME_CLAIM_FILE_POSTFIX + YAML);
         } catch (IOException e) {
             String errorMessage = "Error while generating yaml file for volume claim: " + volumeClaimModel.getName();

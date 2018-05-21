@@ -74,7 +74,7 @@ public class KubernetesHPAGeneratorTests {
         KubernetesDataHolder.getInstance().setDeploymentModel(deploymentModel);
         try {
             new HPAHandler().createArtifacts();
-            File tempFile = new File("target/kubernetes/hello_hpa.yaml");
+            File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_hpa.yaml");
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

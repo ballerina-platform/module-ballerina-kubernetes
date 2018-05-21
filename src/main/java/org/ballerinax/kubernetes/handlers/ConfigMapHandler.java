@@ -26,14 +26,12 @@ import org.ballerinax.kubernetes.models.ConfigMapModel;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_CONF_FILE_NAME;
 import static org.ballerinax.kubernetes.KubernetesConstants.CONFIG_MAP_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 
 /**
@@ -50,8 +48,7 @@ public class ConfigMapHandler implements ArtifactHandler {
                 .build();
         try {
             String configMapContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(configMap);
-            KubernetesUtils.writeToFile(configMapContent, KUBERNETES_DATA_HOLDER.getOutputDir() + File
-                    .separator + extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath()) + CONFIG_MAP_FILE_POSTFIX +
+            KubernetesUtils.writeToFile(configMapContent, CONFIG_MAP_FILE_POSTFIX +
                     YAML);
         } catch (IOException e) {
             String errorMessage = "Error while parsing yaml file for config map: " + configMapModel.getName();

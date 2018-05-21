@@ -60,7 +60,7 @@ public class KubernetesJobGeneratorTests {
 
         try {
             new JobHandler().createArtifacts();
-            File tempFile = new File("target/kubernetes/hello_job.yaml");
+            File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_job.yaml");
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

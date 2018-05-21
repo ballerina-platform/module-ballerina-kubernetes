@@ -25,13 +25,11 @@ import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.SecretModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.SECRET_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
 
 /**
  * Generates kubernetes secret.
@@ -48,8 +46,7 @@ public class SecretHandler implements ArtifactHandler {
                 .build();
         try {
             String secretContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(secret);
-            KubernetesUtils.writeToFile(secretContent, KUBERNETES_DATA_HOLDER.getOutputDir() + File
-                    .separator + extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath()) + SECRET_FILE_POSTFIX +
+            KubernetesUtils.writeToFile(secretContent, SECRET_FILE_POSTFIX +
                     YAML);
         } catch (IOException e) {
             String errorMessage = "Error while generating yaml file for secret: " + secretModel.getName();

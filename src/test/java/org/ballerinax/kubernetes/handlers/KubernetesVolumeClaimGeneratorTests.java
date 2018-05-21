@@ -52,7 +52,8 @@ public class KubernetesVolumeClaimGeneratorTests {
         KubernetesDataHolder.getInstance().addPersistentVolumeClaims(claimModles);
         try {
             new PersistentVolumeClaimHandler().createArtifacts();
-            File tempFile = new File("target/kubernetes/hello_volume_claim.yaml");
+            File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_volume_claim" +
+                    ".yaml");
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

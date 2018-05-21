@@ -18,6 +18,7 @@
 
 package org.ballerinax.kubernetes.handlers;
 
+import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -38,8 +39,11 @@ public class HandlerTestSuite {
     @BeforeClass
     public static void setUp() {
         KubernetesDataHolder dataHolder = KubernetesDataHolder.getInstance();
-        dataHolder.setOutputDir("target/kubernetes/");
-        File resourcesDirectory = new File("src/test/resources");
+        dataHolder.setOutputDir("target" + File.separator + "kubernetes/");
+        File resourcesDirectory = new File("src" + File.separator + "test" + File.separator + "resources");
+        DeploymentModel deploymentModel = new DeploymentModel();
+        deploymentModel.setSingleYAML(false);
+        dataHolder.setDeploymentModel(deploymentModel);
         dataHolder.setBalxFilePath(resourcesDirectory.getAbsolutePath() + File.separator + "hello.balx");
     }
 

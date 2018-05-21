@@ -59,7 +59,8 @@ public class KubernetesConfigMapGeneratorTests {
         KubernetesDataHolder.getInstance().addConfigMaps(configMapModels);
         try {
             new ConfigMapHandler().createArtifacts();
-            File tempFile = new File("target/kubernetes/hello_config_map.yaml");
+            File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_config_map" +
+                    ".yaml");
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

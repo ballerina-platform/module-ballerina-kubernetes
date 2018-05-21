@@ -37,8 +37,10 @@ import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.concurrent.CountDownLatch;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.BALX;
@@ -69,6 +71,28 @@ public class DockerHandler implements ArtifactHandler {
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         } catch (NoSuchFieldException | IllegalAccessException ignored) {
         }
+    }
+
+    /**
+     * Write content to a File. Create the required directories if they don't not exists.
+     *
+     * @param context        context of the file
+     * @param outputFileName target file path
+     * @throws IOException If an error occurs when writing to a file
+     */
+    private static void writeDockerfile(String context, String outputFileName) throws IOException {
+        File newFile = new File(outputFileName);
+        // append if file exists
+        if (newFile.exists()) {
+            Files.write(Paths.get(outputFileName), context.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
+            return;
+        }
+        //create required directories
+        if (newFile.getParentFile().mkdirs()) {
+            Files.write(Paths.get(outputFileName), context.getBytes(StandardCharsets.UTF_8));
+            return;
+        }
+        Files.write(Paths.get(outputFileName), context.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -219,7 +243,6 @@ public class DockerHandler implements ArtifactHandler {
         return stringBuffer.toString();
     }
 
-
     @Override
     public void createArtifacts() throws KubernetesPluginException {
         dockerModel = KUBERNETES_DATA_HOLDER.getDockerModel();
@@ -236,7 +259,7 @@ public class DockerHandler implements ArtifactHandler {
                         .getBalxFilePath());
             }
             dockerOutputDir = dockerOutputDir + File.separator + DOCKER;
-            KubernetesUtils.writeToFile(dockerContent, dockerOutputDir + File.separator + "Dockerfile");
+            writeDockerfile(dockerContent, dockerOutputDir + File.separator + "Dockerfile");
             OUT.print("@kubernetes:Docker \t\t\t - complete 1/3 \r");
             String balxDestination = dockerOutputDir + File.separator + KubernetesUtils.extractBalxName
                     (KUBERNETES_DATA_HOLDER

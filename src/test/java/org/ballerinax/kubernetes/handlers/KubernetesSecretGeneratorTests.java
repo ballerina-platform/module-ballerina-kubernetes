@@ -59,7 +59,7 @@ public class KubernetesSecretGeneratorTests {
         KubernetesDataHolder.getInstance().addSecrets(secretModels);
         try {
             new SecretHandler().createArtifacts();
-            File tempFile = new File("target/kubernetes/hello_secret.yaml");
+            File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_secret.yaml");
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();
