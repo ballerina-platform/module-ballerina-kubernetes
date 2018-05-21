@@ -24,11 +24,9 @@ import io.fabric8.kubernetes.api.model.extensions.Deployment;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
-import org.ballerinax.kubernetes.utils.KubernetesUtils;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,16 +38,15 @@ import java.util.Map;
  */
 public class KubernetesDeploymentGeneratorTests {
 
-    private final Logger log = LoggerFactory.getLogger(KubernetesDeploymentGeneratorTests.class);
     private final String deploymentName = "MyDeployment";
-    private final String selector = "TestAPP";
+    private final String selector = "hello";
     private final String imageName = "SampleImage:v1.0.0";
     private final String imagePullPolicy = "Always";
     private final int replicas = 5;
 
 
     @Test
-    public void testServiceGenerate() {
+    public void testDeploymentGeneration() {
         DeploymentModel deploymentModel = new DeploymentModel();
         deploymentModel.setName(deploymentName);
         Map<String, String> labels = new HashMap<>();
@@ -66,15 +63,10 @@ public class KubernetesDeploymentGeneratorTests {
         env.put("ENV_VAR", "ENV");
         deploymentModel.setEnv(env);
         deploymentModel.setReplicas(replicas);
-
+        KubernetesDataHolder.getInstance().setDeploymentModel(deploymentModel);
         try {
-            String deploymentYAML = new DeploymentHandler(deploymentModel).generate();
-            Assert.assertNotNull(deploymentYAML);
-            File artifactLocation = new File("target/kubernetes");
-            artifactLocation.mkdir();
-            File tempFile = File.createTempFile("temp", deploymentModel.getName() + ".yaml", artifactLocation);
-            KubernetesUtils.writeToFile(deploymentYAML, tempFile.getPath());
-            log.info("Generated YAML: \n" + deploymentYAML);
+            new DeploymentHandler().createArtifacts();
+            File tempFile = new File("target/kubernetes/hello_deployment.yaml");
             Assert.assertTrue(tempFile.exists());
             testGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

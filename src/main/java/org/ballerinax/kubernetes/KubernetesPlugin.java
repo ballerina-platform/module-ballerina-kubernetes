@@ -104,10 +104,13 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
 
     @Override
     public void codeGenerated(Path binaryPath) {
-        if (KubernetesDataHolder.getInstance().isCanProcess()) {
+        KubernetesDataHolder dataHolder = KubernetesDataHolder.getInstance();
+        if (dataHolder.isCanProcess()) {
             String filePath = binaryPath.toAbsolutePath().toString();
             String userDir = new File(filePath).getParentFile().getAbsolutePath();
             String targetPath = userDir + File.separator + "kubernetes" + File.separator;
+            dataHolder.setBalxFilePath(filePath);
+            dataHolder.setOutputDir(targetPath);
             ArtifactManager artifactManager = new ArtifactManager(filePath, targetPath);
             try {
                 KubernetesUtils.deleteDirectory(targetPath);

@@ -179,7 +179,8 @@
                         </goals>
                         <configuration>
                             <includes>
-                                <include>**/*.java</include>
+                                <include>**/HandlerTestSuite.java</include>
+                                <include>**/KubernetesUtilsTest.java</include>
                             </includes>
                             <forkCount>3</forkCount>
                             <reuseForks>true</reuseForks>

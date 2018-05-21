@@ -53,6 +53,7 @@ public class DeploymentModel extends KubernetesModel {
     private Set<PersistentVolumeClaimModel> volumeClaimModels;
     private Set<ExternalFileModel> externalFiles;
     private String commandArgs;
+    private boolean singleYAML;
 
     public DeploymentModel() {
         // Initialize with default values.
@@ -67,6 +68,8 @@ public class DeploymentModel extends KubernetesModel {
         this.labels = new HashMap<>();
         this.env = new HashMap<>();
         this.setImagePullPolicy("IfNotPresent");
+
+        // Configure Docker Host based on operating system.
         String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
         if (operatingSystem.contains("win")) {
             this.dockerHost = WINDOWS_DEFAULT_DOCKER_HOST;
@@ -78,6 +81,7 @@ public class DeploymentModel extends KubernetesModel {
         this.configMapModels = new HashSet<>();
         this.volumeClaimModels = new HashSet<>();
         this.externalFiles = new HashSet<>();
+        this.singleYAML = false;
     }
 
     public Map<String, String> getLabels() {
@@ -294,5 +298,13 @@ public class DeploymentModel extends KubernetesModel {
 
     public void setExternalFiles(Set<ExternalFileModel> externalFiles) {
         this.externalFiles = externalFiles;
+    }
+
+    public boolean isSingleYAML() {
+        return singleYAML;
+    }
+
+    public void setSingleYAML(boolean singleYAML) {
+        this.singleYAML = singleYAML;
     }
 }

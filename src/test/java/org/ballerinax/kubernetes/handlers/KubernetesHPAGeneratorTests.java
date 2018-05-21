@@ -22,12 +22,11 @@ import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscaler;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.DeploymentModel;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.models.PodAutoscalerModel;
-import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,33 +38,43 @@ import java.util.Map;
  */
 public class KubernetesHPAGeneratorTests {
 
-    private final Logger log = LoggerFactory.getLogger(KubernetesHPAGeneratorTests.class);
+
     private final String hpaName = "MyHPA";
     private final String deploymentName = "MyDeployment";
-    private final String selector = "TestAPP";
+    private final String selector = "hello";
     private final int cpuPercentage = 90;
     private final int maxReplicas = 10;
     private final int minReplicas = 2;
 
     @Test
     public void testHPAGenerate() {
+        DeploymentModel deploymentModel = new DeploymentModel();
+        deploymentModel.setName(deploymentName);
+        Map<String, String> labels = new HashMap<>();
+        labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, selector);
+        deploymentModel.addPort(9090);
+        deploymentModel.addPort(9091);
+        deploymentModel.addPort(9092);
+        deploymentModel.setLabels(labels);
+        deploymentModel.setEnableLiveness(true);
+        deploymentModel.setLivenessPort(9090);
+        Map<String, String> env = new HashMap<>();
+        env.put("ENV_VAR", "ENV");
+        deploymentModel.setEnv(env);
+
         PodAutoscalerModel podAutoscalerModel = new PodAutoscalerModel();
         podAutoscalerModel.setName(hpaName);
         podAutoscalerModel.setCpuPercentage(cpuPercentage);
         podAutoscalerModel.setMaxReplicas(maxReplicas);
         podAutoscalerModel.setMinReplicas(minReplicas);
         podAutoscalerModel.setDeployment(deploymentName);
-        Map<String, String> labels = new HashMap<>();
-        labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, selector);
         podAutoscalerModel.setLabels(labels);
+        deploymentModel.setPodAutoscalerModel(podAutoscalerModel);
+        KubernetesDataHolder.getInstance().setPodAutoscalerModel(podAutoscalerModel);
+        KubernetesDataHolder.getInstance().setDeploymentModel(deploymentModel);
         try {
-            String serviceYAML = new HPAHandler(podAutoscalerModel).generate();
-            Assert.assertNotNull(serviceYAML);
-            File artifactLocation = new File("target/kubernetes");
-            artifactLocation.mkdir();
-            File tempFile = File.createTempFile("temp", podAutoscalerModel.getName() + ".yaml", artifactLocation);
-            KubernetesUtils.writeToFile(serviceYAML, tempFile.getPath());
-            log.info("Generated YAML: \n" + serviceYAML);
+            new HPAHandler().createArtifacts();
+            File tempFile = new File("target/kubernetes/hello_hpa.yaml");
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

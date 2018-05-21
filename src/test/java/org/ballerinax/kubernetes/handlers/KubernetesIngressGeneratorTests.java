@@ -23,11 +23,10 @@ import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.IngressModel;
-import org.ballerinax.kubernetes.utils.KubernetesUtils;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.ServiceModel;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +38,7 @@ import java.util.Map;
  */
 public class KubernetesIngressGeneratorTests {
 
-    private final Logger log = LoggerFactory.getLogger(KubernetesIngressGeneratorTests.class);
+
     private final String ingressName = "MyIngress";
     private final String hostname = "abc.com";
     private final String path = "/helloworld";
@@ -47,7 +46,7 @@ public class KubernetesIngressGeneratorTests {
     private final String ingressClass = "nginx";
     private final String serviceName = "HelloWorldService";
     private final int servicePort = 9090;
-    private final String selector = "TestAPP";
+    private final String selector = "hello";
 
     @Test
     public void testIngressGenerator() {
@@ -58,18 +57,23 @@ public class KubernetesIngressGeneratorTests {
         ingressModel.setTargetPath(targetPath);
         ingressModel.setServicePort(servicePort);
         ingressModel.setIngressClass(ingressClass);
+        ingressModel.setEndpointName(serviceName);
         ingressModel.setServiceName(serviceName);
         Map<String, String> labels = new HashMap<>();
         labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, selector);
         ingressModel.setLabels(labels);
+        KubernetesDataHolder.getInstance().addIngressModel(ingressModel);
+        ServiceModel serviceModel = new ServiceModel();
+        serviceModel.setName(serviceName);
+        serviceModel.setPort(9090);
+        serviceModel.setServiceType("NodePort");
+        serviceModel.setSelector(selector);
+        serviceModel.setLabels(labels);
+        KubernetesDataHolder.getInstance().addBEndpointToK8sServiceMap("HelloWorldService", serviceModel);
+
         try {
-            String ingressContent = new IngressHandler(ingressModel).generate();
-            Assert.assertNotNull(ingressContent);
-            File artifactLocation = new File("target/kubernetes");
-            artifactLocation.mkdir();
-            File tempFile = File.createTempFile("temp", ingressModel.getName() + ".yaml", artifactLocation);
-            KubernetesUtils.writeToFile(ingressContent, tempFile.getPath());
-            log.info("Generated YAML: \n" + ingressContent);
+            new IngressHandler().createArtifacts();
+            File tempFile = new File("target/kubernetes/hello_ingress.yaml");
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

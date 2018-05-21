@@ -15,7 +15,6 @@
 
 package org.ballerinax.kubernetes.handlers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
 import io.fabric8.kubernetes.api.model.CronJob;
@@ -25,13 +24,25 @@ import io.fabric8.kubernetes.api.model.EnvVarBuilder;
 import io.fabric8.kubernetes.api.model.Job;
 import io.fabric8.kubernetes.api.model.JobBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
+import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.DockerModel;
 import org.ballerinax.kubernetes.models.JobModel;
+import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.BALX;
+import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_LATEST_TAG;
+import static org.ballerinax.kubernetes.KubernetesConstants.JOB_FILE_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.JOB_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 
 /**
@@ -39,20 +50,18 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
  */
 public class JobHandler implements ArtifactHandler {
 
-    private JobModel jobModel;
 
-    public JobHandler(JobModel jobModel) {
-        this.jobModel = jobModel;
-    }
-
-    @Override
-    public String generate() throws KubernetesPluginException {
+    private void generate(JobModel jobModel) throws KubernetesPluginException {
         try {
+            String jobContent;
             if (isBlank(jobModel.getSchedule())) {
-                return SerializationUtils.dumpWithoutRuntimeStateAsYaml(getJob());
+                jobContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(getJob(jobModel));
+            } else {
+                jobContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(getCronJob(jobModel));
             }
-            return SerializationUtils.dumpWithoutRuntimeStateAsYaml(getCronJob());
-        } catch (JsonProcessingException e) {
+            KubernetesUtils.writeToFile(jobContent, KUBERNETES_DATA_HOLDER.getOutputDir() + File
+                    .separator + extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath()) + JOB_FILE_POSTFIX + YAML);
+        } catch (IOException e) {
             String errorMessage = "Error while generating yaml file for job " + jobModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
@@ -71,7 +80,7 @@ public class JobHandler implements ArtifactHandler {
         return envVars;
     }
 
-    private Container generateContainer() {
+    private Container generateContainer(JobModel jobModel) {
         return new ContainerBuilder()
                 .withName(jobModel.getName())
                 .withImage(jobModel.getImage())
@@ -80,7 +89,7 @@ public class JobHandler implements ArtifactHandler {
                 .build();
     }
 
-    private Job getJob() {
+    private Job getJob(JobModel jobModel) {
         JobBuilder jobBuilder = new JobBuilder()
                 .withNewMetadata()
                 .withName(jobModel.getName())
@@ -89,14 +98,14 @@ public class JobHandler implements ArtifactHandler {
                 .withNewTemplate()
                 .withNewSpec()
                 .withRestartPolicy(jobModel.getRestartPolicy())
-                .withContainers(generateContainer())
+                .withContainers(generateContainer(jobModel))
                 .endSpec()
                 .endTemplate()
                 .endSpec();
         return jobBuilder.build();
     }
 
-    private CronJob getCronJob() {
+    private CronJob getCronJob(JobModel jobModel) {
         return new CronJobBuilder()
                 .withNewMetadata()
                 .withName(jobModel.getName())
@@ -110,5 +119,41 @@ public class JobHandler implements ArtifactHandler {
                 .withSchedule(jobModel.getSchedule())
                 .endSpec()
                 .build();
+    }
+
+
+    @Override
+    public void createArtifacts() throws KubernetesPluginException {
+        String balxFileName = KubernetesUtils.extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath());
+        JobModel jobModel = KUBERNETES_DATA_HOLDER.getJobModel();
+        if (isBlank(jobModel.getName())) {
+            jobModel.setName(getValidName(balxFileName) + JOB_POSTFIX);
+        }
+        if (isBlank(jobModel.getImage())) {
+            jobModel.setImage(balxFileName + DOCKER_LATEST_TAG);
+        }
+        jobModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
+        generate(jobModel);
+        //generate dockerfile and docker image
+        KUBERNETES_DATA_HOLDER.setDockerModel(getDockerModel(jobModel));
+        OUT.println();
+        OUT.println("@kubernetes:Job \t\t\t - complete 1/1");
+    }
+
+    private DockerModel getDockerModel(JobModel jobModel) {
+        DockerModel dockerModel = new DockerModel();
+        String dockerImage = jobModel.getImage();
+        String imageTag = dockerImage.substring(dockerImage.lastIndexOf(":") + 1, dockerImage.length());
+        dockerModel.setBaseImage(jobModel.getBaseImage());
+        dockerModel.setName(dockerImage);
+        dockerModel.setTag(imageTag);
+        dockerModel.setUsername(jobModel.getUsername());
+        dockerModel.setPassword(jobModel.getPassword());
+        dockerModel.setPush(jobModel.isPush());
+        dockerModel.setBalxFileName(KubernetesUtils.extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath()) + BALX);
+        dockerModel.setService(false);
+        dockerModel.setDockerHost(jobModel.getDockerHost());
+        dockerModel.setDockerCertPath(jobModel.getDockerCertPath());
+        return dockerModel;
     }
 }

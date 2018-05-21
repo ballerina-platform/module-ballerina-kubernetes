@@ -19,10 +19,16 @@
 package org.ballerinax.kubernetes.handlers;
 
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+
+import java.io.PrintStream;
 
 /**
  * Artifact generator interface.
  */
 public interface ArtifactHandler {
-    String generate() throws KubernetesPluginException;
+    PrintStream OUT = System.out;
+    KubernetesDataHolder KUBERNETES_DATA_HOLDER = KubernetesDataHolder.getInstance();
+
+    void createArtifacts() throws KubernetesPluginException;
 }

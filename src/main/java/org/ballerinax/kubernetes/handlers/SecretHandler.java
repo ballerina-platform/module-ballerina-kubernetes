@@ -18,27 +18,28 @@
 
 package org.ballerinax.kubernetes.handlers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.fabric8.kubernetes.api.model.Secret;
 import io.fabric8.kubernetes.api.model.SecretBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.SecretModel;
+import org.ballerinax.kubernetes.utils.KubernetesUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+
+import static org.ballerinax.kubernetes.KubernetesConstants.SECRET_FILE_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
 
 /**
  * Generates kubernetes secret.
  */
 public class SecretHandler implements ArtifactHandler {
 
-    SecretModel secretModel;
 
-    public SecretHandler(SecretModel secretModel) {
-        this.secretModel = secretModel;
-
-    }
-
-    @Override
-    public String generate() throws KubernetesPluginException {
+    private void generate(SecretModel secretModel) throws KubernetesPluginException {
         Secret secret = new SecretBuilder()
                 .withNewMetadata()
                 .withName(secretModel.getName())
@@ -46,10 +47,30 @@ public class SecretHandler implements ArtifactHandler {
                 .withData(secretModel.getData())
                 .build();
         try {
-            return SerializationUtils.dumpWithoutRuntimeStateAsYaml(secret);
-        } catch (JsonProcessingException e) {
-            String errorMessage = "Error while parsing yaml file for secret: " + secretModel.getName();
+            String secretContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(secret);
+            KubernetesUtils.writeToFile(secretContent, KUBERNETES_DATA_HOLDER.getOutputDir() + File
+                    .separator + extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath()) + SECRET_FILE_POSTFIX +
+                    YAML);
+        } catch (IOException e) {
+            String errorMessage = "Error while generating yaml file for secret: " + secretModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
     }
+
+    @Override
+    public void createArtifacts() throws KubernetesPluginException {
+        //secret
+        int count = 0;
+        Collection<SecretModel> secretModels = KUBERNETES_DATA_HOLDER.getSecretModelSet();
+        if (secretModels.size() > 0) {
+            OUT.println();
+        }
+        for (SecretModel secretModel : secretModels) {
+            count++;
+            generate(secretModel);
+            OUT.print("@kubernetes:Secret \t\t\t - complete " + count + "/" + secretModels.size() + "\r");
+        }
+
+    }
+
 }

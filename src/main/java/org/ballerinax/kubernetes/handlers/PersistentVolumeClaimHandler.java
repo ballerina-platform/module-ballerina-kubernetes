@@ -18,7 +18,6 @@
 
 package org.ballerinax.kubernetes.handlers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.fabric8.kubernetes.api.model.PersistentVolumeClaim;
 import io.fabric8.kubernetes.api.model.PersistentVolumeClaimBuilder;
 import io.fabric8.kubernetes.api.model.Quantity;
@@ -26,32 +25,29 @@ import io.fabric8.kubernetes.api.model.QuantityBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
+import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.ballerinax.kubernetes.KubernetesConstants.VOLUME_CLAIM_FILE_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 
 /**
  * Generates kubernetes secret.
  */
 public class PersistentVolumeClaimHandler implements ArtifactHandler {
 
-    PersistentVolumeClaimModel volumeClaimModel;
-
-    public PersistentVolumeClaimHandler(PersistentVolumeClaimModel volumeClaimModel) {
-        this.volumeClaimModel = volumeClaimModel;
-
-    }
-
-    @Override
-    public String generate() throws KubernetesPluginException {
-
+    private void generate(PersistentVolumeClaimModel volumeClaimModel) throws KubernetesPluginException {
         Quantity quantity = new QuantityBuilder()
                 .withAmount(volumeClaimModel.getVolumeClaimSize())
                 .build();
-
         Map<String, Quantity> requests = new HashMap<>();
         requests.put("storage", quantity);
-        PersistentVolumeClaim secret = new PersistentVolumeClaimBuilder()
+        PersistentVolumeClaim claim = new PersistentVolumeClaimBuilder()
                 .withNewMetadata()
                 .withName(volumeClaimModel.getName())
                 .endMetadata()
@@ -63,10 +59,28 @@ public class PersistentVolumeClaimHandler implements ArtifactHandler {
                 .endSpec()
                 .build();
         try {
-            return SerializationUtils.dumpWithoutRuntimeStateAsYaml(secret);
-        } catch (JsonProcessingException e) {
-            String errorMessage = "Error while parsing yaml file for volume claim: " + volumeClaimModel.getName();
+            String claimContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(claim);
+            KubernetesUtils.writeToFile(claimContent, KUBERNETES_DATA_HOLDER.getOutputDir() + File
+                    .separator + KubernetesUtils.extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath()) +
+                    VOLUME_CLAIM_FILE_POSTFIX + YAML);
+        } catch (IOException e) {
+            String errorMessage = "Error while generating yaml file for volume claim: " + volumeClaimModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
+        }
+    }
+
+
+    @Override
+    public void createArtifacts() throws KubernetesPluginException {
+        int count = 0;
+        Collection<PersistentVolumeClaimModel> volumeClaims = KUBERNETES_DATA_HOLDER.getVolumeClaimModelSet();
+        if (volumeClaims.size() > 0) {
+            OUT.println();
+        }
+        for (PersistentVolumeClaimModel claimModel : volumeClaims) {
+            count++;
+            generate(claimModel);
+            OUT.print("@kubernetes:VolumeClaim \t\t - complete " + count + "/" + volumeClaims.size() + "\r");
         }
     }
 }

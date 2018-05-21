@@ -18,27 +18,30 @@
 
 package org.ballerinax.kubernetes.handlers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.ConfigMapModel;
+import org.ballerinax.kubernetes.models.DeploymentModel;
+import org.ballerinax.kubernetes.utils.KubernetesUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+
+import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_CONF_FILE_NAME;
+import static org.ballerinax.kubernetes.KubernetesConstants.CONFIG_MAP_FILE_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 
 /**
  * Generates kubernetes Config Map.
  */
 public class ConfigMapHandler implements ArtifactHandler {
 
-    ConfigMapModel configMapModel;
-
-    public ConfigMapHandler(ConfigMapModel configMapModel) {
-        this.configMapModel = configMapModel;
-
-    }
-
-    @Override
-    public String generate() throws KubernetesPluginException {
+    private void generate(ConfigMapModel configMapModel) throws KubernetesPluginException {
         ConfigMap configMap = new ConfigMapBuilder()
                 .withNewMetadata()
                 .withName(configMapModel.getName())
@@ -46,10 +49,39 @@ public class ConfigMapHandler implements ArtifactHandler {
                 .withData(configMapModel.getData())
                 .build();
         try {
-            return SerializationUtils.dumpWithoutRuntimeStateAsYaml(configMap);
-        } catch (JsonProcessingException e) {
+            String configMapContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(configMap);
+            KubernetesUtils.writeToFile(configMapContent, KUBERNETES_DATA_HOLDER.getOutputDir() + File
+                    .separator + extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath()) + CONFIG_MAP_FILE_POSTFIX +
+                    YAML);
+        } catch (IOException e) {
             String errorMessage = "Error while parsing yaml file for config map: " + configMapModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
     }
+
+
+    @Override
+    public void createArtifacts() throws KubernetesPluginException {
+        //configMap
+        int count = 0;
+        Collection<ConfigMapModel> configMapModels = KUBERNETES_DATA_HOLDER.getConfigMapModelSet();
+        if (configMapModels.size() > 0) {
+            OUT.println();
+        }
+        for (ConfigMapModel configMapModel : configMapModels) {
+            count++;
+            if (!isBlank(configMapModel.getBallerinaConf())) {
+                if (configMapModel.getData().size() != 1) {
+                    throw new KubernetesPluginException("There can be only 1 ballerina config file");
+                }
+                DeploymentModel deploymentModel = KUBERNETES_DATA_HOLDER.getDeploymentModel();
+                deploymentModel.setCommandArgs(" --config ${CONFIG_FILE} ");
+                deploymentModel.addEnv("CONFIG_FILE", configMapModel.getMountPath() + BALLERINA_CONF_FILE_NAME);
+                KUBERNETES_DATA_HOLDER.setDeploymentModel(deploymentModel);
+            }
+            generate(configMapModel);
+            OUT.print("@kubernetes:ConfigMap \t\t\t - complete " + count + "/" + configMapModels.size() + "\r");
+        }
+    }
+
 }
