@@ -20,6 +20,7 @@ package org.ballerinax.kubernetes.utils;
 
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
 import java.io.File;
@@ -39,6 +40,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
+import static org.ballerinax.kubernetes.handlers.ArtifactHandler.KUBERNETES_DATA_HOLDER;
+
 /**
  * Util methods used for artifact generation.
  */
@@ -53,22 +57,28 @@ public class KubernetesUtils {
      * Write content to a File. Create the required directories if they don't not exists.
      *
      * @param context        context of the file
-     * @param targetFilePath target file path
+     * @param outputFileName target file path
      * @throws IOException If an error occurs when writing to a file
      */
-    public static void writeToFile(String context, String targetFilePath) throws IOException {
-        File newFile = new File(targetFilePath);
+    public static void writeToFile(String context, String outputFileName) throws IOException {
+        outputFileName = KUBERNETES_DATA_HOLDER.getOutputDir() + File
+                .separator + extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath()) + outputFileName;
+        if (KubernetesDataHolder.getInstance().getDeploymentModel().isSingleYAML()) {
+            outputFileName = KUBERNETES_DATA_HOLDER.getOutputDir() + File
+                    .separator + extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath()) + YAML;
+        }
+        File newFile = new File(outputFileName);
         // append if file exists
         if (newFile.exists()) {
-            Files.write(Paths.get(targetFilePath), context.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
+            Files.write(Paths.get(outputFileName), context.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
             return;
         }
         //create required directories
         if (newFile.getParentFile().mkdirs()) {
-            Files.write(Paths.get(targetFilePath), context.getBytes(StandardCharsets.UTF_8));
+            Files.write(Paths.get(outputFileName), context.getBytes(StandardCharsets.UTF_8));
             return;
         }
-        Files.write(Paths.get(targetFilePath), context.getBytes(StandardCharsets.UTF_8));
+        Files.write(Paths.get(outputFileName), context.getBytes(StandardCharsets.UTF_8));
     }
 
     /**

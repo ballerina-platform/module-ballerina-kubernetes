@@ -22,26 +22,27 @@ import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.ConfigMapModel;
-import org.ballerinax.kubernetes.utils.KubernetesUtils;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Test config map generation.
  */
 public class KubernetesConfigMapGeneratorTests {
 
-    private final Logger log = LoggerFactory.getLogger(KubernetesConfigMapGeneratorTests.class);
+
     private final String configMapName = "MyConfigMap";
     private final boolean readOnly = true;
     private final String mountPath = "/user/dir";
+
 
     @Test
     public void testConfigMapGenerate() {
@@ -53,14 +54,13 @@ public class KubernetesConfigMapGeneratorTests {
         data.put("hello", "world");
         data.put("test", "test1");
         configMapModel.setData(data);
+        Set<ConfigMapModel> configMapModels = new HashSet<>();
+        configMapModels.add(configMapModel);
+        KubernetesDataHolder.getInstance().addConfigMaps(configMapModels);
         try {
-            String configMapContent = new ConfigMapHandler(configMapModel).generate();
-            Assert.assertNotNull(configMapContent);
-            File artifactLocation = new File("target/kubernetes");
-            artifactLocation.mkdir();
-            File tempFile = File.createTempFile("temp", configMapModel.getName() + ".yaml", artifactLocation);
-            KubernetesUtils.writeToFile(configMapContent, tempFile.getPath());
-            log.info("Generated YAML: \n" + configMapContent);
+            new ConfigMapHandler().createArtifacts();
+            File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_config_map" +
+                    ".yaml");
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

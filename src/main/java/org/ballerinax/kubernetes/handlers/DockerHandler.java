@@ -31,13 +31,22 @@ import io.fabric8.docker.dsl.EventListener;
 import io.fabric8.docker.dsl.OutputHandle;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DockerModel;
+import org.ballerinax.kubernetes.models.ExternalFileModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.concurrent.CountDownLatch;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.BALX;
+import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.copyFile;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.printDebug;
 
 /**
@@ -48,13 +57,6 @@ public class DockerHandler implements ArtifactHandler {
     private final CountDownLatch pushDone = new CountDownLatch(1);
     private final CountDownLatch buildDone = new CountDownLatch(1);
     private DockerModel dockerModel;
-
-    public DockerHandler(DockerModel dockerModel) {
-        this.dockerModel = dockerModel;
-        if (dockerModel.getDockerCertPath() != null) {
-            System.setProperty("docker.cert.path", dockerModel.getDockerCertPath());
-        }
-    }
 
     private static void disableFailOnUnknownProperties() {
         // Disable fail on unknown properties using reflection to avoid docker client issue.
@@ -69,6 +71,28 @@ public class DockerHandler implements ArtifactHandler {
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         } catch (NoSuchFieldException | IllegalAccessException ignored) {
         }
+    }
+
+    /**
+     * Write content to a File. Create the required directories if they don't not exists.
+     *
+     * @param context        context of the file
+     * @param outputFileName target file path
+     * @throws IOException If an error occurs when writing to a file
+     */
+    private static void writeDockerfile(String context, String outputFileName) throws IOException {
+        File newFile = new File(outputFileName);
+        // append if file exists
+        if (newFile.exists()) {
+            Files.write(Paths.get(outputFileName), context.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
+            return;
+        }
+        //create required directories
+        if (newFile.getParentFile().mkdirs()) {
+            Files.write(Paths.get(outputFileName), context.getBytes(StandardCharsets.UTF_8));
+            return;
+        }
+        Files.write(Paths.get(outputFileName), context.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -217,6 +241,53 @@ public class DockerHandler implements ArtifactHandler {
         }
         stringBuffer.append("\n");
         return stringBuffer.toString();
+    }
+
+    @Override
+    public void createArtifacts() throws KubernetesPluginException {
+        dockerModel = KUBERNETES_DATA_HOLDER.getDockerModel();
+        if (dockerModel.getDockerCertPath() != null) {
+            System.setProperty("docker.cert.path", dockerModel.getDockerCertPath());
+        }
+        String dockerContent = generate();
+        try {
+            OUT.print("@kubernetes:Docker \t\t\t - complete 0/3 \r");
+            String dockerOutputDir = KUBERNETES_DATA_HOLDER.getOutputDir();
+            if (dockerOutputDir.endsWith("target" + File.separator + "kubernetes" + File.separator)) {
+                //Compiling package therefore append balx file name to docker artifact dir path
+                dockerOutputDir = dockerOutputDir + File.separator + extractBalxName(KUBERNETES_DATA_HOLDER
+                        .getBalxFilePath());
+            }
+            dockerOutputDir = dockerOutputDir + File.separator + DOCKER;
+            writeDockerfile(dockerContent, dockerOutputDir + File.separator + "Dockerfile");
+            OUT.print("@kubernetes:Docker \t\t\t - complete 1/3 \r");
+            String balxDestination = dockerOutputDir + File.separator + KubernetesUtils.extractBalxName
+                    (KUBERNETES_DATA_HOLDER
+                            .getBalxFilePath()) + BALX;
+            copyFile(KUBERNETES_DATA_HOLDER
+                    .getBalxFilePath(), balxDestination);
+            for (ExternalFileModel copyFileModel : dockerModel.getExternalFiles()) {
+                // Copy external files to docker folder
+                String target = dockerOutputDir + File.separator + String.valueOf(Paths.get(copyFileModel.getSource())
+                        .getFileName());
+                copyFile(copyFileModel.getSource(), target);
+            }
+            //check image build is enabled.
+            if (dockerModel.isBuildImage()) {
+                buildImage(dockerModel, dockerOutputDir);
+                OUT.print("@kubernetes:Docker \t\t\t - complete 2/3 \r");
+                Files.delete(Paths.get(balxDestination));
+                //push only if image build is enabled.
+                if (dockerModel.isPush()) {
+                    pushImage(dockerModel);
+                }
+                OUT.print("@kubernetes:Docker \t\t\t - complete 3/3");
+            }
+        } catch (IOException e) {
+            throw new KubernetesPluginException("Unable to write Dockerfile content");
+        } catch (InterruptedException e) {
+            throw new KubernetesPluginException("Unable to create docker images " + e.getMessage());
+        }
     }
 
     /**

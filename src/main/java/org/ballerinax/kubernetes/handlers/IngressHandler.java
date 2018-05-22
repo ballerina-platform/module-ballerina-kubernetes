@@ -18,7 +18,6 @@
 
 package org.ballerinax.kubernetes.handlers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.fabric8.kubernetes.api.model.extensions.HTTPIngressPath;
 import io.fabric8.kubernetes.api.model.extensions.HTTPIngressPathBuilder;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
@@ -28,22 +27,26 @@ import io.fabric8.kubernetes.api.model.extensions.IngressBuilder;
 import io.fabric8.kubernetes.api.model.extensions.IngressTLS;
 import io.fabric8.kubernetes.api.model.extensions.IngressTLSBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
+import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.IngressModel;
+import org.ballerinax.kubernetes.models.SecretModel;
+import org.ballerinax.kubernetes.models.ServiceModel;
+import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
+import static org.ballerinax.kubernetes.KubernetesConstants.INGRESS_FILE_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 
 
 /**
  * Generates kubernetes ingress from annotations.
  */
 public class IngressHandler implements ArtifactHandler {
-    private IngressModel ingressModel;
-
-    public IngressHandler(IngressModel ingressModel) {
-        this.ingressModel = ingressModel;
-    }
 
     /**
      * Generate kubernetes ingress definition from annotation.
@@ -51,7 +54,7 @@ public class IngressHandler implements ArtifactHandler {
      * @return Generated kubernetes {@link Ingress} definition
      * @throws KubernetesPluginException If an error occurs while generating artifact.
      */
-    public String generate() throws KubernetesPluginException {
+    private String generate(IngressModel ingressModel) throws KubernetesPluginException {
         //generate ingress backend
         IngressBackend ingressBackend = new IngressBackendBuilder()
                 .withServiceName(ingressModel.getServiceName())
@@ -108,10 +111,41 @@ public class IngressHandler implements ArtifactHandler {
         String ingressYAML;
         try {
             ingressYAML = SerializationUtils.dumpWithoutRuntimeStateAsYaml(ingress);
-        } catch (JsonProcessingException e) {
+            KubernetesUtils.writeToFile(ingressYAML, INGRESS_FILE_POSTFIX + YAML);
+        } catch (IOException e) {
             String errorMessage = "Error while generating yaml file for ingress: " + ingressModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
         return ingressYAML;
+    }
+
+    @Override
+    public void createArtifacts() throws KubernetesPluginException {
+        Set<IngressModel> ingressModels = KUBERNETES_DATA_HOLDER.getIngressModelSet();
+        int size = ingressModels.size();
+        if (size > 0) {
+            OUT.println();
+        }
+        int count = 0;
+        Map<String, Set<SecretModel>> secretModelsMap = KUBERNETES_DATA_HOLDER.getSecretModels();
+        for (IngressModel ingressModel : ingressModels) {
+            ServiceModel serviceModel = KUBERNETES_DATA_HOLDER.getServiceModel(ingressModel.getEndpointName());
+            if (serviceModel == null) {
+                throw new KubernetesPluginException("@kubernetes:Ingress annotation should be followed by " +
+                        "@kubernetes:Service annotation.");
+            }
+            ingressModel.setServiceName(serviceModel.getName());
+            ingressModel.setServicePort(serviceModel.getPort());
+            String balxFileName = KubernetesUtils.extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath());
+            ingressModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
+            ingressModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
+            if (secretModelsMap.get(ingressModel.getEndpointName()) != null && secretModelsMap.get(ingressModel
+                    .getEndpointName()).size() != 0) {
+                ingressModel.setEnableTLS(true);
+            }
+            generate(ingressModel);
+            count++;
+            OUT.print("@kubernetes:Ingress \t\t\t - complete " + count + "/" + size + "\r");
+        }
     }
 }

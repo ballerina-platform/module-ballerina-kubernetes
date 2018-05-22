@@ -24,11 +24,9 @@ import io.fabric8.kubernetes.api.model.Job;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.JobModel;
-import org.ballerinax.kubernetes.utils.KubernetesUtils;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,16 +38,14 @@ import java.util.Map;
  */
 public class KubernetesJobGeneratorTests {
 
-    private final Logger log = LoggerFactory.getLogger(KubernetesJobGeneratorTests.class);
     private final String jobName = "MyJOB";
     private final String selector = "TestAPP";
     private final String imageName = "SampleImage:v1.0.0";
     private final String imagePullPolicy = "Always";
-    private final int replicas = 5;
 
 
     @Test
-    public void testServiceGenerate() {
+    public void testDeploymentGeneration() {
         JobModel jobModel = new JobModel();
         jobModel.setName(jobName);
         Map<String, String> labels = new HashMap<>();
@@ -60,17 +56,13 @@ public class KubernetesJobGeneratorTests {
         HashMap<String, String> env = new HashMap<>();
         env.put("ENV_VAR", "ENV");
         jobModel.setEnv(env);
+        KubernetesDataHolder.getInstance().setJobModel(jobModel);
 
         try {
-            String jobYAML = new JobHandler(jobModel).generate();
-            Assert.assertNotNull(jobYAML);
-            File artifactLocation = new File("target/kubernetes");
-            artifactLocation.mkdir();
-            File tempFile = File.createTempFile("temp", jobModel.getName() + ".yaml", artifactLocation);
-            KubernetesUtils.writeToFile(jobYAML, tempFile.getPath());
-            log.info("Generated YAML: \n" + jobYAML);
+            new JobHandler().createArtifacts();
+            File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_job.yaml");
             Assert.assertTrue(tempFile.exists());
-            testGeneratedYAML(tempFile);
+            assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();
         } catch (IOException e) {
             Assert.fail("Unable to write to file");
@@ -79,7 +71,7 @@ public class KubernetesJobGeneratorTests {
         }
     }
 
-    private void testGeneratedYAML(File yamlFile) throws IOException {
+    private void assertGeneratedYAML(File yamlFile) throws IOException {
         Job job = KubernetesHelper.loadYaml(yamlFile);
         Assert.assertEquals(jobName, job.getMetadata().getName());
         Assert.assertEquals(1, job.getSpec().getTemplate().getSpec().getContainers().size());

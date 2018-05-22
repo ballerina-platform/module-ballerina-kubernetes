@@ -42,6 +42,7 @@ documentation {Kubernetes deployment configuration
     F{{push}} - Push to remote registry
     F{{dockerCertPath}} - Docker certificate path
     F{{copyFiles}} - Array of [External files](kubernetes#FileConfig) for docker image
+    F{{singleYAML}} - Generate a single yaml file with all kubernetes artifacts (services,deployment,ingress,)
 }
 public type DeploymentConfiguration {
     string name;
@@ -62,6 +63,7 @@ public type DeploymentConfiguration {
     boolean push;
     string dockerCertPath;
     FileConfig[] copyFiles;
+    boolean singleYAML;
 };
 
 documentation {@kubernetes:Deployment annotation to configure deplyoment yaml

@@ -21,22 +21,21 @@ package org.ballerinax.kubernetes.handlers;
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.PersistentVolumeClaim;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
-import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Test kubernetes volume claim generation.
  */
 public class KubernetesVolumeClaimGeneratorTests {
 
-    private final Logger log = LoggerFactory.getLogger(KubernetesVolumeClaimGeneratorTests.class);
     private final String volumeClaimName = "MyVolumeClaim";
     private final boolean readOnly = true;
     private final String mountPath = "/user/dir";
@@ -48,14 +47,13 @@ public class KubernetesVolumeClaimGeneratorTests {
         volumeClaimModel.setReadOnly(readOnly);
         volumeClaimModel.setMountPath(mountPath);
         volumeClaimModel.setAccessMode("ReadWriteOnce");
+        Set<PersistentVolumeClaimModel> claimModles = new HashSet<>();
+        claimModles.add(volumeClaimModel);
+        KubernetesDataHolder.getInstance().addPersistentVolumeClaims(claimModles);
         try {
-            String configMapContent = new PersistentVolumeClaimHandler(volumeClaimModel).generate();
-            Assert.assertNotNull(configMapContent);
-            File artifactLocation = new File("target/kubernetes");
-            artifactLocation.mkdir();
-            File tempFile = File.createTempFile("temp", volumeClaimModel.getName() + ".yaml", artifactLocation);
-            KubernetesUtils.writeToFile(configMapContent, tempFile.getPath());
-            log.info("Generated YAML: \n" + configMapContent);
+            new PersistentVolumeClaimHandler().createArtifacts();
+            File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_volume_claim" +
+                    ".yaml");
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

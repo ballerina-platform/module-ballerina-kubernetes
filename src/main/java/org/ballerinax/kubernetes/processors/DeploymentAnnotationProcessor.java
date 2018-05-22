@@ -33,7 +33,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_CERT_PATH;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_HOST;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
@@ -121,6 +120,9 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 case copyFiles:
                     deploymentModel.setExternalFiles(getExternalFileMap(keyValue));
                     break;
+                case singleYAML:
+                    deploymentModel.setSingleYAML(Boolean.valueOf(annotationValue));
+                    break;
                 default:
                     break;
             }
@@ -192,6 +194,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         baseImage,
         push,
         dockerCertPath,
-        copyFiles
+        copyFiles,
+        singleYAML
     }
 }

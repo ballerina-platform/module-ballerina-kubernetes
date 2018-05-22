@@ -27,8 +27,10 @@ import java.util.Set;
  * Singleton class to store kubernetes models.
  */
 public class KubernetesDataHolder {
+    private static KubernetesDataHolder instance;
     private boolean canProcess;
     private DeploymentModel deploymentModel;
+    private DockerModel dockerModel;
     private PodAutoscalerModel podAutoscalerModel;
     private Map<String, ServiceModel> bEndpointToK8sServiceMap;
     private Map<String, Set<SecretModel>> endPointToSecretMap;
@@ -37,7 +39,8 @@ public class KubernetesDataHolder {
     private Set<ConfigMapModel> configMapModelSet;
     private Set<PersistentVolumeClaimModel> volumeClaimModelSet;
     private JobModel jobModel;
-    private static KubernetesDataHolder instance;
+    private String balxFilePath;
+    private String outputDir;
 
     private KubernetesDataHolder() {
         this.bEndpointToK8sServiceMap = new HashMap<>();
@@ -139,5 +142,29 @@ public class KubernetesDataHolder {
 
     public void setCanProcess(boolean canProcess) {
         this.canProcess = canProcess;
+    }
+
+    public String getBalxFilePath() {
+        return balxFilePath;
+    }
+
+    public void setBalxFilePath(String balxFilePath) {
+        this.balxFilePath = balxFilePath;
+    }
+
+    public String getOutputDir() {
+        return outputDir;
+    }
+
+    public void setOutputDir(String outputDir) {
+        this.outputDir = outputDir;
+    }
+
+    public DockerModel getDockerModel() {
+        return dockerModel;
+    }
+
+    public void setDockerModel(DockerModel dockerModel) {
+        this.dockerModel = dockerModel;
     }
 }

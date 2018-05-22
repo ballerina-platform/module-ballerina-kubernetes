@@ -18,33 +18,28 @@
 
 package org.ballerinax.kubernetes.handlers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscaler;
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscalerBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
+import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.PodAutoscalerModel;
+import org.ballerinax.kubernetes.utils.KubernetesUtils;
+
+import java.io.IOException;
+
+import static org.ballerinax.kubernetes.KubernetesConstants.HPA_FILE_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.HPA_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 
 /**
  * Generates kubernetes Horizontal Pod Autoscaler from annotations.
  */
 public class HPAHandler implements ArtifactHandler {
 
-
-    private PodAutoscalerModel podAutoscalerModel;
-
-    public HPAHandler(PodAutoscalerModel podAutoscalerModel) {
-        this.podAutoscalerModel = podAutoscalerModel;
-    }
-
-    @Override
-    /**
-     * Generate kubernetes Horizontal pod autoscaler definition from annotation.
-     *
-     * @return Generated kubernetes {@link Ingress} definition
-     * @throws KubernetesPluginException If an error occurs while generating artifact.
-     */
-    public String generate() throws KubernetesPluginException {
+    private void generate(PodAutoscalerModel podAutoscalerModel) throws KubernetesPluginException {
         HorizontalPodAutoscaler horizontalPodAutoscaler = new HorizontalPodAutoscalerBuilder()
                 .withNewMetadata()
                 .withName(podAutoscalerModel.getName())
@@ -58,10 +53,34 @@ public class HPAHandler implements ArtifactHandler {
                 .endSpec()
                 .build();
         try {
-            return SerializationUtils.dumpWithoutRuntimeStateAsYaml(horizontalPodAutoscaler);
-        } catch (JsonProcessingException e) {
+            String serviceContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(horizontalPodAutoscaler);
+            KubernetesUtils.writeToFile(serviceContent, HPA_FILE_POSTFIX + YAML);
+        } catch (IOException e) {
             String errorMessage = "Error while generating yaml file for autoscaler: " + podAutoscalerModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
+    }
+
+    @Override
+    public void createArtifacts() throws KubernetesPluginException {
+        DeploymentModel deploymentModel = KUBERNETES_DATA_HOLDER.getDeploymentModel();
+        PodAutoscalerModel podAutoscalerModel = deploymentModel.getPodAutoscalerModel();
+        if (podAutoscalerModel == null) {
+            return;
+        }
+        String balxFileName = KubernetesUtils.extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath());
+        podAutoscalerModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
+        podAutoscalerModel.setDeployment(deploymentModel.getName());
+        if (podAutoscalerModel.getMaxReplicas() == 0) {
+            podAutoscalerModel.setMaxReplicas(deploymentModel.getReplicas() + 1);
+        }
+        if (podAutoscalerModel.getMinReplicas() == 0) {
+            podAutoscalerModel.setMinReplicas(deploymentModel.getReplicas());
+        }
+        if (podAutoscalerModel.getName() == null || podAutoscalerModel.getName().length() == 0) {
+            podAutoscalerModel.setName(getValidName(balxFileName) + HPA_POSTFIX);
+        }
+        generate(podAutoscalerModel);
+        OUT.println("@kubernetes:HPA \t\t\t - complete 1/1");
     }
 }

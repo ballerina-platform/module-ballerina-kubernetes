@@ -14,9 +14,7 @@
     └── kubernetes
         ├── docker
         │   └── Dockerfile
-        ├── hello_world_k8s_config_svc.yaml
-        ├── hello_world_k8s_config_deployment.yaml
-        └── hello_world_k8s_config_ingress.yaml
+        └── hello_world_k8s_config.yaml
     ```
 ### How to run:
 
@@ -41,9 +39,7 @@ $> tree
 └── kubernetes
     ├── docker
     │   └── Dockerfile
-    ├── hello_world_k8s_config_deployment.yaml
-    ├── hello_world_k8s_config_svc.yaml
-    └── hello_world_k8s_config_ingress.yaml
+    └── hello_world_k8s_config.yaml
 ```
 
 3. Verify the docker image is created:

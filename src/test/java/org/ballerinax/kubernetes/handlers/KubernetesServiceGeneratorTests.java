@@ -22,12 +22,10 @@ import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Service;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.models.ServiceModel;
-import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,14 +37,13 @@ import java.util.Map;
  */
 public class KubernetesServiceGeneratorTests {
 
-    private final Logger log = LoggerFactory.getLogger(KubernetesServiceGeneratorTests.class);
     private final String serviceName = "MyService";
-    private final String selector = "TestAPP";
+    private final String selector = "hello";
     private final String serviceType = "NodePort";
     private final int port = 9090;
 
     @Test
-    public void testServiceGenerate() {
+    public void testDeploymentGeneration() {
         ServiceModel serviceModel = new ServiceModel();
         serviceModel.setName(serviceName);
         serviceModel.setPort(port);
@@ -55,14 +52,10 @@ public class KubernetesServiceGeneratorTests {
         Map<String, String> labels = new HashMap<>();
         labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, selector);
         serviceModel.setLabels(labels);
+        KubernetesDataHolder.getInstance().addBEndpointToK8sServiceMap("HelloWorldService", serviceModel);
         try {
-            String serviceYAML = new ServiceHandler(serviceModel).generate();
-            Assert.assertNotNull(serviceYAML);
-            File artifactLocation = new File("target/kubernetes");
-            artifactLocation.mkdir();
-            File tempFile = File.createTempFile("temp", serviceModel.getName() + ".yaml", artifactLocation);
-            KubernetesUtils.writeToFile(serviceYAML, tempFile.getPath());
-            log.info("Generated YAML: \n" + serviceYAML);
+            new ServiceHandler().createArtifacts();
+            File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_svc.yaml");
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

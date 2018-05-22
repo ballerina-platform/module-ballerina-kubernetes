@@ -19,7 +19,6 @@
 package org.ballerinax.kubernetes.handlers;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
 import io.fabric8.kubernetes.api.model.ContainerPort;
@@ -41,24 +40,29 @@ import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.ConfigMapModel;
 import org.ballerinax.kubernetes.models.DeploymentModel;
+import org.ballerinax.kubernetes.models.DockerModel;
 import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
 import org.ballerinax.kubernetes.models.SecretModel;
+import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.BALX;
+import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_FILE_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_LATEST_TAG;
+import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
+
 /**
  * Generates kubernetes deployment from annotations.
  */
 public class DeploymentHandler implements ArtifactHandler {
-
-    private DeploymentModel deploymentModel;
-
-    public DeploymentHandler(DeploymentModel deploymentModel) {
-        this.deploymentModel = deploymentModel;
-    }
 
     private List<ContainerPort> populatePorts(Set<Integer> ports) {
         List<ContainerPort> containerPorts = new ArrayList<>();
@@ -175,10 +179,10 @@ public class DeploymentHandler implements ArtifactHandler {
     /**
      * Generate kubernetes deployment definition from annotation.
      *
-     * @return Generated kubernetes @{@link Deployment} definition
+     * @param deploymentModel @{@link DeploymentModel} definition
      * @throws KubernetesPluginException If an error occurs while generating artifact.
      */
-    public String generate() throws KubernetesPluginException {
+    private void generate(DeploymentModel deploymentModel) throws KubernetesPluginException {
         List<ContainerPort> containerPorts = null;
         if (deploymentModel.getPorts() != null) {
             containerPorts = populatePorts(deploymentModel.getPorts());
@@ -204,12 +208,68 @@ public class DeploymentHandler implements ArtifactHandler {
                 .build();
 
         try {
-            return SerializationUtils.dumpWithoutRuntimeStateAsYaml(deployment);
-        } catch (JsonProcessingException e) {
-            String errorMessage = "Error while parsing yaml file for deployment: " + deploymentModel.getName();
+            String deploymentContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(deployment);
+            KubernetesUtils.writeToFile(deploymentContent, DEPLOYMENT_FILE_POSTFIX + YAML);
+
+        } catch (IOException e) {
+            String errorMessage = "Error while generating yaml file for deployment: " + deploymentModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
     }
 
+    @Override
+    public void createArtifacts() throws KubernetesPluginException {
+        DeploymentModel deploymentModel = KUBERNETES_DATA_HOLDER.getDeploymentModel();
+        deploymentModel.setPodAutoscalerModel(KUBERNETES_DATA_HOLDER.getPodAutoscalerModel());
+        deploymentModel.setSecretModels(KUBERNETES_DATA_HOLDER.getSecretModelSet());
+        deploymentModel.setConfigMapModels(KUBERNETES_DATA_HOLDER.getConfigMapModelSet());
+        deploymentModel.setVolumeClaimModels(KUBERNETES_DATA_HOLDER.getVolumeClaimModelSet());
+        String balxFileName = KubernetesUtils.extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath());
+        if (isBlank(deploymentModel.getName())) {
+            if (balxFileName != null) {
+                deploymentModel.setName(getValidName(balxFileName) + DEPLOYMENT_POSTFIX);
+            }
+        }
+        if (isBlank(deploymentModel.getImage())) {
+            deploymentModel.setImage(balxFileName + DOCKER_LATEST_TAG);
+        }
+        deploymentModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
+        if (deploymentModel.isEnableLiveness() && deploymentModel.getLivenessPort() == 0) {
+            //set first port as liveness port
+            deploymentModel.setLivenessPort(deploymentModel.getPorts().iterator().next());
+        }
+        KUBERNETES_DATA_HOLDER.setDeploymentModel(deploymentModel);
+        generate(deploymentModel);
+        OUT.println("@kubernetes:Deployment \t\t\t - complete 1/1");
+        KUBERNETES_DATA_HOLDER.setDockerModel(getDockerModel(deploymentModel));
+    }
+
+
+    /**
+     * Create docker artifacts.
+     *
+     * @param deploymentModel Deployment model
+     */
+    private DockerModel getDockerModel(DeploymentModel deploymentModel) {
+        DockerModel dockerModel = new DockerModel();
+        String dockerImage = deploymentModel.getImage();
+        String imageTag = dockerImage.substring(dockerImage.lastIndexOf(":") + 1, dockerImage.length());
+        dockerModel.setBaseImage(deploymentModel.getBaseImage());
+        dockerModel.setName(dockerImage);
+        dockerModel.setTag(imageTag);
+        dockerModel.setEnableDebug(false);
+        dockerModel.setUsername(deploymentModel.getUsername());
+        dockerModel.setPassword(deploymentModel.getPassword());
+        dockerModel.setPush(deploymentModel.isPush());
+        dockerModel.setBalxFileName(KubernetesUtils.extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath()) + BALX);
+        dockerModel.setPorts(deploymentModel.getPorts());
+        dockerModel.setService(true);
+        dockerModel.setDockerHost(deploymentModel.getDockerHost());
+        dockerModel.setDockerCertPath(deploymentModel.getDockerCertPath());
+        dockerModel.setBuildImage(deploymentModel.isBuildImage());
+        dockerModel.setCommandArg(deploymentModel.getCommandArgs());
+        dockerModel.setExternalFiles(deploymentModel.getExternalFiles());
+        return dockerModel;
+    }
 }
 

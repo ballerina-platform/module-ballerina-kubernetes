@@ -18,12 +18,11 @@
 
 package org.ballerinax.kubernetes.handlers;
 
+import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DockerModel;
-import org.ballerinax.kubernetes.utils.KubernetesUtils;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,10 +34,9 @@ import java.util.Set;
  */
 public class DockerGeneratorTests {
 
-    private final Logger log = LoggerFactory.getLogger(DockerGeneratorTests.class);
 
     @Test
-    public void testDockerGenerate() throws IOException {
+    public void testDockerGenerate() throws IOException, KubernetesPluginException {
         DockerModel dockerModel = new DockerModel();
         Set<Integer> ports = new HashSet<>();
         ports.add(9090);
@@ -46,16 +44,17 @@ public class DockerGeneratorTests {
         ports.add(9092);
         dockerModel.setPorts(ports);
         dockerModel.setService(true);
-        dockerModel.setBalxFileName("example.balx");
+        dockerModel.setBalxFileName("hello.balx");
         dockerModel.setEnableDebug(true);
+        dockerModel.setBaseImage("ballerina/ballerina:latest");
         dockerModel.setDebugPort(5005);
-
-        String dockerfileContent = new DockerHandler(dockerModel).generate();
-        File dockerfile = new File("target/kubernetes/docker");
+        dockerModel.setBuildImage(false);
+        KubernetesDataHolder dataHolder = KubernetesDataHolder.getInstance();
+        dataHolder.setDockerModel(dockerModel);
+        new DockerHandler().createArtifacts();
+        File dockerfile = new File("target/kubernetes/hello/docker/");
         dockerfile.mkdirs();
-        dockerfile = new File("target/docker/Dockerfile");
-        KubernetesUtils.writeToFile(dockerfileContent, dockerfile.getPath());
-        log.info("Dockerfile Content:\n" + dockerfileContent);
+        dockerfile = new File("target/kubernetes/hello/docker/Dockerfile");
         Assert.assertTrue(dockerfile.exists());
         dockerfile.deleteOnExit();
     }
