@@ -20,6 +20,8 @@ package org.ballerinax.kubernetes.models;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.NGINX;
+
 /**
  * Kubernetes ingress annotations model class.
  */
@@ -38,7 +40,7 @@ public class IngressModel extends KubernetesModel {
     public IngressModel() {
         this.path = "/";
         this.enableTLS = false;
-        this.ingressClass = "nginx";
+        this.ingressClass = NGINX;
         this.labels = new HashMap<>();
     }
 
