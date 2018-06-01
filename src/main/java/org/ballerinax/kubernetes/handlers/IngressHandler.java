@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.INGRESS_FILE_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.NGINX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 
 
@@ -51,10 +52,10 @@ public class IngressHandler implements ArtifactHandler {
     /**
      * Generate kubernetes ingress definition from annotation.
      *
-     * @return Generated kubernetes {@link Ingress} definition
+     * @param ingressModel IngressModel object
      * @throws KubernetesPluginException If an error occurs while generating artifact.
      */
-    private String generate(IngressModel ingressModel) throws KubernetesPluginException {
+    private void generate(IngressModel ingressModel) throws KubernetesPluginException {
         //generate ingress backend
         IngressBackend ingressBackend = new IngressBackendBuilder()
                 .withServiceName(ingressModel.getServiceName())
@@ -80,11 +81,13 @@ public class IngressHandler implements ArtifactHandler {
         //generate annotationMap
         Map<String, String> annotationMap = new HashMap<>();
         annotationMap.put("kubernetes.io/ingress.class", ingressModel.getIngressClass());
-        annotationMap.put("nginx.ingress.kubernetes.io/ssl-passthrough", String.valueOf(ingressModel.isEnableTLS()));
-        if (ingressModel.getTargetPath() != null) {
-            annotationMap.put("nginx.ingress.kubernetes.io/rewrite-target", ingressModel.getTargetPath());
+        if (NGINX.equals(ingressModel.getIngressClass())) {
+            annotationMap.put("nginx.ingress.kubernetes.io/ssl-passthrough", String.valueOf(ingressModel.isEnableTLS
+                    ()));
+            if (ingressModel.getTargetPath() != null) {
+                annotationMap.put("nginx.ingress.kubernetes.io/rewrite-target", ingressModel.getTargetPath());
+            }
         }
-
         //Add user defined ingress annotations to yaml.
         Map<String, String> userDefinedAnnotationMap = ingressModel.getAnnotations();
         if (userDefinedAnnotationMap != null) {
@@ -116,7 +119,6 @@ public class IngressHandler implements ArtifactHandler {
             String errorMessage = "Error while generating yaml file for ingress: " + ingressModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
-        return ingressYAML;
     }
 
     @Override

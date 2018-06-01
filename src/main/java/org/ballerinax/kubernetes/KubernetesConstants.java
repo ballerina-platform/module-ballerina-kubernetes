@@ -59,6 +59,7 @@ public class KubernetesConstants {
     public static final String WINDOWS_DEFAULT_DOCKER_HOST = "tcp://localhost:2375";
     public static final String DOCKER_HOST = "DOCKER_HOST";
     public static final String DOCKER_CERT_PATH = "DOCKER_CERT_PATH";
+    public static final String NGINX = "nginx";
 
     /**
      * Restart policy enum.
