@@ -43,7 +43,8 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
  * Compiler plugin to generate kubernetes artifacts.
  */
 @SupportedAnnotationPackages(
-        value = "ballerinax.kubernetes"
+        //TODO: Verify adding version is correct
+        value = "ballerinax/kubernetes:0.0.0"
 )
 public class KubernetesPlugin extends AbstractCompilerPlugin {
     private DiagnosticLog dlog;
