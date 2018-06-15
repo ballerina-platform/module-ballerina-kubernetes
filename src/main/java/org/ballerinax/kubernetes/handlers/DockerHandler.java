@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.CountDownLatch;
@@ -270,7 +271,11 @@ public class DockerHandler implements ArtifactHandler {
                 // Copy external files to docker folder
                 String target = dockerOutputDir + File.separator + String.valueOf(Paths.get(copyFileModel.getSource())
                         .getFileName());
-                copyFile(copyFileModel.getSource(), target);
+                Path sourcePath = Paths.get(copyFileModel.getSource());
+                if (!sourcePath.isAbsolute()) {
+                    sourcePath = sourcePath.toAbsolutePath();
+                }
+                copyFile(sourcePath.toString(), target);
             }
             //check image build is enabled.
             if (dockerModel.isBuildImage()) {
@@ -281,8 +286,9 @@ public class DockerHandler implements ArtifactHandler {
                 if (dockerModel.isPush()) {
                     pushImage(dockerModel);
                 }
-                OUT.print("@kubernetes:Docker \t\t\t - complete 3/3");
+                OUT.print("@kubernetes:Docker \t\t\t - complete 3/3 \r");
             }
+            OUT.print("@kubernetes:Docker \t\t\t - complete 3/3");
         } catch (IOException e) {
             throw new KubernetesPluginException("Unable to write Dockerfile content");
         } catch (InterruptedException e) {
