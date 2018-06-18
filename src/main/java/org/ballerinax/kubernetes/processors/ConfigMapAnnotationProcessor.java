@@ -22,7 +22,7 @@ import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.ConfigMapModel;
-import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
@@ -128,7 +128,7 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
 
             }
         }
-        KubernetesDataHolder.getInstance().addConfigMaps(configMapModels);
+        KubernetesContext.getInstance().getDataHolder().addConfigMaps(configMapModels);
     }
 
     private Map<String, String> getDataForConfigMap(List<BLangExpression> data) throws KubernetesPluginException {

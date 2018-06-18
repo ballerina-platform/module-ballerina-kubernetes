@@ -62,7 +62,7 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 /**
  * Generates kubernetes deployment from annotations.
  */
-public class DeploymentHandler implements ArtifactHandler {
+public class DeploymentHandler extends AbstractArtifactHandler {
 
     private List<ContainerPort> populatePorts(Set<Integer> ports) {
         List<ContainerPort> containerPorts = new ArrayList<>();
@@ -219,12 +219,12 @@ public class DeploymentHandler implements ArtifactHandler {
 
     @Override
     public void createArtifacts() throws KubernetesPluginException {
-        DeploymentModel deploymentModel = KUBERNETES_DATA_HOLDER.getDeploymentModel();
-        deploymentModel.setPodAutoscalerModel(KUBERNETES_DATA_HOLDER.getPodAutoscalerModel());
-        deploymentModel.setSecretModels(KUBERNETES_DATA_HOLDER.getSecretModelSet());
-        deploymentModel.setConfigMapModels(KUBERNETES_DATA_HOLDER.getConfigMapModelSet());
-        deploymentModel.setVolumeClaimModels(KUBERNETES_DATA_HOLDER.getVolumeClaimModelSet());
-        String balxFileName = KubernetesUtils.extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath());
+        DeploymentModel deploymentModel = dataHolder.getDeploymentModel();
+        deploymentModel.setPodAutoscalerModel(dataHolder.getPodAutoscalerModel());
+        deploymentModel.setSecretModels(dataHolder.getSecretModelSet());
+        deploymentModel.setConfigMapModels(dataHolder.getConfigMapModelSet());
+        deploymentModel.setVolumeClaimModels(dataHolder.getVolumeClaimModelSet());
+        String balxFileName = KubernetesUtils.extractBalxName(dataHolder.getBalxFilePath());
         if (isBlank(deploymentModel.getName())) {
             if (balxFileName != null) {
                 deploymentModel.setName(getValidName(balxFileName) + DEPLOYMENT_POSTFIX);
@@ -238,10 +238,10 @@ public class DeploymentHandler implements ArtifactHandler {
             //set first port as liveness port
             deploymentModel.setLivenessPort(deploymentModel.getPorts().iterator().next());
         }
-        KUBERNETES_DATA_HOLDER.setDeploymentModel(deploymentModel);
+        dataHolder.setDeploymentModel(deploymentModel);
         generate(deploymentModel);
         OUT.println("@kubernetes:Deployment \t\t\t - complete 1/1");
-        KUBERNETES_DATA_HOLDER.setDockerModel(getDockerModel(deploymentModel));
+        dataHolder.setDockerModel(getDockerModel(deploymentModel));
     }
 
 
@@ -261,7 +261,7 @@ public class DeploymentHandler implements ArtifactHandler {
         dockerModel.setUsername(deploymentModel.getUsername());
         dockerModel.setPassword(deploymentModel.getPassword());
         dockerModel.setPush(deploymentModel.isPush());
-        dockerModel.setBalxFileName(KubernetesUtils.extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath()) + BALX);
+        dockerModel.setBalxFileName(KubernetesUtils.extractBalxName(dataHolder.getBalxFilePath()) + BALX);
         dockerModel.setPorts(deploymentModel.getPorts());
         dockerModel.setService(true);
         dockerModel.setDockerHost(deploymentModel.getDockerHost());

@@ -29,6 +29,7 @@ import org.ballerinax.kubernetes.handlers.PersistentVolumeClaimHandler;
 import org.ballerinax.kubernetes.handlers.SecretHandler;
 import org.ballerinax.kubernetes.handlers.ServiceHandler;
 import org.ballerinax.kubernetes.models.DeploymentModel;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
@@ -50,7 +51,7 @@ class ArtifactManager {
     ArtifactManager(String balxFilePath, String outputDir) {
         this.balxFilePath = balxFilePath;
         this.outputDir = outputDir;
-        this.kubernetesDataHolder = KubernetesDataHolder.getInstance();
+        this.kubernetesDataHolder = KubernetesContext.getInstance().getDataHolder();
     }
 
     /**

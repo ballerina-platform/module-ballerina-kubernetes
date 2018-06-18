@@ -23,7 +23,7 @@ import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.IngressModel;
-import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.ServiceModel;
 import org.junit.Assert;
 import org.junit.Test;
@@ -62,14 +62,14 @@ public class KubernetesIngressGeneratorTests {
         Map<String, String> labels = new HashMap<>();
         labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, selector);
         ingressModel.setLabels(labels);
-        KubernetesDataHolder.getInstance().addIngressModel(ingressModel);
+        KubernetesContext.getInstance().getDataHolder().addIngressModel(ingressModel);
         ServiceModel serviceModel = new ServiceModel();
         serviceModel.setName(serviceName);
         serviceModel.setPort(9090);
         serviceModel.setServiceType("NodePort");
         serviceModel.setSelector(selector);
         serviceModel.setLabels(labels);
-        KubernetesDataHolder.getInstance().addBEndpointToK8sServiceMap("HelloWorldService", serviceModel);
+        KubernetesContext.getInstance().getDataHolder().addBEndpointToK8sServiceMap("HelloWorldService", serviceModel);
 
         try {
             new IngressHandler().createArtifacts();

@@ -24,7 +24,7 @@ import io.fabric8.kubernetes.api.model.extensions.Deployment;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
-import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -63,7 +63,7 @@ public class KubernetesDeploymentGeneratorTests {
         env.put("ENV_VAR", "ENV");
         deploymentModel.setEnv(env);
         deploymentModel.setReplicas(replicas);
-        KubernetesDataHolder.getInstance().setDeploymentModel(deploymentModel);
+        KubernetesContext.getInstance().getDataHolder().setDeploymentModel(deploymentModel);
         try {
             new DeploymentHandler().createArtifacts();
             File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_deployment" +

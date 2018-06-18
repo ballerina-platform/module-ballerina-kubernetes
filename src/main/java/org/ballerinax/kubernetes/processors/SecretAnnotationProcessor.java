@@ -22,7 +22,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.SecretModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
@@ -89,7 +89,7 @@ public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
                 secrets.add(secretModel);
             }
         }
-        KubernetesDataHolder.getInstance().addSecrets(secrets);
+        KubernetesContext.getInstance().getDataHolder().addSecrets(secrets);
     }
 
     private Map<String, String> getDataForSecret(List<BLangExpression> data) throws KubernetesPluginException {

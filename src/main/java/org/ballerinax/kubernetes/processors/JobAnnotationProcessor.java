@@ -21,7 +21,7 @@ import org.ballerinalang.model.tree.FunctionNode;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.JobModel;
-import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
@@ -79,7 +79,7 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
         if (!isBlank(dockerCertPath)) {
             jobModel.setDockerCertPath(dockerCertPath);
         }
-        KubernetesDataHolder.getInstance().setJobModel(jobModel);
+        KubernetesContext.getInstance().getDataHolder().setJobModel(jobModel);
     }
 
 

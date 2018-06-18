@@ -37,7 +37,7 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 /**
  * Generates kubernetes Config Map.
  */
-public class ConfigMapHandler implements ArtifactHandler {
+public class ConfigMapHandler extends AbstractArtifactHandler {
 
     private void generate(ConfigMapModel configMapModel) throws KubernetesPluginException {
         ConfigMap configMap = new ConfigMapBuilder()
@@ -61,7 +61,7 @@ public class ConfigMapHandler implements ArtifactHandler {
     public void createArtifacts() throws KubernetesPluginException {
         //configMap
         int count = 0;
-        Collection<ConfigMapModel> configMapModels = KUBERNETES_DATA_HOLDER.getConfigMapModelSet();
+        Collection<ConfigMapModel> configMapModels = dataHolder.getConfigMapModelSet();
         if (configMapModels.size() > 0) {
             OUT.println();
         }
@@ -71,10 +71,10 @@ public class ConfigMapHandler implements ArtifactHandler {
                 if (configMapModel.getData().size() != 1) {
                     throw new KubernetesPluginException("There can be only 1 ballerina config file");
                 }
-                DeploymentModel deploymentModel = KUBERNETES_DATA_HOLDER.getDeploymentModel();
+                DeploymentModel deploymentModel = dataHolder.getDeploymentModel();
                 deploymentModel.setCommandArgs(" --config ${CONFIG_FILE} ");
                 deploymentModel.addEnv("CONFIG_FILE", configMapModel.getMountPath() + BALLERINA_CONF_FILE_NAME);
-                KUBERNETES_DATA_HOLDER.setDeploymentModel(deploymentModel);
+                dataHolder.setDeploymentModel(deploymentModel);
             }
             generate(configMapModel);
             OUT.print("@kubernetes:ConfigMap \t\t\t - complete " + count + "/" + configMapModels.size() + "\r");

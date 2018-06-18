@@ -22,7 +22,7 @@ import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.ConfigMapModel;
-import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -56,7 +56,7 @@ public class KubernetesConfigMapGeneratorTests {
         configMapModel.setData(data);
         Set<ConfigMapModel> configMapModels = new HashSet<>();
         configMapModels.add(configMapModel);
-        KubernetesDataHolder.getInstance().addConfigMaps(configMapModels);
+        KubernetesContext.getInstance().getDataHolder().addConfigMaps(configMapModels);
         try {
             new ConfigMapHandler().createArtifacts();
             File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_config_map" +

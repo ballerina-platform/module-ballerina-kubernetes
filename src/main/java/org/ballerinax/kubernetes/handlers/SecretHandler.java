@@ -34,7 +34,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 /**
  * Generates kubernetes secret.
  */
-public class SecretHandler implements ArtifactHandler {
+public class SecretHandler extends AbstractArtifactHandler {
 
 
     private void generate(SecretModel secretModel) throws KubernetesPluginException {
@@ -58,7 +58,7 @@ public class SecretHandler implements ArtifactHandler {
     public void createArtifacts() throws KubernetesPluginException {
         //secret
         int count = 0;
-        Collection<SecretModel> secretModels = KUBERNETES_DATA_HOLDER.getSecretModelSet();
+        Collection<SecretModel> secretModels = dataHolder.getSecretModelSet();
         if (secretModels.size() > 0) {
             OUT.println();
         }

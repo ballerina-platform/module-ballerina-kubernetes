@@ -37,7 +37,7 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 /**
  * Generates kubernetes Horizontal Pod Autoscaler from annotations.
  */
-public class HPAHandler implements ArtifactHandler {
+public class HPAHandler extends AbstractArtifactHandler {
 
     private void generate(PodAutoscalerModel podAutoscalerModel) throws KubernetesPluginException {
         HorizontalPodAutoscaler horizontalPodAutoscaler = new HorizontalPodAutoscalerBuilder()
@@ -63,12 +63,12 @@ public class HPAHandler implements ArtifactHandler {
 
     @Override
     public void createArtifacts() throws KubernetesPluginException {
-        DeploymentModel deploymentModel = KUBERNETES_DATA_HOLDER.getDeploymentModel();
+        DeploymentModel deploymentModel = dataHolder.getDeploymentModel();
         PodAutoscalerModel podAutoscalerModel = deploymentModel.getPodAutoscalerModel();
         if (podAutoscalerModel == null) {
             return;
         }
-        String balxFileName = KubernetesUtils.extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath());
+        String balxFileName = KubernetesUtils.extractBalxName(dataHolder.getBalxFilePath());
         podAutoscalerModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
         podAutoscalerModel.setDeployment(deploymentModel.getName());
         if (podAutoscalerModel.getMaxReplicas() == 0) {

@@ -20,6 +20,7 @@ package org.ballerinax.kubernetes.utils;
 
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
@@ -41,7 +42,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
-import static org.ballerinax.kubernetes.handlers.ArtifactHandler.KUBERNETES_DATA_HOLDER;
 
 /**
  * Util methods used for artifact generation.
@@ -61,11 +61,12 @@ public class KubernetesUtils {
      * @throws IOException If an error occurs when writing to a file
      */
     public static void writeToFile(String context, String outputFileName) throws IOException {
-        outputFileName = KUBERNETES_DATA_HOLDER.getOutputDir() + File
-                .separator + extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath()) + outputFileName;
-        if (KubernetesDataHolder.getInstance().getDeploymentModel().isSingleYAML()) {
-            outputFileName = KUBERNETES_DATA_HOLDER.getOutputDir() + File
-                    .separator + extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath()) + YAML;
+        KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
+        outputFileName = dataHolder.getOutputDir() + File
+                .separator + extractBalxName(dataHolder.getBalxFilePath()) + outputFileName;
+        if (KubernetesContext.getInstance().getDataHolder().getDeploymentModel().isSingleYAML()) {
+            outputFileName = dataHolder.getOutputDir() + File
+                    .separator + extractBalxName(dataHolder.getBalxFilePath()) + YAML;
         }
         File newFile = new File(outputFileName);
         // append if file exists

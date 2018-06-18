@@ -24,7 +24,7 @@ import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.expressions.RecordLiteralNode;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.ServiceModel;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.BLangEndpoint;
@@ -53,7 +53,8 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =
                 ((BLangRecordLiteral) ((BLangEndpoint) endpointNode).configurationExpr).getKeyValuePairs();
         serviceModel.setPort(extractPort(endpointConfig));
-        KubernetesDataHolder.getInstance().addBEndpointToK8sServiceMap(endpointNode.getName().getValue(), serviceModel);
+        KubernetesContext.getInstance().getDataHolder().addBEndpointToK8sServiceMap(endpointNode.getName().getValue()
+                , serviceModel);
     }
 
     @Override
@@ -71,7 +72,8 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =
                 ((BLangRecordLiteral) anonymousEndpoint).getKeyValuePairs();
         serviceModel.setPort(extractPort(endpointConfig));
-        KubernetesDataHolder.getInstance().addBEndpointToK8sServiceMap(serviceNode.getName().getValue(), serviceModel);
+        KubernetesContext.getInstance().getDataHolder().addBEndpointToK8sServiceMap(serviceNode.getName().getValue(),
+                serviceModel);
     }
 
     private int extractPort(List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig) throws

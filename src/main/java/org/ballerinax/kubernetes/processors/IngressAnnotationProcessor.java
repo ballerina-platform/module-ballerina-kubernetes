@@ -25,7 +25,7 @@ import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.expressions.RecordLiteralNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.IngressModel;
-import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.SecretModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
@@ -70,7 +70,7 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
         List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =
                 ((BLangRecordLiteral) ((BLangEndpoint) endpointNode).configurationExpr).getKeyValuePairs();
         processEndpoint(endpointName, endpointConfig);
-        KubernetesDataHolder.getInstance().addIngressModel(ingressModel);
+        KubernetesContext.getInstance().getDataHolder().addIngressModel(ingressModel);
     }
 
     /**
@@ -214,8 +214,8 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
                     List<BLangRecordLiteral.BLangRecordKeyValue> sslKeyValues = ((BLangRecordLiteral) keyValue
                             .valueExpr).getKeyValuePairs();
                     Set<SecretModel> secretModels = processSecureSocketAnnotation(endpointName, sslKeyValues);
-                    KubernetesDataHolder.getInstance().addEndpointSecret(endpointName, secretModels);
-                    KubernetesDataHolder.getInstance().addSecrets(secretModels);
+                    KubernetesContext.getInstance().getDataHolder().addEndpointSecret(endpointName, secretModels);
+                    KubernetesContext.getInstance().getDataHolder().addSecrets(secretModels);
                     break;
                 default:
                     break;
@@ -246,7 +246,7 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
         List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =
                 ((BLangRecordLiteral) anonymousEndpoint).getKeyValuePairs();
         processEndpoint(endpointName, endpointConfig);
-        KubernetesDataHolder.getInstance().addIngressModel(ingressModel);
+        KubernetesContext.getInstance().getDataHolder().addIngressModel(ingressModel);
 
     }
 

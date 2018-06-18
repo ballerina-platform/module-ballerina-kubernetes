@@ -21,7 +21,7 @@ package org.ballerinax.kubernetes.processors;
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
@@ -39,17 +39,6 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
  * Persistent volume claim annotation processor.
  */
 public class VolumeClaimAnnotationProcessor extends AbstractAnnotationProcessor {
-
-    /**
-     * Enum class for volume configurations.
-     */
-    private enum VolumeClaimConfig {
-        name,
-        mountPath,
-        readOnly,
-        accessMode,
-        volumeClaimSize
-    }
 
     /**
      * Process PersistentVolumeClaim annotations.
@@ -94,6 +83,17 @@ public class VolumeClaimAnnotationProcessor extends AbstractAnnotationProcessor 
                 volumeClaimModels.add(claimModel);
             }
         }
-        KubernetesDataHolder.getInstance().addPersistentVolumeClaims(volumeClaimModels);
+        KubernetesContext.getInstance().getDataHolder().addPersistentVolumeClaims(volumeClaimModels);
+    }
+
+    /**
+     * Enum class for volume configurations.
+     */
+    private enum VolumeClaimConfig {
+        name,
+        mountPath,
+        readOnly,
+        accessMode,
+        volumeClaimSize
     }
 }

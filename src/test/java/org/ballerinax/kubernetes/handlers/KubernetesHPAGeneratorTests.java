@@ -23,7 +23,7 @@ import io.fabric8.kubernetes.api.model.HorizontalPodAutoscaler;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
-import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.PodAutoscalerModel;
 import org.junit.Assert;
 import org.junit.Test;
@@ -70,8 +70,8 @@ public class KubernetesHPAGeneratorTests {
         podAutoscalerModel.setDeployment(deploymentName);
         podAutoscalerModel.setLabels(labels);
         deploymentModel.setPodAutoscalerModel(podAutoscalerModel);
-        KubernetesDataHolder.getInstance().setPodAutoscalerModel(podAutoscalerModel);
-        KubernetesDataHolder.getInstance().setDeploymentModel(deploymentModel);
+        KubernetesContext.getInstance().getDataHolder().setPodAutoscalerModel(podAutoscalerModel);
+        KubernetesContext.getInstance().getDataHolder().setDeploymentModel(deploymentModel);
         try {
             new HPAHandler().createArtifacts();
             File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_hpa.yaml");

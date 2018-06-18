@@ -21,7 +21,7 @@ package org.ballerinax.kubernetes.processors;
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.PodAutoscalerModel;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
@@ -36,17 +36,6 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
  * HPA annotation processor.
  */
 public class HPAAnnotationProcessor extends AbstractAnnotationProcessor {
-
-    /**
-     * Enum class for pod autoscaler configurations.
-     */
-    private enum PodAutoscalerConfiguration {
-        name,
-        labels,
-        minReplicas,
-        maxReplicas,
-        cpuPercentage
-    }
 
     @Override
     public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode) throws
@@ -78,6 +67,17 @@ public class HPAAnnotationProcessor extends AbstractAnnotationProcessor {
                     break;
             }
         }
-        KubernetesDataHolder.getInstance().setPodAutoscalerModel(podAutoscalerModel);
+        KubernetesContext.getInstance().getDataHolder().setPodAutoscalerModel(podAutoscalerModel);
+    }
+
+    /**
+     * Enum class for pod autoscaler configurations.
+     */
+    private enum PodAutoscalerConfiguration {
+        name,
+        labels,
+        minReplicas,
+        maxReplicas,
+        cpuPercentage
     }
 }

@@ -21,7 +21,7 @@ package org.ballerinax.kubernetes.handlers;
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Secret;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.SecretModel;
 import org.junit.Assert;
 import org.junit.Test;
@@ -56,7 +56,7 @@ public class KubernetesSecretGeneratorTests {
         secretModel.setData(data);
         Set<SecretModel> secretModels = new HashSet<>();
         secretModels.add(secretModel);
-        KubernetesDataHolder.getInstance().addSecrets(secretModels);
+        KubernetesContext.getInstance().getDataHolder().addSecrets(secretModels);
         try {
             new SecretHandler().createArtifacts();
             File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_secret.yaml");

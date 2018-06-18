@@ -20,6 +20,7 @@ package org.ballerinax.kubernetes.handlers;
 
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DockerModel;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.junit.Assert;
 import org.junit.Test;
@@ -49,7 +50,8 @@ public class DockerGeneratorTests {
         dockerModel.setBaseImage("ballerina/ballerina:latest");
         dockerModel.setDebugPort(5005);
         dockerModel.setBuildImage(false);
-        KubernetesDataHolder dataHolder = KubernetesDataHolder.getInstance();
+        KubernetesContext context = KubernetesContext.getInstance();
+        KubernetesDataHolder dataHolder = context.getDataHolder();
         dataHolder.setDockerModel(dockerModel);
         new DockerHandler().createArtifacts();
         File dockerfile = new File("target/kubernetes/hello/docker/");
