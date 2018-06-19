@@ -85,7 +85,7 @@ public class ServiceHandler extends AbstractArtifactHandler {
             serviceModel.setSelector(balxFileName);
             generate(serviceModel);
             deploymentModel.addPort(serviceModel.getPort());
-            OUT.print("@kubernetes:Service \t\t\t - complete " + count + "/" + serviceModels.size() + "\r");
+            OUT.print("\t@kubernetes:Service \t\t\t - complete " + count + "/" + serviceModels.size() + "\r");
         }
     }
 

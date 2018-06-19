@@ -147,7 +147,7 @@ public class IngressHandler extends AbstractArtifactHandler {
             }
             generate(ingressModel);
             count++;
-            OUT.print("@kubernetes:Ingress \t\t\t - complete " + count + "/" + size + "\r");
+            OUT.print("\t@kubernetes:Ingress \t\t\t - complete " + count + "/" + size + "\r");
         }
     }
 }

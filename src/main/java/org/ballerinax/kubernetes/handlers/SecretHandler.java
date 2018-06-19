@@ -65,7 +65,7 @@ public class SecretHandler extends AbstractArtifactHandler {
         for (SecretModel secretModel : secretModels) {
             count++;
             generate(secretModel);
-            OUT.print("@kubernetes:Secret \t\t\t - complete " + count + "/" + secretModels.size() + "\r");
+            OUT.print("\t@kubernetes:Secret \t\t\t - complete " + count + "/" + secretModels.size() + "\r");
         }
 
     }

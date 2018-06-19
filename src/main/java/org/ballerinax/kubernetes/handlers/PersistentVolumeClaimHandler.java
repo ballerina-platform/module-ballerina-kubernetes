@@ -78,7 +78,7 @@ public class PersistentVolumeClaimHandler extends AbstractArtifactHandler {
         for (PersistentVolumeClaimModel claimModel : volumeClaims) {
             count++;
             generate(claimModel);
-            OUT.print("@kubernetes:VolumeClaim \t\t - complete " + count + "/" + volumeClaims.size() + "\r");
+            OUT.print("\t@kubernetes:VolumeClaim \t\t - complete " + count + "/" + volumeClaims.size() + "\r");
         }
     }
 }
