@@ -19,6 +19,7 @@
 package org.ballerinax.kubernetes.handlers;
 
 import org.ballerinax.kubernetes.models.DeploymentModel;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -38,7 +39,9 @@ public class HandlerTestSuite {
 
     @BeforeClass
     public static void setUp() {
-        KubernetesDataHolder dataHolder = KubernetesDataHolder.getInstance();
+        KubernetesContext context = KubernetesContext.getInstance();
+        context.addDataHolder("test/my_pkg:0.0.0");
+        KubernetesDataHolder dataHolder = context.getDataHolder();
         dataHolder.setOutputDir("target" + File.separator + "kubernetes/");
         File resourcesDirectory = new File("src" + File.separator + "test" + File.separator + "resources");
         DeploymentModel deploymentModel = new DeploymentModel();

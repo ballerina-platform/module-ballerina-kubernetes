@@ -19,7 +19,7 @@
 package org.ballerinax.kubernetes.processors;
 
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 
 /**
  * Annotation processor factory.
@@ -28,7 +28,7 @@ public class AnnotationProcessorFactory {
 
     public static AnnotationProcessor getAnnotationProcessorInstance(String type) throws KubernetesPluginException {
         // set can process to true so that this value can be accessed from code generated method.
-        KubernetesDataHolder.getInstance().setCanProcess(true);
+        KubernetesContext.getInstance().getDataHolder().setCanProcess(true);
         KubernetesAnnotation kubernetesAnnotation = KubernetesAnnotation.valueOf(type);
         switch (kubernetesAnnotation) {
             case Service:
@@ -48,7 +48,7 @@ public class AnnotationProcessorFactory {
             case Job:
                 return new JobAnnotationProcessor();
             default:
-                KubernetesDataHolder.getInstance().setCanProcess(false);
+                KubernetesContext.getInstance().getDataHolder().setCanProcess(false);
                 throw new KubernetesPluginException("Error while getting annotation processor for type: " + type);
         }
     }

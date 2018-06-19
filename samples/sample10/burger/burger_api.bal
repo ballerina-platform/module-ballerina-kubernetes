@@ -18,6 +18,7 @@ endpoint http:Listener burgerEP {
 };
 
 
+@kubernetes:Deployment {}
 @http:ServiceConfig {
     basePath:"/burger"
 }

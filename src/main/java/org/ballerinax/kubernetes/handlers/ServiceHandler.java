@@ -24,7 +24,7 @@ import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
-import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.ServiceModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
@@ -38,8 +38,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 /**
  * Generates kubernetes service from annotations.
  */
-public class ServiceHandler implements ArtifactHandler {
-
+public class ServiceHandler extends AbstractArtifactHandler {
 
     /**
      * Generate kubernetes service definition from annotation.
@@ -75,12 +74,13 @@ public class ServiceHandler implements ArtifactHandler {
     @Override
     public void createArtifacts() throws KubernetesPluginException {
         // Service
-        DeploymentModel deploymentModel = KUBERNETES_DATA_HOLDER.getDeploymentModel();
-        Map<String, ServiceModel> serviceModels = KUBERNETES_DATA_HOLDER.getbEndpointToK8sServiceMap();
+        DeploymentModel deploymentModel = dataHolder.getDeploymentModel();
+        Map<String, ServiceModel> serviceModels = dataHolder.getbEndpointToK8sServiceMap();
         int count = 0;
         for (ServiceModel serviceModel : serviceModels.values()) {
             count++;
-            String balxFileName = KubernetesUtils.extractBalxName(KubernetesDataHolder.getInstance().getBalxFilePath());
+            String balxFileName = KubernetesUtils.extractBalxName(KubernetesContext.getInstance().getDataHolder()
+                    .getBalxFilePath());
             serviceModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
             serviceModel.setSelector(balxFileName);
             generate(serviceModel);

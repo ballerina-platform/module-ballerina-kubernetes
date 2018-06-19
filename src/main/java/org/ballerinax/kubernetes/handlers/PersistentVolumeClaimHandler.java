@@ -38,7 +38,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 /**
  * Generates kubernetes secret.
  */
-public class PersistentVolumeClaimHandler implements ArtifactHandler {
+public class PersistentVolumeClaimHandler extends AbstractArtifactHandler {
 
     private void generate(PersistentVolumeClaimModel volumeClaimModel) throws KubernetesPluginException {
         Quantity quantity = new QuantityBuilder()
@@ -71,7 +71,7 @@ public class PersistentVolumeClaimHandler implements ArtifactHandler {
     @Override
     public void createArtifacts() throws KubernetesPluginException {
         int count = 0;
-        Collection<PersistentVolumeClaimModel> volumeClaims = KUBERNETES_DATA_HOLDER.getVolumeClaimModelSet();
+        Collection<PersistentVolumeClaimModel> volumeClaims = dataHolder.getVolumeClaimModelSet();
         if (volumeClaims.size() > 0) {
             OUT.println();
         }

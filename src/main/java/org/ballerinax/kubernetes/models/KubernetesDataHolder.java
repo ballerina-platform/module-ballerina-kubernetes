@@ -24,10 +24,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Singleton class to store kubernetes models.
+ * Class to store kubernetes models.
  */
 public class KubernetesDataHolder {
-    private static KubernetesDataHolder instance;
     private boolean canProcess;
     private DeploymentModel deploymentModel;
     private DockerModel dockerModel;
@@ -42,22 +41,13 @@ public class KubernetesDataHolder {
     private String balxFilePath;
     private String outputDir;
 
-    private KubernetesDataHolder() {
+    public KubernetesDataHolder() {
         this.bEndpointToK8sServiceMap = new HashMap<>();
         this.endPointToSecretMap = new HashMap<>();
         this.secretModelSet = new HashSet<>();
         this.configMapModelSet = new HashSet<>();
         this.volumeClaimModelSet = new HashSet<>();
         ingressModelSet = new HashSet<>();
-    }
-
-    public static KubernetesDataHolder getInstance() {
-        synchronized (KubernetesDataHolder.class) {
-            if (instance == null) {
-                instance = new KubernetesDataHolder();
-            }
-        }
-        return instance;
     }
 
     public DeploymentModel getDeploymentModel() {

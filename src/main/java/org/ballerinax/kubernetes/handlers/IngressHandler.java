@@ -47,7 +47,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 /**
  * Generates kubernetes ingress from annotations.
  */
-public class IngressHandler implements ArtifactHandler {
+public class IngressHandler extends AbstractArtifactHandler {
 
     /**
      * Generate kubernetes ingress definition from annotation.
@@ -123,22 +123,22 @@ public class IngressHandler implements ArtifactHandler {
 
     @Override
     public void createArtifacts() throws KubernetesPluginException {
-        Set<IngressModel> ingressModels = KUBERNETES_DATA_HOLDER.getIngressModelSet();
+        Set<IngressModel> ingressModels = dataHolder.getIngressModelSet();
         int size = ingressModels.size();
         if (size > 0) {
             OUT.println();
         }
         int count = 0;
-        Map<String, Set<SecretModel>> secretModelsMap = KUBERNETES_DATA_HOLDER.getSecretModels();
+        Map<String, Set<SecretModel>> secretModelsMap = dataHolder.getSecretModels();
         for (IngressModel ingressModel : ingressModels) {
-            ServiceModel serviceModel = KUBERNETES_DATA_HOLDER.getServiceModel(ingressModel.getEndpointName());
+            ServiceModel serviceModel = dataHolder.getServiceModel(ingressModel.getEndpointName());
             if (serviceModel == null) {
                 throw new KubernetesPluginException("@kubernetes:Ingress annotation should be followed by " +
                         "@kubernetes:Service annotation.");
             }
             ingressModel.setServiceName(serviceModel.getName());
             ingressModel.setServicePort(serviceModel.getPort());
-            String balxFileName = KubernetesUtils.extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath());
+            String balxFileName = KubernetesUtils.extractBalxName(dataHolder.getBalxFilePath());
             ingressModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
             ingressModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
             if (secretModelsMap.get(ingressModel.getEndpointName()) != null && secretModelsMap.get(ingressModel

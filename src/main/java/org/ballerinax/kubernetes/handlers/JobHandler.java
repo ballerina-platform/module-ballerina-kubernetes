@@ -46,7 +46,7 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 /**
  * Job generator.
  */
-public class JobHandler implements ArtifactHandler {
+public class JobHandler extends AbstractArtifactHandler {
 
 
     private void generate(JobModel jobModel) throws KubernetesPluginException {
@@ -121,8 +121,8 @@ public class JobHandler implements ArtifactHandler {
 
     @Override
     public void createArtifacts() throws KubernetesPluginException {
-        String balxFileName = KubernetesUtils.extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath());
-        JobModel jobModel = KUBERNETES_DATA_HOLDER.getJobModel();
+        String balxFileName = KubernetesUtils.extractBalxName(dataHolder.getBalxFilePath());
+        JobModel jobModel = dataHolder.getJobModel();
         if (isBlank(jobModel.getName())) {
             jobModel.setName(getValidName(balxFileName) + JOB_POSTFIX);
         }
@@ -132,7 +132,7 @@ public class JobHandler implements ArtifactHandler {
         jobModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
         generate(jobModel);
         //generate dockerfile and docker image
-        KUBERNETES_DATA_HOLDER.setDockerModel(getDockerModel(jobModel));
+        dataHolder.setDockerModel(getDockerModel(jobModel));
         OUT.println();
         OUT.println("@kubernetes:Job \t\t\t - complete 1/1");
     }
@@ -147,7 +147,7 @@ public class JobHandler implements ArtifactHandler {
         dockerModel.setUsername(jobModel.getUsername());
         dockerModel.setPassword(jobModel.getPassword());
         dockerModel.setPush(jobModel.isPush());
-        dockerModel.setBalxFileName(KubernetesUtils.extractBalxName(KUBERNETES_DATA_HOLDER.getBalxFilePath()) + BALX);
+        dockerModel.setBalxFileName(KubernetesUtils.extractBalxName(dataHolder.getBalxFilePath()) + BALX);
         dockerModel.setService(false);
         dockerModel.setDockerHost(jobModel.getDockerHost());
         dockerModel.setDockerCertPath(jobModel.getDockerCertPath());

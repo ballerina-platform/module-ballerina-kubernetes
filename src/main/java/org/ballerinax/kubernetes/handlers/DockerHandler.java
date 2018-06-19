@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.CountDownLatch;
@@ -52,7 +53,7 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.printDebug;
 /**
  * Generates Docker artifacts from annotations.
  */
-public class DockerHandler implements ArtifactHandler {
+public class DockerHandler extends AbstractArtifactHandler {
 
     private final CountDownLatch pushDone = new CountDownLatch(1);
     private final CountDownLatch buildDone = new CountDownLatch(1);
@@ -245,32 +246,36 @@ public class DockerHandler implements ArtifactHandler {
 
     @Override
     public void createArtifacts() throws KubernetesPluginException {
-        dockerModel = KUBERNETES_DATA_HOLDER.getDockerModel();
+        dockerModel = dataHolder.getDockerModel();
         if (dockerModel.getDockerCertPath() != null) {
             System.setProperty("docker.cert.path", dockerModel.getDockerCertPath());
         }
         String dockerContent = generate();
         try {
             OUT.print("@kubernetes:Docker \t\t\t - complete 0/3 \r");
-            String dockerOutputDir = KUBERNETES_DATA_HOLDER.getOutputDir();
+            String dockerOutputDir = dataHolder.getOutputDir();
             if (dockerOutputDir.endsWith("target" + File.separator + "kubernetes" + File.separator)) {
                 //Compiling package therefore append balx file name to docker artifact dir path
-                dockerOutputDir = dockerOutputDir + File.separator + extractBalxName(KUBERNETES_DATA_HOLDER
+                dockerOutputDir = dockerOutputDir + File.separator + extractBalxName(dataHolder
                         .getBalxFilePath());
             }
             dockerOutputDir = dockerOutputDir + File.separator + DOCKER;
             writeDockerfile(dockerContent, dockerOutputDir + File.separator + "Dockerfile");
             OUT.print("@kubernetes:Docker \t\t\t - complete 1/3 \r");
             String balxDestination = dockerOutputDir + File.separator + KubernetesUtils.extractBalxName
-                    (KUBERNETES_DATA_HOLDER
+                    (dataHolder
                             .getBalxFilePath()) + BALX;
-            copyFile(KUBERNETES_DATA_HOLDER
+            copyFile(dataHolder
                     .getBalxFilePath(), balxDestination);
             for (ExternalFileModel copyFileModel : dockerModel.getExternalFiles()) {
                 // Copy external files to docker folder
                 String target = dockerOutputDir + File.separator + String.valueOf(Paths.get(copyFileModel.getSource())
                         .getFileName());
-                copyFile(copyFileModel.getSource(), target);
+                Path sourcePath = Paths.get(copyFileModel.getSource());
+                if (!sourcePath.isAbsolute()) {
+                    sourcePath = sourcePath.toAbsolutePath();
+                }
+                copyFile(sourcePath.toString(), target);
             }
             //check image build is enabled.
             if (dockerModel.isBuildImage()) {
@@ -281,8 +286,9 @@ public class DockerHandler implements ArtifactHandler {
                 if (dockerModel.isPush()) {
                     pushImage(dockerModel);
                 }
-                OUT.print("@kubernetes:Docker \t\t\t - complete 3/3");
+                OUT.print("@kubernetes:Docker \t\t\t - complete 3/3 \r");
             }
+            OUT.print("@kubernetes:Docker \t\t\t - complete 3/3");
         } catch (IOException e) {
             throw new KubernetesPluginException("Unable to write Dockerfile content");
         } catch (InterruptedException e) {

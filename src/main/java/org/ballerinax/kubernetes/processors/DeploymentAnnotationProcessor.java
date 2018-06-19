@@ -23,7 +23,7 @@ import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.ExternalFileModel;
-import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
@@ -136,7 +136,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         if (!isBlank(dockerCertPath)) {
             deploymentModel.setDockerCertPath(dockerCertPath);
         }
-        KubernetesDataHolder.getInstance().setDeploymentModel(deploymentModel);
+        KubernetesContext.getInstance().getDataHolder().setDeploymentModel(deploymentModel);
     }
 
     private Set<ExternalFileModel> getExternalFileMap(BLangRecordLiteral.BLangRecordKeyValue keyValue) throws

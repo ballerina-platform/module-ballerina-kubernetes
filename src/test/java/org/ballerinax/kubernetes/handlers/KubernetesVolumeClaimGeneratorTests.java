@@ -21,7 +21,7 @@ package org.ballerinax.kubernetes.handlers;
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.PersistentVolumeClaim;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
 import org.junit.Assert;
 import org.junit.Test;
@@ -49,7 +49,7 @@ public class KubernetesVolumeClaimGeneratorTests {
         volumeClaimModel.setAccessMode("ReadWriteOnce");
         Set<PersistentVolumeClaimModel> claimModles = new HashSet<>();
         claimModles.add(volumeClaimModel);
-        KubernetesDataHolder.getInstance().addPersistentVolumeClaims(claimModles);
+        KubernetesContext.getInstance().getDataHolder().addPersistentVolumeClaims(claimModles);
         try {
             new PersistentVolumeClaimHandler().createArtifacts();
             File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_volume_claim" +
