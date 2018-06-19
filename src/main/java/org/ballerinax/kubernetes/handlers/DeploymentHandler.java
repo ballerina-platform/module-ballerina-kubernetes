@@ -240,6 +240,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
         }
         dataHolder.setDeploymentModel(deploymentModel);
         generate(deploymentModel);
+        OUT.println();
         OUT.println("@kubernetes:Deployment \t\t\t - complete 1/1");
         dataHolder.setDockerModel(getDockerModel(deploymentModel));
     }
