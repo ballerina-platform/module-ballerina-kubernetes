@@ -4,19 +4,28 @@
 - Following files will be generated from this sample.
     ``` 
     $> docker image
-    food_api_pkg:latest
+    pizza: latest 
+    burger: latest  
     
     $> tree
       └── target
-          ├── food_api_pkg.balx
-          └── kubernetes
-              ├── food_api_pkg
-              │   └── docker
-              │       └── Dockerfile
-              ├── food_api_pkg_deployment.yaml
-              ├── food_api_pkg_ingress.yaml
-              ├── food_api_pkg_secret.yaml
-              └── food_api_pkg_svc.yaml
+          ├── Ballerina.lock
+          ├── burger.balx
+          ├── kubernetes
+          │   ├── burger
+          │   │   ├── burger_deployment.yaml
+          │   │   ├── burger_ingress.yaml
+          │   │   ├── burger_secret.yaml
+          │   │   ├── burger_svc.yaml
+          │   │   └── docker
+          │   │       └── Dockerfile
+          │   └── pizza
+          │       ├── docker
+          │       │   └── Dockerfile
+          │       ├── pizza_deployment.yaml
+          │       ├── pizza_ingress.yaml
+          │       └── pizza_svc.yaml
+          └── pizza.balx
   
     ```
 ### How to run:
@@ -29,15 +38,23 @@ Ballerina project initialized
 
 1. Compile the  food_api_pkg file. Command to run kubernetes artifacts will be printed on success:
 ```bash
-$> ballerina build food_api_pkg
-@kubernetes:Service 			 - complete 2/2
-@kubernetes:Ingress 			 - complete 2/2
-@kubernetes:Docker 			     - complete 3/3
-@kubernetes:Deployment 			 - complete 1/1
+$> ballerina build 
+@kubernetes:Service                      - complete 1/1
+@kubernetes:Ingress                      - complete 1/1
+@kubernetes:Secret                       - complete 1/1
+@kubernetes:Deployment                   - complete 1/1
+@kubernetes:Docker                       - complete 3/3 
 
+Run following command to deploy kubernetes artifacts: 
+kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample10/target/kubernetes/burger
 
-Run following command to deploy kubernetes artifacts:
-kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample10/target/food_api_pkg/kubernetes/
+@kubernetes:Service                      - complete 1/1
+@kubernetes:Ingress                      - complete 1/1
+@kubernetes:Deployment                   - complete 1/1
+@kubernetes:Docker                       - complete 3/3 
+
+Run following command to deploy kubernetes artifacts: 
+kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample10/target/kubernetes/pizza
 ```
 
 2. food_api_pkg.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
@@ -45,42 +62,56 @@ kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample
 $> tree
 .
 └── target
-    ├── food_api_pkg.balx
-    └── kubernetes
-        ├── food_api_pkg
-        │   └── docker
-        │       └── Dockerfile
-        ├── food_api_pkg_deployment.yaml
-        ├── food_api_pkg_ingress.yaml
-        ├── food_api_pkg_secret.yaml
-        └── food_api_pkg_svc.yaml
+  ├── Ballerina.lock
+  ├── burger.balx
+  ├── kubernetes
+  │   ├── burger
+  │   │   ├── burger_deployment.yaml
+  │   │   ├── burger_ingress.yaml
+  │   │   ├── burger_secret.yaml
+  │   │   ├── burger_svc.yaml
+  │   │   └── docker
+  │   │       └── Dockerfile
+  │   └── pizza
+  │       ├── docker
+  │       │   └── Dockerfile
+  │       ├── pizza_deployment.yaml
+  │       ├── pizza_ingress.yaml
+  │       └── pizza_svc.yaml
+  └── pizza.balx
+  
 
 ```
 
 3. Verify the docker image is created:
 ```bash
 $> docker images
-REPOSITORY                    TAG                       IMAGE ID            CREATED              SIZE
-food_api_pkg                 latest                    dacc0a8cff85        About a minute ago   122MB
+REPOSITORY       TAG                 IMAGE ID            CREATED             SIZE
+pizza            latest              7eb49de027a7        12 minutes ago      135MB
+burger           latest              7b8bec8eedc6        13 minutes ago      135MB
 ```
 
 5. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$>  kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample10/target/kubernetes/
-deployment "foodstore" created
-ingress "pizzaapi-ingress" created
-ingress "burgerapi-ingress" created
+$ kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample10/target/kubernetes/pizza/
+deployment.extensions "foodstore" created
+ingress.extensions "pizzaep-ingress" created
 service "pizzaep-svc" created
-service "burgerep-svc" created
+
+$ kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample10/target/kubernetes/burger
+deployment.extensions "burger-deployment" created
+ingress.extensions "burgerep-ingress" created
 ```
 
 6. Verify kubernetes deployment,service,secrets and ingress is deployed:
 ```bash
 $> kubectl get pods
 NAME                       READY     STATUS    RESTARTS   AGE
-foodstore-5fd78b97-6jw5b   1/1       Running   0          29s
-foodstore-5fd78b97-9dwp6   1/1       Running   0          29s
-foodstore-5fd78b97-knkh8   1/1       Running   0          29s
+burger-deployment-85448f5797-mspzc   1/1       Running   0          4m
+foodstore-7f779cdc9c-65wpr           1/1       Running   0          4m
+foodstore-7f779cdc9c-lb54g           1/1       Running   0          4m
+foodstore-7f779cdc9c-nhcl2           1/1       Running   0          4m
+
 
 $> kubectl get svc
 NAME           TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
@@ -111,6 +142,7 @@ Burger menu
 
 8. Undeploy sample:
 ```bash
-$> kubectl delete -f target/kubernetes/
+$> kubectl delete -f target/kubernetes/pizza
+$> kubectl delete -f target/kubernetes/burger
 
 ```
