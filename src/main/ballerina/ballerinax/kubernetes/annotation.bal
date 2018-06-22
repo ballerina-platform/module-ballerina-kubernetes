@@ -18,7 +18,7 @@ documentation {External file type for docker
     F{{source}} - source path of the file (in your machine)
     F{{target}} - target path (inside container)
 }
-public type FileConfig {
+public type FileConfig record {
     string source;
     string target;
 };
@@ -44,7 +44,7 @@ documentation {Kubernetes deployment configuration
     F{{copyFiles}} - Array of [External files](kubernetes#FileConfig) for docker image
     F{{singleYAML}} - Generate a single yaml file with all kubernetes artifacts (services,deployment,ingress,)
 }
-public type DeploymentConfiguration {
+public type DeploymentConfiguration record {
     string name;
     map labels;
     int replicas;
@@ -76,7 +76,7 @@ documentation {Kubernetes service configuration
     F{{labels}} - Map of labels for deployment
     F{{serviceType}} - Service type of the service
 }
-public type ServiceConfiguration {
+public type ServiceConfiguration record {
     string name;
     map labels;
     string serviceType;
@@ -97,7 +97,7 @@ documentation{Kubernetes ingress configuration
     F{{ingressClass}} - Ingress class
     F{{enableTLS}} - Enable/Disable ingress TLS
 }
-public type IngressConfiguration {
+public type IngressConfiguration record {
     string name;
     string endpointName;
     map labels;
@@ -120,7 +120,7 @@ documentation {Kubernetes Horizontal Pod Autoscaler configuration
     F{{maxReplicas}} - Maximum number of replicas
     F{{cpuPercentage}} - CPU percentage to start scaling
 }
-public type PodAutoscalerConfig {
+public type PodAutoscalerConfig record {
     string name;
     map labels;
     int minReplicas;
@@ -139,7 +139,7 @@ documentation {Kubernetes secret volume mount
     F{{readOnly}} - Is mount read only
     F{{data}} - Paths to data files as an array
 }
-public type Secret {
+public type Secret record {
     string name;
     string mountPath;
     boolean readOnly;
@@ -149,7 +149,7 @@ public type Secret {
 documentation {Secret volume mount configurations for kubernetes
     F{{secrets}} - Array of [Secret](kubernetes.html#Secret)
 }
-public type  SecretMount {
+public type SecretMount record {
     Secret[] secrets;
 };
 
@@ -163,7 +163,7 @@ documentation {Kubernetes Config Map volume mount
     F{{readOnly}} - Is mount read only
     F{{data}} - Paths to data files
 }
-public type ConfigMap {
+public type ConfigMap record {
     string name;
     string mountPath;
     boolean readOnly;
@@ -174,7 +174,7 @@ documentation {Secret volume mount configurations for kubernetes
     F{{ballerinaConf}} - path to ballerina configuration file
     F{{configMaps}} - Array of [ConfigMap](kubernetes.html#ConfigMap)
 }
-public type  ConfigMapMount {
+public type ConfigMapMount record {
     string ballerinaConf;
     ConfigMap[] configMaps;
 };
@@ -190,7 +190,7 @@ documentation {Kubernetes Persistent Volume Claim
     F{{volumeClaimSize}} - Size of the volume claim
     F{{readOnly}} - Is mount read only
 }
-public type PersistentVolumeClaimConfig {
+public type PersistentVolumeClaimConfig record {
     string name;
     string mountPath;
     string accessMode;
@@ -201,7 +201,7 @@ public type PersistentVolumeClaimConfig {
 documentation {Persistent Volume Claims configurations for kubernetes
     F{{volumeClaims}} - Array of [PersistentVolumeClaimConfig](kubernetes.html#PersistentVolumeClaimConfig)
 }
-public type  PersistentVolumeClaims {
+public type PersistentVolumeClaims record {
     PersistentVolumeClaimConfig[] volumeClaims;
 };
 
@@ -226,7 +226,7 @@ documentation {value:"Kubernetes job configuration
     F{{push}} - Push to remote registry
     F{{dockerCertPath}} - Docker cert path
 }
-public type JobConfig {
+public type JobConfig record {
     string name;
     map labels;
     string restartPolicy;
