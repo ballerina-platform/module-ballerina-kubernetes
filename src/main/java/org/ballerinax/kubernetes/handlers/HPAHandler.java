@@ -81,6 +81,6 @@ public class HPAHandler extends AbstractArtifactHandler {
             podAutoscalerModel.setName(getValidName(balxFileName) + HPA_POSTFIX);
         }
         generate(podAutoscalerModel);
-        OUT.println("@kubernetes:HPA \t\t\t - complete 1/1");
+        OUT.println("\t@kubernetes:HPA \t\t\t - complete 1/1");
     }
 }

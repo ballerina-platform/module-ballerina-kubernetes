@@ -252,7 +252,7 @@ public class DockerHandler extends AbstractArtifactHandler {
         }
         String dockerContent = generate();
         try {
-            OUT.print("@kubernetes:Docker \t\t\t - complete 0/3 \r");
+            OUT.print("\t@kubernetes:Docker \t\t\t - complete 0/3 \r");
             String dockerOutputDir = dataHolder.getOutputDir();
             if (dockerOutputDir.endsWith("target" + File.separator + "kubernetes" + File.separator)) {
                 //Compiling package therefore append balx file name to docker artifact dir path
@@ -261,7 +261,7 @@ public class DockerHandler extends AbstractArtifactHandler {
             }
             dockerOutputDir = dockerOutputDir + File.separator + DOCKER;
             writeDockerfile(dockerContent, dockerOutputDir + File.separator + "Dockerfile");
-            OUT.print("@kubernetes:Docker \t\t\t - complete 1/3 \r");
+            OUT.print("\t@kubernetes:Docker \t\t\t - complete 1/3 \r");
             String balxDestination = dockerOutputDir + File.separator + KubernetesUtils.extractBalxName
                     (dataHolder
                             .getBalxFilePath()) + BALX;
@@ -280,15 +280,15 @@ public class DockerHandler extends AbstractArtifactHandler {
             //check image build is enabled.
             if (dockerModel.isBuildImage()) {
                 buildImage(dockerModel, dockerOutputDir);
-                OUT.print("@kubernetes:Docker \t\t\t - complete 2/3 \r");
+                OUT.print("\t@kubernetes:Docker \t\t\t - complete 2/3 \r");
                 Files.delete(Paths.get(balxDestination));
                 //push only if image build is enabled.
                 if (dockerModel.isPush()) {
                     pushImage(dockerModel);
                 }
-                OUT.print("@kubernetes:Docker \t\t\t - complete 3/3 \r");
+                OUT.print("\t@kubernetes:Docker \t\t\t - complete 3/3 \r");
             }
-            OUT.print("@kubernetes:Docker \t\t\t - complete 3/3");
+            OUT.print("\t@kubernetes:Docker \t\t\t - complete 3/3");
         } catch (IOException e) {
             throw new KubernetesPluginException("Unable to write Dockerfile content");
         } catch (InterruptedException e) {

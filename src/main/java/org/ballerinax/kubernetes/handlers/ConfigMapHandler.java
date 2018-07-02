@@ -77,7 +77,7 @@ public class ConfigMapHandler extends AbstractArtifactHandler {
                 dataHolder.setDeploymentModel(deploymentModel);
             }
             generate(configMapModel);
-            OUT.print("@kubernetes:ConfigMap \t\t\t - complete " + count + "/" + configMapModels.size() + "\r");
+            OUT.print("\t@kubernetes:ConfigMap \t\t\t - complete " + count + "/" + configMapModels.size() + "\r");
         }
     }
 
