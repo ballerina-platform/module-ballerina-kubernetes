@@ -134,7 +134,6 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                 artifactManager.createArtifacts();
             } catch (KubernetesPluginException e) {
                 printError(e.getMessage());
-                dlog.logDiagnostic(Diagnostic.Kind.ERROR, null, e.getMessage());
                 try {
                     KubernetesUtils.deleteDirectory(targetPath);
                 } catch (KubernetesPluginException ignored) {
