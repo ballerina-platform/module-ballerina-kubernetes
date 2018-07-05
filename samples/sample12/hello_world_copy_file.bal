@@ -5,42 +5,42 @@ import ballerina/io;
 
 @kubernetes:Service {}
 @kubernetes:Ingress {
-    hostname:"abc.com"
+    hostname: "abc.com"
 }
 endpoint http:Listener helloWorldEP {
-    port:9090,
-    secureSocket:{
-        keyStore:{
-            path:"${ballerina.home}/bre/security/ballerinaKeystore.p12",
-            password:"ballerina"
+    port: 9090,
+    secureSocket: {
+        keyStore: {
+            path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
+            password: "ballerina"
         },
-        trustStore:{
-            path:"${ballerina.home}/bre/security/ballerinaTruststore.p12",
-            password:"ballerina"
+        trustStore: {
+            path: "${ballerina.home}/bre/security/ballerinaTruststore.p12",
+            password: "ballerina"
         }
     }
 };
 
 @kubernetes:Deployment {
-    copyFiles:[
+    copyFiles: [
         {
-            target:"/home/ballerina/data/data.txt",
-            source:"./data/data.txt"
+            target: "/home/ballerina/data/data.txt",
+            source: "./data/data.txt"
         }
     ]
 }
 @http:ServiceConfig {
-    basePath:"/helloWorld"
+    basePath: "/helloWorld"
 }
 service<http:Service> helloWorld bind helloWorldEP {
     @http:ResourceConfig {
-        methods:["GET"],
-        path:"/data"
+        methods: ["GET"],
+        path: "/data"
     }
     getData(endpoint outboundEP, http:Request request) {
         http:Response response = new;
         string payload = readFile("./data/data.txt");
-        response.setTextPayload("Data: " + payload + "\n");
+        response.setTextPayload("Data: " + untaint payload + "\n");
         _ = outboundEP->respond(response);
     }
 }
