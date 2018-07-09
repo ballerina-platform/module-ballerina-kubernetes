@@ -20,6 +20,7 @@ package org.ballerinax.kubernetes.utils;
 
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
@@ -64,7 +65,8 @@ public class KubernetesUtils {
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
         outputFileName = dataHolder.getOutputDir() + File
                 .separator + extractBalxName(dataHolder.getBalxFilePath()) + outputFileName;
-        if (KubernetesContext.getInstance().getDataHolder().getDeploymentModel().isSingleYAML()) {
+        DeploymentModel deploymentModel = KubernetesContext.getInstance().getDataHolder().getDeploymentModel();
+        if (deploymentModel != null && deploymentModel.isSingleYAML()) {
             outputFileName = dataHolder.getOutputDir() + File
                     .separator + extractBalxName(dataHolder.getBalxFilePath()) + YAML;
         }
