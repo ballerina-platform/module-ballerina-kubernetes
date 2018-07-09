@@ -53,7 +53,7 @@ service<http:Service> helloWorld bind helloWorldEP {
     getData(endpoint outboundEP, http:Request request) {
         http:Response response = new;
         string payload = readFile("./data/data.txt");
-        response.setTextPayload("Data: " + payload + "\n");
+        response.setTextPayload("Data: " + untaint payload + "\n");
         _ = outboundEP->respond(response);
     }
 }
@@ -76,4 +76,3 @@ function readFile(string filePath) returns (string) {
         error ioError => return "Error: Unable to read file";
     }
 }
-
