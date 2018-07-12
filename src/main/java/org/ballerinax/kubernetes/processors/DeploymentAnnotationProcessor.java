@@ -123,6 +123,9 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 case singleYAML:
                     deploymentModel.setSingleYAML(Boolean.valueOf(annotationValue));
                     break;
+                case dependsOn:
+                    deploymentModel.setDependsOn(getDependsOn(keyValue));
+                    break;
                 default:
                     break;
             }
@@ -172,6 +175,16 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
 
     }
 
+    private Set<String> getDependsOn(BLangRecordLiteral.BLangRecordKeyValue keyValue) {
+        Set<String> dependsOnList = new HashSet<>();
+        List<BLangExpression> configAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
+        for (BLangExpression bLangExpression : configAnnotation) {
+            dependsOnList.add(bLangExpression.toString());
+        }
+        return dependsOnList;
+    }
+
+
     /**
      * Enum class for DeploymentConfiguration.
      */
@@ -184,7 +197,6 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         initialDelaySeconds,
         periodSeconds,
         imagePullPolicy,
-        namespace,
         image,
         env,
         buildImage,
@@ -195,6 +207,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         push,
         dockerCertPath,
         copyFiles,
-        singleYAML
+        singleYAML,
+        dependsOn
     }
 }

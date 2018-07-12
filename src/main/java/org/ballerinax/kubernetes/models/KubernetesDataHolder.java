@@ -47,7 +47,8 @@ public class KubernetesDataHolder {
         this.secretModelSet = new HashSet<>();
         this.configMapModelSet = new HashSet<>();
         this.volumeClaimModelSet = new HashSet<>();
-        ingressModelSet = new HashSet<>();
+        this.ingressModelSet = new HashSet<>();
+        this.deploymentModel = new DeploymentModel();
     }
 
     public DeploymentModel getDeploymentModel() {

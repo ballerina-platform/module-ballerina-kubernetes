@@ -26,11 +26,11 @@ import java.util.Map;
  */
 public class KubernetesContext {
     private static KubernetesContext instance;
-    private final Map<String, KubernetesDataHolder> k8sContext;
+    private final Map<String, KubernetesDataHolder> packageIDtoDataHolderMap;
     private String currentPackage;
 
     private KubernetesContext() {
-        k8sContext = new HashMap<>();
+        packageIDtoDataHolderMap = new HashMap<>();
     }
 
     public static KubernetesContext getInstance() {
@@ -44,7 +44,7 @@ public class KubernetesContext {
 
     public void addDataHolder(String packageID) {
         this.currentPackage = packageID;
-        this.k8sContext.put(packageID, new KubernetesDataHolder());
+        this.packageIDtoDataHolderMap.put(packageID, new KubernetesDataHolder());
     }
 
     public void setCurrentPackage(String packageID) {
@@ -52,11 +52,25 @@ public class KubernetesContext {
     }
 
     public KubernetesDataHolder getDataHolder() {
-        return this.k8sContext.get(this.currentPackage);
+        return this.packageIDtoDataHolderMap.get(this.currentPackage);
     }
 
     public KubernetesDataHolder getDataHolder(String packageID) {
-        return this.k8sContext.get(packageID);
+        return this.packageIDtoDataHolderMap.get(packageID);
     }
 
+    public Map<String, KubernetesDataHolder> getPackageIDtoDataHolderMap() {
+        return packageIDtoDataHolderMap;
+    }
+
+    public boolean isValidService(String serviceName) {
+        for (KubernetesDataHolder holder : packageIDtoDataHolderMap.values()) {
+            for (ServiceModel serviceModel : holder.getbEndpointToK8sServiceMap().values()) {
+                if (serviceModel.getName().equals(serviceName)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

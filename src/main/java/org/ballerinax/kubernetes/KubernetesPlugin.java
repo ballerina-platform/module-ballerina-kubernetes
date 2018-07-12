@@ -32,6 +32,7 @@ import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.processors.AnnotationProcessorFactory;
+import org.ballerinax.kubernetes.utils.DependencyValidator;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.wso2.ballerinalang.compiler.tree.BLangEndpoint;
 import org.wso2.ballerinalang.compiler.tree.BLangPackage;
@@ -39,6 +40,8 @@ import org.wso2.ballerinalang.compiler.tree.BLangPackage;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
@@ -47,7 +50,6 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
  * Compiler plugin to generate kubernetes artifacts.
  */
 @SupportedAnnotationPackages(
-        //TODO: Verify adding version is correct
         value = "ballerinax/kubernetes:0.0.0"
 )
 public class KubernetesPlugin extends AbstractCompilerPlugin {
@@ -126,15 +128,38 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
             }
             dataHolder.setBalxFilePath(filePath);
             dataHolder.setOutputDir(targetPath);
-            ArtifactManager artifactManager = new ArtifactManager(filePath, targetPath);
+            ArtifactManager artifactManager = new ArtifactManager(targetPath);
             try {
                 KubernetesUtils.deleteDirectory(targetPath);
+                validateDeploymentDependencies();
                 artifactManager.createArtifacts();
             } catch (KubernetesPluginException e) {
-                printError(e.getMessage());
+                printError("package [" + packageID + "]" + e.getMessage());
                 try {
                     KubernetesUtils.deleteDirectory(targetPath);
                 } catch (KubernetesPluginException ignored) {
+                }
+            }
+        }
+    }
+
+    private void validateDeploymentDependencies() throws KubernetesPluginException {
+        Map<String, KubernetesDataHolder> packageToDataHolderMap = KubernetesContext.getInstance()
+                .getPackageIDtoDataHolderMap();
+        DependencyValidator dependencyValidator = new DependencyValidator();
+        for (KubernetesDataHolder dataHolder : packageToDataHolderMap.values()) {
+            Set<String> dependsOn = dataHolder.getDeploymentModel().getDependsOn();
+            if (dependsOn.size() > 0) {
+                String[] array = dependsOn.toArray(new String[0]);
+                for (String dependencyService : array) {
+                    if (!KubernetesContext.getInstance().isValidService(dependencyService)) {
+                        throw new KubernetesPluginException("@kubernetes:Deployment{} contains invalid service " +
+                                "dependency " + dependencyService);
+                    }
+                }
+                if (!dependencyValidator.validateDependency(array)) {
+                    throw new KubernetesPluginException("@kubernetes:Deployment{} contains cyclic " +
+                            "dependencies");
                 }
             }
         }
