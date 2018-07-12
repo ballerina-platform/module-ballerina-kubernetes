@@ -35,7 +35,9 @@ import org.ballerinax.kubernetes.models.ServiceModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -69,13 +71,11 @@ public class IngressHandler extends AbstractArtifactHandler {
                         .getPath()).build();
 
         //generate TLS
-        IngressTLS ingressTLS;
+        List<IngressTLS> ingressTLS = new ArrayList<>();
         if (ingressModel.isEnableTLS()) {
-            ingressTLS = new IngressTLSBuilder()
+            ingressTLS.add(new IngressTLSBuilder()
                     .withHosts(ingressModel.getHostname())
-                    .build();
-        } else {
-            ingressTLS = new IngressTLSBuilder().build();
+                    .build());
         }
 
         //generate annotationMap
