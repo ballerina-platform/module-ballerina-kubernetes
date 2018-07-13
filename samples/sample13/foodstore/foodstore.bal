@@ -8,7 +8,7 @@ import ballerina/log;
 @kubernetes:Ingress {
     hostname: "foodstore.com"
 }
-endpoint http:Listener pizzaEP {
+endpoint http:Listener foodStoreEP {
     port: 9090
 };
 
@@ -22,12 +22,13 @@ endpoint http:Client pizzaBackend {
 
 @kubernetes:Deployment {
     labels: { "location": "SL", "city": "COLOMBO" },
-    enableLiveness: true
+    enableLiveness: true,
+    dependsOn: ["burger:burgerEP", "pizza:pizzaEP"]
 }
 @http:ServiceConfig {
     basePath: "/store"
 }
-service<http:Service> PizzaAPI bind pizzaEP {
+service<http:Service> FoodStoreAPI bind foodStoreEP {
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/pizza"

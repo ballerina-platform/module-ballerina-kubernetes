@@ -16,7 +16,6 @@ endpoint http:Listener burgerEP {
 
 
 @kubernetes:Deployment {
-    dependsOn: ["pizza:pizzaEP"]
 }
 @http:ServiceConfig {
     basePath: "/burger"
