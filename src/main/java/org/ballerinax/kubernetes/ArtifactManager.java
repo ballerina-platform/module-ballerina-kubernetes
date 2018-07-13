@@ -33,6 +33,11 @@ import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_LATEST_TAG;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
+
 /**
  * Generate and write artifacts to files.
  */
@@ -57,8 +62,6 @@ class ArtifactManager {
             printKubernetesInstructions(outputDir);
             return;
         }
-        DeploymentModel deploymentModel = kubernetesDataHolder.getDeploymentModel();
-        kubernetesDataHolder.setDeploymentModel(deploymentModel);
         new ServiceHandler().createArtifacts();
         new IngressHandler().createArtifacts();
         new SecretHandler().createArtifacts();
@@ -70,6 +73,22 @@ class ArtifactManager {
         printKubernetesInstructions(outputDir);
     }
 
+
+    public void populateDeploymentModel() {
+        DeploymentModel deploymentModel = kubernetesDataHolder.getDeploymentModel();
+        kubernetesDataHolder.setDeploymentModel(deploymentModel);
+        String balxFileName = KubernetesUtils.extractBalxName(kubernetesDataHolder.getBalxFilePath());
+        if (isBlank(deploymentModel.getName())) {
+            if (balxFileName != null) {
+                deploymentModel.setName(getValidName(balxFileName) + DEPLOYMENT_POSTFIX);
+            }
+        }
+        if (isBlank(deploymentModel.getImage())) {
+            deploymentModel.setImage(balxFileName + DOCKER_LATEST_TAG);
+        }
+        deploymentModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
+        kubernetesDataHolder.setDeploymentModel(deploymentModel);
+    }
 
     private void printKubernetesInstructions(String outputDir) {
         KubernetesUtils.printInstruction("\n\n\tRun the following command to deploy the Kubernetes artifacts: ");

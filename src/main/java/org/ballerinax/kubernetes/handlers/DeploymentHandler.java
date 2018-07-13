@@ -41,6 +41,7 @@ import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.ConfigMapModel;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.DockerModel;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
 import org.ballerinax.kubernetes.models.SecretModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
@@ -53,11 +54,7 @@ import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.BALX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_FILE_POSTFIX;
-import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_POSTFIX;
-import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_LATEST_TAG;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 
 /**
  * Generates kubernetes deployment from annotations.
@@ -105,15 +102,16 @@ public class DeploymentHandler extends AbstractArtifactHandler {
         return volumeMounts;
     }
 
-    private List<Container> generateInitContainer(DeploymentModel deploymentModel) {
+    private List<Container> generateInitContainer(DeploymentModel deploymentModel) throws KubernetesPluginException {
         List<Container> initContainers = new ArrayList<>();
         for (String dependsOn : deploymentModel.getDependsOn()) {
+            String serviceName = KubernetesContext.getInstance().getServiceName(dependsOn);
             List<String> commands = new ArrayList<>();
             commands.add("sh");
             commands.add("-c");
-            commands.add("until nslookup " + dependsOn + "; do echo waiting for mysql-svc; sleep 2; done;");
+            commands.add("until nslookup " + serviceName + "; do echo waiting for " + serviceName + "; sleep 2; done;");
             initContainers.add(new ContainerBuilder()
-                    .withName("wait-for-" + dependsOn)
+                    .withName("wait-for-" + serviceName)
                     .withImage("busybox")
                     .withCommand(commands)
                     .build());
@@ -241,21 +239,10 @@ public class DeploymentHandler extends AbstractArtifactHandler {
         deploymentModel.setSecretModels(dataHolder.getSecretModelSet());
         deploymentModel.setConfigMapModels(dataHolder.getConfigMapModelSet());
         deploymentModel.setVolumeClaimModels(dataHolder.getVolumeClaimModelSet());
-        String balxFileName = KubernetesUtils.extractBalxName(dataHolder.getBalxFilePath());
-        if (isBlank(deploymentModel.getName())) {
-            if (balxFileName != null) {
-                deploymentModel.setName(getValidName(balxFileName) + DEPLOYMENT_POSTFIX);
-            }
-        }
-        if (isBlank(deploymentModel.getImage())) {
-            deploymentModel.setImage(balxFileName + DOCKER_LATEST_TAG);
-        }
-        deploymentModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
         if (deploymentModel.isEnableLiveness() && deploymentModel.getLivenessPort() == 0) {
             //set first port as liveness port
             deploymentModel.setLivenessPort(deploymentModel.getPorts().iterator().next());
         }
-        dataHolder.setDeploymentModel(deploymentModel);
         generate(deploymentModel);
         OUT.println();
         OUT.println("\t@kubernetes:Deployment \t\t\t - complete 1/1");

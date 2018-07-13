@@ -1,0 +1,47 @@
+---
+apiVersion: "extensions/v1beta1"
+kind: "Deployment"
+metadata:
+  annotations: {}
+  finalizers: []
+  labels:
+    app: "foodstore"
+    city: "COLOMBO"
+    location: "SL"
+  name: "foodstore-deployment"
+  ownerReferences: []
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations: {}
+      finalizers: []
+      labels:
+        app: "foodstore"
+        city: "COLOMBO"
+        location: "SL"
+      ownerReferences: []
+    spec:
+      containers:
+      - args: []
+        command: []
+        env: []
+        envFrom: []
+        image: "foodstore:latest"
+        imagePullPolicy: "IfNotPresent"
+        livenessProbe:
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          tcpSocket:
+            port: 9090
+        name: "foodstore-deployment"
+        ports:
+        - containerPort: 9090
+          protocol: "TCP"
+        volumeMounts: []
+      hostAliases: []
+      imagePullSecrets: []
+      initContainers: []
+      nodeSelector: {}
+      tolerations: []
+      volumes: []

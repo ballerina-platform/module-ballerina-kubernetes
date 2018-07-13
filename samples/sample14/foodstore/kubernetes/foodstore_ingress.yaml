@@ -1,0 +1,22 @@
+---
+apiVersion: "extensions/v1beta1"
+kind: "Ingress"
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-passthrough: "false"
+    kubernetes.io/ingress.class: "nginx"
+  finalizers: []
+  labels:
+    app: "foodstore"
+  name: "pizzaep-ingress"
+  ownerReferences: []
+spec:
+  rules:
+  - host: "foodstore.com"
+    http:
+      paths:
+      - backend:
+          serviceName: "pizzaep-svc"
+          servicePort: 9090
+        path: "/"
+  tls: []

@@ -39,6 +39,7 @@ import org.wso2.ballerinalang.compiler.tree.BLangPackage;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,8 +63,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
 
     @Override
     public void process(PackageNode packageNode) {
-        String pkgID = ((BLangPackage) packageNode).packageID.toString();
-        KubernetesContext.getInstance().addDataHolder(pkgID);
+        KubernetesContext.getInstance().addDataHolder(((BLangPackage) packageNode).packageID);
     }
 
     @Override
@@ -116,7 +116,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
 
     @Override
     public void codeGenerated(PackageID packageID, Path binaryPath) {
-        KubernetesContext.getInstance().setCurrentPackage(packageID.toString());
+        KubernetesContext.getInstance().setCurrentPackage(packageID);
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
         if (dataHolder.isCanProcess()) {
             String filePath = binaryPath.toAbsolutePath().toString();
@@ -131,10 +131,11 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
             ArtifactManager artifactManager = new ArtifactManager(targetPath);
             try {
                 KubernetesUtils.deleteDirectory(targetPath);
+                artifactManager.populateDeploymentModel();
                 validateDeploymentDependencies();
                 artifactManager.createArtifacts();
             } catch (KubernetesPluginException e) {
-                printError("package [" + packageID + "]" + e.getMessage());
+                printError("package [" + packageID + "] " + e.getMessage());
                 try {
                     KubernetesUtils.deleteDirectory(targetPath);
                 } catch (KubernetesPluginException ignored) {
@@ -144,24 +145,37 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     }
 
     private void validateDeploymentDependencies() throws KubernetesPluginException {
-        Map<String, KubernetesDataHolder> packageToDataHolderMap = KubernetesContext.getInstance()
-                .getPackageIDtoDataHolderMap();
+        KubernetesContext context = KubernetesContext.getInstance();
+        Map<PackageID, KubernetesDataHolder> packageToDataHolderMap =
+                context.getPackageIDtoDataHolderMap();
         DependencyValidator dependencyValidator = new DependencyValidator();
         for (KubernetesDataHolder dataHolder : packageToDataHolderMap.values()) {
+            //add other dependent deployments
+            List<String> dependencies = new ArrayList<>();
+            //add the current deployment as 0th element
+            String currentDeployment = dataHolder.getDeploymentModel().getName();
+            if (currentDeployment == null) {
+                return;
+            }
+            dependencies.add(currentDeployment);
             Set<String> dependsOn = dataHolder.getDeploymentModel().getDependsOn();
-            if (dependsOn.size() > 0) {
-                String[] array = dependsOn.toArray(new String[0]);
-                for (String dependencyService : array) {
-                    if (!KubernetesContext.getInstance().isValidService(dependencyService)) {
-                        throw new KubernetesPluginException("@kubernetes:Deployment{} contains invalid service " +
-                                "dependency " + dependencyService);
-                    }
+            for (String endpointName : dependsOn) {
+                String dependentDeployment = context.getDeploymentNameFromEndpoint(endpointName);
+                if (dependentDeployment == null) {
+                    return;
                 }
-                if (!dependencyValidator.validateDependency(array)) {
-                    throw new KubernetesPluginException("@kubernetes:Deployment{} contains cyclic " +
-                            "dependencies");
+                if (!dependentDeployment.equals(currentDeployment)) {
+                    dependencies.add(dependentDeployment);
+                } else {
+                    // Endpoint is in the same package.
+                    throw new KubernetesPluginException("@kubernetes:Deployment{} contains cyclic dependencies");
                 }
+            }
+            String[] array = dependencies.toArray(new String[0]);
+            if (!dependencyValidator.validateDependency(array)) {
+                throw new KubernetesPluginException("@kubernetes:Deployment{} contains cyclic dependencies");
             }
         }
     }
+
 }
