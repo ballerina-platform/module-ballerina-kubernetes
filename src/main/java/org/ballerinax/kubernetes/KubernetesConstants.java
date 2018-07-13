@@ -49,7 +49,6 @@ public class KubernetesConstants {
     public static final String HPA_FILE_POSTFIX = "_hpa";
     public static final String YAML = ".yaml";
     public static final String DOCKER_LATEST_TAG = ":latest";
-    public static final String LISTENER = "Listener";
     public static final String BALLERINA_HOME = "/home/ballerina";
     public static final String BALLERINA_RUNTIME = "/ballerina/runtime";
     public static final String BALLERINA_CONF_MOUNT_PATH = "/home/ballerina/conf/";
