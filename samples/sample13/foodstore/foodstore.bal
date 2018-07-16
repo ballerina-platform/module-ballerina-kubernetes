@@ -9,11 +9,17 @@ import ballerina/log;
     hostname: "foodstore.com"
 }
 endpoint http:Listener foodStoreEP {
-    port: 9090
+    port: 9091,
+    secureSocket: {
+        keyStore: {
+            path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
+            password: "ballerina"
+        }
+    }
 };
 
 endpoint http:Client burgerBackend {
-    url: "http://burger-backend:9090"
+    url: "http://buger-backend:9090"
 };
 
 endpoint http:Client pizzaBackend {
@@ -28,6 +34,7 @@ endpoint http:Client pizzaBackend {
 @http:ServiceConfig {
     basePath: "/store"
 }
+@kubernetes:HPA {}
 service<http:Service> FoodStoreAPI bind foodStoreEP {
     @http:ResourceConfig {
         methods: ["GET"],
@@ -52,11 +59,10 @@ service<http:Service> FoodStoreAPI bind foodStoreEP {
         path: "/burger"
     }
     getBurgerMenu(endpoint outboundEP, http:Request req) {
-        var response = pizzaBackend->get("/burger/menu");
-
+        var response = burgerBackend->get("/burger/menu");
         match response {
             http:Response resp => {
-                log:printInfo("GET request:");
+                log:printInfo("GET request: ");
                 _ = outboundEP->respond(resp);
             }
             error err => {

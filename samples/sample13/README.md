@@ -69,27 +69,31 @@ Generating executables
     ./target/foodstore.balx
 	@kubernetes:Service 			 - complete 1/1
 	@kubernetes:Ingress 			 - complete 1/1
+	@kubernetes:Secret 			 - complete 1/1
 	@kubernetes:Deployment 			 - complete 1/1
+	@kubernetes:HPA 			 - complete 1/1
 	@kubernetes:Docker 			 - complete 3/3
 
 	Run following command to deploy kubernetes artifacts:
-	kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample14/target/kubernetes/foodstore
+	kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample13/target/kubernetes/foodstore
 
     ./target/burger.balx
 	@kubernetes:Service 			 - complete 1/1
+	@kubernetes:ConfigMap 			 - complete 1/1
 	@kubernetes:Deployment 			 - complete 1/1
 	@kubernetes:Docker 			 - complete 3/3
 
 	Run following command to deploy kubernetes artifacts:
-	kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample14/target/kubernetes/burger
+	kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample13/target/kubernetes/burger
 
     ./target/pizza.balx
 	@kubernetes:Service 			 - complete 1/1
+	@kubernetes:ConfigMap 			 - complete 1/1
 	@kubernetes:Deployment 			 - complete 1/1
 	@kubernetes:Docker 			 - complete 3/3
 
 	Run following command to deploy kubernetes artifacts:
-	kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample14/target/kubernetes/pizza
+	kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample13/target/kubernetes/pizza
 ```
 
 2. food_api_pkg.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
@@ -101,6 +105,7 @@ target/
       ├── foodstore.balx
       ├── kubernetes
       │   ├── burger
+      │   │   ├── burger_config_map.yaml
       │   │   ├── burger_deployment.yaml
       │   │   ├── burger_svc.yaml
       │   │   └── docker
@@ -109,11 +114,14 @@ target/
       │   │   ├── docker
       │   │   │   └── Dockerfile
       │   │   ├── foodstore_deployment.yaml
+      │   │   ├── foodstore_hpa.yaml
       │   │   ├── foodstore_ingress.yaml
+      │   │   ├── foodstore_secret.yaml
       │   │   └── foodstore_svc.yaml
       │   └── pizza
       │       ├── docker
       │       │   └── Dockerfile
+      │       ├── pizza_config_map.yaml
       │       ├── pizza_deployment.yaml
       │       └── pizza_svc.yaml
       └── pizza.balx
@@ -131,11 +139,15 @@ foodstore       latest              31d58eaa27fa        About a minute ago   127
 5. Run kubectl command to deploy the artifacts.
 ```bash
 $ kubectl apply -Rf ./target/kubernetes
+configmap "burgerapi-config-map" created
 deployment.extensions "burger-deployment" created
 service "buger-backend" created
 deployment.extensions "foodstore-deployment" created
-ingress.extensions "pizzaep-ingress" created
-service "pizzaep-svc" created
+horizontalpodautoscaler.autoscaling "foodstore-hpa" created
+ingress.extensions "foodstoreep-ingress" created
+secret "foodstoreep-keystore" created
+service "foodstoreep-svc" created
+configmap "pizzaapi-config-map" created
 deployment.extensions "pizza-deployment" created
 service "pizza-backend" created
 ```
@@ -172,11 +184,12 @@ from `kubectl get ingress` command.)_
  127.0.0.1 foodstore.com
 ```
 ```bash
-$> curl http://foodstore.com/pizza/menu
-Pizza menu
+$> curl https://foodstore.com/store/burger -k
+{"menu":{"items":[{"menu_item_id":"1","category":"Burger","name":"BBQ Chicken","description":"Burger with BBQ Chicken & sauce","price":"10.00","favorite":false,"menu_item_options":[{"required":false,"option_type":"multi","options":[{"menu_item_option_id":"12","name":"Ketchup","price":"2.50"}]}]},{"menu_item_id":"2","category":"Burger","name":"Hamburger","description":"Hamburger with onions","price":"7.00","favorite":true,"menu_item_options":[{"required":false,"option_type":"single","options":[{"menu_item_option_id":"15","name":"Fries","price":"5.00"},{"menu_item_option_id":"9","name":"Cheese","price":"7.00"}]}]},{"menu_item_id":"3","category":"Burger","name":"Veggie Delight","description":"Veggie Burger with onions,carrot,cheese & cucumber","price":"3.00","favorite":true,"menu_item_options":[{"required":false,"option_type":"single","options":[{"menu_item_option_id":"15","name":"Fries","price":"5.00"},{"menu_item_option_id":"9","name":"Cheese","price":"7.00"}]}]}]}}
 
-$> curl http://foodstore.com/burger/menu
-Burger menu
+
+$> curl https://foodstore.com/store/pizza -k
+{"menu":{"items":[{"menu_item_id":"1","category":"Pizza","name":"Carbonara","description":"Pizza with carbonara sauce","price":"10.00","favorite":false,"menu_item_options":[{"required":false,"option_type":"multi","options":[{"menu_item_option_id":"12","name":"Ketchup","price":"2.50"}]}]},{"menu_item_id":"2","category":"Pizza","name":"Capricciosa","description":"Pizza Capricciosa","price":"3.00","favorite":true,"menu_item_options":[{"required":false,"option_type":"single","options":[{"menu_item_option_id":"15","name":"Mushrooms","price":"5.00"},{"menu_item_option_id":"9","name":"Cheese","price":"7.00"}]}]}]}}
 ```
 
 8. Undeploy sample:
