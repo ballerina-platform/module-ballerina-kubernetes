@@ -35,8 +35,16 @@
   
     ```
 ### How to run:
+1. Go to `resource/docker` folder and run the build.sh file. This will generate two databases deployment in mysql namespace.
+Verify pods and services are created. 
+```bash
+$> kubectl get pods -n mysql
+NAME                                       READY     STATUS    RESTARTS   AGE
+burger-mysql-deployment-54b6498dbc-mpdbm   1/1       Running   0          3s
+pizza-mysql-deployment-544ccd76f8-m72ts    1/1       Running   0          3s
+```
 
-1. Initialize ballerina project.
+1. Navigate to sample13 folder and Initialize ballerina project.
 ```bash
 sample13$> ballerina init
 Ballerina project initialized

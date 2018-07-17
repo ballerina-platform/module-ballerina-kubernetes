@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
 
@@ -121,10 +122,10 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
         if (dataHolder.isCanProcess()) {
             String filePath = binaryPath.toAbsolutePath().toString();
             String userDir = new File(filePath).getParentFile().getAbsolutePath();
-            String targetPath = userDir + File.separator + "kubernetes" + File.separator;
+            String targetPath = userDir + File.separator + KUBERNETES + File.separator;
             if (userDir.endsWith("target")) {
                 //Compiling package therefore append balx file name to docker artifact dir path
-                targetPath = userDir + File.separator + "kubernetes" + File.separator + extractBalxName(filePath);
+                targetPath = userDir + File.separator + KUBERNETES + File.separator + extractBalxName(filePath);
             }
             dataHolder.setBalxFilePath(filePath);
             dataHolder.setOutputDir(targetPath);
@@ -146,8 +147,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
 
     private void validateDeploymentDependencies() throws KubernetesPluginException {
         KubernetesContext context = KubernetesContext.getInstance();
-        Map<PackageID, KubernetesDataHolder> packageToDataHolderMap =
-                context.getPackageIDtoDataHolderMap();
+        Map<PackageID, KubernetesDataHolder> packageToDataHolderMap = context.getPackageIDtoDataHolderMap();
         DependencyValidator dependencyValidator = new DependencyValidator();
         for (KubernetesDataHolder dataHolder : packageToDataHolderMap.values()) {
             //add other dependent deployments

@@ -1,0 +1,123 @@
+---
+apiVersion: "extensions/v1beta1"
+kind: "Deployment"
+metadata:
+  namespace: "mysql"
+  annotations: {}
+  finalizers: []
+  labels:
+    app: "hotdrink-mysql"
+  name: "hotdrink-mysql-deployment"
+  ownerReferences: []
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations: {}
+      finalizers: []
+      labels:
+        app: "hotdrink-mysql"
+      ownerReferences: []
+    spec:
+      containers:
+      - args: []
+        command: []
+        env:
+          - name: "MYSQL_ROOT_PASSWORD"
+            value: "root"
+        envFrom: []
+        image: "hotdrink_mysql_db:1.0.0"
+        imagePullPolicy: "IfNotPresent"
+        name: "hotdrink-mysql-container"
+        ports:
+        - containerPort: 3306
+          protocol: "TCP"
+        volumeMounts: []
+      hostAliases: []
+      imagePullSecrets: []
+      initContainers: []
+      nodeSelector: {}
+      tolerations: []
+      volumes: []
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  namespace: "mysql"
+  annotations: {}
+  finalizers: []
+  labels:
+    app: "hotdrink-mysql"
+  name: "hotdrink-mysql"
+  ownerReferences: []
+spec:
+  externalIPs: []
+  loadBalancerSourceRanges: []
+  ports:
+  - port: 3306
+    protocol: "TCP"
+    targetPort: 3306
+  selector:
+    app: "hotdrink-mysql"
+---
+apiVersion: "extensions/v1beta1"
+kind: "Deployment"
+metadata:
+  namespace: "mysql"
+  annotations: {}
+  finalizers: []
+  labels:
+    app: "cooldrink-mysql"
+  name: "cooldrink-mysql-deployment"
+  ownerReferences: []
+spec:
+  replicas: 1
+  template:
+    metadata:
+      namespace: "mysql"
+      annotations: {}
+      finalizers: []
+      labels:
+        app: "cooldrink-mysql"
+      ownerReferences: []
+    spec:
+      containers:
+      - args: []
+        command: []
+        env:
+          - name: "MYSQL_ROOT_PASSWORD"
+            value: "root"
+        envFrom: []
+        image: "cooldrink_mysql_db:1.0.0"
+        imagePullPolicy: "IfNotPresent"
+        name: "cooldrink-mysql-container"
+        ports:
+        - containerPort: 3306
+          protocol: "TCP"
+        volumeMounts: []
+      hostAliases: []
+      imagePullSecrets: []
+      initContainers: []
+      nodeSelector: {}
+      tolerations: []
+      volumes: []
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  namespace: "mysql"
+  annotations: {}
+  finalizers: []
+  labels:
+    app: "cooldrink-mysql"
+  name: "cooldrink-mysql"
+  ownerReferences: []
+spec:
+  externalIPs: []
+  loadBalancerSourceRanges: []
+  ports:
+  - port: 3306
+    protocol: "TCP"
+    targetPort: 3306
+  selector:
+    app: "cooldrink-mysql"

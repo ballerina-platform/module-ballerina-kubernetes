@@ -6,9 +6,9 @@ import ballerina/log;
     serviceType: "NodePort"
 }
 @kubernetes:Ingress {
-    hostname: "foodstore.com"
+    hostname: "drinkstore.com"
 }
-endpoint http:Listener foodStoreEP {
+endpoint http:Listener drinkStoreEP {
     port: 9091,
     secureSocket: {
         keyStore: {
@@ -18,30 +18,30 @@ endpoint http:Listener foodStoreEP {
     }
 };
 
-endpoint http:Client burgerBackend {
-    url: "http://buger-backend:9090"
+endpoint http:Client hotDrinkBackend {
+    url: "http://hotdrink-backend:9090"
 };
 
-endpoint http:Client pizzaBackend {
-    url: "http://pizza-backend:9090"
+endpoint http:Client coolDrinkBackend {
+    url: "http://cooldrink-backend:9090"
 };
 
 @kubernetes:Deployment {
-    labels: { "location": "SL", "city": "COLOMBO" },
     enableLiveness: true,
-    dependsOn: ["burger:burgerEP", "pizza:pizzaEP"]
+    dependsOn: ["cool_drink:coolDrinkEP", "hot_drink:hotDrinkEP"],
+    singleYAML: true
 }
 @http:ServiceConfig {
     basePath: "/store"
 }
 @kubernetes:HPA {}
-service<http:Service> FoodStoreAPI bind foodStoreEP {
+service<http:Service> DrinkStoreAPI bind drinkStoreEP {
     @http:ResourceConfig {
         methods: ["GET"],
-        path: "/pizza"
+        path: "/hotDrink"
     }
     getPizzaMenu(endpoint outboundEP, http:Request req) {
-        var response = pizzaBackend->get("/pizza/menu");
+        var response = coolDrinkBackend->get("/coolDrink/menu");
 
         match response {
             http:Response resp => {
@@ -56,10 +56,10 @@ service<http:Service> FoodStoreAPI bind foodStoreEP {
 
     @http:ResourceConfig {
         methods: ["GET"],
-        path: "/burger"
+        path: "/coolDrink"
     }
     getBurgerMenu(endpoint outboundEP, http:Request req) {
-        var response = burgerBackend->get("/burger/menu");
+        var response = hotDrinkBackend->get("/hotDrink/menu");
         match response {
             http:Response resp => {
                 log:printInfo("GET request: ");
