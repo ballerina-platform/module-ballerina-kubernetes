@@ -125,13 +125,13 @@ public class DockerHandler extends AbstractArtifactHandler {
 
                     @Override
                     public void onError(String message) {
-                        dockerError.setErrorMsg("Unable to build docker image: " + message);
+                        dockerError.setErrorMsg("Unable to build Docker image: " + message);
                         buildDone.countDown();
                     }
 
                     @Override
                     public void onError(Throwable t) {
-                        dockerError.setErrorMsg("Unable to build docker image: " + t.getMessage());
+                        dockerError.setErrorMsg("Unable to build Docker image: " + t.getMessage());
                         buildDone.countDown();
                     }
 
@@ -182,13 +182,13 @@ public class DockerHandler extends AbstractArtifactHandler {
                     @Override
                     public void onError(String message) {
                         pushDone.countDown();
-                        dockerError.setErrorMsg("Unable to push docker image: " + message);
+                        dockerError.setErrorMsg("Unable to push Docker image: " + message);
                     }
 
                     @Override
                     public void onError(Throwable t) {
                         pushDone.countDown();
-                        dockerError.setErrorMsg("Unable to push docker image: " + t.getMessage());
+                        dockerError.setErrorMsg("Unable to push Docker image: " + t.getMessage());
                     }
 
                     @Override
@@ -292,7 +292,7 @@ public class DockerHandler extends AbstractArtifactHandler {
         } catch (IOException e) {
             throw new KubernetesPluginException("Unable to write Dockerfile content");
         } catch (InterruptedException e) {
-            throw new KubernetesPluginException("Unable to create docker images " + e.getMessage());
+            throw new KubernetesPluginException("Unable to create Docker images " + e.getMessage());
         }
     }
 
