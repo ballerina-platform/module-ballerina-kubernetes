@@ -58,7 +58,7 @@
                 <executions>
                     <execution>
                         <id>unpack-dependencies</id>
-                        <phase>package</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>unpack-dependencies</goal>
                         </goals>
@@ -74,15 +74,9 @@
                             <stripVersion>true</stripVersion>
                         </configuration>
                     </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
                     <execution>
                         <id>unpack-balo</id>
-                        <phase>generate-resources</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>unpack-dependencies</goal>
                         </goals>
@@ -93,14 +87,8 @@
                             </outputDirectory>
                         </configuration>
                     </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
                     <execution>
-                        <phase>process-sources</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>copy</goal>
                         </goals>
@@ -148,6 +136,28 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <systemPropertyVariables>
+                        <ballerina.pack>
+                            ${project.build.directory}/extracted-distributions/ballerina-zip/ballerina-${ballerina.lang.version}/bin
+                        </ballerina.pack>
+                        <sample.dir>
+                            ${project.build.directory}/../../samples
+                        </sample.dir>
+                    </systemPropertyVariables>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
+                </configuration>
             </plugin>
         </plugins>
     </build>
