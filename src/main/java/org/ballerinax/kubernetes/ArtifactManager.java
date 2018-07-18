@@ -83,7 +83,7 @@ class ArtifactManager {
 
 
     private void printKubernetesInstructions(String outputDir) {
-        KubernetesUtils.printInstruction("\n\n\tRun following command to deploy kubernetes artifacts: ");
+        KubernetesUtils.printInstruction("\n\n\tRun the following command to deploy the Kubernetes artifacts: ");
         KubernetesUtils.printInstruction("\tkubectl apply -f " + outputDir);
         KubernetesUtils.printInstruction("");
     }
