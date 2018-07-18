@@ -101,12 +101,13 @@ do
 
 	if [[ number -eq 10 ]]; then
 	    ballerina init
-		ballerina build food_api_pkg
-		kubectl apply -f ./target/kubernetes
+		ballerina build
+		kubectl apply -f ./target/kubernetes/burger
+		kubectl apply -f ./target/kubernetes/pizza
 		sleep 10
 		curl http://pizza.com/pizzastore/pizza/menu
 		curl https://burger.com/menu -k
-		kubectl delete -f ./target/kubernetes
+		kubectl delete -Rf ./target/kubernetes
 	fi
 
 	if [[ number -eq 12 ]]; then

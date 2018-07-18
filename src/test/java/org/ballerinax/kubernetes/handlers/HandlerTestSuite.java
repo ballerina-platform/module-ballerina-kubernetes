@@ -18,6 +18,7 @@
 
 package org.ballerinax.kubernetes.handlers;
 
+import org.ballerinalang.model.elements.PackageID;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
@@ -26,6 +27,8 @@ import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+import org.wso2.ballerinalang.compiler.util.Name;
+import org.wso2.ballerinalang.compiler.util.Names;
 
 import java.io.File;
 
@@ -40,7 +43,7 @@ public class HandlerTestSuite {
     @BeforeClass
     public static void setUp() {
         KubernetesContext context = KubernetesContext.getInstance();
-        context.addDataHolder("test/my_pkg:0.0.0");
+        context.addDataHolder(new PackageID(Names.ANON_ORG, new Name("my_pkg"), Names.DEFAULT_VERSION));
         KubernetesDataHolder dataHolder = context.getDataHolder();
         dataHolder.setOutputDir("target" + File.separator + "kubernetes/");
         File resourcesDirectory = new File("src" + File.separator + "test" + File.separator + "resources");

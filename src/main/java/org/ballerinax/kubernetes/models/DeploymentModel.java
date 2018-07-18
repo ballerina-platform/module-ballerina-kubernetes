@@ -52,6 +52,7 @@ public class DeploymentModel extends KubernetesModel {
     private Set<ConfigMapModel> configMapModels;
     private Set<PersistentVolumeClaimModel> volumeClaimModels;
     private Set<ExternalFileModel> externalFiles;
+    private Set<String> dependsOn;
     private String commandArgs;
     private boolean singleYAML;
 
@@ -68,6 +69,7 @@ public class DeploymentModel extends KubernetesModel {
         this.labels = new HashMap<>();
         this.env = new HashMap<>();
         this.setImagePullPolicy("IfNotPresent");
+        this.dependsOn = new HashSet<>();
 
         // Configure Docker Host based on operating system.
         String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
@@ -306,5 +308,13 @@ public class DeploymentModel extends KubernetesModel {
 
     public void setSingleYAML(boolean singleYAML) {
         this.singleYAML = singleYAML;
+    }
+
+    public Set<String> getDependsOn() {
+        return dependsOn;
+    }
+
+    public void setDependsOn(Set<String> dependsOn) {
+        this.dependsOn = dependsOn;
     }
 }

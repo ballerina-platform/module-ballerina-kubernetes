@@ -160,7 +160,8 @@ public class DockerHandler extends AbstractArtifactHandler {
      * @throws InterruptedException When error with docker build process
      * @throws IOException          When error with docker build process
      */
-    public void pushImage(DockerModel dockerModel) throws InterruptedException, IOException, KubernetesPluginException {
+    private void pushImage(DockerModel dockerModel) throws InterruptedException, IOException,
+            KubernetesPluginException {
         disableFailOnUnknownProperties();
         AuthConfig authConfig = new AuthConfigBuilder().withUsername(dockerModel.getUsername()).withPassword
                 (dockerModel.getPassword())
@@ -255,7 +256,7 @@ public class DockerHandler extends AbstractArtifactHandler {
             OUT.print("\t@kubernetes:Docker \t\t\t - complete 0/3 \r");
             String dockerOutputDir = dataHolder.getOutputDir();
             if (dockerOutputDir.endsWith("target" + File.separator + "kubernetes" + File.separator)) {
-                //Compiling package therefore append balx file name to docker artifact dir path
+                //Compiling package therefore append balx file dependencies to docker artifact dir path
                 dockerOutputDir = dockerOutputDir + File.separator + extractBalxName(dataHolder
                         .getBalxFilePath());
             }
@@ -311,7 +312,7 @@ public class DockerHandler extends AbstractArtifactHandler {
             return error;
         }
 
-        public String getErrorMsg() {
+        String getErrorMsg() {
             return errorMsg;
         }
 
