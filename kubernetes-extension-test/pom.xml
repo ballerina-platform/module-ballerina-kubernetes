@@ -26,6 +26,12 @@
         <artifactId>kubernetes-extension-parent</artifactId>
     </parent>
 
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>kubernete-extension-test</artifactId>
+    <packaging>jar</packaging>
+    <name>Kubernetes Extension Tests</name>
+    <url>http://ballerinalang.org</url>
+
     <dependencies>
         <dependency>
             <groupId>org.ballerinalang</groupId>
@@ -161,11 +167,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>kubernete-extension-test</artifactId>
-    <packaging>jar</packaging>
-    <name>Kubernetes Extension - Test Module</name>
-    <url>http://ballerinalang.org</url>
-
 </project>

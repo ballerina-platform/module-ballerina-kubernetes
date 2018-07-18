@@ -36,7 +36,7 @@ public class TestRunnerUtils {
     private static final String distributionPath = System.getProperty("ballerina.pack");
     private static final String ballerinaCommand = distributionPath + File.separator + "ballerina";
     private static final String buildCommand = "build";
-    private static final String executing = "Executing  command: ";
+    private static final String executing = "Executing command: ";
 
     private static void logOutput(InputStream inputStream) throws IOException {
         BufferedReader br = null;
