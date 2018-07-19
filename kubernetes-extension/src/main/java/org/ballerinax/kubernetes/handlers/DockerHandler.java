@@ -104,7 +104,7 @@ public class DockerHandler extends AbstractArtifactHandler {
      * @throws InterruptedException When error with docker build process
      * @throws IOException          When error with docker build process
      */
-    public void buildImage(DockerModel dockerModel, String dockerDir) throws
+    private void buildImage(DockerModel dockerModel, String dockerDir) throws
             InterruptedException, IOException, KubernetesPluginException {
         disableFailOnUnknownProperties();
         Config dockerClientConfig = new ConfigBuilder()

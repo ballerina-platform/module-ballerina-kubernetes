@@ -23,6 +23,10 @@
         <packages>
             <package name="org.ballerinax.kubernetes.test.samples"/>
         </packages>
+
+        <!--<classes>-->
+        <!--<class name="org.ballerinax.kubernetes.test.samples.TestSample2"></class>-->
+        <!--</classes>-->
     </test>
 
 </suite>
