@@ -18,19 +18,25 @@
 
 package org.ballerinax.kubernetes.models;
 
+import org.ballerinalang.model.elements.PackageID;
+import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.wso2.ballerinalang.compiler.util.Names;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 
 /**
  * Class to hold Kubernetes data holder against package id.
  */
 public class KubernetesContext {
     private static KubernetesContext instance;
-    private final Map<String, KubernetesDataHolder> k8sContext;
-    private String currentPackage;
+    private final Map<PackageID, KubernetesDataHolder> packageIDtoDataHolderMap;
+    private PackageID currentPackage;
 
     private KubernetesContext() {
-        k8sContext = new HashMap<>();
+        packageIDtoDataHolderMap = new HashMap<>();
     }
 
     public static KubernetesContext getInstance() {
@@ -42,21 +48,51 @@ public class KubernetesContext {
         return instance;
     }
 
-    public void addDataHolder(String packageID) {
+    public void addDataHolder(PackageID packageID) {
         this.currentPackage = packageID;
-        this.k8sContext.put(packageID, new KubernetesDataHolder());
+        this.packageIDtoDataHolderMap.put(packageID, new KubernetesDataHolder());
     }
 
-    public void setCurrentPackage(String packageID) {
+    public void setCurrentPackage(PackageID packageID) {
         this.currentPackage = packageID;
     }
 
     public KubernetesDataHolder getDataHolder() {
-        return this.k8sContext.get(this.currentPackage);
+        return this.packageIDtoDataHolderMap.get(this.currentPackage);
     }
 
-    public KubernetesDataHolder getDataHolder(String packageID) {
-        return this.k8sContext.get(packageID);
+    public KubernetesDataHolder getDataHolder(PackageID packageID) {
+        return this.packageIDtoDataHolderMap.get(packageID);
     }
 
+    public Map<PackageID, KubernetesDataHolder> getPackageIDtoDataHolderMap() {
+        return packageIDtoDataHolderMap;
+    }
+
+    public String getServiceName(String dependsOn) throws KubernetesPluginException {
+        String packageName = dependsOn.substring(0, dependsOn.indexOf(Names.VERSION_SEPARATOR.value));
+        String endpoint = dependsOn.substring(dependsOn.indexOf(Names.VERSION_SEPARATOR.value) + 1, dependsOn.length());
+        for (PackageID packageID : packageIDtoDataHolderMap.keySet()) {
+            if (packageName.equals(packageID.name.value)) {
+                return getDataHolder(packageID).getbEndpointToK8sServiceMap().get(endpoint).getName();
+            }
+        }
+        throw new KubernetesPluginException("Dependent endpoint " + dependsOn + " is not annotated with " +
+                "@kubernetes:Service{}");
+    }
+
+    public String getDeploymentNameFromEndpoint(String dependsOn) throws KubernetesPluginException {
+        if (isBlank(dependsOn) || !dependsOn.contains(Names.VERSION_SEPARATOR.value) || !(dependsOn.indexOf
+                (Names.VERSION_SEPARATOR.value) > 1)) {
+            throw new KubernetesPluginException("@kubernetes:Deployment{} Invalid dependsOn format specified " +
+                    dependsOn);
+        }
+        String packageName = dependsOn.substring(0, dependsOn.indexOf(Names.VERSION_SEPARATOR.value));
+        for (PackageID packageID : packageIDtoDataHolderMap.keySet()) {
+            if (packageName.equals(packageID.name.value)) {
+                return getDataHolder(packageID).getDeploymentModel().getName();
+            }
+        }
+        throw new KubernetesPluginException("Dependent endpoint " + dependsOn + " not found.");
+    }
 }

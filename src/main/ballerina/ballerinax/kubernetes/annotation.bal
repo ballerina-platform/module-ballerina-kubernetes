@@ -43,6 +43,8 @@ documentation {Kubernetes deployment configuration
     F{{dockerCertPath}} - Docker certificate path
     F{{copyFiles}} - Array of [External files](kubernetes#FileConfig) for docker image
     F{{singleYAML}} - Generate a single yaml file with all kubernetes artifacts (services,deployment,ingress,)
+    F{{dependsOn}} - Services this deployment depends on
+    F{{imagePullSecret}} - Image pull secrets
 }
 public type DeploymentConfiguration record {
     string name;
@@ -64,6 +66,8 @@ public type DeploymentConfiguration record {
     string dockerCertPath;
     FileConfig[] copyFiles;
     boolean singleYAML;
+    string[] dependsOn;
+    string[] imagePullSecrets;
 };
 
 documentation {@kubernetes:Deployment annotation to configure deplyoment yaml

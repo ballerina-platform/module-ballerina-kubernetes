@@ -55,3 +55,4 @@ nginx-ingress   nginx-5667df56c8-8d8ct                       1/1       Running  
 1. [Sample10: Ballerina package with kubernetes annotations](sample10)
 1. [Sample11: Kubernetes Hello World with Ballerina Function](sample11)
 1. [Sample12: Copy External files to Docker Image](sample12) 
+1. [Sample13: Ballerina packages with dependencies](sample13) 
