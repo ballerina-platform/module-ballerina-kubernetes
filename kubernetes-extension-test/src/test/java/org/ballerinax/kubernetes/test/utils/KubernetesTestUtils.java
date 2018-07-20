@@ -39,15 +39,17 @@ import static org.ballerinax.kubernetes.KubernetesConstants.UNIX_DEFAULT_DOCKER_
 import static org.ballerinax.kubernetes.KubernetesConstants.WINDOWS_DEFAULT_DOCKER_HOST;
 
 /**
- * Kubernetes Integration test utils.
+ * Kubernetes test utils.
  */
 public class KubernetesTestUtils {
 
     private static final Log log = LogFactory.getLog(KubernetesTestUtils.class);
-    private static final String distributionPath = System.getProperty("ballerina.pack");
-    private static final String ballerinaCommand = distributionPath + File.separator + "ballerina";
-    private static final String buildCommand = "build";
-    private static final String executing = "Executing command: ";
+    private static final String DISTRIBUTION_PATH = System.getProperty("ballerina.pack");
+    private static final String BALLERINA_COMMAND = DISTRIBUTION_PATH + File.separator + "ballerina";
+    private static final String BUILD = "build";
+    private static final String EXECUTING_COMMAND = "Executing command: ";
+    private static final String COMPILING = "Compiling: ";
+    private static final String EXIT_CODE = "Exit code: ";
 
     private static void logOutput(InputStream inputStream) throws IOException {
         BufferedReader br = null;
@@ -79,7 +81,7 @@ public class KubernetesTestUtils {
      */
     public static void deleteDockerImage(String imageName) {
         DockerClient client = getDockerClient();
-        client.image().withName(imageName).delete().andPrune(true);
+        client.image().withName(imageName).delete().andPrune();
     }
 
     private static DockerClient getDockerClient() {
@@ -103,13 +105,13 @@ public class KubernetesTestUtils {
      */
     public static int compileBallerinaFile(String sourceDirectory, String fileName) throws InterruptedException,
             IOException {
-        ProcessBuilder pb = new ProcessBuilder(ballerinaCommand, buildCommand, fileName);
-        log.info("Compiling " + sourceDirectory);
-        log.debug(executing + pb.command());
+        ProcessBuilder pb = new ProcessBuilder(BALLERINA_COMMAND, BUILD, fileName);
+        log.info(COMPILING + sourceDirectory);
+        log.debug(EXECUTING_COMMAND + pb.command());
         pb.directory(new File(sourceDirectory));
         Process process = pb.start();
         int exitCode = process.waitFor();
-        log.info("Exit Code:" + exitCode);
+        log.info(EXIT_CODE + exitCode);
         logOutput(process.getInputStream());
         logOutput(process.getErrorStream());
         return exitCode;
@@ -125,23 +127,23 @@ public class KubernetesTestUtils {
      */
     public static int compileBallerinaProject(String sourceDirectory) throws InterruptedException,
             IOException {
-        ProcessBuilder pb = new ProcessBuilder(ballerinaCommand, "init");
-        log.info("Compiling " + sourceDirectory);
-        log.debug(executing + pb.command());
+        ProcessBuilder pb = new ProcessBuilder(BALLERINA_COMMAND, "init");
+        log.info(COMPILING + sourceDirectory);
+        log.debug(EXECUTING_COMMAND + pb.command());
         pb.directory(new File(sourceDirectory));
         Process process = pb.start();
         int exitCode = process.waitFor();
-        log.info("Exit Code:" + exitCode);
+        log.info(EXIT_CODE + exitCode);
         logOutput(process.getInputStream());
         logOutput(process.getErrorStream());
 
         pb = new ProcessBuilder
-                (ballerinaCommand, buildCommand);
-        log.debug(executing + pb.command());
+                (BALLERINA_COMMAND, BUILD);
+        log.debug(EXECUTING_COMMAND + pb.command());
         pb.directory(new File(sourceDirectory));
         process = pb.start();
         exitCode = process.waitFor();
-        log.info("Exit Code:" + exitCode);
+        log.info(EXIT_CODE + exitCode);
         logOutput(process.getInputStream());
         logOutput(process.getErrorStream());
         return exitCode;
