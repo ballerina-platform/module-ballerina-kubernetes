@@ -59,6 +59,7 @@ class ArtifactManager {
     void createArtifacts() throws KubernetesPluginException {
         if (kubernetesDataHolder.getJobModel() != null) {
             new JobHandler().createArtifacts();
+            new DockerHandler().createArtifacts();
             printKubernetesInstructions(outputDir);
             return;
         }

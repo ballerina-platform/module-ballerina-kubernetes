@@ -17,6 +17,8 @@
  */
 package org.ballerinax.kubernetes.models;
 
+import org.ballerinax.kubernetes.KubernetesConstants;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -68,7 +70,7 @@ public class DeploymentModel extends KubernetesModel {
         this.push = false;
         this.labels = new HashMap<>();
         this.env = new HashMap<>();
-        this.setImagePullPolicy("IfNotPresent");
+        this.imagePullPolicy = KubernetesConstants.ImagePullPolicy.IfNotPresent.name();
         this.dependsOn = new HashSet<>();
 
         // Configure Docker Host based on operating system.
