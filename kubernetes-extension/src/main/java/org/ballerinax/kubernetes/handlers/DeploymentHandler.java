@@ -25,6 +25,8 @@ import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.EnvVarBuilder;
+import io.fabric8.kubernetes.api.model.LocalObjectReference;
+import io.fabric8.kubernetes.api.model.LocalObjectReferenceBuilder;
 import io.fabric8.kubernetes.api.model.Probe;
 import io.fabric8.kubernetes.api.model.ProbeBuilder;
 import io.fabric8.kubernetes.api.model.TCPSocketAction;
@@ -190,6 +192,14 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                 .build();
     }
 
+    private List<LocalObjectReference> getImagePullSecrets(DeploymentModel deploymentModel) {
+        List<LocalObjectReference> imagePullSecrets = new ArrayList<>();
+        for (String imagePullSecret : deploymentModel.getImagePullSecrets()) {
+            imagePullSecrets.add(new LocalObjectReferenceBuilder().withName(imagePullSecret).build());
+        }
+        return imagePullSecrets;
+    }
+
     /**
      * Generate kubernetes deployment definition from annotation.
      *
@@ -215,6 +225,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                 .endMetadata()
                 .withNewSpec()
                 .withContainers(container)
+                .withImagePullSecrets(getImagePullSecrets(deploymentModel))
                 .withInitContainers(generateInitContainer(deploymentModel))
                 .withVolumes(populateVolume(deploymentModel))
                 .endSpec()

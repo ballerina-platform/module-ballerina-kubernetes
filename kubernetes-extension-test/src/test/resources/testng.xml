@@ -19,7 +19,7 @@
 
 <suite name="Ballerina-Kubernetes-Test-Suite">
 
-    <test name="ballerina-packaging-sample-tests" parallel="false">
+    <test name="ballerina-kubernetes-sample-tests" parallel="false">
         <packages>
             <package name="org.ballerinax.kubernetes.test.samples"/>
         </packages>

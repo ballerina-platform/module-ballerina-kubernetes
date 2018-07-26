@@ -126,6 +126,9 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 case dependsOn:
                     deploymentModel.setDependsOn(getDependsOn(keyValue));
                     break;
+                case imagePullSecrets:
+                    deploymentModel.setImagePullSecrets(getImagePullSecrets(keyValue));
+                    break;
                 default:
                     break;
             }
@@ -184,6 +187,15 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         return dependsOnList;
     }
 
+    private Set<String> getImagePullSecrets(BLangRecordLiteral.BLangRecordKeyValue keyValue) {
+        Set<String> imagePullSecrets = new HashSet<>();
+        List<BLangExpression> configAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
+        for (BLangExpression bLangExpression : configAnnotation) {
+            imagePullSecrets.add(bLangExpression.toString());
+        }
+        return imagePullSecrets;
+    }
+
 
     /**
      * Enum class for DeploymentConfiguration.
@@ -208,6 +220,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         dockerCertPath,
         copyFiles,
         singleYAML,
-        dependsOn
+        dependsOn,
+        imagePullSecrets
     }
 }

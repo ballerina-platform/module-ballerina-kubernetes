@@ -43,6 +43,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |username|Username for the docker registry|null|
 |password|Password for the docker registry|null|
 |baseImage|Base image to create the docker image|ballerina/ballerina:latest|
+|imagePullSecrets|Image pull secrets value|null|
 |singleYAML|Generate a single yaml file for all k8s resources|false|
 
 ### @kubernetes:Service{}
