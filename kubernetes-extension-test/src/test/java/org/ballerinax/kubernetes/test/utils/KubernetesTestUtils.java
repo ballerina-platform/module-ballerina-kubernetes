@@ -52,14 +52,10 @@ public class KubernetesTestUtils {
     private static final String EXIT_CODE = "Exit code: ";
 
     private static void logOutput(InputStream inputStream) throws IOException {
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new InputStreamReader(inputStream));
+        try (
+                BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))
+        ) {
             br.lines().forEach(log::info);
-        } finally {
-            if (br != null) {
-                br.close();
-            }
         }
     }
 
@@ -149,6 +145,8 @@ public class KubernetesTestUtils {
         return exitCode;
     }
 
+    // Disable fail on unknown properties using reflection to avoid docker client issue.
+    // (https://github.com/fabric8io/docker-client/issues/106).
     private static void disableFailOnUnknownProperties() {
         try {
             final Field jsonMapperField = Config.class.getDeclaredField("JSON_MAPPER");

@@ -55,6 +55,7 @@ public class DeploymentModel extends KubernetesModel {
     private Set<PersistentVolumeClaimModel> volumeClaimModels;
     private Set<ExternalFileModel> externalFiles;
     private Set<String> dependsOn;
+    private Set<String> imagePullSecrets;
     private String commandArgs;
     private boolean singleYAML;
 
@@ -85,6 +86,7 @@ public class DeploymentModel extends KubernetesModel {
         this.configMapModels = new HashSet<>();
         this.volumeClaimModels = new HashSet<>();
         this.externalFiles = new HashSet<>();
+        this.imagePullSecrets = new HashSet<>();
         this.singleYAML = false;
     }
 
@@ -318,5 +320,13 @@ public class DeploymentModel extends KubernetesModel {
 
     public void setDependsOn(Set<String> dependsOn) {
         this.dependsOn = dependsOn;
+    }
+
+    public Set<String> getImagePullSecrets() {
+        return imagePullSecrets;
+    }
+
+    public void setImagePullSecrets(Set<String> imagePullSecrets) {
+        this.imagePullSecrets = imagePullSecrets;
     }
 }

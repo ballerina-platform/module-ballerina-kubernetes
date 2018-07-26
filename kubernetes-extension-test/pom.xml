@@ -27,7 +27,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>kubernete-extension-test</artifactId>
+    <artifactId>kubernetes-extension-test</artifactId>
     <packaging>jar</packaging>
     <name>Kubernetes Extension Tests</name>
     <url>http://ballerinalang.org</url>
