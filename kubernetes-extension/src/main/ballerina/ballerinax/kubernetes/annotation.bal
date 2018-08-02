@@ -192,6 +192,7 @@ documentation {Kubernetes Persistent Volume Claim
     F{{mountPath}} - Mount Path
     F{{accessMode}} - Access mode
     F{{volumeClaimSize}} - Size of the volume claim
+    F{{annotations}} - Map of annotation values
     F{{readOnly}} - Is mount read only
 }
 public type PersistentVolumeClaimConfig record {
@@ -199,6 +200,7 @@ public type PersistentVolumeClaimConfig record {
     string mountPath;
     string accessMode;
     string volumeClaimSize;
+    map annotations;
     boolean readOnly;
 };
 
