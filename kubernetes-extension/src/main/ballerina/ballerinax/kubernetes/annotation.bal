@@ -25,6 +25,7 @@ public type FileConfig record {
 
 documentation {Kubernetes deployment configuration
     F{{name}} - Name of the deployment
+    F{{namespce}} - Kubernetes namespace
     F{{labels}} - Map of labels for deployment
     F{{replicas}} - Number of replicas
     F{{enableLiveness}} - Enable/Disable liveness probe
@@ -48,6 +49,7 @@ documentation {Kubernetes deployment configuration
 }
 public type DeploymentConfiguration record {
     string name;
+    string namespace;
     map labels;
     int replicas;
     boolean enableLiveness;

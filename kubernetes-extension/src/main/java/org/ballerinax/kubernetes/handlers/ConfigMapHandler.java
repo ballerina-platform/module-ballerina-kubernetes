@@ -43,6 +43,7 @@ public class ConfigMapHandler extends AbstractArtifactHandler {
         ConfigMap configMap = new ConfigMapBuilder()
                 .withNewMetadata()
                 .withName(configMapModel.getName())
+                .withNamespace(dataHolder.getNamespace())
                 .endMetadata()
                 .withData(configMapModel.getData())
                 .build();

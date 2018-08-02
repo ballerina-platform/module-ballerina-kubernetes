@@ -69,6 +69,9 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 case name:
                     deploymentModel.setName(getValidName(annotationValue));
                     break;
+                case namespace:
+                    KubernetesContext.getInstance().getDataHolder().setNamespace(annotationValue);
+                    break;
                 case labels:
                     deploymentModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
@@ -202,6 +205,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
      */
     private enum DeploymentConfiguration {
         name,
+        namespace,
         labels,
         replicas,
         enableLiveness,

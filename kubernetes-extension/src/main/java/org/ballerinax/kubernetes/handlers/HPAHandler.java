@@ -43,6 +43,7 @@ public class HPAHandler extends AbstractArtifactHandler {
         HorizontalPodAutoscaler horizontalPodAutoscaler = new HorizontalPodAutoscalerBuilder()
                 .withNewMetadata()
                 .withName(podAutoscalerModel.getName())
+                .withNamespace(dataHolder.getNamespace())
                 .withLabels(podAutoscalerModel.getLabels())
                 .endMetadata()
                 .withNewSpec()
