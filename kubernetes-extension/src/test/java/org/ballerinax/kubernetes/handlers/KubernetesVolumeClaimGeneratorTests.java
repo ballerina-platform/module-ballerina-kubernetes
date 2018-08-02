@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -39,6 +40,8 @@ public class KubernetesVolumeClaimGeneratorTests {
     private final String volumeClaimName = "MyVolumeClaim";
     private final boolean readOnly = true;
     private final String mountPath = "/user/dir";
+    private final String annotationKey = "volume.beta.kubernetes.io/storage-class";
+    private final String annotationValue = "efs";
 
     @Test
     public void testVolumeClaimGenerate() {
@@ -47,6 +50,9 @@ public class KubernetesVolumeClaimGeneratorTests {
         volumeClaimModel.setReadOnly(readOnly);
         volumeClaimModel.setMountPath(mountPath);
         volumeClaimModel.setAccessMode("ReadWriteOnce");
+        HashMap<String, String> annotations = new HashMap<>();
+        annotations.put(annotationKey, annotationValue);
+        volumeClaimModel.setAnnotations(annotations);
         Set<PersistentVolumeClaimModel> claimModles = new HashSet<>();
         claimModles.add(volumeClaimModel);
         KubernetesContext.getInstance().getDataHolder().addPersistentVolumeClaims(claimModles);
@@ -67,5 +73,10 @@ public class KubernetesVolumeClaimGeneratorTests {
     private void assertGeneratedYAML(File yamlFile) throws IOException {
         PersistentVolumeClaim volumeClaim = KubernetesHelper.loadYaml(yamlFile);
         Assert.assertEquals(volumeClaimName, volumeClaim.getMetadata().getName());
+        Assert.assertEquals(1, volumeClaim.getMetadata().getAnnotations().size());
+        Assert.assertTrue(volumeClaim.getMetadata().getAnnotations()
+                .containsKey(annotationKey));
+        Assert.assertEquals(annotationValue, volumeClaim.getMetadata().getAnnotations()
+                .get(annotationKey));
     }
 }
