@@ -27,6 +27,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |name|Name of the deployment|\<outputfilename\>-deployment|
 |labels|Labels for deployment|"app: \<outputfilename\>"|
 |replicas|Number of replicas|1|
+|dependsOn|Endpoints this deployment Depends on|null|
 |enableLiveness|Enable or disable liveness probe|false|
 |initialDelaySeconds|Initial delay in seconds before performing the first probe|10s|
 |periodSeconds|Liveness probe interval|5s|
@@ -42,6 +43,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |username|Username for the docker registry|null|
 |password|Password for the docker registry|null|
 |baseImage|Base image to create the docker image|ballerina/ballerina:latest|
+|imagePullSecrets|Image pull secrets value|null|
 |singleYAML|Generate a single yaml file for all k8s resources|false|
 
 ### @kubernetes:Service{}
@@ -134,13 +136,13 @@ Annotation based kubernetes extension implementation for ballerina.
 |baseImage|Base image to create the docker image|ballerina/ballerina:latest|
 
 
-## How to run
+## How to build
 
 1. Download and install JDK 8 or later
-2. Get a clone or download the source from this repository (https://github.com/ballerinax/docker)
+2. Install Docker
+2. Get a clone or download the source from this repository (https://github.com/ballerinax/kubernetes)
 3. Run the Maven command ``mvn clean  install`` from within the ``kubernetes`` directory.
-4. Copy ``target/kubernetes-extension-0.962.0.jar`` file to ``<BALLERINA_HOME>/bre/lib`` directory.
-5. Run ``ballerina build <.bal filename>`` to generate artifacts.
+
 
 The docker artifacts will be created in a folder called target with following structure.
 ```bash
