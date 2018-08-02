@@ -98,6 +98,7 @@ public class IngressHandler extends AbstractArtifactHandler {
         Ingress ingress = new IngressBuilder()
                 .withNewMetadata()
                 .withName(ingressModel.getName())
+                .withNamespace(dataHolder.getNamespace())
                 .addToLabels(ingressModel.getLabels())
                 .addToAnnotations(annotationMap)
                 .endMetadata()

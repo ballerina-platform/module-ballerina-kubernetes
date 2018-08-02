@@ -40,8 +40,9 @@ public class KubernetesDataHolder {
     private JobModel jobModel;
     private String balxFilePath;
     private String outputDir;
+    private String namespace;
 
-    public KubernetesDataHolder() {
+    KubernetesDataHolder() {
         this.bEndpointToK8sServiceMap = new HashMap<>();
         this.endPointToSecretMap = new HashMap<>();
         this.secretModelSet = new HashSet<>();
@@ -49,6 +50,7 @@ public class KubernetesDataHolder {
         this.volumeClaimModelSet = new HashSet<>();
         this.ingressModelSet = new HashSet<>();
         this.deploymentModel = new DeploymentModel();
+//        this.namespace = "";
     }
 
     public DeploymentModel getDeploymentModel() {
@@ -157,5 +159,13 @@ public class KubernetesDataHolder {
 
     public void setDockerModel(DockerModel dockerModel) {
         this.dockerModel = dockerModel;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 }

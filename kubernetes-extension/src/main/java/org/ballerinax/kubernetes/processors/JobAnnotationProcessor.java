@@ -52,6 +52,9 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
                 case name:
                     jobModel.setName(getValidName(annotationValue));
                     break;
+                case namespace:
+                    KubernetesContext.getInstance().getDataHolder().setNamespace(annotationValue);
+                    break;
                 case labels:
                     jobModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
@@ -88,6 +91,7 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
      */
     private enum JobConfiguration {
         name,
+        namespace,
         labels,
         restartPolicy,
         backoffLimit,

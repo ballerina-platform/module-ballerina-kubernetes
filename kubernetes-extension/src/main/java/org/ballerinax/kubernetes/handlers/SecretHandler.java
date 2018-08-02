@@ -40,6 +40,7 @@ public class SecretHandler extends AbstractArtifactHandler {
     private void generate(SecretModel secretModel) throws KubernetesPluginException {
         Secret secret = new SecretBuilder()
                 .withNewMetadata()
+                .withNamespace(dataHolder.getNamespace())
                 .withName(secretModel.getName())
                 .endMetadata()
                 .withData(secretModel.getData())

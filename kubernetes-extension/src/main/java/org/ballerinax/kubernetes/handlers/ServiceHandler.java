@@ -49,6 +49,7 @@ public class ServiceHandler extends AbstractArtifactHandler {
         Service service = new ServiceBuilder()
                 .withNewMetadata()
                 .withName(serviceModel.getName())
+                .withNamespace(dataHolder.getNamespace())
                 .addToLabels(serviceModel.getLabels())
                 .endMetadata()
                 .withNewSpec()

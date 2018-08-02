@@ -57,6 +57,7 @@ public class KubernetesConstants {
     public static final String DOCKER_HOST = "DOCKER_HOST";
     public static final String DOCKER_CERT_PATH = "DOCKER_CERT_PATH";
     public static final String NGINX = "nginx";
+    public static final String DEFAULT_NAMESPACE = "default";
 
     /**
      * Restart policy enum.
