@@ -25,6 +25,7 @@ public type FileConfig record {
 
 documentation {Kubernetes deployment configuration
     F{{name}} - Name of the deployment
+    F{{namespce}} - Kubernetes namespace
     F{{labels}} - Map of labels for deployment
     F{{replicas}} - Number of replicas
     F{{enableLiveness}} - Enable/Disable liveness probe
@@ -48,6 +49,7 @@ documentation {Kubernetes deployment configuration
 }
 public type DeploymentConfiguration record {
     string name;
+    string namespace;
     map labels;
     int replicas;
     boolean enableLiveness;
@@ -192,6 +194,7 @@ documentation {Kubernetes Persistent Volume Claim
     F{{mountPath}} - Mount Path
     F{{accessMode}} - Access mode
     F{{volumeClaimSize}} - Size of the volume claim
+    F{{annotations}} - Map of annotation values
     F{{readOnly}} - Is mount read only
 }
 public type PersistentVolumeClaimConfig record {
@@ -199,6 +202,7 @@ public type PersistentVolumeClaimConfig record {
     string mountPath;
     string accessMode;
     string volumeClaimSize;
+    map annotations;
     boolean readOnly;
 };
 

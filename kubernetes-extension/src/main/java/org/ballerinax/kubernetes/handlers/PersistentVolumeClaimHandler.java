@@ -49,6 +49,8 @@ public class PersistentVolumeClaimHandler extends AbstractArtifactHandler {
         PersistentVolumeClaim claim = new PersistentVolumeClaimBuilder()
                 .withNewMetadata()
                 .withName(volumeClaimModel.getName())
+                .withNamespace(dataHolder.getNamespace())
+                .withAnnotations(volumeClaimModel.getAnnotations())
                 .endMetadata()
                 .withNewSpec()
                 .withAccessModes(volumeClaimModel.getAccessMode())

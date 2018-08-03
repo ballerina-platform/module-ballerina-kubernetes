@@ -16,6 +16,7 @@ Annotation based kubernetes extension implementation for ballerina.
 - Kubernetes config map support
 - Kubernetes persistent volume claim support
 
+**Refer [samples](samples) for more info.**
 
 ## Supported Annotations:
 
@@ -25,6 +26,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
 |name|Name of the deployment|\<outputfilename\>-deployment|
+|namespace|Namespace of the deployment|null|
 |labels|Labels for deployment|"app: \<outputfilename\>"|
 |replicas|Number of replicas|1|
 |dependsOn|Endpoints this deployment Depends on|null|
@@ -108,6 +110,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
 |name|Name secret mount|null|
+|annotations|Metadata Annotations map|null|
 |mountPath|Path to mount on container|null|
 |readOnly|Is mount read only|false|
 |accessMode|Access mode|ReadWriteOnce|
@@ -119,6 +122,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
 |name| Name of the job|\<output file name\>-job|
+|namespace|Namespace for the Job|default|
 |labels| Labels for job|"app: \<outputfilename\>"|
 |restartPolicy| Restart policy|Never|
 |backoffLimit| Backoff limit|3|
@@ -140,30 +144,18 @@ Annotation based kubernetes extension implementation for ballerina.
 
 1. Download and install JDK 8 or later
 2. Install Docker
-2. Get a clone or download the source from this repository (https://github.com/ballerinax/kubernetes)
-3. Run the Maven command ``mvn clean  install`` from within the ``kubernetes`` directory.
-
-
-The docker artifacts will be created in a folder called target with following structure.
-```bash
-    └── kubernetes
-    │           ├── deployment.yaml
-    │           ├── ingress.yaml
-    │           ├── secret.yaml
-    │           ├── config_map.yaml
-    │           ├── volume_claim.yaml
-    │           ├── service.yaml
-    │           └── docker
-    │	        	  └── Dockerfile
-    │  	
-    └── outputfilename.balx	
-```
+3. Get a clone or download the source from this repository (https://github.com/ballerinax/kubernetes)
+4. Run the Maven command ``mvn clean install`` from within the ``kubernetes`` directory.
 
 ### Annotation Usage Sample:
+
 ```ballerina
 import ballerina/http;
 import ballerinax/kubernetes;
 
+@kubernetes:Ingress{
+    hostname:"abc.com"
+}
 @kubernetes:Service{name:"hello"}
 endpoint http:Listener helloEP {
     port:9090
@@ -171,9 +163,6 @@ endpoint http:Listener helloEP {
 
 @kubernetes:Deployment{
     enableLiveness:true
-}
-@kubernetes:Ingress{
-    hostname:"abc.com"
 }
 @http:serviceConfig {
     basePath:"/helloWorld"
@@ -186,4 +175,17 @@ service<http:Service> helloWorld bind helloEP {
     }
 }
 ```
-**Refer [samples](samples) for more info.**
+
+The kubernetes artifacts will be created in following structure.
+```bash
+kubernetes
+├── deployment.yaml
+├── ingress.yaml
+├── secret.yaml
+├── config_map.yaml
+├── volume_claim.yaml
+├── service.yaml
+└── docker
+ └── Dockerfile
+    	
+```

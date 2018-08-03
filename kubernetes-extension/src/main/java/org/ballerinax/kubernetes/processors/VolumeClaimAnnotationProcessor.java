@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
@@ -76,6 +77,10 @@ public class VolumeClaimAnnotationProcessor extends AbstractAnnotationProcessor 
                         case readOnly:
                             claimModel.setReadOnly(Boolean.parseBoolean(annotationValue));
                             break;
+                        case annotations:
+                            claimModel.setAnnotations(getMap(((BLangRecordLiteral) annotation.getValue())
+                                    .keyValuePairs));
+                            break;
                         default:
                             break;
                     }
@@ -94,6 +99,7 @@ public class VolumeClaimAnnotationProcessor extends AbstractAnnotationProcessor 
         mountPath,
         readOnly,
         accessMode,
-        volumeClaimSize
+        volumeClaimSize,
+        annotations
     }
 }
