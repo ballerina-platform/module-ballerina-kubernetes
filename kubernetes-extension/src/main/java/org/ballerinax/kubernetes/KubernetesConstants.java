@@ -34,6 +34,8 @@ public class KubernetesConstants {
     public static final String CONFIG_MAP_POSTFIX = "-config-map";
     public static final String SECRET_POSTFIX = "-secret";
     public static final String DOCKER = "docker";
+    public static final String HELM_CHART = "helm_chart";
+    public static final String HELM_CHART_TEMPLATES = "templates";
     public static final String BALX = ".balx";
     public static final String DEPLOYMENT_POSTFIX = "-deployment";
     public static final String JOB_POSTFIX = "-job";

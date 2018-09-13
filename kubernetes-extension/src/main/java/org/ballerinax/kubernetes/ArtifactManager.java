@@ -23,6 +23,7 @@ import org.ballerinax.kubernetes.handlers.ConfigMapHandler;
 import org.ballerinax.kubernetes.handlers.DeploymentHandler;
 import org.ballerinax.kubernetes.handlers.DockerHandler;
 import org.ballerinax.kubernetes.handlers.HPAHandler;
+import org.ballerinax.kubernetes.handlers.HelmChartHandler;
 import org.ballerinax.kubernetes.handlers.IngressHandler;
 import org.ballerinax.kubernetes.handlers.JobHandler;
 import org.ballerinax.kubernetes.handlers.PersistentVolumeClaimHandler;
@@ -71,6 +72,7 @@ class ArtifactManager {
         new DeploymentHandler().createArtifacts();
         new HPAHandler().createArtifacts();
         new DockerHandler().createArtifacts();
+        new HelmChartHandler().createArtifacts();
         printKubernetesInstructions(outputDir);
     }
 
