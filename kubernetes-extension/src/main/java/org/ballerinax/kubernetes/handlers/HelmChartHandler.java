@@ -17,16 +17,32 @@
  */
 package org.ballerinax.kubernetes.handlers;
 
-import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.DumperOptions.FlowStyle;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 
-import static org.ballerinax.kubernetes.KubernetesConstants.HELM_CHART;
+import static org.ballerinax.kubernetes.KubernetesConstants.HELM_API_VERSION;
+import static org.ballerinax.kubernetes.KubernetesConstants.HELM_API_VERSION_DEFAULT;
+import static org.ballerinax.kubernetes.KubernetesConstants.HELM_APP_VERSION;
+import static org.ballerinax.kubernetes.KubernetesConstants.HELM_APP_VERSION_DEFAULT;
 import static org.ballerinax.kubernetes.KubernetesConstants.HELM_CHART_TEMPLATES;
+import static org.ballerinax.kubernetes.KubernetesConstants.HELM_CHART_YAML_FILE_NAME;
+import static org.ballerinax.kubernetes.KubernetesConstants.HELM_DESCRIPTION;
+import static org.ballerinax.kubernetes.KubernetesConstants.HELM_NAME;
+import static org.ballerinax.kubernetes.KubernetesConstants.HELM_VERSION;
+import static org.ballerinax.kubernetes.KubernetesConstants.HELM_VERSION_DEFAULT;
+import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
 
 /**
@@ -36,25 +52,22 @@ public class HelmChartHandler extends AbstractArtifactHandler {
 
     @Override
     public void createArtifacts() throws KubernetesPluginException {
-        try {
-            OUT.println();
-            String helmBaseOutputDir = this.dataHolder.getOutputDir();
-            if (helmBaseOutputDir.endsWith("target" + File.separator + "kubernetes" + File.separator)) {
-                helmBaseOutputDir = helmBaseOutputDir + File.separator + 
-                        extractBalxName(this.dataHolder.getBalxFilePath());
-            }
-            helmBaseOutputDir = helmBaseOutputDir + File.separator + HELM_CHART;
-            String helmTemplatesOutputDir = helmBaseOutputDir + File.separator + HELM_CHART_TEMPLATES;
-            // Create the Helm templates directory
-            new File(helmTemplatesOutputDir).mkdirs();
-            // Create the helm template files using the generated Kubernetes artifacts
-            this.copyKubernetesArtifactsToHelmTemplates(helmTemplatesOutputDir);
-            // Create the Chart.yaml
-            this.generateChartYAML();
-            OUT.print("\t@kubernetes:Helm \t\t\t - complete 1/1");
-        } catch (Exception e) {
-            throw new KubernetesPluginException("Error in generating the Helm chart: " + e.getMessage(), e);
+        DeploymentModel model = this.dataHolder.getDeploymentModel();
+        OUT.println();
+        String helmBaseOutputDir = this.dataHolder.getOutputDir();
+        if (helmBaseOutputDir.endsWith("target" + File.separator + "kubernetes" + File.separator)) {
+            helmBaseOutputDir = helmBaseOutputDir + File.separator + 
+                    extractBalxName(this.dataHolder.getBalxFilePath());
         }
+        helmBaseOutputDir = helmBaseOutputDir + File.separator + model.getName();
+        String helmTemplatesOutputDir = helmBaseOutputDir + File.separator + HELM_CHART_TEMPLATES;
+        // Create the Helm templates directory
+        new File(helmTemplatesOutputDir).mkdirs();
+        // Create the helm template files using the generated Kubernetes artifacts
+        this.copyKubernetesArtifactsToHelmTemplates(helmTemplatesOutputDir);
+        // Create the Chart.yaml
+        this.generateChartYAML(helmBaseOutputDir);
+        OUT.print("\t@kubernetes:Helm \t\t\t - complete 1/1");
     }
     
     private void copyKubernetesArtifactsToHelmTemplates(String helmTemplatesOutputDir) 
@@ -70,8 +83,24 @@ public class HelmChartHandler extends AbstractArtifactHandler {
         }
     }
 
-    private void generateChartYAML() {
-        //TODO
+    private void generateChartYAML(String helmBaseOutputDir) throws KubernetesPluginException {
+        DeploymentModel model = this.dataHolder.getDeploymentModel();
+        DumperOptions options = new DumperOptions();
+        options.setDefaultFlowStyle(FlowStyle.BLOCK);
+        Yaml yaml = new Yaml(options);
+        Map<String, String> values = new LinkedHashMap<>();
+        values.put(HELM_API_VERSION, HELM_API_VERSION_DEFAULT);
+        values.put(HELM_APP_VERSION, HELM_APP_VERSION_DEFAULT);
+        values.put(HELM_DESCRIPTION, "Helm chart for " + model.getName());
+        values.put(HELM_NAME, model.getName());
+        values.put(HELM_VERSION, model.getVersion() == null ? HELM_VERSION_DEFAULT : model.getVersion());
+        try {
+            FileWriter writer = new FileWriter(helmBaseOutputDir + File.separator + HELM_CHART_YAML_FILE_NAME);
+            yaml.dump(values, writer);
+            writer.close();
+        } catch (IOException e) {
+            throw new KubernetesPluginException("Error in generating the Helm chart: " + e.getMessage(), e);
+        }
     }
     
     /**
@@ -81,7 +110,7 @@ public class HelmChartHandler extends AbstractArtifactHandler {
         
         @Override
         public boolean accept(File dir, String name) {
-            return name.toLowerCase(Locale.getDefault()).endsWith(KubernetesConstants.YAML);
+            return name.toLowerCase(Locale.getDefault()).endsWith(YAML);
         }
         
     }
