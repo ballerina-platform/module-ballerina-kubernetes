@@ -94,10 +94,8 @@ public class HelmChartHandler extends AbstractArtifactHandler {
         values.put(HELM_DESCRIPTION, "Helm chart for " + model.getName());
         values.put(HELM_NAME, model.getName());
         values.put(HELM_VERSION, model.getVersion() == null ? HELM_VERSION_DEFAULT : model.getVersion());
-        try {
-            FileWriter writer = new FileWriter(helmBaseOutputDir + File.separator + HELM_CHART_YAML_FILE_NAME);
+        try (FileWriter writer = new FileWriter(helmBaseOutputDir + File.separator + HELM_CHART_YAML_FILE_NAME)) {
             yaml.dump(values, writer);
-            writer.close();
         } catch (IOException e) {
             throw new KubernetesPluginException("Error in generating the Helm chart: " + e.getMessage(), e);
         }
