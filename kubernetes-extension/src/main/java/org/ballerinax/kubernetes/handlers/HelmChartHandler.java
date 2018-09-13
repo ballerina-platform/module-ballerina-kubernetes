@@ -73,7 +73,7 @@ public class HelmChartHandler extends AbstractArtifactHandler {
     private void copyKubernetesArtifactsToHelmTemplates(String helmTemplatesOutputDir) 
             throws KubernetesPluginException {
         File dir = new File(this.dataHolder.getOutputDir());
-        File[] yamlFiles = dir.listFiles(new KuberenetesArtifactsFileFilter());
+        File[] yamlFiles = dir.listFiles(new KubernetesArtifactsFileFilter());
         if (yamlFiles == null) {
             throw new KubernetesPluginException("Kuberenetes artifacts not available to generate Helm templates");
         }
@@ -104,7 +104,7 @@ public class HelmChartHandler extends AbstractArtifactHandler {
     /**
      * This class represents a {@link FilenameFilter} implementation to filter out Kubernetes artifacts.
      */
-    private static class KuberenetesArtifactsFileFilter implements FilenameFilter {
+    private static class KubernetesArtifactsFileFilter implements FilenameFilter {
         
         @Override
         public boolean accept(File dir, String name) {
