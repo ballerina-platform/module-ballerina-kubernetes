@@ -34,6 +34,7 @@ public class KubernetesConstants {
     public static final String CONFIG_MAP_POSTFIX = "-config-map";
     public static final String SECRET_POSTFIX = "-secret";
     public static final String DOCKER = "docker";
+    public static final String HELM_CHART_TEMPLATES = "templates";
     public static final String BALX = ".balx";
     public static final String DEPLOYMENT_POSTFIX = "-deployment";
     public static final String JOB_POSTFIX = "-job";
@@ -58,6 +59,15 @@ public class KubernetesConstants {
     public static final String DOCKER_CERT_PATH = "DOCKER_CERT_PATH";
     public static final String NGINX = "nginx";
     public static final String DEFAULT_NAMESPACE = "default";
+    public static final String HELM_CHART_YAML_FILE_NAME = "Chart.yaml";
+    public static final String HELM_API_VERSION = "apiVersion";
+    public static final String HELM_API_VERSION_DEFAULT = "v1";
+    public static final String HELM_APP_VERSION = "appVersion";
+    public static final String HELM_APP_VERSION_DEFAULT = "1.0";
+    public static final String HELM_DESCRIPTION = "description";
+    public static final String HELM_NAME = "name";
+    public static final String HELM_VERSION = "version";
+    public static final String HELM_VERSION_DEFAULT = "0.1.0";
 
     /**
      * Restart policy enum.
