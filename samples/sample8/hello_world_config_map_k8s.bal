@@ -66,9 +66,9 @@ function getConfigValue(string instanceId, string property) returns (string) {
 function readFile(string filePath) returns (string) {
     io:Mode permission = "r";
     io:ByteChannel bchannel = io:openFile(filePath, permission);
-    io:CharacterChannel channel = new io:CharacterChannel(bchannel, "UTF-8");
+    io:CharacterChannel cChannel = new io:CharacterChannel(bchannel, "UTF-8");
 
-    var readOutput = channel.read(50);
+    var readOutput = cChannel.read(50);
     match readOutput {
         string text => {
             return text;
