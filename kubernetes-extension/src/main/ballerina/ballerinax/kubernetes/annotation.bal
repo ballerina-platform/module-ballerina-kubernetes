@@ -14,39 +14,39 @@
 // specific language governing permissions and limitations
 // under the License.
 
-documentation {External file type for docker
-    F{{source}} - source path of the file (in your machine)
-    F{{target}} - target path (inside container)
-}
+# External file type for docker.
+#
+# + source - source path of the file (in your machine)
+# + target - target path (inside container)
 public type FileConfig record {
     string source;
     string target;
 };
 
-documentation {Kubernetes deployment configuration
-    F{{name}} - Name of the deployment
-    F{{namespce}} - Kubernetes namespace
-    F{{labels}} - Map of labels for deployment
-    F{{replicas}} - Number of replicas
-    F{{enableLiveness}} - Enable/Disable liveness probe
-    F{{livenessPort}} - Port to check the liveness
-    F{{initialDelaySeconds}} - Initial delay in seconds before performing the first probe
-    F{{periodSeconds}} - Liveness probe interval
-    F{{imagePullPolicy}} - Kubernetes image pull policy
-    F{{image}} - Docker image with tag
-    F{{env}} - Environment varialbe map for containers
-    F{{buildImage}} - Docker image to be build or not
-    F{{dockerHost}} - Docker host IP and docker PORT. (e.g minikube IP and docker PORT)
-    F{{username}} - Username for docker registry
-    F{{password}} - Password for docker registry
-    F{{baseImage}} - Base image for docker image building
-    F{{push}} - Push to remote registry
-    F{{dockerCertPath}} - Docker certificate path
-    F{{copyFiles}} - Array of [External files](kubernetes#FileConfig) for docker image
-    F{{singleYAML}} - Generate a single yaml file with all kubernetes artifacts (services,deployment,ingress,)
-    F{{dependsOn}} - Services this deployment depends on
-    F{{imagePullSecret}} - Image pull secrets
-}
+# Kubernetes deployment configuration.
+#
+# + name - Name of the deployment
+# + namespce - Kubernetes namespace
+# + labels - Map of labels for deployment
+# + replicas - Number of replicas
+# + enableLiveness - Enable/Disable liveness probe
+# + livenessPort - Port to check the liveness
+# + initialDelaySeconds - Initial delay in seconds before performing the first probe
+# + periodSeconds - Liveness probe interval
+# + imagePullPolicy - Kubernetes image pull policy
+# + image - Docker image with tag
+# + env - Environment varialbe map for containers
+# + buildImage - Docker image to be build or not
+# + dockerHost - Docker host IP and docker PORT. (e.g minikube IP and docker PORT)
+# + username - Username for docker registry
+# + password - Password for docker registry
+# + baseImage - Base image for docker image building
+# + push - Push to remote registry
+# + dockerCertPath - Docker certificate path
+# + copyFiles - Array of [External files](kubernetes#FileConfig) for docker image
+# + singleYAML - Generate a single yaml file with all kubernetes artifacts (services,deployment,ingress,)
+# + dependsOn - Services this deployment depends on
+# + imagePullSecret - Image pull secrets
 public type DeploymentConfiguration record {
     string name;
     string namespace;
@@ -72,37 +72,35 @@ public type DeploymentConfiguration record {
     string[] imagePullSecrets;
 };
 
-documentation {@kubernetes:Deployment annotation to configure deplyoment yaml
-}
+# @kubernetes:Deployment annotation to configure deplyoment yaml.
 public annotation<service, endpoint> Deployment DeploymentConfiguration;
 
 
-documentation {Kubernetes service configuration
-    F{{name}} - Name of the service
-    F{{labels}} - Map of labels for deployment
-    F{{serviceType}} - Service type of the service
-}
+# Kubernetes service configuration.
+#
+# + name - Name of the service
+# + labels - Map of labels for deployment
+# + serviceType - Service type of the service
 public type ServiceConfiguration record {
     string name;
     map labels;
     string serviceType;
 };
 
-documentation {@kubernetes:Service annotation to configure service yaml
-}
+# @kubernetes:Service annotation to configure service yaml.
 public annotation<endpoint, service> Service ServiceConfiguration;
 
-documentation{Kubernetes ingress configuration
-    F{{name}} - Name of the ingress
-    F{{endpointName}} - Name of the endpoint ingress attached
-    F{{labels}} - Label map for ingress
-    F{{annotations}} - Map of additional annotations
-    F{{hostname}} - Host name of the ingress
-    F{{path}} - Resource path
-    F{{targetPath}} - Target path for url rewrite
-    F{{ingressClass}} - Ingress class
-    F{{enableTLS}} - Enable/Disable ingress TLS
-}
+# Kubernetes ingress configuration.
+#
+# + name - Name of the ingress
+# + endpointName - Name of the endpoint ingress attached
+# + labels - Label map for ingress
+# + annotations - Map of additional annotations
+# + hostname - Host name of the ingress
+# + path - Resource path
+# + targetPath - Target path for url rewrite
+# + ingressClass - Ingress class
+# + enableTLS - Enable/Disable ingress TLS
 public type IngressConfiguration record {
     string name;
     string endpointName;
@@ -115,17 +113,16 @@ public type IngressConfiguration record {
     boolean enableTLS;
 };
 
-documentation {@kubernetes:Ingress annotation to configure ingress yaml
-}
+# @kubernetes:Ingress annotation to configure ingress yaml.
 public annotation<service, endpoint> Ingress IngressConfiguration;
 
-documentation {Kubernetes Horizontal Pod Autoscaler configuration
-    F{{name}} - Name of the Autoscaler
-    F{{labels}} - Labels for Autoscaler
-    F{{minReplicas}} - Minimum number of replicas
-    F{{maxReplicas}} - Maximum number of replicas
-    F{{cpuPercentage}} - CPU percentage to start scaling
-}
+# Kubernetes Horizontal Pod Autoscaler configuration
+#
+# + name - Name of the Autoscaler
+# + labels - Labels for Autoscaler
+# + minReplicas - Minimum number of replicas
+# + maxReplicas - Maximum number of replicas
+# + cpuPercentage - CPU percentage to start scaling
 public type PodAutoscalerConfig record {
     string name;
     map labels;
@@ -134,17 +131,15 @@ public type PodAutoscalerConfig record {
     int cpuPercentage;
 };
 
-documentation {@kubernetes:HPA annotation to configure horizontal pod autoscaler yaml
-}
+# @kubernetes:HPA annotation to configure horizontal pod autoscaler yaml.
 public annotation<service> HPA PodAutoscalerConfig;
 
-
-documentation {Kubernetes secret volume mount
-    F{{name}} - Name of the volume mount
-    F{{mountPath}} - Mount path
-    F{{readOnly}} - Is mount read only
-    F{{data}} - Paths to data files as an array
-}
+# Kubernetes secret volume mount.
+#
+# + name - Name of the volume mount
+# + mountPath - Mount path
+# + readOnly - Is mount read only
+# + data - Paths to data files as an array
 public type Secret record {
     string name;
     string mountPath;
@@ -152,23 +147,22 @@ public type Secret record {
     string[] data;
 };
 
-documentation {Secret volume mount configurations for kubernetes
-    F{{secrets}} - Array of [Secret](kubernetes.html#Secret)
-}
+#Secret volume mount configurations for kubernetes.
+#
+# + secrets - Array of [Secret](kubernetes.html#Secret)
 public type SecretMount record {
     Secret[] secrets;
 };
 
-documentation {@kubernetes:Secret annotation to configure secrets
-}
+# @kubernetes:Secret annotation to configure secrets.
 public annotation<service> Secret SecretMount;
 
-documentation {Kubernetes Config Map volume mount
-    F{{name}} - Name of the volume mount
-    F{{mountPath}} - Mount path
-    F{{readOnly}} - Is mount read only
-    F{{data}} - Paths to data files
-}
+# Kubernetes Config Map volume mount.
+#
+# + name - Name of the volume mount
+# + mountPath - Mount path
+# + readOnly - Is mount read only
+# + data - Paths to data files
 public type ConfigMap record {
     string name;
     string mountPath;
@@ -176,27 +170,26 @@ public type ConfigMap record {
     string[] data;
 };
 
-documentation {Secret volume mount configurations for kubernetes
-    F{{ballerinaConf}} - path to ballerina configuration file
-    F{{configMaps}} - Array of [ConfigMap](kubernetes.html#ConfigMap)
-}
+# Secret volume mount configurations for kubernetes.
+#
+# + ballerinaConf - path to ballerina configuration file
+# + configMaps - Array of [ConfigMap](kubernetes.html#ConfigMap)
 public type ConfigMapMount record {
     string ballerinaConf;
     ConfigMap[] configMaps;
 };
 
-documentation {@kubernetes:ConfigMap annotation to configure config maps
-}
+# @kubernetes:ConfigMap annotation to configure config maps.
 public annotation<service> ConfigMap ConfigMapMount;
 
-documentation {Kubernetes Persistent Volume Claim
-    F{{name}} - Name of the volume claim
-    F{{mountPath}} - Mount Path
-    F{{accessMode}} - Access mode
-    F{{volumeClaimSize}} - Size of the volume claim
-    F{{annotations}} - Map of annotation values
-    F{{readOnly}} - Is mount read only
-}
+# Kubernetes Persistent Volume Claim.
+#
+# + name - Name of the volume claim
+# + mountPath - Mount Path
+# + accessMode - Access mode
+# + volumeClaimSize - Size of the volume claim
+# + annotations - Map of annotation values
+# + readOnly - Is mount read only
 public type PersistentVolumeClaimConfig record {
     string name;
     string mountPath;
@@ -206,34 +199,33 @@ public type PersistentVolumeClaimConfig record {
     boolean readOnly;
 };
 
-documentation {Persistent Volume Claims configurations for kubernetes
-    F{{volumeClaims}} - Array of [PersistentVolumeClaimConfig](kubernetes.html#PersistentVolumeClaimConfig)
-}
+# Persistent Volume Claims configurations for kubernetes.
+#
+# + volumeClaims - Array of [PersistentVolumeClaimConfig](kubernetes.html#PersistentVolumeClaimConfig)
 public type PersistentVolumeClaims record {
     PersistentVolumeClaimConfig[] volumeClaims;
 };
 
-documentation {@kubernetes:PersistentVolumeClaim annotation to configure Persistent Volume Claims
-}
+# @kubernetes:PersistentVolumeClaim annotation to configure Persistent Volume Claims.
 public annotation<service> PersistentVolumeClaim PersistentVolumeClaims;
 
-documentation {value:"Kubernetes job configuration
-    F{{name}} - Name of the job
-    F{{labels}} - Labels for job
-    F{{restartPolicy}} - Restart policy
-    F{{backoffLimit}} - Backoff limit
-    F{{activeDeadlineSeconds}} - Active deadline seconds
-    F{{schedule}} - Schedule for cron jobs
-    F{{image}} - Docker image with tag
-    F{{env}} - Environment varialbes for container
-    F{{buildImage}} - Docker image to be build or not
-    F{{dockerHost}} - Docker host IP and docker PORT. (e.g minikube IP and docker PORT)
-    F{{username}} - Username for docker registry
-    F{{password}} - Password for docker registry
-    F{{baseImage}} - Base image for docker image building
-    F{{push}} - Push to remote registry
-    F{{dockerCertPath}} - Docker cert path
-}
+# Kubernetes job configuration.
+#
+# + name - Name of the job
+# + labels - Labels for job
+# + restartPolicy - Restart policy
+# + backoffLimit - Backoff limit
+# + activeDeadlineSeconds - Active deadline seconds
+# + schedule - Schedule for cron jobs
+# + image - Docker image with tag
+# + env - Environment varialbes for container
+# + buildImage - Docker image to be build or not
+# + dockerHost - Docker host IP and docker PORT. (e.g minikube IP and docker PORT)
+# + username - Username for docker registry
+# + password - Password for docker registry
+# + baseImage - Base image for docker image building
+# + push - Push to remote registry
+# + dockerCertPath - Docker cert path
 public type JobConfig record {
     string name;
     map labels;
@@ -253,6 +245,5 @@ public type JobConfig record {
     string dockerCertPath;
 };
 
-documentation {@kubernetes:Job annotation to configure kubernetes jobs
-}
+# @kubernetes:Job annotation to configure kubernetes jobs.
 public annotation<function> Job JobConfig;
