@@ -23,6 +23,7 @@ import org.ballerinax.kubernetes.handlers.ConfigMapHandler;
 import org.ballerinax.kubernetes.handlers.DeploymentHandler;
 import org.ballerinax.kubernetes.handlers.DockerHandler;
 import org.ballerinax.kubernetes.handlers.HPAHandler;
+import org.ballerinax.kubernetes.handlers.HelmChartHandler;
 import org.ballerinax.kubernetes.handlers.IngressHandler;
 import org.ballerinax.kubernetes.handlers.JobHandler;
 import org.ballerinax.kubernetes.handlers.PersistentVolumeClaimHandler;
@@ -37,6 +38,8 @@ import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_LATEST_TAG;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
+
+import java.io.File;
 
 /**
  * Generate and write artifacts to files.
@@ -71,6 +74,7 @@ class ArtifactManager {
         new DeploymentHandler().createArtifacts();
         new HPAHandler().createArtifacts();
         new DockerHandler().createArtifacts();
+        new HelmChartHandler().createArtifacts();
         printKubernetesInstructions(outputDir);
     }
 
@@ -94,6 +98,10 @@ class ArtifactManager {
     private void printKubernetesInstructions(String outputDir) {
         KubernetesUtils.printInstruction("\n\n\tRun the following command to deploy the Kubernetes artifacts: ");
         KubernetesUtils.printInstruction("\tkubectl apply -f " + outputDir);
+        DeploymentModel model = this.kubernetesDataHolder.getDeploymentModel();
+        KubernetesUtils.printInstruction("\n\tRun the following command to install the application using Helm: ");
+        KubernetesUtils.printInstruction("\thelm install --name " + model.getName() +
+                " " + new File(outputDir + File.separator + model.getName()).getAbsolutePath());
         KubernetesUtils.printInstruction("");
     }
 

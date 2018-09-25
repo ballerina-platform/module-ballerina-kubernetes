@@ -60,6 +60,20 @@ public class Sample10Test implements SampleTest {
     }
 
     @Test
+    public void validateHelmChartYaml() {
+        Assert.assertTrue(new File(burgerPkgTargetPath + File.separator + 
+                "burger-deployment" + File.separator + "Chart.yaml").exists());
+    }
+    
+    @Test
+    public void validateHelmChartTemplates() {
+        File templateDir = new File(burgerPkgTargetPath + File.separator +
+                "burger-deployment" + File.separator + "templates");
+        Assert.assertTrue(templateDir.isDirectory());
+        Assert.assertTrue(templateDir.list().length > 0);
+    }
+    
+    @Test
     public void validateDockerfile() {
         Assert.assertTrue(new File(burgerPkgTargetPath + File.separator + DOCKER + File.separator + "Dockerfile")
                 .exists());

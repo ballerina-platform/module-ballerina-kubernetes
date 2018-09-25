@@ -22,8 +22,6 @@ import io.fabric8.docker.api.model.ImageInspect;
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.Job;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
@@ -42,7 +40,6 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDocker
 
 public class Sample11Test implements SampleTest {
 
-    private static final Log log = LogFactory.getLog(Sample1Test.class);
     private final String sourceDirPath = SAMPLE_DIR + File.separator + "sample11";
     private final String targetPath = sourceDirPath + File.separator + KUBERNETES;
     private final String dockerImage = "hello_world_job:latest";
