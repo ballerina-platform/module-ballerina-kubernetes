@@ -239,9 +239,9 @@ public class DockerHandler extends AbstractArtifactHandler {
             stringBuffer.append("CMD ballerina run ");
         }
         if (dockerModel.isEnableDebug()) {
-            stringBuffer.append(" --debug ").append(dockerModel.getDebugPort());
+            stringBuffer.append("--debug ").append(dockerModel.getDebugPort()).append(" ");
         }
-        stringBuffer.append(" ").append(dockerModel.getBalxFileName()).append("\n");
+        stringBuffer.append(dockerModel.getBalxFileName()).append("\n");
         return stringBuffer.toString();
     }
 
