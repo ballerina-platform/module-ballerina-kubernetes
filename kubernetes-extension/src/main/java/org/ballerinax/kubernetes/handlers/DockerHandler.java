@@ -231,17 +231,17 @@ public class DockerHandler extends AbstractArtifactHandler {
         if (dockerModel.isService()) {
             stringBuffer.append("EXPOSE ");
             dockerModel.getPorts().forEach(port -> stringBuffer.append(" ").append(port));
-            stringBuffer.append("\n\nCMD ballerina run ").append(dockerModel.getBalxFileName());
+            stringBuffer.append("\n\nCMD ballerina run ");
             if (!KubernetesUtils.isBlank(dockerModel.getCommandArg())) {
                 stringBuffer.append(dockerModel.getCommandArg());
             }
         } else {
-            stringBuffer.append("CMD ballerina run ").append(dockerModel.getBalxFileName());
+            stringBuffer.append("CMD ballerina run ");
         }
         if (dockerModel.isEnableDebug()) {
-            stringBuffer.append(" --debug ").append(dockerModel.getDebugPort());
+            stringBuffer.append("--debug ").append(dockerModel.getDebugPort()).append(" ");
         }
-        stringBuffer.append("\n");
+        stringBuffer.append(dockerModel.getBalxFileName()).append("\n");
         return stringBuffer.toString();
     }
 

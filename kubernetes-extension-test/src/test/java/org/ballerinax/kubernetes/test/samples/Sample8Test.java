@@ -124,8 +124,9 @@ public class Sample8Test implements SampleTest {
         Assert.assertEquals(1, imageInspect.getContainerConfig().getExposedPorts().size());
         Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9090/tcp"));
         // Validate ballerina.conf in run command
-        Assert.assertEquals("CMD [\"/bin/sh\" \"-c\" \"ballerina run hello_world_config_map_k8s.balx --config " +
-                "${CONFIG_FILE}\"]", imageInspect.getContainerConfig().getCmd().get(3));
+        Assert.assertEquals(imageInspect.getContainerConfig().getCmd().get(3),
+                            "CMD [\"/bin/sh\" \"-c\" \"ballerina run --config ${CONFIG_FILE} "
+                                    + "hello_world_config_map_k8s.balx\"]");
     }
 
     @AfterClass
