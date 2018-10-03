@@ -7,7 +7,9 @@ import ballerinax/kubernetes;
     path:"/pizzastore",
     targetPath:"/"
 }
-@kubernetes:Service {}
+@kubernetes:Service {
+    sessionAffinity: "ClientIP"
+}
 endpoint http:Listener pizzaEP {
     port:9099
 };

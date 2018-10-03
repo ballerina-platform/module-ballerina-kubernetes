@@ -119,6 +119,7 @@ public class Sample3Test implements SampleTest {
         Assert.assertEquals(KubernetesConstants.ServiceType.ClusterIP.name(), pizzaSvc.getSpec().getType());
         Assert.assertEquals(1, pizzaSvc.getSpec().getPorts().size());
         Assert.assertEquals(9099, pizzaSvc.getSpec().getPorts().get(0).getPort().intValue());
+        Assert.assertEquals("ClientIP", pizzaSvc.getSpec().getSessionAffinity());
 
         // Assert burgerSvc
         Assert.assertNotNull(burgerSvc);

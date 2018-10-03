@@ -119,6 +119,9 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
                                 "@kubernetes annotations.");
                     }
                     break;
+                case sessionAffinity:
+                    serviceModel.setSessionAffinity(annotationValue);
+                    break;
                 default:
                     break;
             }
@@ -133,6 +136,7 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         name,
         labels,
         serviceType,
-        port
+        port,
+        sessionAffinity
     }
 }
