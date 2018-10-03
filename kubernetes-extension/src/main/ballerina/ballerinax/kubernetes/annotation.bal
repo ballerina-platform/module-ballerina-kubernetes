@@ -75,15 +75,22 @@ public type DeploymentConfiguration record {
 # @kubernetes:Deployment annotation to configure deplyoment yaml.
 public annotation<service, endpoint> Deployment DeploymentConfiguration;
 
+@final public SessionAffinity NONE = "None";
+@final public SessionAffinity CLIENT_IP = "ClientIP";
+
+# Session affinity field for kubernetes services.
+public type SessionAffinity "None"|"ClientIP";
 
 # Kubernetes service configuration.
 #
 # + name - Name of the service
 # + labels - Map of labels for deployment
+# + sessionAffinity - Session affinity for pods
 # + serviceType - Service type of the service
 public type ServiceConfiguration record {
     string name;
     map labels;
+    SessionAffinity? sessionAffinity;
     string serviceType;
 };
 
