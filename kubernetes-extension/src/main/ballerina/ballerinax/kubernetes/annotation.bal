@@ -23,6 +23,38 @@ public type FileConfig record {
     string target;
 };
 
+public type FieldValue record {
+    string fieldPath;
+};
+
+public type SecretKeyValue record {
+    string key;
+    string name;
+};
+
+public type ResourceFieldValue record {
+    string containerName;
+    string ^"resource";
+};
+
+public type ConfigMapKeyValue record {
+    string name;
+    string key;
+};
+
+public type FieldRef record {
+    FieldValue configMapKeyRef;
+};
+public type SecretKeyRef record {
+    SecretKeyValue configMapKeyRef;
+};
+public type ResourceFieldRef record {
+    ResourceFieldValue configMapKeyRef;
+};
+public type ConfigMapKeyRef record {
+    ConfigMapKeyValue configMapKeyRef;
+};
+
 # Kubernetes deployment configuration.
 #
 # + name - Name of the deployment
@@ -58,7 +90,7 @@ public type DeploymentConfiguration record {
     int periodSeconds;
     string imagePullPolicy;
     string image;
-    map env;
+    map<string|FieldRef|SecretKeyRef|ResourceFieldRef|ConfigMapKeyRef> env;
     boolean buildImage;
     string dockerHost;
     string username;

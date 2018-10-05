@@ -24,9 +24,9 @@
             <package name="org.ballerinax.kubernetes.test.samples"/>
         </packages>
 
-        <!--<classes>-->
-        <!--<class name="org.ballerinax.kubernetes.test.samples.Sample2Test"></class>-->
-        <!--</classes>-->
+        <classes>
+            <class name="org.ballerinax.kubernetes.test.EnvVarTest"/>
+        </classes>
     </test>
 
 </suite>

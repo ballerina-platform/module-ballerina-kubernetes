@@ -22,15 +22,19 @@ import org.ballerinalang.model.tree.EndpointNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
+import org.ballerinax.kubernetes.models.EnvVarValueModel;
 import org.ballerinax.kubernetes.models.ExternalFileModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_CERT_PATH;
@@ -91,7 +95,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                     deploymentModel.setUsername(annotationValue);
                     break;
                 case env:
-                    deploymentModel.setEnv(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    deploymentModel.setEnv(getEnvVarMap(keyValue.getValue()));
                     break;
                 case password:
                     deploymentModel.setPassword(annotationValue);
@@ -147,7 +151,31 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         }
         KubernetesContext.getInstance().getDataHolder().setDeploymentModel(deploymentModel);
     }
-
+    
+    /**
+     * Convert environment variable values into a map for deployment model.
+     *
+     * @param envVarValues Value of env field of Deployment annotation.
+     * @return A map of env var models.
+     */
+    private Map<String, EnvVarValueModel> getEnvVarMap(BLangExpression envVarValues) {
+        Map<String, EnvVarValueModel> envVarMap = new LinkedHashMap<>();
+        if (envVarValues instanceof BLangRecordLiteral) {
+            for (BLangRecordLiteral.BLangRecordKeyValue envVar : ((BLangRecordLiteral) envVarValues).keyValuePairs) {
+                String envVarName = envVar.getKey().toString();
+                EnvVarValueModel envVarValue = null;
+                if (envVar.getValue() instanceof BLangLiteral) {
+                    // Value is a string
+                    BLangLiteral value = (BLangLiteral) envVar.getValue();
+                    envVarValue = new EnvVarValueModel(value.toString());
+                }
+                
+                envVarMap.put(envVarName, envVarValue);
+            }
+        }
+        return envVarMap;
+    }
+    
     private Set<ExternalFileModel> getExternalFileMap(BLangRecordLiteral.BLangRecordKeyValue keyValue) throws
             KubernetesPluginException {
         Set<ExternalFileModel> externalFiles = new HashSet<>();

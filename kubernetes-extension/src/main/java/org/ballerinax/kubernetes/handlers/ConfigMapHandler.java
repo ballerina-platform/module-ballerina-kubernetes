@@ -24,6 +24,7 @@ import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.ConfigMapModel;
 import org.ballerinax.kubernetes.models.DeploymentModel;
+import org.ballerinax.kubernetes.models.EnvVarValueModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
@@ -74,7 +75,9 @@ public class ConfigMapHandler extends AbstractArtifactHandler {
                 }
                 DeploymentModel deploymentModel = dataHolder.getDeploymentModel();
                 deploymentModel.setCommandArgs("--config ${CONFIG_FILE} ");
-                deploymentModel.addEnv("CONFIG_FILE", configMapModel.getMountPath() + BALLERINA_CONF_FILE_NAME);
+                EnvVarValueModel envVarValueModel = new EnvVarValueModel(configMapModel.getMountPath() +
+                                                                         BALLERINA_CONF_FILE_NAME);
+                deploymentModel.addEnv("CONFIG_FILE", envVarValueModel);
                 dataHolder.setDeploymentModel(deploymentModel);
             }
             generate(configMapModel);
