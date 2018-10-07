@@ -31,7 +31,7 @@ endpoint http:Listener pizzaEP {
 };
 
 @kubernetes:Deployment {
-    name: "foodstore",
+    name: "resource-field-ref-value",
     image: "pizza-shop:latest",
     env: {
         "MY_CPU_REQUEST": {

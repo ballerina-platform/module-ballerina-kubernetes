@@ -31,7 +31,7 @@ endpoint http:Listener pizzaEP {
 };
 
 @kubernetes:Deployment {
-    name: "foodstore",
+    name: "name-value",
     image: "pizza-shop:latest",
     env: { "location": "SL", "city": "COLOMBO" }
 }

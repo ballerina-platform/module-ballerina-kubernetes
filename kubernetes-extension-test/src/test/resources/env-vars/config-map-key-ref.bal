@@ -31,7 +31,7 @@ endpoint http:Listener pizzaEP {
 };
 
 @kubernetes:Deployment {
-    name: "foodstore",
+    name: "config-map-key-ref",
     image: "pizza-shop:latest",
     env: {
         "SPECIAL_LEVEL_KEY": {

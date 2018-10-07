@@ -31,7 +31,7 @@ endpoint http:Listener pizzaEP {
 };
 
 @kubernetes:Deployment {
-    name: "foodstore",
+    name: "secret-key-ref",
     image: "pizza-shop:latest",
     env: {
         "SECRET_USERNAME": {
