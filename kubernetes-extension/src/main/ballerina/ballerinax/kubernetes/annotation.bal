@@ -23,36 +23,74 @@ public type FileConfig record {
     string target;
 };
 
+# Value for a field.
+#
+# + field - Path of the field
 public type FieldValue record {
     string fieldPath;
+    !...
 };
 
+# Value for a secret key.
+#
+# + name - Name of the secret.
+# + key - Key of the secret.
 public type SecretKeyValue record {
-    string key;
     string name;
+    string key;
+    !...
 };
 
+# Value for resource field.
+#
+# + containerName - Name of the container.
+# + resource - Resource field
 public type ResourceFieldValue record {
     string containerName;
     string ^"resource";
+    !...
 };
 
+# Value for config map key.
+#
+# + name - name of the config.
+# + key - key of the config.
 public type ConfigMapKeyValue record {
     string name;
     string key;
+    !...
 };
 
+# Value from field.
+#
+# + fieldRef - Reference for a field.
 public type FieldRef record {
-    FieldValue configMapKeyRef;
+    FieldValue fieldRef;
+    !...
 };
+
+# Value from secret key.
+#
+# + secretKeyRef - Reference for secret key.
 public type SecretKeyRef record {
-    SecretKeyValue configMapKeyRef;
+    SecretKeyValue secretKeyRef;
+    !...
 };
+
+# Value from resource field.
+#
+# + resourceFieldRef - Reference for resource field.
 public type ResourceFieldRef record {
-    ResourceFieldValue configMapKeyRef;
+    ResourceFieldValue resourceFieldRef;
+    !...
 };
+
+# Value from config map key.
+#
+# + configMapKeyRef - Reference for config map key.
 public type ConfigMapKeyRef record {
     ConfigMapKeyValue configMapKeyRef;
+    !...
 };
 
 # Kubernetes deployment configuration.
@@ -122,7 +160,7 @@ public type SessionAffinity "None"|"ClientIP";
 public type ServiceConfiguration record {
     string name;
     map labels;
-    SessionAffinity? sessionAffinity;
+    SessionAffinity sessionAffinity;
     string serviceType;
 };
 

@@ -19,6 +19,7 @@ package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.EndpointNode;
+import org.ballerinalang.model.tree.NodeKind;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
@@ -30,6 +31,7 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -160,14 +162,68 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
      */
     private Map<String, EnvVarValueModel> getEnvVarMap(BLangExpression envVarValues) {
         Map<String, EnvVarValueModel> envVarMap = new LinkedHashMap<>();
-        if (envVarValues instanceof BLangRecordLiteral) {
+        if (envVarValues.getKind() == NodeKind.RECORD_LITERAL_EXPR) {
             for (BLangRecordLiteral.BLangRecordKeyValue envVar : ((BLangRecordLiteral) envVarValues).keyValuePairs) {
                 String envVarName = envVar.getKey().toString();
                 EnvVarValueModel envVarValue = null;
-                if (envVar.getValue() instanceof BLangLiteral) {
+                if (envVar.getValue().getKind() == NodeKind.LITERAL) {
                     // Value is a string
                     BLangLiteral value = (BLangLiteral) envVar.getValue();
                     envVarValue = new EnvVarValueModel(value.toString());
+                } else if (envVar.getValue().getKind() == NodeKind.RECORD_LITERAL_EXPR) {
+                    BLangRecordLiteral valueFrom = (BLangRecordLiteral) envVar.getValue();
+                    BLangRecordLiteral.BLangRecordKeyValue bRefType = valueFrom.getKeyValuePairs().get(0);
+                    BLangSimpleVarRef refType = (BLangSimpleVarRef) bRefType.getKey();
+                    switch (refType.variableName.toString()) {
+                        case "fieldRef":
+                            BLangRecordLiteral.BLangRecordKeyValue fieldRefValue =
+                                    ((BLangRecordLiteral) bRefType.getValue()).getKeyValuePairs().get(0);
+                            EnvVarValueModel.FieldRef fieldRefModel = new EnvVarValueModel.FieldRef();
+                            fieldRefModel.setFieldPath(fieldRefValue.getValue().toString());
+                            envVarValue = new EnvVarValueModel(fieldRefModel);
+                            break;
+                        case "secretKeyRef":
+                            EnvVarValueModel.SecretKeyRef secretKeyRefModel = new EnvVarValueModel.SecretKeyRef();
+                            for (BLangRecordLiteral.BLangRecordKeyValue secretKeyRefFields :
+                                    ((BLangRecordLiteral) bRefType.getValue()).getKeyValuePairs()) {
+                                if (secretKeyRefFields.getKey().toString().equals("key")) {
+                                    secretKeyRefModel.setKey(secretKeyRefFields.getValue().toString());
+                                } else if (secretKeyRefFields.getKey().toString().equals("name")) {
+                                    secretKeyRefModel.setName(secretKeyRefFields.getValue().toString());
+                                }
+                            }
+                            envVarValue = new EnvVarValueModel(secretKeyRefModel);
+                            break;
+                        case "resourceFieldRef":
+                            EnvVarValueModel.ResourceFieldRef resourceFieldRefModel =
+                                    new EnvVarValueModel.ResourceFieldRef();
+                            for (BLangRecordLiteral.BLangRecordKeyValue resourceFieldRefFields :
+                                    ((BLangRecordLiteral) bRefType.getValue()).getKeyValuePairs()) {
+                                if (resourceFieldRefFields.getKey().toString().equals("containerName")) {
+                                    resourceFieldRefModel.setContainerName(
+                                            resourceFieldRefFields.getValue().toString());
+                                } else if (resourceFieldRefFields.getKey().toString().equals("resource")) {
+                                    resourceFieldRefModel.setResource(resourceFieldRefFields.getValue().toString());
+                                }
+                            }
+                            envVarValue = new EnvVarValueModel(resourceFieldRefModel);
+                            break;
+                        case "configMapKeyRef":
+                            EnvVarValueModel.ConfigMapKeyValue configMapKeyRefModel =
+                                    new EnvVarValueModel.ConfigMapKeyValue();
+                            for (BLangRecordLiteral.BLangRecordKeyValue configMapKeyRefFields :
+                                    ((BLangRecordLiteral) bRefType.getValue()).getKeyValuePairs()) {
+                                if (configMapKeyRefFields.getKey().toString().equals("key")) {
+                                    configMapKeyRefModel.setKey(configMapKeyRefFields.getValue().toString());
+                                } else if (configMapKeyRefFields.getKey().toString().equals("name")) {
+                                    configMapKeyRefModel.setName(configMapKeyRefFields.getValue().toString());
+                                }
+                            }
+                            envVarValue = new EnvVarValueModel(configMapKeyRefModel);
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 
                 envVarMap.put(envVarName, envVarValue);
