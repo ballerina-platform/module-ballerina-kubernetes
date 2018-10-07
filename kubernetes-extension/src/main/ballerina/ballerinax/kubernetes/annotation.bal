@@ -25,7 +25,7 @@ public type FileConfig record {
 
 # Value for a field.
 #
-# + field - Path of the field
+# + fieldPath - Path of the field
 public type FieldValue record {
     string fieldPath;
     !...
@@ -96,7 +96,7 @@ public type ConfigMapKeyRef record {
 # Kubernetes deployment configuration.
 #
 # + name - Name of the deployment
-# + namespce - Kubernetes namespace
+# + namespace - Kubernetes namespace
 # + labels - Map of labels for deployment
 # + replicas - Number of replicas
 # + enableLiveness - Enable/Disable liveness probe
@@ -116,7 +116,7 @@ public type ConfigMapKeyRef record {
 # + copyFiles - Array of [External files](kubernetes#FileConfig) for docker image
 # + singleYAML - Generate a single yaml file with all kubernetes artifacts (services,deployment,ingress,)
 # + dependsOn - Services this deployment depends on
-# + imagePullSecret - Image pull secrets
+# + imagePullSecrets - Image pull secrets
 public type DeploymentConfiguration record {
     string name;
     string namespace;
@@ -294,8 +294,9 @@ public annotation<service> PersistentVolumeClaim PersistentVolumeClaims;
 # + backoffLimit - Backoff limit
 # + activeDeadlineSeconds - Active deadline seconds
 # + schedule - Schedule for cron jobs
-# + image - Docker image with tag
 # + env - Environment varialbes for container
+# + image - Docker image with tag
+# + imagePullPolicy - Policy for pulling an image
 # + buildImage - Docker image to be build or not
 # + dockerHost - Docker host IP and docker PORT. (e.g minikube IP and docker PORT)
 # + username - Username for docker registry
