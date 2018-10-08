@@ -36,7 +36,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -239,7 +239,7 @@ public class KubernetesUtils {
      * @return Map of key values.
      */
     public static Map<String, String> getMap(List<BLangRecordLiteral.BLangRecordKeyValue> keyValues) {
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new LinkedHashMap<>();
         if (keyValues != null) {
             keyValues.forEach(keyValue -> map.put(keyValue.getKey().toString(), keyValue.getValue().toString()));
         }

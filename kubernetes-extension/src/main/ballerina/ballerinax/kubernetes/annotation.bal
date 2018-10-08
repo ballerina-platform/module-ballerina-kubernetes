@@ -23,10 +23,80 @@ public type FileConfig record {
     string target;
 };
 
+# Value for a field.
+#
+# + fieldPath - Path of the field
+public type FieldValue record {
+    string fieldPath;
+    !...
+};
+
+# Value for a secret key.
+#
+# + name - Name of the secret.
+# + key - Key of the secret.
+public type SecretKeyValue record {
+    string name;
+    string key;
+    !...
+};
+
+# Value for resource field.
+#
+# + containerName - Name of the container.
+# + resource - Resource field
+public type ResourceFieldValue record {
+    string containerName;
+    string ^"resource";
+    !...
+};
+
+# Value for config map key.
+#
+# + name - name of the config.
+# + key - key of the config.
+public type ConfigMapKeyValue record {
+    string name;
+    string key;
+    !...
+};
+
+# Value from field.
+#
+# + fieldRef - Reference for a field.
+public type FieldRef record {
+    FieldValue fieldRef;
+    !...
+};
+
+# Value from secret key.
+#
+# + secretKeyRef - Reference for secret key.
+public type SecretKeyRef record {
+    SecretKeyValue secretKeyRef;
+    !...
+};
+
+# Value from resource field.
+#
+# + resourceFieldRef - Reference for resource field.
+public type ResourceFieldRef record {
+    ResourceFieldValue resourceFieldRef;
+    !...
+};
+
+# Value from config map key.
+#
+# + configMapKeyRef - Reference for config map key.
+public type ConfigMapKeyRef record {
+    ConfigMapKeyValue configMapKeyRef;
+    !...
+};
+
 # Kubernetes deployment configuration.
 #
 # + name - Name of the deployment
-# + namespce - Kubernetes namespace
+# + namespace - Kubernetes namespace
 # + labels - Map of labels for deployment
 # + replicas - Number of replicas
 # + enableLiveness - Enable/Disable liveness probe
@@ -46,7 +116,7 @@ public type FileConfig record {
 # + copyFiles - Array of [External files](kubernetes#FileConfig) for docker image
 # + singleYAML - Generate a single yaml file with all kubernetes artifacts (services,deployment,ingress,)
 # + dependsOn - Services this deployment depends on
-# + imagePullSecret - Image pull secrets
+# + imagePullSecrets - Image pull secrets
 public type DeploymentConfiguration record {
     string name;
     string namespace;
@@ -58,7 +128,7 @@ public type DeploymentConfiguration record {
     int periodSeconds;
     string imagePullPolicy;
     string image;
-    map env;
+    map<string|FieldRef|SecretKeyRef|ResourceFieldRef|ConfigMapKeyRef> env;
     boolean buildImage;
     string dockerHost;
     string username;
@@ -90,7 +160,7 @@ public type SessionAffinity "None"|"ClientIP";
 public type ServiceConfiguration record {
     string name;
     map labels;
-    SessionAffinity? sessionAffinity;
+    SessionAffinity sessionAffinity;
     string serviceType;
 };
 
@@ -224,8 +294,9 @@ public annotation<service> PersistentVolumeClaim PersistentVolumeClaims;
 # + backoffLimit - Backoff limit
 # + activeDeadlineSeconds - Active deadline seconds
 # + schedule - Schedule for cron jobs
-# + image - Docker image with tag
 # + env - Environment varialbes for container
+# + image - Docker image with tag
+# + imagePullPolicy - Policy for pulling an image
 # + buildImage - Docker image to be build or not
 # + dockerHost - Docker host IP and docker PORT. (e.g minikube IP and docker PORT)
 # + username - Username for docker registry

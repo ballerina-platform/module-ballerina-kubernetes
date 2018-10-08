@@ -19,8 +19,8 @@ package org.ballerinax.kubernetes.models;
 
 import org.ballerinax.kubernetes.KubernetesConstants;
 
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -42,7 +42,7 @@ public class DeploymentModel extends KubernetesModel {
     private String image;
     private boolean buildImage;
     private String baseImage;
-    private Map<String, String> env;
+    private Map<String, EnvVarValueModel> env;
     private String username;
     private String password;
     private boolean push;
@@ -69,8 +69,8 @@ public class DeploymentModel extends KubernetesModel {
         String baseImageVersion = getClass().getPackage().getImplementationVersion();
         this.baseImage = "ballerina/ballerina:" + baseImageVersion;
         this.push = false;
-        this.labels = new HashMap<>();
-        this.env = new HashMap<>();
+        this.labels = new LinkedHashMap<>();
+        this.env = new LinkedHashMap<>();
         this.imagePullPolicy = KubernetesConstants.ImagePullPolicy.IfNotPresent.name();
         this.dependsOn = new HashSet<>();
 
@@ -154,11 +154,11 @@ public class DeploymentModel extends KubernetesModel {
         this.ports.add(port);
     }
 
-    public Map<String, String> getEnv() {
+    public Map<String, EnvVarValueModel> getEnv() {
         return env;
     }
 
-    public void setEnv(Map<String, String> env) {
+    public void setEnv(Map<String, EnvVarValueModel> env) {
         this.env = env;
     }
 
@@ -214,10 +214,9 @@ public class DeploymentModel extends KubernetesModel {
         this.labels.put(key, value);
     }
 
-    public void addEnv(String key, String value) {
+    public void addEnv(String key, EnvVarValueModel value) {
         env.put(key, value);
     }
-
 
     public PodAutoscalerModel getPodAutoscalerModel() {
         return podAutoscalerModel;
