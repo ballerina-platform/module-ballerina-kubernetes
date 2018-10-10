@@ -151,6 +151,13 @@ public annotation<service, endpoint> Deployment DeploymentConfiguration;
 # Session affinity field for kubernetes services.
 public type SessionAffinity "None"|"ClientIP";
 
+@final public ServiceType CLUSTER_IP = "ClusterIP";
+@final public ServiceType NODE_PORT = "NodePort";
+@final public ServiceType LOAD_BALANCER = "LoadBalancer";
+
+# Service type field for kubernetes services.
+public type ServiceType "NodePort"|"ClusterIP"|"LoadBalancer";
+
 # Kubernetes service configuration.
 #
 # + name - Name of the service
@@ -161,7 +168,7 @@ public type ServiceConfiguration record {
     string name;
     map labels;
     SessionAffinity sessionAffinity;
-    string serviceType;
+    ServiceType serviceType;
 };
 
 # @kubernetes:Service annotation to configure service yaml.
