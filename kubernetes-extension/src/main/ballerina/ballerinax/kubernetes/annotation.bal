@@ -293,6 +293,29 @@ public type PersistentVolumeClaims record {
 # @kubernetes:PersistentVolumeClaim annotation to configure Persistent Volume Claims.
 public annotation<service> PersistentVolumeClaim PersistentVolumeClaims;
 
+# Kubernetes Resource Quota
+#
+# + name - Name of the resource quota
+# + hard - Quotas for the resources
+# + scopes - Scopes of the quota
+public type ResourceQuotaConfig record {
+    string name;
+    map<string> hard;
+    string[] scopes;
+    !...
+};
+
+# Resource Quota configuration for kubernetes.
+#
+# + resourceQuotas - Array of [ResourceQuotaConfig](kubernetes.html#ResourceQuotaConfig)
+public type ResourceQuota record {
+    ResourceQuotaConfig[] resourceQuotas;
+    !...
+};
+
+# @kubernetes:ResourcesQuotas annotation to configure Resource Quotas.
+public annotation<service> ResourcesQuotas ResourceQuota;
+
 # Kubernetes job configuration.
 #
 # + name - Name of the job
