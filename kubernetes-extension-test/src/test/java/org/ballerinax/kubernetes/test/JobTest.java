@@ -50,7 +50,7 @@ public class JobTest {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(sourceDirPath, "ballerina_job.bal"), 0);
         File dockerFile = new File(targetPath + File.separator + DOCKER + File.separator + "Dockerfile");
         Assert.assertTrue(dockerFile.exists());
-        ImageInspect imageInspect = getDockerImage("env_job:latest");
+        ImageInspect imageInspect = getDockerImage(dockerImage);
         Assert.assertNotNull(imageInspect.getContainerConfig());
         File jobYAML = new File(targetPath + File.separator + "ballerina_job_job.yaml");
         Job job = KubernetesHelper.loadYaml(jobYAML);
