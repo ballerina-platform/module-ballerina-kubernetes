@@ -37,7 +37,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.RESOURCE_QUOTA_FILE_
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 
 /**
- *
+ * Test resource quotas
  */
 public class KubernetesResourceQuotaGeneratorTests {
     

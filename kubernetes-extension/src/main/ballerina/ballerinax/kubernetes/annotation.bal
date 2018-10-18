@@ -292,6 +292,7 @@ public type ResourceQuotaScope "Terminating"|"NotTerminating"|"BestEffort"|"NotB
 # Kubernetes Resource Quota
 #
 # + name - Name of the resource quota
+# + labels - Labels for resource quota
 # + hard - Quotas for the resources
 # + scopes - Scopes of the quota
 public type ResourceQuotaConfig record {
