@@ -41,6 +41,11 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
  */
 public class ResourceQuotaHandler extends AbstractArtifactHandler {
     
+    /**
+     * Generate resource quota files.
+     * @param resourceQuotaModel Resource quota models.
+     * @throws KubernetesPluginException Error when writing to file.
+     */
     private void generate(ResourceQuotaModel resourceQuotaModel) throws KubernetesPluginException {
         ResourceQuota resourceQuota = new ResourceQuotaBuilder()
                 .withNewMetadata()
@@ -63,6 +68,11 @@ public class ResourceQuotaHandler extends AbstractArtifactHandler {
         }
     }
     
+    /**
+     * Convert hard limits map.
+     * @param hard Hard limit map from model.
+     * @return Converted map.
+     */
     private Map<String, Quantity> getHard(Map<String, String> hard) {
         return hard.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, hardEntry -> new QuantityBuilder()
@@ -70,6 +80,9 @@ public class ResourceQuotaHandler extends AbstractArtifactHandler {
                         .build()));
     }
     
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void createArtifacts() throws KubernetesPluginException {
         int count = 0;
