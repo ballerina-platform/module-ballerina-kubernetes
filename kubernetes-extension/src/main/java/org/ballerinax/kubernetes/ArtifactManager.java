@@ -27,7 +27,7 @@ import org.ballerinax.kubernetes.handlers.HelmChartHandler;
 import org.ballerinax.kubernetes.handlers.IngressHandler;
 import org.ballerinax.kubernetes.handlers.JobHandler;
 import org.ballerinax.kubernetes.handlers.PersistentVolumeClaimHandler;
-import org.ballerinax.kubernetes.handlers.ResourceQuoataHandler;
+import org.ballerinax.kubernetes.handlers.ResourceQuotaHandler;
 import org.ballerinax.kubernetes.handlers.SecretHandler;
 import org.ballerinax.kubernetes.handlers.ServiceHandler;
 import org.ballerinax.kubernetes.models.DeploymentModel;
@@ -71,7 +71,7 @@ class ArtifactManager {
         new IngressHandler().createArtifacts();
         new SecretHandler().createArtifacts();
         new PersistentVolumeClaimHandler().createArtifacts();
-        new ResourceQuoataHandler().createArtifacts();
+        new ResourceQuotaHandler().createArtifacts();
         new ConfigMapHandler().createArtifacts();
         new DeploymentHandler().createArtifacts();
         new HPAHandler().createArtifacts();

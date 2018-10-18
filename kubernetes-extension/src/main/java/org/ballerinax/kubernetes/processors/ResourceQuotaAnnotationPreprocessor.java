@@ -29,10 +29,10 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getArray;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
@@ -60,11 +60,16 @@ public class ResourceQuotaAnnotationPreprocessor extends AbstractAnnotationProce
                         case name:
                             resourceQuotaModel.setName(getValidName(resolveValue(annotation.getValue().toString())));
                             break;
-                        case hard:
-                            resourceQuotaModel.setHard(getMap(annotationValues));
+                        case labels:
+                            BLangRecordLiteral labelValues = (BLangRecordLiteral) annotation.getValue();
+                            resourceQuotaModel.setLabels(getMap(labelValues.getKeyValuePairs()));
                             break;
-                        case scope:
-                            resourceQuotaModel.setScopes(getScopes(annotation));
+                        case hard:
+                            BLangRecordLiteral hardValueRecord = (BLangRecordLiteral) annotation.getValue();
+                            resourceQuotaModel.setHard(getMap(hardValueRecord.getKeyValuePairs()));
+                            break;
+                        case scopes:
+                            resourceQuotaModel.setScopes(getArray((BLangArrayLiteral) annotation.getValue()));
                             break;
                         default:
                             break;
@@ -76,21 +81,13 @@ public class ResourceQuotaAnnotationPreprocessor extends AbstractAnnotationProce
         KubernetesContext.getInstance().getDataHolder().addResourceQuotaModels(resourceQuotaModels);
     }
     
-    private Set<String> getScopes(BLangRecordLiteral.BLangRecordKeyValue keyValue) {
-        Set<String> scopeSet = new LinkedHashSet<>();
-        List<BLangExpression> configAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
-        for (BLangExpression bLangExpression : configAnnotation) {
-            scopeSet.add(bLangExpression.toString());
-        }
-        return scopeSet;
-    }
-    
     /**
      * Enum class for volume configurations.
      */
     private enum ResourceQuotaConfig {
         name,
+        labels,
         hard,
-        scope
+        scopes
     }
 }

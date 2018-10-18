@@ -33,10 +33,12 @@ import org.wso2.ballerinalang.compiler.util.Names;
 import java.io.File;
 
 @RunWith(Suite.class)
-@SuiteClasses({DockerGeneratorTests.class, KubernetesSecretGeneratorTests.class, KubernetesConfigMapGeneratorTests
-        .class, KubernetesDeploymentGeneratorTests.class, KubernetesHPAGeneratorTests.class,
-        KubernetesServiceGeneratorTests.class, KubernetesIngressGeneratorTests.class, KubernetesSecretGeneratorTests
-        .class, KubernetesVolumeClaimGeneratorTests.class, KubernetesJobGeneratorTests.class})
+@SuiteClasses({DockerGeneratorTests.class, KubernetesSecretGeneratorTests.class,
+               KubernetesConfigMapGeneratorTests.class, KubernetesDeploymentGeneratorTests.class,
+               KubernetesHPAGeneratorTests.class, KubernetesServiceGeneratorTests.class,
+               KubernetesIngressGeneratorTests.class, KubernetesSecretGeneratorTests.class,
+               KubernetesVolumeClaimGeneratorTests.class, KubernetesJobGeneratorTests.class,
+               KubernetesResourceQuotaGeneratorTests.class})
 
 public class HandlerTestSuite {
 

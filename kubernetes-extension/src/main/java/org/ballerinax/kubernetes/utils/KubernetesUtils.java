@@ -32,6 +32,7 @@ import io.fabric8.kubernetes.api.model.SecretKeySelector;
 import io.fabric8.kubernetes.api.model.SecretKeySelectorBuilder;
 import org.apache.commons.io.FileUtils;
 import org.ballerinalang.model.tree.NodeKind;
+import org.ballerinalang.model.tree.expressions.ExpressionNode;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
@@ -57,6 +58,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -271,6 +273,19 @@ public class KubernetesUtils {
             keyValues.forEach(keyValue -> map.put(keyValue.getKey().toString(), keyValue.getValue().toString()));
         }
         return map;
+    }
+    
+    /**
+     * Generate set of string using a {@link BLangArrayLiteral}.
+     * @param bArrayLiteral Array literal.
+     * @return Convert string.
+     */
+    public static Set<String> getArray(BLangArrayLiteral bArrayLiteral) {
+        Set<String> scopeSet = new LinkedHashSet<>();
+        for (ExpressionNode bLangExpression : bArrayLiteral.getExpressions()) {
+            scopeSet.add(bLangExpression.toString());
+        }
+        return scopeSet;
     }
 
     /**
