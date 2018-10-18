@@ -18,6 +18,7 @@
 
 package org.ballerinax.kubernetes.utils;
 
+import org.apache.commons.io.FileUtils;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -27,6 +28,8 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -102,7 +105,6 @@ public class KubernetesUtilsTest {
                     "environment.");
         }
         Assert.assertEquals(KubernetesUtils.resolveValue("demo"), "demo");
-
     }
 
     @Test
@@ -117,5 +119,55 @@ public class KubernetesUtilsTest {
     public void getValidNameTest() {
         String testString = "HELLO_WORLD.DEMO";
         Assert.assertEquals("hello-world-demo", KubernetesUtils.getValidName(testString));
+    }
+    
+    @Test
+    public void copyFileTest() throws IOException, KubernetesPluginException {
+        File testFile = folder.newFile("copy.txt");
+        Path tempDirectory = Files.createTempDirectory("copy-test-");
+        Path destinationFile = tempDirectory.resolve("copy.txt");
+        KubernetesUtils.copyFileOrDirectory(testFile.getAbsolutePath(), destinationFile.toString());
+        
+        // assert
+        Assert.assertTrue(Files.exists(destinationFile));
+        
+        // clean up
+        FileUtils.deleteQuietly(testFile);
+        FileUtils.deleteQuietly(tempDirectory.toFile());
+    }
+    
+    @Test
+    public void copyDirectoryTest() throws IOException, KubernetesPluginException {
+        File testFolder = folder.newFolder("copyDir");
+        Path copy1File = testFolder.toPath().resolve("copy1.txt");
+        Path copy2File = testFolder.toPath().resolve("copy2.txt");
+        Files.createFile(copy1File);
+        Files.createFile(copy2File);
+        
+        Path destinationDir = Files.createTempDirectory("copy-test-");
+        KubernetesUtils.copyFileOrDirectory(testFolder.getAbsolutePath(), destinationDir.toString());
+        
+        // assert
+        Assert.assertTrue(Files.exists(destinationDir));
+        Assert.assertTrue(Files.exists(destinationDir.resolve("copy1.txt")));
+        Assert.assertTrue(Files.exists(destinationDir.resolve("copy2.txt")));
+        
+        // clean up
+        FileUtils.deleteQuietly(testFolder);
+        FileUtils.deleteQuietly(destinationDir.toFile());
+    }
+    
+    @Test
+    public void copyFileToDirectoryTest() throws IOException, KubernetesPluginException {
+        File testFile = folder.newFile("copy.txt");
+        Path destinationDir = Files.createTempDirectory("copy-test-");
+        KubernetesUtils.copyFileOrDirectory(testFile.getAbsolutePath(), destinationDir.toString());
+    
+        // assert
+        Assert.assertTrue(Files.exists(destinationDir.resolve("copy.txt")));
+    
+        // clean up
+        FileUtils.deleteQuietly(testFile);
+        FileUtils.deleteQuietly(destinationDir.toFile());
     }
 }

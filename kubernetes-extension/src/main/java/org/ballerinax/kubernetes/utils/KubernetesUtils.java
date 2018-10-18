@@ -18,6 +18,7 @@
 
 package org.ballerinax.kubernetes.utils;
 
+import org.apache.commons.io.FileUtils;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -28,8 +29,6 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -106,27 +105,32 @@ public class KubernetesUtils {
         }
         throw new KubernetesPluginException("Unable to read contents of the file " + targetFilePath);
     }
-
+    
     /**
-     * Copy file from source to destination.
+     * Copy file or directory.
      *
-     * @param source      source file path
-     * @param destination destination file path
+     * @param source      source file/directory path
+     * @param destination destination file/directory path
      */
-    public static void copyFile(String source, String destination) throws KubernetesPluginException {
-        File sourceFile = new File(source);
-        File destinationFile = new File(destination);
-        try (FileInputStream fileInputStream = new FileInputStream(sourceFile);
-             FileOutputStream fileOutputStream = new FileOutputStream(destinationFile)) {
-            int bufferSize;
-            byte[] buffer = new byte[512];
-            while ((bufferSize = fileInputStream.read(buffer)) > 0) {
-                fileOutputStream.write(buffer, 0, bufferSize);
+    public static void copyFileOrDirectory(String source, String destination) throws KubernetesPluginException {
+        File src = new File(source);
+        File dst = new File(destination);
+        try {
+            // if source is file
+            if (Files.isRegularFile(Paths.get(source))) {
+                if (Files.isDirectory(dst.toPath())) {
+                    // if destination is directory
+                    FileUtils.copyFileToDirectory(src, dst);
+                } else {
+                    // if destination is file
+                    FileUtils.copyFile(src, dst);
+                }
+            } else if (Files.isDirectory(Paths.get(source))) {
+                FileUtils.copyDirectory(src, dst);
             }
         } catch (IOException e) {
             throw new KubernetesPluginException("Error while copying file", e);
         }
-
     }
 
     /**
@@ -272,5 +276,4 @@ public class KubernetesUtils {
     public static String getValidName(String name) {
         return name.toLowerCase(Locale.getDefault()).replace("_", "-").replace(".", "-");
     }
-
 }
