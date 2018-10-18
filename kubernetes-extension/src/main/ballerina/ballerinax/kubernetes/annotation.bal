@@ -332,6 +332,9 @@ public annotation<service> ResourceQuota ResourceQuotas;
 # + baseImage - Base image for docker image building
 # + push - Push to remote registry
 # + dockerCertPath - Docker cert path
+# + copyFiles - Array of [External files](kubernetes#FileConfig) for docker image
+# + imagePullSecrets - Image pull secrets
+# + singleYAML - Generate a single yaml file with all kubernetes artifacts (services,deployment,ingress,)
 public type JobConfig record {
     string name;
     map labels;
@@ -339,7 +342,7 @@ public type JobConfig record {
     string backoffLimit;
     string activeDeadlineSeconds;
     string schedule;
-    map env;
+    map<string|FieldRef|SecretKeyRef|ResourceFieldRef|ConfigMapKeyRef> env;
     string imagePullPolicy;
     string image;
     boolean buildImage;
@@ -349,6 +352,9 @@ public type JobConfig record {
     string baseImage;
     boolean push;
     string dockerCertPath;
+    FileConfig[] copyFiles;
+    string[] imagePullSecrets;
+    boolean singleYAML;
 };
 
 # @kubernetes:Job annotation to configure kubernetes jobs.
