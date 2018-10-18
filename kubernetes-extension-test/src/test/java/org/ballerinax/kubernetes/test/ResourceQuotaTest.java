@@ -141,12 +141,19 @@ public class ResourceQuotaTest {
         File deploymentYAML = Paths.get(targetPath).resolve("multiple-quotas_resource_quota.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         ResourceQuota resourceQuota = KubernetesHelper.loadYaml(deploymentYAML);
-        
-        Assert.assertEquals(resourceQuota.getMetadata().getName(), "minimum-resources");
-        
-        Assert.assertEquals(resourceQuota.getSpec().getHard().size(), 1, "Invalid number of hard limits.");
-        Assert.assertEquals(resourceQuota.getSpec().getHard().get("pods").getAmount(), "1",
-                "Invalid number of pods.");
+    
+        Assert.assertEquals(resourceQuota.getMetadata().getName(), "compute-resources");
+    
+        Assert.assertEquals(resourceQuota.getSpec().getHard().size(), 5, "Invalid number of hard limits.");
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("pods").getAmount(), "4", "Invalid number of pods.");
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.cpu").getAmount(), "1",
+                "Invalid number of cpu requests.");
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.memory").getAmount(), "1Gi",
+                "Invalid number of memory requests.");
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.cpu").getAmount(), "2",
+                "Invalid number of cpu limits");
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.memory").getAmount(), "2Gi",
+                "Invalid number of memory limits.");
         
         // TODO: Assert additional quota
 

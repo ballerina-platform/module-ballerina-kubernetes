@@ -82,7 +82,7 @@ public class ResourceQuotaAnnotationPreprocessor extends AbstractAnnotationProce
     }
     
     /**
-     * Enum class for volume configurations.
+     * Enum class for resource quota configurations.
      */
     private enum ResourceQuotaConfig {
         name,
