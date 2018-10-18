@@ -21,8 +21,11 @@ package org.ballerinax.kubernetes.models;
 import org.ballerinax.kubernetes.KubernetesConstants;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.UNIX_DEFAULT_DOCKER_HOST;
 import static org.ballerinax.kubernetes.KubernetesConstants.WINDOWS_DEFAULT_DOCKER_HOST;
@@ -36,7 +39,7 @@ public class JobModel extends KubernetesModel {
     private int backoffLimit;
     private int activeDeadlineSeconds;
     private String schedule;
-    private HashMap<String, String> env;
+    private Map<String, EnvVarValueModel> env;
     private String imagePullPolicy;
     private String image;
     private boolean buildImage;
@@ -46,14 +49,19 @@ public class JobModel extends KubernetesModel {
     private String baseImage;
     private boolean push;
     private String dockerCertPath;
+    private Set<String> imagePullSecrets;
+    private Set<ExternalFileModel> externalFiles;
+    private boolean singleYAML;
 
     public JobModel() {
         this.labels = new HashMap<>();
-        this.setEnv(new HashMap<>());
+        this.env = new LinkedHashMap<>();
+        this.externalFiles = new HashSet<>();
         this.restartPolicy = KubernetesConstants.RestartPolicy.Never.name();
         String baseImageVersion = getClass().getPackage().getImplementationVersion();
         this.setBaseImage("ballerina/ballerina:" + baseImageVersion);
         this.setPush(false);
+        this.buildImage = true;
         this.labels = new HashMap<>();
         this.setEnv(new HashMap<>());
         this.setImagePullPolicy("IfNotPresent");
@@ -64,6 +72,8 @@ public class JobModel extends KubernetesModel {
             this.dockerHost = UNIX_DEFAULT_DOCKER_HOST;
         }
         this.activeDeadlineSeconds = 20;
+        this.imagePullSecrets = new HashSet<>();
+        this.singleYAML = false;
     }
 
 
@@ -111,12 +121,16 @@ public class JobModel extends KubernetesModel {
         this.schedule = schedule;
     }
 
-    public HashMap<String, String> getEnv() {
+    public Map<String, EnvVarValueModel> getEnv() {
         return env;
     }
 
-    public void setEnv(HashMap<String, String> env) {
+    public void setEnv(Map<String, EnvVarValueModel> env) {
         this.env = env;
+    }
+
+    public void addEnv(String key, EnvVarValueModel value) {
+        env.put(key, value);
     }
 
     public String getImagePullPolicy() {
@@ -190,4 +204,29 @@ public class JobModel extends KubernetesModel {
     public void setDockerCertPath(String dockerCertPath) {
         this.dockerCertPath = dockerCertPath;
     }
+
+    public Set<String> getImagePullSecrets() {
+        return imagePullSecrets;
+    }
+
+    public void setImagePullSecrets(Set<String> imagePullSecrets) {
+        this.imagePullSecrets = imagePullSecrets;
+    }
+
+    public Set<ExternalFileModel> getExternalFiles() {
+        return externalFiles;
+    }
+
+    public void setExternalFiles(Set<ExternalFileModel> externalFiles) {
+        this.externalFiles = externalFiles;
+    }
+
+    public boolean isSingleYAML() {
+        return singleYAML;
+    }
+
+    public void setSingleYAML(boolean singleYAML) {
+        this.singleYAML = singleYAML;
+    }
+
 }

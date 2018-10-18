@@ -19,26 +19,14 @@
 package org.ballerinax.kubernetes.handlers;
 
 
-import io.fabric8.kubernetes.api.model.ConfigMapKeySelector;
-import io.fabric8.kubernetes.api.model.ConfigMapKeySelectorBuilder;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
-import io.fabric8.kubernetes.api.model.EnvVar;
-import io.fabric8.kubernetes.api.model.EnvVarBuilder;
-import io.fabric8.kubernetes.api.model.EnvVarSource;
-import io.fabric8.kubernetes.api.model.EnvVarSourceBuilder;
 import io.fabric8.kubernetes.api.model.LocalObjectReference;
 import io.fabric8.kubernetes.api.model.LocalObjectReferenceBuilder;
-import io.fabric8.kubernetes.api.model.ObjectFieldSelector;
-import io.fabric8.kubernetes.api.model.ObjectFieldSelectorBuilder;
 import io.fabric8.kubernetes.api.model.Probe;
 import io.fabric8.kubernetes.api.model.ProbeBuilder;
-import io.fabric8.kubernetes.api.model.ResourceFieldSelector;
-import io.fabric8.kubernetes.api.model.ResourceFieldSelectorBuilder;
-import io.fabric8.kubernetes.api.model.SecretKeySelector;
-import io.fabric8.kubernetes.api.model.SecretKeySelectorBuilder;
 import io.fabric8.kubernetes.api.model.TCPSocketAction;
 import io.fabric8.kubernetes.api.model.TCPSocketActionBuilder;
 import io.fabric8.kubernetes.api.model.Volume;
@@ -53,7 +41,6 @@ import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.ConfigMapModel;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.DockerModel;
-import org.ballerinax.kubernetes.models.EnvVarValueModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
 import org.ballerinax.kubernetes.models.SecretModel;
@@ -62,12 +49,12 @@ import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.BALX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.populateEnvVar;
 
 /**
  * Generates kubernetes deployment from annotations.
@@ -145,59 +132,6 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                 .build();
     }
 
-    private List<EnvVar> populateEnvVar(Map<String, EnvVarValueModel> envMap) {
-        List<EnvVar> envVars = new ArrayList<>();
-        if (envMap == null) {
-            return envVars;
-        }
-        envMap.forEach((k, v) -> {
-            EnvVar envVar = null;
-            if (v.getValue() != null) {
-                envVar = new EnvVarBuilder().withName(k).withValue(v.getValue()).build();
-            } else if (v.getValueFrom() instanceof EnvVarValueModel.FieldRef) {
-                EnvVarValueModel.FieldRef fieldRefModel = (EnvVarValueModel.FieldRef) v.getValueFrom();
-                
-                ObjectFieldSelector fieldRef =
-                        new ObjectFieldSelectorBuilder().withFieldPath(fieldRefModel.getFieldPath()).build();
-                EnvVarSource envVarSource = new EnvVarSourceBuilder().withFieldRef(fieldRef).build();
-                envVar = new EnvVarBuilder().withName(k).withValueFrom(envVarSource).build();
-            } else if (v.getValueFrom() instanceof EnvVarValueModel.SecretKeyRef) {
-                EnvVarValueModel.SecretKeyRef secretKeyRefModel = (EnvVarValueModel.SecretKeyRef) v.getValueFrom();
-    
-                SecretKeySelector secretRef = new SecretKeySelectorBuilder()
-                        .withName(secretKeyRefModel.getName())
-                        .withKey(secretKeyRefModel.getKey())
-                        .build();
-                EnvVarSource envVarSource = new EnvVarSourceBuilder().withSecretKeyRef(secretRef).build();
-                envVar = new EnvVarBuilder().withName(k).withValueFrom(envVarSource).build();
-            } else if (v.getValueFrom() instanceof EnvVarValueModel.ResourceFieldRef) {
-                EnvVarValueModel.ResourceFieldRef resourceFieldRefModel =
-                        (EnvVarValueModel.ResourceFieldRef) v.getValueFrom();
-    
-                ResourceFieldSelector resourceFieldRef = new ResourceFieldSelectorBuilder()
-                        .withContainerName(resourceFieldRefModel.getContainerName())
-                        .withResource(resourceFieldRefModel.getResource())
-                        .build();
-                EnvVarSource envVarSource = new EnvVarSourceBuilder().withResourceFieldRef(resourceFieldRef).build();
-                envVar = new EnvVarBuilder().withName(k).withValueFrom(envVarSource).build();
-            } else if (v.getValueFrom() instanceof EnvVarValueModel.ConfigMapKeyValue) {
-                EnvVarValueModel.ConfigMapKeyValue configMapKeyValue =
-                        (EnvVarValueModel.ConfigMapKeyValue) v.getValueFrom();
-    
-                ConfigMapKeySelector configMapKey = new ConfigMapKeySelectorBuilder()
-                        .withKey(configMapKeyValue.getKey())
-                        .withName(configMapKeyValue.getName())
-                        .build();
-                EnvVarSource envVarSource = new EnvVarSourceBuilder().withConfigMapKeyRef(configMapKey).build();
-                envVar = new EnvVarBuilder().withName(k).withValueFrom(envVarSource).build();
-            }
-            
-            if (envVar != null) {
-                envVars.add(envVar);
-            }
-        });
-        return envVars;
-    }
 
     private List<Volume> populateVolume(DeploymentModel deploymentModel) {
         List<Volume> volumes = new ArrayList<>();

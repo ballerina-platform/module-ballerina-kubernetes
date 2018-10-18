@@ -19,10 +19,10 @@ import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
 import io.fabric8.kubernetes.api.model.CronJob;
 import io.fabric8.kubernetes.api.model.CronJobBuilder;
-import io.fabric8.kubernetes.api.model.EnvVar;
-import io.fabric8.kubernetes.api.model.EnvVarBuilder;
 import io.fabric8.kubernetes.api.model.Job;
 import io.fabric8.kubernetes.api.model.JobBuilder;
+import io.fabric8.kubernetes.api.model.LocalObjectReference;
+import io.fabric8.kubernetes.api.model.LocalObjectReferenceBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -33,7 +33,6 @@ import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.BALX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_LATEST_TAG;
@@ -42,6 +41,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.JOB_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.populateEnvVar;
 
 /**
  * Job generator.
@@ -65,17 +65,6 @@ public class JobHandler extends AbstractArtifactHandler {
 
     }
 
-    private List<EnvVar> populateEnvVar(Map<String, String> envMap) {
-        List<EnvVar> envVars = new ArrayList<>();
-        if (envMap == null) {
-            return envVars;
-        }
-        envMap.forEach((k, v) -> {
-            EnvVar envVar = new EnvVarBuilder().withName(k).withValue(v).build();
-            envVars.add(envVar);
-        });
-        return envVars;
-    }
 
     private Container generateContainer(JobModel jobModel) {
         return new ContainerBuilder()
@@ -97,10 +86,19 @@ public class JobHandler extends AbstractArtifactHandler {
                 .withNewSpec()
                 .withRestartPolicy(jobModel.getRestartPolicy())
                 .withContainers(generateContainer(jobModel))
+                .withImagePullSecrets(getImagePullSecrets(jobModel))
                 .endSpec()
                 .endTemplate()
                 .endSpec();
         return jobBuilder.build();
+    }
+
+    private List<LocalObjectReference> getImagePullSecrets(JobModel jobModel) {
+        List<LocalObjectReference> imagePullSecrets = new ArrayList<>();
+        for (String imagePullSecret : jobModel.getImagePullSecrets()) {
+            imagePullSecrets.add(new LocalObjectReferenceBuilder().withName(imagePullSecret).build());
+        }
+        return imagePullSecrets;
     }
 
     private CronJob getCronJob(JobModel jobModel) {
@@ -152,6 +150,8 @@ public class JobHandler extends AbstractArtifactHandler {
         dockerModel.setService(false);
         dockerModel.setDockerHost(jobModel.getDockerHost());
         dockerModel.setDockerCertPath(jobModel.getDockerCertPath());
+        dockerModel.setBuildImage(jobModel.isBuildImage());
+        dockerModel.setExternalFiles(jobModel.getExternalFiles());
         return dockerModel;
     }
 }
