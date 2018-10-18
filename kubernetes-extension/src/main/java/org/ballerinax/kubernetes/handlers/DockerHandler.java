@@ -239,7 +239,7 @@ public class DockerHandler extends AbstractArtifactHandler {
         if (!KubernetesUtils.isBlank(dockerModel.getCommandArg())) {
             stringBuffer.append(dockerModel.getCommandArg());
         }
-
+    
         if (dockerModel.isEnableDebug()) {
             stringBuffer.append("--debug ").append(dockerModel.getDebugPort()).append(" ");
         }
