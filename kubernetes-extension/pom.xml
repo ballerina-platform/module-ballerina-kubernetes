@@ -237,6 +237,7 @@
                                 <includes>
                                     <include>io.fabric8:*</include>
                                     <include>commons-io:commons-io</include>
+                                    <include>commons-io.wso2:commons-io</include>
                                     <include>commons-codec:commons-codec</include>
                                     <include>javax.validation:validation-api</include>
                                     <include>com.squareup.okhttp3:okhttp</include>
