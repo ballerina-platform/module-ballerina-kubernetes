@@ -143,7 +143,7 @@ public type DeploymentConfiguration record {
 };
 
 # @kubernetes:Deployment annotation to configure deplyoment yaml.
-public annotation<service, endpoint> Deployment DeploymentConfiguration;
+public annotation<service, function, endpoint> Deployment DeploymentConfiguration;
 
 # Session affinity field for kubernetes services.
 public type SessionAffinity "None"|"ClientIP";
