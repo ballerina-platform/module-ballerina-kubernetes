@@ -29,6 +29,9 @@ import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_CERT_PATH;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_HOST;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getEnvVarMap;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getExternalFileMap;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getImagePullSecrets;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
@@ -70,6 +73,45 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
                 case schedule:
                     jobModel.setSchedule(annotationValue);
                     break;
+                case username:
+                    jobModel.setUsername(annotationValue);
+                    break;
+                case env:
+                    jobModel.setEnv(getEnvVarMap(keyValue.getValue()));
+                    break;
+                case password:
+                    jobModel.setPassword(annotationValue);
+                    break;
+                case baseImage:
+                    jobModel.setBaseImage(annotationValue);
+                    break;
+                case push:
+                    jobModel.setPush(Boolean.valueOf(annotationValue));
+                    break;
+                case buildImage:
+                    jobModel.setBuildImage(Boolean.valueOf(annotationValue));
+                    break;
+                case image:
+                    jobModel.setImage(annotationValue);
+                    break;
+                case dockerHost:
+                    jobModel.setDockerHost(annotationValue);
+                    break;
+                case dockerCertPath:
+                    jobModel.setDockerCertPath(annotationValue);
+                    break;
+                case imagePullPolicy:
+                    jobModel.setImagePullPolicy(annotationValue);
+                    break;
+                case copyFiles:
+                    jobModel.setExternalFiles(getExternalFileMap(keyValue));
+                    break;
+                case singleYAML:
+                    jobModel.setSingleYAML(Boolean.valueOf(annotationValue));
+                    break;
+                case imagePullSecrets:
+                    jobModel.setImagePullSecrets(getImagePullSecrets(keyValue));
+                    break;
                 default:
                     break;
             }
@@ -96,6 +138,20 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
         restartPolicy,
         backoffLimit,
         activeDeadlineSeconds,
-        schedule
+        schedule,
+        env,
+        buildImage,
+        dockerHost,
+        username,
+        password,
+        baseImage,
+        image,
+        imagePullPolicy,
+        push,
+        dockerCertPath,
+        copyFiles,
+        singleYAML,
+        dependsOn,
+        imagePullSecrets
     }
 }
