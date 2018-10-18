@@ -145,15 +145,8 @@ public type DeploymentConfiguration record {
 # @kubernetes:Deployment annotation to configure deplyoment yaml.
 public annotation<service, endpoint> Deployment DeploymentConfiguration;
 
-@final public SessionAffinity NONE = "None";
-@final public SessionAffinity CLIENT_IP = "ClientIP";
-
 # Session affinity field for kubernetes services.
 public type SessionAffinity "None"|"ClientIP";
-
-@final public ServiceType CLUSTER_IP = "ClusterIP";
-@final public ServiceType NODE_PORT = "NodePort";
-@final public ServiceType LOAD_BALANCER = "LoadBalancer";
 
 # Service type field for kubernetes services.
 public type ServiceType "NodePort"|"ClusterIP"|"LoadBalancer";
@@ -166,9 +159,9 @@ public type ServiceType "NodePort"|"ClusterIP"|"LoadBalancer";
 # + serviceType - Service type of the service
 public type ServiceConfiguration record {
     string name;
-    map labels;
-    SessionAffinity sessionAffinity;
-    ServiceType serviceType;
+    map<string>? labels;
+    SessionAffinity? sessionAffinity;
+    ServiceType? serviceType;
 };
 
 # @kubernetes:Service annotation to configure service yaml.
@@ -292,6 +285,34 @@ public type PersistentVolumeClaims record {
 
 # @kubernetes:PersistentVolumeClaim annotation to configure Persistent Volume Claims.
 public annotation<service> PersistentVolumeClaim PersistentVolumeClaims;
+
+# Scopes for kubernetes resource quotas
+public type ResourceQuotaScope "Terminating"|"NotTerminating"|"BestEffort"|"NotBestEffort";
+
+# Kubernetes Resource Quota
+#
+# + name - Name of the resource quota
+# + labels - Labels for resource quota
+# + hard - Quotas for the resources
+# + scopes - Scopes of the quota
+public type ResourceQuotaConfig record {
+    string name;
+    map<string>? labels;
+    map<string> hard;
+    ResourceQuotaScope[] scopes = [];
+    !...
+};
+
+# Resource Quota configuration for kubernetes.
+#
+# + resourceQuotas - Array of [ResourceQuotaConfig](kubernetes.html#ResourceQuotaConfig)
+public type ResourceQuotas record {
+    ResourceQuotaConfig[] resourceQuotas;
+    !...
+};
+
+# @kubernetes:ResourcesQuotas annotation to configure Resource Quotas.
+public annotation<service> ResourceQuota ResourceQuotas;
 
 # Kubernetes job configuration.
 #

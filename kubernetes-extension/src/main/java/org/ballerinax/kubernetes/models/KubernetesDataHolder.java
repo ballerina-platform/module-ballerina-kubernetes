@@ -37,6 +37,7 @@ public class KubernetesDataHolder {
     private Set<IngressModel> ingressModelSet;
     private Set<ConfigMapModel> configMapModelSet;
     private Set<PersistentVolumeClaimModel> volumeClaimModelSet;
+    private Set<ResourceQuotaModel> resourceQuotaModelSet;
     private JobModel jobModel;
     private String balxFilePath;
     private String outputDir;
@@ -50,6 +51,7 @@ public class KubernetesDataHolder {
         this.volumeClaimModelSet = new HashSet<>();
         this.ingressModelSet = new HashSet<>();
         this.deploymentModel = new DeploymentModel();
+        this.resourceQuotaModelSet = new HashSet<>();
 //        this.namespace = "";
     }
 
@@ -100,7 +102,15 @@ public class KubernetesDataHolder {
     public void addPersistentVolumeClaims(Set<PersistentVolumeClaimModel> persistentVolumeClaims) {
         this.volumeClaimModelSet.addAll(persistentVolumeClaims);
     }
-
+    
+    public Set<ResourceQuotaModel> getResourceQuotaModels() {
+        return resourceQuotaModelSet;
+    }
+    
+    public void addResourceQuotaModels(Set<ResourceQuotaModel> resourceQuotaModels) {
+        this.resourceQuotaModelSet = resourceQuotaModels;
+    }
+    
     public Map<String, ServiceModel> getbEndpointToK8sServiceMap() {
         return bEndpointToK8sServiceMap;
     }
