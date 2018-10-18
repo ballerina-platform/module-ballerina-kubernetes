@@ -145,8 +145,15 @@ public type DeploymentConfiguration record {
 # @kubernetes:Deployment annotation to configure deplyoment yaml.
 public annotation<service, function, endpoint> Deployment DeploymentConfiguration;
 
+@final public SessionAffinity NONE = "None";
+@final public SessionAffinity CLIENT_IP = "ClientIP";
+
 # Session affinity field for kubernetes services.
 public type SessionAffinity "None"|"ClientIP";
+
+@final public ServiceType CLUSTER_IP = "ClusterIP";
+@final public ServiceType NODE_PORT = "NodePort";
+@final public ServiceType LOAD_BALANCER = "LoadBalancer";
 
 # Service type field for kubernetes services.
 public type ServiceType "NodePort"|"ClusterIP"|"LoadBalancer";
