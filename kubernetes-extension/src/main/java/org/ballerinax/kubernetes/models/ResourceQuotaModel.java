@@ -28,12 +28,22 @@ import java.util.Set;
  * Kubernetes Resource Quota annotations model class.
  */
 public class ResourceQuotaModel extends KubernetesModel {
+    private Map<String, String> labels;
     private Map<String, String> hard;
     private Set<String> scopes;
     
     public ResourceQuotaModel() {
+        labels = new LinkedHashMap<>();
         hard = new LinkedHashMap<>();
         scopes = new LinkedHashSet<>();
+    }
+    
+    public Map<String, String> getLabels() {
+        return labels;
+    }
+    
+    public void setLabels(Map<String, String> labels) {
+        this.labels = labels;
     }
     
     public Map<String, String> getHard() {
@@ -61,16 +71,17 @@ public class ResourceQuotaModel extends KubernetesModel {
             return false;
         }
         ResourceQuotaModel that = (ResourceQuotaModel) o;
-        return Objects.equals(getHard(), that.getHard()) && Objects.equals(getScopes(), that.getScopes());
+        return Objects.equals(getLabels(), that.getLabels()) && Objects.equals(getHard(), that.getHard()) &&
+               Objects.equals(getScopes(), that.getScopes());
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(getHard(), getScopes());
+        return Objects.hash(getLabels(), getHard(), getScopes());
     }
     
     @Override
     public String toString() {
-        return "ResourceQuotaModel{" + "hard=" + hard + ", scopes=" + scopes + '}';
+        return "ResourceQuotaModel{" + "labels=" + labels + ", hard=" + hard + ", scopes=" + scopes + '}';
     }
 }

@@ -39,22 +39,23 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 /**
  * Generates kubernetes resource quotas.
  */
-public class ResourceQuoataHandler extends AbstractArtifactHandler {
+public class ResourceQuotaHandler extends AbstractArtifactHandler {
     
     private void generate(ResourceQuotaModel resourceQuotaModel) throws KubernetesPluginException {
         ResourceQuota resourceQuota = new ResourceQuotaBuilder()
                 .withNewMetadata()
                 .withName(resourceQuotaModel.getName())
+                .withLabels(resourceQuotaModel.getLabels())
                 .endMetadata()
                 .withNewSpec()
                 .withHard(getHard(resourceQuotaModel.getHard()))
                 .withScopes(new ArrayList<>(resourceQuotaModel.getScopes()))
                 .endSpec()
                 .build();
-    
+        
         try {
-            String claimContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(resourceQuota);
-            KubernetesUtils.writeToFile(claimContent, RESOURCE_QUOTA_FILE_POSTFIX + YAML);
+            String resourceQuotaContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(resourceQuota);
+            KubernetesUtils.writeToFile(resourceQuotaContent, RESOURCE_QUOTA_FILE_POSTFIX + YAML);
         } catch (IOException e) {
             String errorMessage = "Error while generating yaml file for resource quotas: " +
                                   resourceQuotaModel.getName();
@@ -81,6 +82,6 @@ public class ResourceQuoataHandler extends AbstractArtifactHandler {
             generate(resourceQuotaModel);
             OUT.print("\t@kubernetes:ResourceQuota \t\t - complete " + count + "/" + resourceQuotas.size() + "\r");
         }
-    
+        
     }
 }

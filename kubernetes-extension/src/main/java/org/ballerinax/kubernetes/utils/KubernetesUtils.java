@@ -18,11 +18,13 @@
 
 package org.ballerinax.kubernetes.utils;
 
+import org.ballerinalang.model.tree.expressions.ExpressionNode;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
 import java.io.File;
@@ -37,10 +39,12 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 
@@ -244,6 +248,19 @@ public class KubernetesUtils {
             keyValues.forEach(keyValue -> map.put(keyValue.getKey().toString(), keyValue.getValue().toString()));
         }
         return map;
+    }
+    
+    /**
+     * Generate set of string using a {@link BLangArrayLiteral}.
+     * @param bArrayLiteral Array literal.
+     * @return Convert string.
+     */
+    public static Set<String> getArray(BLangArrayLiteral bArrayLiteral) {
+        Set<String> scopeSet = new LinkedHashSet<>();
+        for (ExpressionNode bLangExpression : bArrayLiteral.getExpressions()) {
+            scopeSet.add(bLangExpression.toString());
+        }
+        return scopeSet;
     }
 
     /**
