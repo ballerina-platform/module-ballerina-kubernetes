@@ -30,16 +30,21 @@ import io.fabric8.kubernetes.api.model.ResourceFieldSelector;
 import io.fabric8.kubernetes.api.model.ResourceFieldSelectorBuilder;
 import io.fabric8.kubernetes.api.model.SecretKeySelector;
 import io.fabric8.kubernetes.api.model.SecretKeySelectorBuilder;
-import org.ballerinalang.model.tree.NodeKind;
 import org.apache.commons.io.FileUtils;
+import org.ballerinalang.model.tree.NodeKind;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
+import org.ballerinax.kubernetes.models.EnvVarValueModel;
+import org.ballerinax.kubernetes.models.ExternalFileModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
 
 import java.io.File;
 import java.io.IOException;
@@ -269,9 +274,10 @@ public class KubernetesUtils {
         }
         return map;
     }
-    
+
     /**
      * Generate set of string using a {@link BLangArrayLiteral}.
+     *
      * @param bArrayLiteral Array literal.
      * @return Convert string.
      */
