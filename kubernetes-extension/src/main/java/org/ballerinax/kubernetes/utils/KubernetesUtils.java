@@ -125,7 +125,7 @@ public class KubernetesUtils {
         }
         throw new KubernetesPluginException("Unable to read contents of the file " + targetFilePath);
     }
-
+    
     /**
      * Copy file or directory.
      *
@@ -151,7 +151,6 @@ public class KubernetesUtils {
         } catch (IOException e) {
             throw new KubernetesPluginException("Error while copying file", e);
         }
-
     }
 
     /**
