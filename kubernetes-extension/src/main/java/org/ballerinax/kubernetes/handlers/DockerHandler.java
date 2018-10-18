@@ -229,7 +229,7 @@ public class DockerHandler extends AbstractArtifactHandler {
                     .append("\n");
         });
     
-        if (dockerModel.getPorts().size() > 0) {
+        if (dockerModel.getPorts() != null && dockerModel.getPorts().size() > 0) {
             stringBuffer.append("EXPOSE ");
             dockerModel.getPorts().forEach(port -> stringBuffer.append(" ").append(port));
         }
