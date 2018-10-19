@@ -27,6 +27,7 @@
         <classes>
             <class name="org.ballerinax.kubernetes.test.EnvVarTest"/>
             <class name="org.ballerinax.kubernetes.test.JobTest"/>
+            <class name="org.ballerinax.kubernetes.test.MainFunctionDeploymentTest"/>
         </classes>
     </test>
 
