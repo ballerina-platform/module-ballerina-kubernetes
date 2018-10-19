@@ -143,10 +143,17 @@ public type DeploymentConfiguration record {
 };
 
 # @kubernetes:Deployment annotation to configure deplyoment yaml.
-public annotation<service, endpoint> Deployment DeploymentConfiguration;
+public annotation<service, function, endpoint> Deployment DeploymentConfiguration;
+
+@final public SessionAffinity NONE = "None";
+@final public SessionAffinity CLIENT_IP = "ClientIP";
 
 # Session affinity field for kubernetes services.
 public type SessionAffinity "None"|"ClientIP";
+
+@final public ServiceType CLUSTER_IP = "ClusterIP";
+@final public ServiceType NODE_PORT = "NodePort";
+@final public ServiceType LOAD_BALANCER = "LoadBalancer";
 
 # Service type field for kubernetes services.
 public type ServiceType "NodePort"|"ClusterIP"|"LoadBalancer";
@@ -332,6 +339,9 @@ public annotation<service> ResourceQuota ResourceQuotas;
 # + baseImage - Base image for docker image building
 # + push - Push to remote registry
 # + dockerCertPath - Docker cert path
+# + copyFiles - Array of [External files](kubernetes#FileConfig) for docker image
+# + imagePullSecrets - Image pull secrets
+# + singleYAML - Generate a single yaml file with all kubernetes artifacts (services,deployment,ingress,)
 public type JobConfig record {
     string name;
     map labels;
@@ -339,7 +349,7 @@ public type JobConfig record {
     string backoffLimit;
     string activeDeadlineSeconds;
     string schedule;
-    map env;
+    map<string|FieldRef|SecretKeyRef|ResourceFieldRef|ConfigMapKeyRef> env;
     string imagePullPolicy;
     string image;
     boolean buildImage;
@@ -349,6 +359,9 @@ public type JobConfig record {
     string baseImage;
     boolean push;
     string dockerCertPath;
+    FileConfig[] copyFiles;
+    string[] imagePullSecrets;
+    boolean singleYAML;
 };
 
 # @kubernetes:Job annotation to configure kubernetes jobs.

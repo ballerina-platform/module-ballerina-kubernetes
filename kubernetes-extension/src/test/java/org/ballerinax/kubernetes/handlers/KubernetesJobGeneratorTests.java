@@ -23,6 +23,7 @@ import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.Job;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.EnvVarValueModel;
 import org.ballerinax.kubernetes.models.JobModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.junit.Assert;
@@ -53,8 +54,9 @@ public class KubernetesJobGeneratorTests {
         jobModel.setLabels(labels);
         jobModel.setImage(imageName);
         jobModel.setImagePullPolicy(imagePullPolicy);
-        HashMap<String, String> env = new HashMap<>();
-        env.put("ENV_VAR", "ENV");
+        Map<String, EnvVarValueModel> env = new HashMap<>();
+        EnvVarValueModel testEnvVar = new EnvVarValueModel("ENV");
+        env.put("ENV_VAR", testEnvVar);
         jobModel.setEnv(env);
         KubernetesContext.getInstance().getDataHolder().setJobModel(jobModel);
 

@@ -18,15 +18,33 @@
 
 package org.ballerinax.kubernetes.utils;
 
+import io.fabric8.kubernetes.api.model.ConfigMapKeySelector;
+import io.fabric8.kubernetes.api.model.ConfigMapKeySelectorBuilder;
+import io.fabric8.kubernetes.api.model.EnvVar;
+import io.fabric8.kubernetes.api.model.EnvVarBuilder;
+import io.fabric8.kubernetes.api.model.EnvVarSource;
+import io.fabric8.kubernetes.api.model.EnvVarSourceBuilder;
+import io.fabric8.kubernetes.api.model.ObjectFieldSelector;
+import io.fabric8.kubernetes.api.model.ObjectFieldSelectorBuilder;
+import io.fabric8.kubernetes.api.model.ResourceFieldSelector;
+import io.fabric8.kubernetes.api.model.ResourceFieldSelectorBuilder;
+import io.fabric8.kubernetes.api.model.SecretKeySelector;
+import io.fabric8.kubernetes.api.model.SecretKeySelectorBuilder;
 import org.apache.commons.io.FileUtils;
+import org.ballerinalang.model.tree.NodeKind;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
+import org.ballerinax.kubernetes.models.EnvVarValueModel;
+import org.ballerinax.kubernetes.models.ExternalFileModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +54,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -105,7 +125,7 @@ public class KubernetesUtils {
         }
         throw new KubernetesPluginException("Unable to read contents of the file " + targetFilePath);
     }
-    
+
     /**
      * Copy file or directory.
      *
@@ -131,6 +151,7 @@ public class KubernetesUtils {
         } catch (IOException e) {
             throw new KubernetesPluginException("Error while copying file", e);
         }
+
     }
 
     /**
@@ -253,9 +274,10 @@ public class KubernetesUtils {
         }
         return map;
     }
-    
+
     /**
      * Generate set of string using a {@link BLangArrayLiteral}.
+     *
      * @param bArrayLiteral Array literal.
      * @return Convert string.
      */
@@ -275,5 +297,198 @@ public class KubernetesUtils {
      */
     public static String getValidName(String name) {
         return name.toLowerCase(Locale.getDefault()).replace("_", "-").replace(".", "-");
+    }
+
+    /**
+     * Convert environment variable values into a map for deployment model.
+     *
+     * @param envVarValues Value of env field of Deployment annotation.
+     * @return A map of env var models.
+     */
+    public static Map<String, EnvVarValueModel> getEnvVarMap(BLangExpression envVarValues) {
+        Map<String, EnvVarValueModel> envVarMap = new LinkedHashMap<>();
+        if (envVarValues.getKind() == NodeKind.RECORD_LITERAL_EXPR && envVarValues instanceof BLangRecordLiteral) {
+            for (BLangRecordLiteral.BLangRecordKeyValue envVar : ((BLangRecordLiteral) envVarValues).keyValuePairs) {
+                String envVarName = envVar.getKey().toString();
+                EnvVarValueModel envVarValue = null;
+                if (envVar.getValue().getKind() == NodeKind.LITERAL) {
+                    // Value is a string
+                    BLangLiteral value = (BLangLiteral) envVar.getValue();
+                    envVarValue = new EnvVarValueModel(value.toString());
+                } else if (envVar.getValue().getKind() == NodeKind.RECORD_LITERAL_EXPR) {
+                    BLangRecordLiteral valueFrom = (BLangRecordLiteral) envVar.getValue();
+                    BLangRecordLiteral.BLangRecordKeyValue bRefType = valueFrom.getKeyValuePairs().get(0);
+                    BLangSimpleVarRef refType = (BLangSimpleVarRef) bRefType.getKey();
+                    switch (refType.variableName.toString()) {
+                        case "fieldRef":
+                            BLangRecordLiteral.BLangRecordKeyValue fieldRefValue =
+                                    ((BLangRecordLiteral) bRefType.getValue()).getKeyValuePairs().get(0);
+                            EnvVarValueModel.FieldRef fieldRefModel = new EnvVarValueModel.FieldRef();
+                            fieldRefModel.setFieldPath(fieldRefValue.getValue().toString());
+                            envVarValue = new EnvVarValueModel(fieldRefModel);
+                            break;
+                        case "secretKeyRef":
+                            EnvVarValueModel.SecretKeyRef secretKeyRefModel = new EnvVarValueModel.SecretKeyRef();
+                            for (BLangRecordLiteral.BLangRecordKeyValue secretKeyRefFields :
+                                    ((BLangRecordLiteral) bRefType.getValue()).getKeyValuePairs()) {
+                                if (secretKeyRefFields.getKey().toString().equals("key")) {
+                                    secretKeyRefModel.setKey(secretKeyRefFields.getValue().toString());
+                                } else if (secretKeyRefFields.getKey().toString().equals("name")) {
+                                    secretKeyRefModel.setName(secretKeyRefFields.getValue().toString());
+                                }
+                            }
+                            envVarValue = new EnvVarValueModel(secretKeyRefModel);
+                            break;
+                        case "resourceFieldRef":
+                            EnvVarValueModel.ResourceFieldRef resourceFieldRefModel =
+                                    new EnvVarValueModel.ResourceFieldRef();
+                            for (BLangRecordLiteral.BLangRecordKeyValue resourceFieldRefFields :
+                                    ((BLangRecordLiteral) bRefType.getValue()).getKeyValuePairs()) {
+                                if (resourceFieldRefFields.getKey().toString().equals("containerName")) {
+                                    resourceFieldRefModel.setContainerName(
+                                            resourceFieldRefFields.getValue().toString());
+                                } else if (resourceFieldRefFields.getKey().toString().equals("resource")) {
+                                    resourceFieldRefModel.setResource(resourceFieldRefFields.getValue().toString());
+                                }
+                            }
+                            envVarValue = new EnvVarValueModel(resourceFieldRefModel);
+                            break;
+                        case "configMapKeyRef":
+                            EnvVarValueModel.ConfigMapKeyValue configMapKeyRefModel =
+                                    new EnvVarValueModel.ConfigMapKeyValue();
+                            for (BLangRecordLiteral.BLangRecordKeyValue configMapKeyRefFields :
+                                    ((BLangRecordLiteral) bRefType.getValue()).getKeyValuePairs()) {
+                                if (configMapKeyRefFields.getKey().toString().equals("key")) {
+                                    configMapKeyRefModel.setKey(configMapKeyRefFields.getValue().toString());
+                                } else if (configMapKeyRefFields.getKey().toString().equals("name")) {
+                                    configMapKeyRefModel.setName(configMapKeyRefFields.getValue().toString());
+                                }
+                            }
+                            envVarValue = new EnvVarValueModel(configMapKeyRefModel);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                envVarMap.put(envVarName, envVarValue);
+            }
+        }
+        return envVarMap;
+    }
+
+    /**
+     * Get Image pull secrets.
+     *
+     * @param keyValue Value of imagePullSecret field of Job annotation.
+     * @return A set of image pull secrets.
+     */
+    public static Set<String> getImagePullSecrets(BLangRecordLiteral.BLangRecordKeyValue keyValue) {
+        Set<String> imagePullSecrets = new HashSet<>();
+        List<BLangExpression> configAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
+        for (BLangExpression bLangExpression : configAnnotation) {
+            imagePullSecrets.add(bLangExpression.toString());
+        }
+        return imagePullSecrets;
+    }
+
+
+    /**
+     * Get the set of external files to copy to docker image.
+     *
+     * @param keyValue Value of copyFiles field of Job annotation.
+     * @return A set of external files
+     * @throws KubernetesPluginException if an error occur while getting the paths
+     */
+    public static Set<ExternalFileModel> getExternalFileMap(BLangRecordLiteral.BLangRecordKeyValue keyValue) throws
+            KubernetesPluginException {
+        Set<ExternalFileModel> externalFiles = new HashSet<>();
+        List<BLangExpression> configAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
+        for (BLangExpression bLangExpression : configAnnotation) {
+            List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
+                    ((BLangRecordLiteral) bLangExpression).getKeyValuePairs();
+            ExternalFileModel externalFileModel = new ExternalFileModel();
+            for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
+                String annotationValue = resolveValue(annotation.getValue().toString());
+                switch (annotation.getKey().toString()) {
+                    case "source":
+                        externalFileModel.setSource(annotationValue);
+                        break;
+                    case "target":
+                        externalFileModel.setTarget(annotationValue);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (isBlank(externalFileModel.getSource())) {
+                throw new KubernetesPluginException("@kubernetes:Deployment copyFiles source cannot be empty.");
+            }
+            if (isBlank(externalFileModel.getTarget())) {
+                throw new KubernetesPluginException("@kubernetes:Deployment copyFiles target cannot be empty.");
+            }
+            externalFiles.add(externalFileModel);
+        }
+        return externalFiles;
+    }
+
+    /**
+     * Get a list of environment variables.
+     *
+     * @param envMap Map of Environment variables
+     * @return List of env vars
+     */
+    public static List<EnvVar> populateEnvVar(Map<String, EnvVarValueModel> envMap) {
+        List<EnvVar> envVars = new ArrayList<>();
+        if (envMap == null) {
+            return envVars;
+        }
+        envMap.forEach((k, v) -> {
+            EnvVar envVar = null;
+            if (v.getValue() != null) {
+                envVar = new EnvVarBuilder().withName(k).withValue(v.getValue()).build();
+            } else if (v.getValueFrom() instanceof EnvVarValueModel.FieldRef) {
+                EnvVarValueModel.FieldRef fieldRefModel = (EnvVarValueModel.FieldRef) v.getValueFrom();
+
+                ObjectFieldSelector fieldRef =
+                        new ObjectFieldSelectorBuilder().withFieldPath(fieldRefModel.getFieldPath()).build();
+                EnvVarSource envVarSource = new EnvVarSourceBuilder().withFieldRef(fieldRef).build();
+                envVar = new EnvVarBuilder().withName(k).withValueFrom(envVarSource).build();
+            } else if (v.getValueFrom() instanceof EnvVarValueModel.SecretKeyRef) {
+                EnvVarValueModel.SecretKeyRef secretKeyRefModel = (EnvVarValueModel.SecretKeyRef) v.getValueFrom();
+
+                SecretKeySelector secretRef = new SecretKeySelectorBuilder()
+                        .withName(secretKeyRefModel.getName())
+                        .withKey(secretKeyRefModel.getKey())
+                        .build();
+                EnvVarSource envVarSource = new EnvVarSourceBuilder().withSecretKeyRef(secretRef).build();
+                envVar = new EnvVarBuilder().withName(k).withValueFrom(envVarSource).build();
+            } else if (v.getValueFrom() instanceof EnvVarValueModel.ResourceFieldRef) {
+                EnvVarValueModel.ResourceFieldRef resourceFieldRefModel =
+                        (EnvVarValueModel.ResourceFieldRef) v.getValueFrom();
+
+                ResourceFieldSelector resourceFieldRef = new ResourceFieldSelectorBuilder()
+                        .withContainerName(resourceFieldRefModel.getContainerName())
+                        .withResource(resourceFieldRefModel.getResource())
+                        .build();
+                EnvVarSource envVarSource = new EnvVarSourceBuilder().withResourceFieldRef(resourceFieldRef).build();
+                envVar = new EnvVarBuilder().withName(k).withValueFrom(envVarSource).build();
+            } else if (v.getValueFrom() instanceof EnvVarValueModel.ConfigMapKeyValue) {
+                EnvVarValueModel.ConfigMapKeyValue configMapKeyValue =
+                        (EnvVarValueModel.ConfigMapKeyValue) v.getValueFrom();
+
+                ConfigMapKeySelector configMapKey = new ConfigMapKeySelectorBuilder()
+                        .withKey(configMapKeyValue.getKey())
+                        .withName(configMapKeyValue.getName())
+                        .build();
+                EnvVarSource envVarSource = new EnvVarSourceBuilder().withConfigMapKeyRef(configMapKey).build();
+                envVar = new EnvVarBuilder().withName(k).withValueFrom(envVarSource).build();
+            }
+
+            if (envVar != null) {
+                envVars.add(envVar);
+            }
+        });
+        return envVars;
     }
 }
