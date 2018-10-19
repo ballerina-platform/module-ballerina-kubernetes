@@ -36,7 +36,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDockerImage;
 
 /**
- *
+ * Test case for creating a deployment using a main function.
  */
 public class MainFunctionDeploymentTest {
     private final String balDirectory = Paths.get("src").resolve("test").resolve("resources").resolve("deployment")
@@ -45,13 +45,13 @@ public class MainFunctionDeploymentTest {
     private final String dockerImage = "main-function:latest";
     
     /**
-     * Build bal file with deployment having name value environment variables.
+     * Build bal file with deployment attached to a main function.
      * @throws IOException Error when loading the generated yaml.
      * @throws InterruptedException Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void nameValueTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void mainFuncDeploymentTest() throws IOException, InterruptedException, KubernetesPluginException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "main-function.bal"), 0);
         
         // Check if docker image exists and correct
@@ -62,7 +62,7 @@ public class MainFunctionDeploymentTest {
         File deploymentYAML = Paths.get(targetPath).resolve("main-function_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
-        Assert.assertEquals(deployment.getMetadata().getLabels().size(), 2, "Unmatching number of labels found.");
+        Assert.assertEquals(deployment.getMetadata().getLabels().size(), 2, "Invalid number of labels found.");
         Assert.assertEquals(deployment.getMetadata().getLabels().get("app"), "main-function", "Invalid label found.");
         Assert.assertEquals(deployment.getMetadata().getLabels().get("task_type"), "printer", "Invalid label found.");
         
