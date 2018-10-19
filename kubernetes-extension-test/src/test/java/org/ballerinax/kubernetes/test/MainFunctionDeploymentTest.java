@@ -36,7 +36,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDockerImage;
 
 /**
- *
+ * Test case for creating a deployment using a main function.
  */
 public class MainFunctionDeploymentTest {
     private final String balDirectory = Paths.get("src").resolve("test").resolve("resources").resolve("deployment")
