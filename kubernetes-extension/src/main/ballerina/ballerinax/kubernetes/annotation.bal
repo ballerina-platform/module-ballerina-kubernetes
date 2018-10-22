@@ -319,7 +319,7 @@ public type ResourceQuotas record {
 };
 
 # @kubernetes:ResourcesQuotas annotation to configure Resource Quotas.
-public annotation<service> ResourceQuota ResourceQuotas;
+public annotation<service, function, endpoint> ResourceQuota ResourceQuotas;
 
 # Kubernetes job configuration.
 #
