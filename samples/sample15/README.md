@@ -35,8 +35,8 @@ hello_world_k8s.balx
 @kubernetes:Ingress 			 - complete 1/1
 @kubernetes:ResourceQuota 		 - complete 1/1
 @kubernetes:Deployment 			 - complete 1/1
-@kubernetes:Docker 			    - complete 3/3
-@kubernetes:Helm 			    - complete 1/1
+@kubernetes:Docker 			 - complete 3/3
+@kubernetes:Helm 			 - complete 1/1
 Run the following command to deploy the Kubernetes artifacts:
 kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample15/kubernetes/
 
@@ -96,7 +96,7 @@ hello-world-k8s-deployment-57bd5c5d8b-vc7w8   1/1       Running   0          14s
 
 ```
 
-7. Verify kubernetes resource quota is created with a limit of 2 pods for the `ballerina` namespace.
+7. Verify kubernetes resource quota is created for `ballerina` namespace.
 ```bash
 $> kubectl get resourcequota pod-limit --namespace=ballerina --output=yaml
 apiVersion: v1
@@ -104,21 +104,33 @@ kind: ResourceQuota
 metadata:
   annotations:
     kubectl.kubernetes.io/last-applied-configuration: |
-      {"apiVersion":"v1","kind":"ResourceQuota","metadata":{"annotations":{},"finalizers":[],"labels":{},"name":"pod-limit","namespace":"ballerina","ownerReferences":[]},"spec":{"hard":{"pods":"2"},"scopes":[]}}
-  creationTimestamp: 2018-10-22T06:29:20Z
+      {"apiVersion":"v1","kind":"ResourceQuota","metadata":{"annotations":{},"finalizers":[],"labels":{},"name":"pod-limit","namespace":"ballerina","ownerReferences":[]},"spec":{"hard":{"limits.cpu":"2","limits.memory":"2Gi","pods":"2","requests.cpu":"1","requests.memory":"1Gi"},"scopes":[]}}
+  creationTimestamp: 2018-10-22T08:25:48Z
   name: pod-limit
   namespace: ballerina
-  resourceVersion: "613162"
+  resourceVersion: "622100"
   selfLink: /api/v1/namespaces/ballerina/resourcequotas/pod-limit
-  uid: ceeef932-d5c3-11e8-b9e5-025000000001
+  uid: 1468f1a9-d5d4-11e8-b9e5-025000000001
 spec:
   hard:
+    limits.cpu: "2"
+    limits.memory: 2Gi
     pods: "2"
+    requests.cpu: "1"
+    requests.memory: 1Gi
 status:
   hard:
+    limits.cpu: "2"
+    limits.memory: 2Gi
     pods: "2"
+    requests.cpu: "1"
+    requests.memory: 1Gi
   used:
-    pods: "1"
+    limits.cpu: "0"
+    limits.memory: "0"
+    pods: "2"
+    requests.cpu: "0"
+    requests.memory: "0"
 
 ```
 

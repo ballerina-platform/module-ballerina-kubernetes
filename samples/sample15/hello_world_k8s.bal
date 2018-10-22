@@ -4,7 +4,7 @@ import ballerinax/kubernetes;
 @kubernetes:Deployment {
     enableLiveness: true,
     namespace: "ballerina",
-    replicas: 2 // Needs to pods minimum
+    replicas: 2
 }
 @kubernetes:Ingress {
     hostname: "abc.com"
@@ -19,7 +19,12 @@ endpoint http:Listener helloEP {
         {
             name: "pod-limit",
             hard: {
-                "pods": "2" // Maximum of 2 pods
+                "pods": "2",
+                "requests.cpu": "1",
+                "requests.memory": "1Gi",
+                "limits.cpu": "2",
+                "limits.memory": "2Gi"
+
             }
         }
     ]
