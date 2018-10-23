@@ -14,8 +14,9 @@ Annotation based kubernetes extension implementation for ballerina.
 - Docker image generation. 
 - Docker push support with remote docker registry.
 - Kubernetes secret support.
-- Kubernetes config map support
-- Kubernetes persistent volume claim support
+- Kubernetes config map support.
+- Kubernetes persistent volume claim support.
+- Kubernetes resource quotas.
 
 **Refer [samples](samples) for more info.**
 
@@ -140,6 +141,15 @@ Annotation based kubernetes extension implementation for ballerina.
 |password|Password for the docker registry|null|
 |baseImage|Base image to create the docker image|ballerina/ballerina:latest|
 
+### @kubernetes:ResourceQuota{}
+- Support with ballerina services, endpoints and functions.
+
+|**Annotation Name**|**Description**|**Default value**|
+|--|--|--|
+|name| Name of the resource quota|\<output file name\>_resource_quota|
+|labels| Labels for resource quota|"app: \<outputfilename\>"|
+|hard| Hard rules|{}|
+|scopes| scopes to which the resource quota will be applied to|[]|
 
 ## How to build
 

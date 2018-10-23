@@ -117,6 +117,13 @@ do
 		curl https://abc.com/helloWorld/data -k
 		kubectl delete -f ./kubernetes
 	fi
+
+	if [[ number -eq 15 ]]; then
+		ballerina build hello_world_k8s.bal
+		kubectl apply -f ./kubernetes
+		sleep 5
+		kubectl delete -f ./kubernetes
+	fi
 	echo "======================== End of sample-$number ========================"
 	popd
 done
