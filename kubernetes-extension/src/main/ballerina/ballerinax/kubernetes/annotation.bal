@@ -368,3 +368,39 @@ public type JobConfig record {
 
 # @kubernetes:Job annotation to configure kubernetes jobs.
 public annotation<function> Job JobConfig;
+
+public type IstioPortProtocol "HTTP"|"HTTPS"|"GRPC"|"HTTP2"|"MONGO"|"TCP"|"TLS";
+
+public type IstioPortConfig {
+    int number;
+    IstioPortProtocol protocol;
+    string? name;
+};
+
+public type IstioTLSOptionMode "PASSTHROUGH"|"SIMPLE"|"MUTUAL";
+
+public type IstioTLSOptionConfig record {
+    boolean httpRedirect;
+    IstioTLSOptionMode mode;
+    string serverCertificate;
+    string privateKey;
+    string caCertificates;
+    string[]? subjectAltNames;
+};
+
+public type IstioServerConfig record {
+    IstioPortConfig port;
+    string[] hosts;
+    IstioTLSOptionConfig? tls;
+};
+
+public type IstioGatewayConfig record {
+    string name;
+    string? namespace;
+    map<string>? labels;
+    map<string>? annotations;
+    map<string> selector;
+    IstioServerConfig[] servers;
+};
+
+public annotation<service, endpoint> IstioGateway IstioGatewayConfig;
