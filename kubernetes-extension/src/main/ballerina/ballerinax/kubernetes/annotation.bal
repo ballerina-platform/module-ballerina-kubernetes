@@ -93,6 +93,20 @@ public type ConfigMapKeyRef record {
     !...
 };
 
+@final public ImagePullPolicy IF_NOT_PRESENT = "IfNotPresent";
+@final public ImagePullPolicy ALWAYS = "Always";
+@final public ImagePullPolicy NEVER = "Never";
+
+# Image pull policy type field for kubernetes deployment and jobs.
+public type ImagePullPolicy "IfNotPresent"|"Always"|"Never";
+
+@final public RestartPolicy ON_FAILURE_RESTART = "OnFailure";
+@final public RestartPolicy ALWAYS_RESTART = "Always";
+@final public RestartPolicy NEVER_RESTART = "Never";
+
+# Restart policy type field for kubernetes jobs.
+public type RestartPolicy "OnFailure"|"Always"|"Never";
+
 # Kubernetes deployment configuration.
 #
 # + name - Name of the deployment
@@ -126,7 +140,7 @@ public type DeploymentConfiguration record {
     int livenessPort;
     int initialDelaySeconds;
     int periodSeconds;
-    string imagePullPolicy;
+    ImagePullPolicy? imagePullPolicy;
     string image;
     map<string|FieldRef|SecretKeyRef|ResourceFieldRef|ConfigMapKeyRef> env;
     boolean buildImage;
@@ -345,12 +359,12 @@ public annotation<service, function, endpoint> ResourceQuota ResourceQuotas;
 public type JobConfig record {
     string name;
     map labels;
-    string restartPolicy;
+    RestartPolicy? restartPolicy;
     string backoffLimit;
     string activeDeadlineSeconds;
     string schedule;
     map<string|FieldRef|SecretKeyRef|ResourceFieldRef|ConfigMapKeyRef> env;
-    string imagePullPolicy;
+    ImagePullPolicy? imagePullPolicy;
     string image;
     boolean buildImage;
     string dockerHost;
