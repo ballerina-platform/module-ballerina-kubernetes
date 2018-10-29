@@ -52,7 +52,9 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         }
         List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =
                 ((BLangRecordLiteral) ((BLangEndpoint) endpointNode).configurationExpr).getKeyValuePairs();
-        serviceModel.setPort(extractPort(endpointConfig));
+        if (serviceModel.getPort() == -1) {
+            serviceModel.setPort(extractPort(endpointConfig));
+        }
         KubernetesContext.getInstance().getDataHolder().addBEndpointToK8sServiceMap(endpointNode.getName().getValue()
                 , serviceModel);
     }

@@ -162,13 +162,16 @@ public type ServiceType "NodePort"|"ClusterIP"|"LoadBalancer";
 #
 # + name - Name of the service
 # + labels - Map of labels for deployment
+# + port - Service port
 # + sessionAffinity - Session affinity for pods
 # + serviceType - Service type of the service
 public type ServiceConfiguration record {
     string name;
     map<string>? labels;
+    int port;
     SessionAffinity? sessionAffinity;
     ServiceType? serviceType;
+    !...
 };
 
 # @kubernetes:Service annotation to configure service yaml.
