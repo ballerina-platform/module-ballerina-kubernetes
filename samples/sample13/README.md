@@ -1,4 +1,4 @@
-## Sample13: Ballerina packages with dependencies
+## Sample13: Ballerina modules with dependencies
 
 - This sample runs foodstore with dependsOn annotation.   
 - The foodstore application will wait until pizza_api & burger_api gets deployed.

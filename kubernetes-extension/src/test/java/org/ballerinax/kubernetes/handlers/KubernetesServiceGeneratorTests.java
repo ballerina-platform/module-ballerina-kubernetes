@@ -40,6 +40,7 @@ public class KubernetesServiceGeneratorTests {
     private final String serviceName = "MyService";
     private final String selector = "hello";
     private final String serviceType = "NodePort";
+    private final String sessionAffinity = "ClientIP";
     private final int port = 9090;
 
     @Test
@@ -49,6 +50,7 @@ public class KubernetesServiceGeneratorTests {
         serviceModel.setPort(port);
         serviceModel.setServiceType(serviceType);
         serviceModel.setSelector(selector);
+        serviceModel.setSessionAffinity(sessionAffinity);
         Map<String, String> labels = new HashMap<>();
         labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, selector);
         serviceModel.setLabels(labels);
@@ -72,6 +74,7 @@ public class KubernetesServiceGeneratorTests {
         Assert.assertEquals(selector, service.getMetadata().getLabels().get(KubernetesConstants
                 .KUBERNETES_SELECTOR_KEY));
         Assert.assertEquals(serviceType, service.getSpec().getType());
+        Assert.assertEquals(sessionAffinity, service.getSpec().getSessionAffinity());
         Assert.assertEquals(1, service.getSpec().getPorts().size());
         Assert.assertEquals(port, service.getSpec().getPorts().get(0).getPort().intValue());
 

@@ -23,8 +23,6 @@ import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
-import io.fabric8.kubernetes.api.model.EnvVar;
-import io.fabric8.kubernetes.api.model.EnvVarBuilder;
 import io.fabric8.kubernetes.api.model.LocalObjectReference;
 import io.fabric8.kubernetes.api.model.LocalObjectReferenceBuilder;
 import io.fabric8.kubernetes.api.model.Probe;
@@ -51,12 +49,12 @@ import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.BALX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.populateEnvVar;
 
 /**
  * Generates kubernetes deployment from annotations.
@@ -134,17 +132,6 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                 .build();
     }
 
-    private List<EnvVar> populateEnvVar(Map<String, String> envMap) {
-        List<EnvVar> envVars = new ArrayList<>();
-        if (envMap == null) {
-            return envVars;
-        }
-        envMap.forEach((k, v) -> {
-            EnvVar envVar = new EnvVarBuilder().withName(k).withValue(v).build();
-            envVars.add(envVar);
-        });
-        return envVars;
-    }
 
     private List<Volume> populateVolume(DeploymentModel deploymentModel) {
         List<Volume> volumes = new ArrayList<>();

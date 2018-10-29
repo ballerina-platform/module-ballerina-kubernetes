@@ -19,10 +19,10 @@ package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.EndpointNode;
+import org.ballerinalang.model.tree.FunctionNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
-import org.ballerinax.kubernetes.models.ExternalFileModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
@@ -35,6 +35,9 @@ import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_CERT_PATH;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_HOST;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getEnvVarMap;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getExternalFileMap;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getImagePullSecrets;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
@@ -56,7 +59,13 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
             throws KubernetesPluginException {
         processDeployment(attachmentNode);
     }
-
+    
+    @Override
+    public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode) throws
+            KubernetesPluginException {
+        processDeployment(attachmentNode);
+    }
+    
     private void processDeployment(AnnotationAttachmentNode attachmentNode) throws KubernetesPluginException {
         DeploymentModel deploymentModel = new DeploymentModel();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
@@ -91,7 +100,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                     deploymentModel.setUsername(annotationValue);
                     break;
                 case env:
-                    deploymentModel.setEnv(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    deploymentModel.setEnv(getEnvVarMap(keyValue.getValue()));
                     break;
                 case password:
                     deploymentModel.setPassword(annotationValue);
@@ -148,39 +157,6 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         KubernetesContext.getInstance().getDataHolder().setDeploymentModel(deploymentModel);
     }
 
-    private Set<ExternalFileModel> getExternalFileMap(BLangRecordLiteral.BLangRecordKeyValue keyValue) throws
-            KubernetesPluginException {
-        Set<ExternalFileModel> externalFiles = new HashSet<>();
-        List<BLangExpression> configAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
-        for (BLangExpression bLangExpression : configAnnotation) {
-            List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
-                    ((BLangRecordLiteral) bLangExpression).getKeyValuePairs();
-            ExternalFileModel externalFileModel = new ExternalFileModel();
-            for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
-                String annotationValue = resolveValue(annotation.getValue().toString());
-                switch (annotation.getKey().toString()) {
-                    case "source":
-                        externalFileModel.setSource(annotationValue);
-                        break;
-                    case "target":
-                        externalFileModel.setTarget(annotationValue);
-                        break;
-                    default:
-                        break;
-                }
-            }
-            if (isBlank(externalFileModel.getSource())) {
-                throw new KubernetesPluginException("@kubernetes:Deployment copyFiles source cannot be empty.");
-            }
-            if (isBlank(externalFileModel.getTarget())) {
-                throw new KubernetesPluginException("@kubernetes:Deployment copyFiles target cannot be empty.");
-            }
-            externalFiles.add(externalFileModel);
-        }
-        return externalFiles;
-
-    }
-
     private Set<String> getDependsOn(BLangRecordLiteral.BLangRecordKeyValue keyValue) {
         Set<String> dependsOnList = new HashSet<>();
         List<BLangExpression> configAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
@@ -188,15 +164,6 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
             dependsOnList.add(bLangExpression.toString());
         }
         return dependsOnList;
-    }
-
-    private Set<String> getImagePullSecrets(BLangRecordLiteral.BLangRecordKeyValue keyValue) {
-        Set<String> imagePullSecrets = new HashSet<>();
-        List<BLangExpression> configAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
-        for (BLangExpression bLangExpression : configAnnotation) {
-            imagePullSecrets.add(bLangExpression.toString());
-        }
-        return imagePullSecrets;
     }
 
 

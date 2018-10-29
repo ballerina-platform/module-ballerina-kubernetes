@@ -46,7 +46,7 @@ import java.util.concurrent.CountDownLatch;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.BALX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.copyFile;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.copyFileOrDirectory;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.printDebug;
 
@@ -228,16 +228,18 @@ public class DockerHandler extends AbstractArtifactHandler {
                     .append(file.getTarget())
                     .append("\n");
         });
-        if (dockerModel.isService()) {
+
+        if (dockerModel.getPorts() != null && dockerModel.getPorts().size() > 0) {
             stringBuffer.append("EXPOSE ");
             dockerModel.getPorts().forEach(port -> stringBuffer.append(" ").append(port));
-            stringBuffer.append("\n\nCMD ballerina run ");
-            if (!KubernetesUtils.isBlank(dockerModel.getCommandArg())) {
-                stringBuffer.append(dockerModel.getCommandArg());
-            }
-        } else {
-            stringBuffer.append("CMD ballerina run ");
         }
+
+        stringBuffer.append("\nCMD ballerina run ");
+
+        if (!KubernetesUtils.isBlank(dockerModel.getCommandArg())) {
+            stringBuffer.append(dockerModel.getCommandArg());
+        }
+    
         if (dockerModel.isEnableDebug()) {
             stringBuffer.append("--debug ").append(dockerModel.getDebugPort()).append(" ");
         }
@@ -266,7 +268,7 @@ public class DockerHandler extends AbstractArtifactHandler {
             String balxDestination = dockerOutputDir + File.separator + KubernetesUtils.extractBalxName
                     (dataHolder
                             .getBalxFilePath()) + BALX;
-            copyFile(dataHolder
+            copyFileOrDirectory(dataHolder
                     .getBalxFilePath(), balxDestination);
             for (ExternalFileModel copyFileModel : dockerModel.getExternalFiles()) {
                 // Copy external files to docker folder
@@ -276,7 +278,7 @@ public class DockerHandler extends AbstractArtifactHandler {
                 if (!sourcePath.isAbsolute()) {
                     sourcePath = sourcePath.toAbsolutePath();
                 }
-                copyFile(sourcePath.toString(), target);
+                copyFileOrDirectory(sourcePath.toString(), target);
             }
             //check image build is enabled.
             if (dockerModel.isBuildImage()) {

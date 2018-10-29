@@ -23,6 +23,7 @@ import io.fabric8.kubernetes.api.model.HorizontalPodAutoscaler;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
+import org.ballerinax.kubernetes.models.EnvVarValueModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.PodAutoscalerModel;
 import org.junit.Assert;
@@ -58,8 +59,9 @@ public class KubernetesHPAGeneratorTests {
         deploymentModel.setLabels(labels);
         deploymentModel.setEnableLiveness(true);
         deploymentModel.setLivenessPort(9090);
-        Map<String, String> env = new HashMap<>();
-        env.put("ENV_VAR", "ENV");
+        Map<String, EnvVarValueModel> env = new HashMap<>();
+        EnvVarValueModel testEnvVar = new EnvVarValueModel("ENV");
+        env.put("ENV_VAR", testEnvVar);
         deploymentModel.setEnv(env);
 
         PodAutoscalerModel podAutoscalerModel = new PodAutoscalerModel();

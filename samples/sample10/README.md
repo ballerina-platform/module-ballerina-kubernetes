@@ -1,6 +1,6 @@
-## Sample10: Ballerina package with kubernetes annotations
+## Sample10: Ballerina module with kubernetes annotations
 
-- This sample runs [foodstore](../sample3) as a package.   
+- This sample runs [foodstore](../sample3) as a module.   
 - Following files will be generated from this sample.
     ``` 
     $> docker image

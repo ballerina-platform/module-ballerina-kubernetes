@@ -20,7 +20,7 @@
 
     <parent>
         <groupId>org.ballerinax.kubernetes</groupId>
-        <version>0.981.2-SNAPSHOT</version>
+        <version>0.982.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
         <artifactId>kubernetes-extension-parent</artifactId>
     </parent>
@@ -237,6 +237,7 @@
                                 <includes>
                                     <include>io.fabric8:*</include>
                                     <include>commons-io:commons-io</include>
+                                    <include>commons-io.wso2:commons-io</include>
                                     <include>commons-codec:commons-codec</include>
                                     <include>javax.validation:validation-api</include>
                                     <include>com.squareup.okhttp3:okhttp</include>

@@ -78,7 +78,7 @@ public class HelmChartHandler extends AbstractArtifactHandler {
             throw new KubernetesPluginException("Kuberenetes artifacts not available to generate Helm templates");
         }
         for (File yamlFile : yamlFiles) {
-            KubernetesUtils.copyFile(yamlFile.getAbsolutePath(), 
+            KubernetesUtils.copyFileOrDirectory(yamlFile.getAbsolutePath(),
                     helmTemplatesOutputDir + File.separator + yamlFile.getName());
         }
     }

@@ -23,10 +23,86 @@ public type FileConfig record {
     string target;
 };
 
+# Value for a field.
+#
+# + fieldPath - Path of the field
+public type FieldValue record {
+    string fieldPath;
+    !...
+};
+
+# Value for a secret key.
+#
+# + name - Name of the secret.
+# + key - Key of the secret.
+public type SecretKeyValue record {
+    string name;
+    string key;
+    !...
+};
+
+# Value for resource field.
+#
+# + containerName - Name of the container.
+# + resource - Resource field
+public type ResourceFieldValue record {
+    string containerName;
+    string ^"resource";
+    !...
+};
+
+# Value for config map key.
+#
+# + name - name of the config.
+# + key - key of the config.
+public type ConfigMapKeyValue record {
+    string name;
+    string key;
+    !...
+};
+
+# Value from field.
+#
+# + fieldRef - Reference for a field.
+public type FieldRef record {
+    FieldValue fieldRef;
+    !...
+};
+
+# Value from secret key.
+#
+# + secretKeyRef - Reference for secret key.
+public type SecretKeyRef record {
+    SecretKeyValue secretKeyRef;
+    !...
+};
+
+# Value from resource field.
+#
+# + resourceFieldRef - Reference for resource field.
+public type ResourceFieldRef record {
+    ResourceFieldValue resourceFieldRef;
+    !...
+};
+
+# Value from config map key.
+#
+# + configMapKeyRef - Reference for config map key.
+public type ConfigMapKeyRef record {
+    ConfigMapKeyValue configMapKeyRef;
+    !...
+};
+
+# Image pull policy type field for kubernetes deployment and jobs.
+public type ImagePullPolicy "IfNotPresent"|"Always"|"Never";
+
+# Restart policy type field for kubernetes jobs.
+public type RestartPolicy "OnFailure"|"Always"|"Never";
+
 # Kubernetes deployment configuration.
 #
 # + name - Name of the deployment
-# + namespce - Kubernetes namespace
+# + namespace - Kubernetes namespace
 # + labels - Map of labels for deployment
 # + replicas - Number of replicas
 # + enableLiveness - Enable/Disable liveness probe
@@ -46,7 +122,7 @@ public type FileConfig record {
 # + copyFiles - Array of [External files](kubernetes#FileConfig) for docker image
 # + singleYAML - Generate a single yaml file with all kubernetes artifacts (services,deployment,ingress,)
 # + dependsOn - Services this deployment depends on
-# + imagePullSecret - Image pull secrets
+# + imagePullSecrets - Image pull secrets
 public type DeploymentConfiguration record {
     string name;
     string namespace;
@@ -56,9 +132,9 @@ public type DeploymentConfiguration record {
     int livenessPort;
     int initialDelaySeconds;
     int periodSeconds;
-    string imagePullPolicy;
+    ImagePullPolicy? imagePullPolicy;
     string image;
-    map env;
+    map<string|FieldRef|SecretKeyRef|ResourceFieldRef|ConfigMapKeyRef> env;
     boolean buildImage;
     string dockerHost;
     string username;
@@ -73,18 +149,28 @@ public type DeploymentConfiguration record {
 };
 
 # @kubernetes:Deployment annotation to configure deplyoment yaml.
-public annotation<service, endpoint> Deployment DeploymentConfiguration;
+public annotation<service, function, endpoint> Deployment DeploymentConfiguration;
 
+# Session affinity field for kubernetes services.
+public type SessionAffinity "None"|"ClientIP";
+
+# Service type field for kubernetes services.
+public type ServiceType "NodePort"|"ClusterIP"|"LoadBalancer";
 
 # Kubernetes service configuration.
 #
 # + name - Name of the service
 # + labels - Map of labels for deployment
+# + port - Service port
+# + sessionAffinity - Session affinity for pods
 # + serviceType - Service type of the service
 public type ServiceConfiguration record {
     string name;
-    map labels;
-    string serviceType;
+    map<string>? labels;
+    int port;
+    SessionAffinity? sessionAffinity;
+    ServiceType? serviceType;
+    !...
 };
 
 # @kubernetes:Service annotation to configure service yaml.
@@ -209,6 +295,34 @@ public type PersistentVolumeClaims record {
 # @kubernetes:PersistentVolumeClaim annotation to configure Persistent Volume Claims.
 public annotation<service> PersistentVolumeClaim PersistentVolumeClaims;
 
+# Scopes for kubernetes resource quotas
+public type ResourceQuotaScope "Terminating"|"NotTerminating"|"BestEffort"|"NotBestEffort";
+
+# Kubernetes Resource Quota
+#
+# + name - Name of the resource quota
+# + labels - Labels for resource quota
+# + hard - Quotas for the resources
+# + scopes - Scopes of the quota
+public type ResourceQuotaConfig record {
+    string name;
+    map<string>? labels;
+    map<string> hard;
+    ResourceQuotaScope[] scopes = [];
+    !...
+};
+
+# Resource Quota configuration for kubernetes.
+#
+# + resourceQuotas - Array of [ResourceQuotaConfig](kubernetes.html#ResourceQuotaConfig)
+public type ResourceQuotas record {
+    ResourceQuotaConfig[] resourceQuotas;
+    !...
+};
+
+# @kubernetes:ResourcesQuotas annotation to configure Resource Quotas.
+public annotation<service, function, endpoint> ResourceQuota ResourceQuotas;
+
 # Kubernetes job configuration.
 #
 # + name - Name of the job
@@ -217,8 +331,9 @@ public annotation<service> PersistentVolumeClaim PersistentVolumeClaims;
 # + backoffLimit - Backoff limit
 # + activeDeadlineSeconds - Active deadline seconds
 # + schedule - Schedule for cron jobs
-# + image - Docker image with tag
 # + env - Environment varialbes for container
+# + image - Docker image with tag
+# + imagePullPolicy - Policy for pulling an image
 # + buildImage - Docker image to be build or not
 # + dockerHost - Docker host IP and docker PORT. (e.g minikube IP and docker PORT)
 # + username - Username for docker registry
@@ -226,15 +341,18 @@ public annotation<service> PersistentVolumeClaim PersistentVolumeClaims;
 # + baseImage - Base image for docker image building
 # + push - Push to remote registry
 # + dockerCertPath - Docker cert path
+# + copyFiles - Array of [External files](kubernetes#FileConfig) for docker image
+# + imagePullSecrets - Image pull secrets
+# + singleYAML - Generate a single yaml file with all kubernetes artifacts (services,deployment,ingress,)
 public type JobConfig record {
     string name;
     map labels;
-    string restartPolicy;
+    RestartPolicy? restartPolicy;
     string backoffLimit;
     string activeDeadlineSeconds;
     string schedule;
-    map env;
-    string imagePullPolicy;
+    map<string|FieldRef|SecretKeyRef|ResourceFieldRef|ConfigMapKeyRef> env;
+    ImagePullPolicy? imagePullPolicy;
     string image;
     boolean buildImage;
     string dockerHost;
@@ -243,6 +361,9 @@ public type JobConfig record {
     string baseImage;
     boolean push;
     string dockerCertPath;
+    FileConfig[] copyFiles;
+    string[] imagePullSecrets;
+    boolean singleYAML;
 };
 
 # @kubernetes:Job annotation to configure kubernetes jobs.

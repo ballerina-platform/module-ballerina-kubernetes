@@ -52,7 +52,9 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         }
         List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =
                 ((BLangRecordLiteral) ((BLangEndpoint) endpointNode).configurationExpr).getKeyValuePairs();
-        serviceModel.setPort(extractPort(endpointConfig));
+        if (serviceModel.getPort() == -1) {
+            serviceModel.setPort(extractPort(endpointConfig));
+        }
         KubernetesContext.getInstance().getDataHolder().addBEndpointToK8sServiceMap(endpointNode.getName().getValue()
                 , serviceModel);
     }
@@ -119,6 +121,9 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
                                 "@kubernetes annotations.");
                     }
                     break;
+                case sessionAffinity:
+                    serviceModel.setSessionAffinity(annotationValue);
+                    break;
                 default:
                     break;
             }
@@ -133,6 +138,7 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         name,
         labels,
         serviceType,
-        port
+        port,
+        sessionAffinity
     }
 }
