@@ -29,7 +29,7 @@ public class ServiceModel extends KubernetesModel {
     
     private Map<String, String> labels;
     private String serviceType;
-    private int port;
+    private int port = -1;
     private String selector;
     private String sessionAffinity;
 
