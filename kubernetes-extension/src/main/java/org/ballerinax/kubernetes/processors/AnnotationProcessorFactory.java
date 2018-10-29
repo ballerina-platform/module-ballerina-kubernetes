@@ -20,6 +20,7 @@ package org.ballerinax.kubernetes.processors;
 
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
+import org.ballerinax.kubernetes.processors.istio.IstioGatewayAnnotationProcessor;
 
 /**
  * Annotation processor factory.
@@ -49,6 +50,8 @@ public class AnnotationProcessorFactory {
                 return new JobAnnotationProcessor();
             case ResourceQuota:
                 return new ResourceQuotaAnnotationPreprocessor();
+            case IstioGateway:
+                return new IstioGatewayAnnotationProcessor();
             default:
                 KubernetesContext.getInstance().getDataHolder().setCanProcess(false);
                 throw new KubernetesPluginException("Error while getting annotation processor for type: " + type);
@@ -64,6 +67,7 @@ public class AnnotationProcessorFactory {
         ConfigMap,
         PersistentVolumeClaim,
         Job,
-        ResourceQuota
+        ResourceQuota,
+        IstioGateway
     }
 }

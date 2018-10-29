@@ -18,8 +18,11 @@
 
 package org.ballerinax.kubernetes.models;
 
+import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
+
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,7 +40,8 @@ public class KubernetesDataHolder {
     private Set<IngressModel> ingressModelSet;
     private Set<ConfigMapModel> configMapModelSet;
     private Set<PersistentVolumeClaimModel> volumeClaimModelSet;
-    private Set<ResourceQuotaModel> resourceQuotaModelSet;
+    private Set<ResourceQuotaModel> resourceQuotaModels;
+    private Set<IstioGatewayModel> istioGatewayModels;
     private JobModel jobModel;
     private String balxFilePath;
     private String outputDir;
@@ -51,7 +55,8 @@ public class KubernetesDataHolder {
         this.volumeClaimModelSet = new HashSet<>();
         this.ingressModelSet = new HashSet<>();
         this.deploymentModel = new DeploymentModel();
-        this.resourceQuotaModelSet = new HashSet<>();
+        this.resourceQuotaModels = new HashSet<>();
+        this.istioGatewayModels = new LinkedHashSet<>();
 //        this.namespace = "";
     }
 
@@ -104,11 +109,11 @@ public class KubernetesDataHolder {
     }
     
     public Set<ResourceQuotaModel> getResourceQuotaModels() {
-        return resourceQuotaModelSet;
+        return resourceQuotaModels;
     }
     
-    public void addResourceQuotaModels(Set<ResourceQuotaModel> resourceQuotaModels) {
-        this.resourceQuotaModelSet = resourceQuotaModels;
+    public void setResourceQuotaModels(Set<ResourceQuotaModel> resourceQuotaModels) {
+        this.resourceQuotaModels = resourceQuotaModels;
     }
     
     public Map<String, ServiceModel> getbEndpointToK8sServiceMap() {
@@ -177,5 +182,13 @@ public class KubernetesDataHolder {
 
     public void setNamespace(String namespace) {
         this.namespace = namespace;
+    }
+    
+    public Set<IstioGatewayModel> getIstioGatewayModels() {
+        return istioGatewayModels;
+    }
+    
+    public void addIstioGatewayModel(IstioGatewayModel istioGatewayModel) {
+        this.istioGatewayModels.add(istioGatewayModel);
     }
 }

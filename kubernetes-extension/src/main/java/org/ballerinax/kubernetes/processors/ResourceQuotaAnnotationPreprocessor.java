@@ -98,7 +98,7 @@ public class ResourceQuotaAnnotationPreprocessor extends AbstractAnnotationProce
                 resourceQuotaModels.add(resourceQuotaModel);
             }
         }
-        KubernetesContext.getInstance().getDataHolder().addResourceQuotaModels(resourceQuotaModels);
+        KubernetesContext.getInstance().getDataHolder().setResourceQuotaModels(resourceQuotaModels);
     }
     
     /**

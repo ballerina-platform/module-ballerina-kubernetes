@@ -58,7 +58,7 @@ public class KubernetesResourceQuotaGeneratorTests {
     
         Set<ResourceQuotaModel> resourceQuotaModels = new LinkedHashSet<>();
         resourceQuotaModels.add(resourceQuotaModel);
-        KubernetesContext.getInstance().getDataHolder().addResourceQuotaModels(resourceQuotaModels);
+        KubernetesContext.getInstance().getDataHolder().setResourceQuotaModels(resourceQuotaModels);
         try {
             new ResourceQuotaHandler().createArtifacts();
             File yamlFile = new File("target" + File.separator + "kubernetes" + File.separator +

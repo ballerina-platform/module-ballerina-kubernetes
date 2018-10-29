@@ -46,6 +46,7 @@ public class KubernetesConstants {
     public static final String CONFIG_MAP_FILE_POSTFIX = "_config_map";
     public static final String VOLUME_CLAIM_FILE_POSTFIX = "_volume_claim";
     public static final String RESOURCE_QUOTA_FILE_POSTFIX = "_resource_quota";
+    public static final String ISTIO_GATEWAY_FILE_POSTFIX = "_istio_gateway";
     public static final String HPA_FILE_POSTFIX = "_hpa";
     public static final String YAML = ".yaml";
     public static final String DOCKER_LATEST_TAG = ":latest";

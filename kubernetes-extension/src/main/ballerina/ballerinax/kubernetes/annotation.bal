@@ -381,10 +381,10 @@ public type IstioTLSOptionMode "PASSTHROUGH"|"SIMPLE"|"MUTUAL";
 
 public type IstioTLSOptionConfig record {
     boolean httpRedirect;
-    IstioTLSOptionMode mode;
-    string serverCertificate;
-    string privateKey;
-    string caCertificates;
+    IstioTLSOptionMode? mode;
+    string? serverCertificate;
+    string? privateKey;
+    string? caCertificates;
     string[]? subjectAltNames;
 };
 
@@ -404,3 +404,14 @@ public type IstioGatewayConfig record {
 };
 
 public annotation<service, endpoint> IstioGateway IstioGatewayConfig;
+
+public type IstioVirutalServiceConfig record {
+    string name;
+    string? namespace;
+    map<string>? labels;
+    map<string>? annotations;
+    string[] hosts;
+
+};
+
+public annotation<service, endpoint> IstioVirutalService IstioVirutalServiceConfig;
