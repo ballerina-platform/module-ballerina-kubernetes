@@ -93,16 +93,8 @@ public type ConfigMapKeyRef record {
     !...
 };
 
-@final public ImagePullPolicy IF_NOT_PRESENT = "IfNotPresent";
-@final public ImagePullPolicy ALWAYS = "Always";
-@final public ImagePullPolicy NEVER = "Never";
-
 # Image pull policy type field for kubernetes deployment and jobs.
 public type ImagePullPolicy "IfNotPresent"|"Always"|"Never";
-
-@final public RestartPolicy ON_FAILURE_RESTART = "OnFailure";
-@final public RestartPolicy ALWAYS_RESTART = "Always";
-@final public RestartPolicy NEVER_RESTART = "Never";
 
 # Restart policy type field for kubernetes jobs.
 public type RestartPolicy "OnFailure"|"Always"|"Never";
@@ -159,15 +151,8 @@ public type DeploymentConfiguration record {
 # @kubernetes:Deployment annotation to configure deplyoment yaml.
 public annotation<service, function, endpoint> Deployment DeploymentConfiguration;
 
-@final public SessionAffinity NONE = "None";
-@final public SessionAffinity CLIENT_IP = "ClientIP";
-
 # Session affinity field for kubernetes services.
 public type SessionAffinity "None"|"ClientIP";
-
-@final public ServiceType CLUSTER_IP = "ClusterIP";
-@final public ServiceType NODE_PORT = "NodePort";
-@final public ServiceType LOAD_BALANCER = "LoadBalancer";
 
 # Service type field for kubernetes services.
 public type ServiceType "NodePort"|"ClusterIP"|"LoadBalancer";
