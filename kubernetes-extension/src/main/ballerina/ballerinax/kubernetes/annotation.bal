@@ -380,7 +380,7 @@ public type IstioPortConfig {
 public type IstioTLSOptionMode "PASSTHROUGH"|"SIMPLE"|"MUTUAL";
 
 public type IstioTLSOptionConfig record {
-    boolean httpRedirect;
+    boolean httpsRedirect;
     IstioTLSOptionMode? mode;
     string? serverCertificate;
     string? privateKey;

@@ -46,15 +46,16 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
  */
 public class IstioGatewayGeneratorTests {
     @Test
-    public void testResourceQuota() {
+    public void testSimpleGateway() {
         IstioGatewayModel istioGatewayModel = new IstioGatewayModel();
         istioGatewayModel.setName("my-gateway");
+        istioGatewayModel.setNamespace("ballerina");
         
         Map<String, String> selectors = new LinkedHashMap<>();
         selectors.put("app", "my-gatweway-controller");
         istioGatewayModel.setSelector(selectors);
         
-        List<IstioServerModel> servers = new LinkedList<>();
+        List<IstioServerModel> serverModels = new LinkedList<>();
         
         // First server
         IstioServerModel serverModel = new IstioServerModel();
@@ -63,16 +64,16 @@ public class IstioGatewayGeneratorTests {
         portModel.setProtocol("HTTP");
         portModel.setName("http");
         serverModel.setPort(portModel);
-        List<String> hosts = new LinkedList<>();
-        hosts.add("uk.bookinfo.com");
-        hosts.add("eu.bookinfo.com");
-        serverModel.setHosts(hosts);
+        List<String> hostModels = new LinkedList<>();
+        hostModels.add("uk.bookinfo.com");
+        hostModels.add("eu.bookinfo.com");
+        serverModel.setHosts(hostModels);
         IstioServerModel.TLSOptions tlsOptions = new IstioServerModel.TLSOptions();
         tlsOptions.setHttpsRedirect(true);
         serverModel.setTls(tlsOptions);
-        servers.add(serverModel);
+        serverModels.add(serverModel);
         
-        istioGatewayModel.setServers(servers);
+        istioGatewayModel.setServers(serverModels);
         
         KubernetesContext.getInstance().getDataHolder().addIstioGatewayModel(istioGatewayModel);
         try {
@@ -80,11 +81,33 @@ public class IstioGatewayGeneratorTests {
             File yamlFile = new File("target" + File.separator + "kubernetes" + File.separator +
                                      "hello" + ISTIO_GATEWAY_FILE_POSTFIX + YAML);
             Yaml yaml = new Yaml();
-            istioGatewayModel = yaml.loadAs(FileUtils.readFileToString(yamlFile), IstioGatewayModel.class);
+            Map gateway = (LinkedHashMap)yaml.load(FileUtils.readFileToString(yamlFile));
     
             // metadata
-            Assert.assertEquals("my-gateway", istioGatewayModel.getName());
+            Map metadata = (Map) gateway.get("metadata");
+            Assert.assertEquals("my-gateway", metadata.get("name"));
+            Assert.assertEquals("ballerina", metadata.get("namespace"));
+    
+            Map spec = (Map) gateway.get("spec");
             
+            Map selector = (Map) spec.get("selector");
+            Assert.assertEquals("my-gatweway-controller", selector.get("app"));
+    
+            List servers = (List) spec.get("servers");
+            Map server = (Map) servers.get(0);
+            
+            Map port = (Map) server.get("port");
+            Assert.assertEquals(80, port.get("number"));
+            Assert.assertEquals("HTTP", port.get("protocol"));
+            Assert.assertEquals("http", port.get("name"));
+    
+            List<String> hosts = (List<String>) server.get("hosts");
+            Assert.assertTrue(hosts.contains("uk.bookinfo.com"));
+            Assert.assertTrue(hosts.contains("eu.bookinfo.com"));
+    
+            Map tls = (Map) server.get("tls");
+            Assert.assertEquals(true, tls.get("httpsRedirect"));
+    
             yamlFile.deleteOnExit();
         } catch (IOException e) {
             Assert.fail("Unable to write to file: " + e.getMessage());
@@ -93,9 +116,13 @@ public class IstioGatewayGeneratorTests {
         }
     }
     
+    // Multiple servers
+    
+    // All fields
+    
     // Test with no selector // minimum
     
-    // TODO: Test if minimum 1 server is needed
+    //  minimum 1 server is needed
     
     // 1 or more hosts is needed
     

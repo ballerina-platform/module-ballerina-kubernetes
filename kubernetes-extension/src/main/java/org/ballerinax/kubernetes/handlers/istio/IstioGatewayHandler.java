@@ -23,12 +23,13 @@ import org.ballerinax.kubernetes.handlers.AbstractArtifactHandler;
 import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
 import org.ballerinax.kubernetes.models.istio.IstioServerModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
-import org.yaml.snakeyaml.nodes.Node;
-import org.yaml.snakeyaml.representer.Represent;
-import org.yaml.snakeyaml.representer.Representer;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -104,23 +105,83 @@ public class IstioGatewayHandler extends AbstractArtifactHandler {
             Map<String, Object> gatewayYamlModel = new LinkedHashMap<>();
             gatewayYamlModel.put("apiVersion", "networking.istio.io/v1alpha3");
             gatewayYamlModel.put("kind", "Gateway");
-            String gatewayYamlString = KubernetesUtils.getAsYaml(gatewayYamlModel);
+            
+            // metadata
+            Map<String, Object> metadata = new LinkedHashMap<>();
+            metadata.put("name", gatewayModel.getName());
+            if (null != gatewayModel.getNamespace()) {
+                metadata.put("namespace", gatewayModel.getNamespace());
+            }
+            if (null != gatewayModel.getLabels() && gatewayModel.getLabels().size() > 0) {
+                metadata.put("labels", gatewayModel.getLabels());
+            }
+            if (null != gatewayModel.getAnnotations() && gatewayModel.getAnnotations().size() > 0) {
+                metadata.put("annotations", gatewayModel.getAnnotations());
+            }
+            gatewayYamlModel.put("metadata", metadata);
+            
+            // spec
+            Map<String, Object> spec = new LinkedHashMap<>();
+            spec.put("selector", gatewayModel.getSelector());
+            
+            // servers
+            List<Map<String, Object>> servers = new LinkedList<>();
+            for (IstioServerModel serverModel : gatewayModel.getServers()) {
+                Map<String, Object> server = new LinkedHashMap<>();
+                
+                // hosts
+                if (null != serverModel.getHosts() && serverModel.getHosts().size() > 0) {
+                    server.put("hosts", serverModel.getHosts());
+                }
+                
+                // port
+                Map<String, Object> port = new LinkedHashMap<>();
+                port.put("number", serverModel.getPort().getNumber());
+                port.put("protocol", serverModel.getPort().getProtocol());
+                if (null != serverModel.getPort().getName()) {
+                    port.put("name", serverModel.getPort().getName());
+                }
+                server.put("port", port);
+                
+                Map<String, Object> tls = new LinkedHashMap<>();
+                tls.put("httpsRedirect", serverModel.getTls().isHttpsRedirect());
+                if (null != serverModel.getTls().getMode()) {
+                    tls.put("mode", serverModel.getTls().getMode());
+                }
+                if (null != serverModel.getTls().getServerCertificate()) {
+                    tls.put("serverCertificate", serverModel.getTls().getServerCertificate());
+                }
+                if (null != serverModel.getTls().getPrivateKey()) {
+                    tls.put("privateKey", serverModel.getTls().getPrivateKey());
+                }
+                if (null != serverModel.getTls().getCaCertificates()) {
+                    tls.put("caCertificates", serverModel.getTls().getCaCertificates());
+                }
+                if (null != serverModel.getTls().getSubjectAltNames() &&
+                    serverModel.getTls().getSubjectAltNames().size() > 0) {
+                    tls.put("subjectAltNames", serverModel.getTls().getSubjectAltNames());
+                }
+    
+                server.put("tls", tls);
+    
+                servers.add(server);
+            }
+    
+            if (servers.size() > 0) {
+                spec.put("servers", servers);
+            }
+            gatewayYamlModel.put("spec", spec);
+    
+            DumperOptions options = new DumperOptions();
+            options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+            
+            Yaml yamlProcessor = new Yaml(options);
+            String gatewayYamlString = yamlProcessor.dump(gatewayYamlModel);
+            
             KubernetesUtils.writeToFile(gatewayYamlString, ISTIO_GATEWAY_FILE_POSTFIX + YAML);
         } catch (IOException e) {
-            String errorMessage = "Error while generating yaml file for istio gateway: " +
-                                  gatewayModel.getName();
+            String errorMessage = "Error while generating yaml file for istio gateway: " + gatewayModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
-        }
-    }
-    
-    private class IstioGateway extends Representer {
-        private class RepresentIstioGatewayModel implements Represent {
-    
-            @Override
-            public Node representData(Object o) {
-                IstioGatewayModel gatewayModel = (IstioGatewayModel) o;
-                represe
-            }
         }
     }
 }

@@ -53,7 +53,7 @@ public class IstioServerModel {
     }
     
     public static class TLSOptions {
-        private boolean httpsRedirect;
+        private boolean httpsRedirect = false;
         private String mode;
         private String serverCertificate;
         private String privateKey;

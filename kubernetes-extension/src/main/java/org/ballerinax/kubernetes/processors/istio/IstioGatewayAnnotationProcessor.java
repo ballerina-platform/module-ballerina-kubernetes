@@ -28,9 +28,7 @@ import org.ballerinax.kubernetes.processors.AbstractAnnotationProcessor;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
@@ -116,14 +114,11 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
                 case servers:
                     break;
             }
-    
-//            // Validate
-//            if (validateGatewayModel(gatewayModel)) {
-//                gatewayModels.add(gatewayModel);
-//            }
             KubernetesContext.getInstance().getDataHolder().addIstioGatewayModel(gatewayModel);
         }
     }
+    
+    private
     
     private enum IstioPortConfig {
         number,
