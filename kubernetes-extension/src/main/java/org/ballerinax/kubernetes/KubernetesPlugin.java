@@ -36,6 +36,7 @@ import org.ballerinax.kubernetes.utils.DependencyValidator;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.wso2.ballerinalang.compiler.tree.BLangEndpoint;
 import org.wso2.ballerinalang.compiler.tree.BLangPackage;
+import org.wso2.ballerinalang.compiler.tree.BLangTestablePackage;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -64,6 +65,10 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
 
     @Override
     public void process(PackageNode packageNode) {
+        if (packageNode instanceof BLangTestablePackage) {
+            return;
+        }
+    
         KubernetesContext.getInstance().addDataHolder(((BLangPackage) packageNode).packageID);
     }
 
