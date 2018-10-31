@@ -13,7 +13,7 @@ import ballerinax/kubernetes;
         label2: "label2"
     },
     selector: {
-        app: "my-gatweway-controller"
+        app: "my-gateway-controller"
     },
     servers: [
         {
@@ -31,12 +31,24 @@ import ballerinax/kubernetes;
             }
         }
     ]
+}
+@kubernetes:Deployment {
+    name: "all_fields",
+    image: "pizza-shop:latest"
+}
+@kubernetes:Ingress {
+    hostname: "abc.com"
+}
+@kubernetes:Service {name: "hello"}
+endpoint http:Listener helloEP {
+    port: 9090
+};
 
-}
+
 @http:ServiceConfig {
-    basePath:"/helloWorld"
+    basePath: "/helloWorld"
 }
-service<http:Service> helloWorld bind {port:9090} {
+service<http:Service> helloWorld bind helloEP {
     sayHello(endpoint outboundEP, http:Request request) {
         http:Response response = new;
         response.setTextPayload("Hello, World from service helloWorld ! \n");

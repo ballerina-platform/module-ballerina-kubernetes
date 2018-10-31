@@ -42,7 +42,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.ISTIO_GATEWAY_FILE_P
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 
 /**
- *
+ * Unit test cases for istio gateway models.
  */
 public class IstioGatewayGeneratorTests {
     @Test
@@ -64,7 +64,7 @@ public class IstioGatewayGeneratorTests {
         portModel.setProtocol("HTTP");
         portModel.setName("http");
         serverModel.setPort(portModel);
-        List<String> hostModels = new LinkedList<>();
+        Set<String> hostModels = new LinkedHashSet<>();
         hostModels.add("uk.bookinfo.com");
         hostModels.add("eu.bookinfo.com");
         serverModel.setHosts(hostModels);
@@ -81,7 +81,7 @@ public class IstioGatewayGeneratorTests {
             File yamlFile = new File("target" + File.separator + "kubernetes" + File.separator +
                                      "hello" + ISTIO_GATEWAY_FILE_POSTFIX + YAML);
             Yaml yaml = new Yaml();
-            Map gateway = (LinkedHashMap)yaml.load(FileUtils.readFileToString(yamlFile));
+            Map gateway = (LinkedHashMap) yaml.load(FileUtils.readFileToString(yamlFile));
     
             // metadata
             Map metadata = (Map) gateway.get("metadata");
@@ -112,23 +112,7 @@ public class IstioGatewayGeneratorTests {
         } catch (IOException e) {
             Assert.fail("Unable to write to file: " + e.getMessage());
         } catch (KubernetesPluginException e) {
-            Assert.fail("Unable to generate yaml from service: " + e.getMessage());
+            Assert.fail("Unable to generate yaml: " + e.getMessage());
         }
     }
-    
-    // Multiple servers
-    
-    // All fields
-    
-    // Test with no selector // minimum
-    
-    //  minimum 1 server is needed
-    
-    // 1 or more hosts is needed
-    
-    // Port should be more than 0
-    
-    // TLS SIMPLE or MUTUAL serverCertificate
-    // TLS SIMPLE or MUTUAL privateKey
-    // TLS MUTUAL caCertificates
 }

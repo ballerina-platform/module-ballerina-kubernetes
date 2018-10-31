@@ -24,17 +24,21 @@ import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.wso2.andes.util.FileUtils;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDockerImage;
 
 /**
- *
+ * Test cases for generating istio gateway artifacts.
  */
 public class IstioGatewayTest {
     
@@ -44,7 +48,7 @@ public class IstioGatewayTest {
     private final String dockerImage = "pizza-shop:latest";
     
     /**
-     * Build bal file with resource quotas.
+     * Build bal file with istio gateway annotations.
      * @throws IOException Error when loading the generated yaml.
      * @throws InterruptedException Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
@@ -57,44 +61,47 @@ public class IstioGatewayTest {
         validateDockerfile();
         validateDockerImage();
         
-//        // Validate deployment yaml
-//        File deploymentYAML = Paths.get(targetPath).resolve("simple-quota_resource_quota.yaml").toFile();
-//        Assert.assertTrue(deploymentYAML.exists());
-//        ResourceQuota resourceQuota = KubernetesHelper.loadYaml(deploymentYAML);
-//        Assert.assertEquals(resourceQuota.getMetadata().getName(), "compute-resources");
-//
-//        Assert.assertEquals(resourceQuota.getMetadata().getLabels().size(), 1, "Invalid number of labels.");
-//        Assert.assertEquals(resourceQuota.getMetadata().getLabels().get("priority"), "high",
-//                "Invalid label value found.");
-//
-//        Assert.assertEquals(resourceQuota.getSpec().getHard().size(), 5, "Invalid number of hard limits.");
-//        Assert.assertEquals(resourceQuota.getSpec().getHard().get("pods").getAmount(), "4", "Invalid number of pods.");
-//        Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.cpu").getAmount(), "1",
-//                "Invalid number of cpu requests.");
-//        Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.memory").getAmount(), "1Gi",
-//                "Invalid number of memory requests.");
-//        Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.cpu").getAmount(), "2",
-//                "Invalid number of cpu limits");
-//        Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.memory").getAmount(), "2Gi",
-//                "Invalid number of memory limits.");
-//
-//        Assert.assertEquals(resourceQuota.getSpec().getScopes().size(), 0, "Unexpected number of scopes.");
+        // Validate deployment yaml
+        File gatewayFile = Paths.get(targetPath).resolve("all_fields_istio_gateway.yaml").toFile();
+        Assert.assertTrue(gatewayFile.exists());
+        Yaml yamlProcessor = new Yaml();
+        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
+        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(gateway.get("kind"), "Gateway", "Invalid kind.");
+    
+        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
+        Assert.assertEquals(selector.get("app"), "my-gateway-controller", "Invalid selector.");
+    
+        List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
+        Map<String, Object> server = servers.get(0);
+        Map<String, Object> port = (Map<String, Object>) server.get("port");
+        Assert.assertEquals(port.get("number"), 80, "Invalid port number.");
+        Assert.assertEquals(port.get("name"), "http", "Invalid port name.");
+        Assert.assertEquals(port.get("protocol"), "HTTP", "Invalid port protocol.");
+    
+        List<String> hosts = (List<String>) server.get("hosts");
+        Assert.assertTrue(hosts.contains("uk.bookinfo.com"), "uk.bookinfo.com host not included");
+        Assert.assertTrue(hosts.contains("eu.bookinfo.com"), "eu.bookinfo.com host not included");
+    
+        Map<String, Object> tls = (Map<String, Object>) server.get("tls");
+        Assert.assertEquals(tls.get("httpsRedirect"), true, "Invalid tls httpsRedirect value");
         
         KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(dockerImage);
     }
     
-    /**
-     * Build bal file with deployment having invalid environment variables. This should fail.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
-     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
-     */
-    @Test
-    public void invalidTest() throws IOException, InterruptedException, KubernetesPluginException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "quota-with-invalid-scope.bal"), 1);
-        KubernetesUtils.deleteDirectory(targetPath);
-    }
+//    /**
+//     * Build bal file with deployment having invalid environment variables. This should fail.
+//     * @throws IOException Error when loading the generated yaml.
+//     * @throws InterruptedException Error when compiling the ballerina file.
+//     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
+//     */
+//    @Test
+//    public void invalidTest() throws IOException, InterruptedException, KubernetesPluginException {
+//        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "quota-with-inval-scope.bal"), 1);
+//        KubernetesUtils.deleteDirectory(targetPath);
+//    }
     
     /**
      * Validate if Dockerfile is created.
@@ -110,6 +117,6 @@ public class IstioGatewayTest {
     public void validateDockerImage() {
         ImageInspect imageInspect = getDockerImage(dockerImage);
         Assert.assertEquals(1, imageInspect.getContainerConfig().getExposedPorts().size());
-        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9099/tcp"));
+        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9090/tcp"));
     }
 }

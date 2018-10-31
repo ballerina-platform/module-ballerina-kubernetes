@@ -371,7 +371,7 @@ public annotation<function> Job JobConfig;
 
 public type IstioPortProtocol "HTTP"|"HTTPS"|"GRPC"|"HTTP2"|"MONGO"|"TCP"|"TLS";
 
-public type IstioPortConfig {
+public type IstioPortConfig record {
     int number;
     IstioPortProtocol protocol;
     string? name;

@@ -18,14 +18,14 @@
 
 package org.ballerinax.kubernetes.models.istio;
 
-import java.util.List;
+import java.util.Set;
 
 /**
- *
+ * Istio gateway server annotation model class.
  */
 public class IstioServerModel {
     private IstioPortModel port;
-    private List<String> hosts;
+    private Set<String> hosts;
     private TLSOptions tls;
     
     public IstioPortModel getPort() {
@@ -44,21 +44,24 @@ public class IstioServerModel {
         this.tls = tls;
     }
     
-    public List<String> getHosts() {
+    public Set<String> getHosts() {
         return hosts;
     }
     
-    public void setHosts(List<String> hosts) {
+    public void setHosts(Set<String> hosts) {
         this.hosts = hosts;
     }
     
+    /**
+     * Istio gateway server TLS option annotation model class.
+     */
     public static class TLSOptions {
         private boolean httpsRedirect = false;
         private String mode;
         private String serverCertificate;
         private String privateKey;
         private String caCertificates;
-        private List<String> subjectAltNames;
+        private Set<String> subjectAltNames;
     
         public boolean isHttpsRedirect() {
             return httpsRedirect;
@@ -100,11 +103,11 @@ public class IstioServerModel {
             this.caCertificates = caCertificates;
         }
     
-        public List<String> getSubjectAltNames() {
+        public Set<String> getSubjectAltNames() {
             return subjectAltNames;
         }
     
-        public void setSubjectAltNames(List<String> subjectAltNames) {
+        public void setSubjectAltNames(Set<String> subjectAltNames) {
             this.subjectAltNames = subjectAltNames;
         }
     }

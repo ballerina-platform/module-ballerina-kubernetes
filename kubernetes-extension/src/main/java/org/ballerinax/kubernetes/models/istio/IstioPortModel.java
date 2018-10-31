@@ -19,7 +19,7 @@
 package org.ballerinax.kubernetes.models.istio;
 
 /**
- *
+ * Istio gateway port annotation model class.
  */
 public class IstioPortModel {
     private int number;

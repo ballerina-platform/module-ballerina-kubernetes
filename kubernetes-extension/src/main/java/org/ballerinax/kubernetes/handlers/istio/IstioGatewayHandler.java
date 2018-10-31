@@ -27,6 +27,7 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,10 +38,14 @@ import static org.ballerinax.kubernetes.KubernetesConstants.ISTIO_GATEWAY_FILE_P
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 
 /**
- *
+ * Generates istio gateway artifacts.
  */
 public class IstioGatewayHandler extends AbstractArtifactHandler {
     
+    /**
+     * {@inheritDoc}
+     * Performs validations.
+     */
     @Override
     public void createArtifacts() throws KubernetesPluginException {
         Set<IstioGatewayModel> gatewayModels = dataHolder.getIstioGatewayModels();
@@ -60,35 +65,35 @@ public class IstioGatewayHandler extends AbstractArtifactHandler {
             }
             
             // Validate number of servers.
-            if (gatewayModel.getServers().size() == 0) {
+            if (null == gatewayModel.getServers() || gatewayModel.getServers().size() == 0) {
                 throw new KubernetesPluginException("'" + gatewayModel.getName() + "' Istio Gateway needs one or more" +
                                                     " servers.");
             }
             
             // Validate server.hosts
             for (IstioServerModel serverModel : gatewayModel.getServers()) {
-                if (serverModel.getHosts().size() == 0) {
+                if (null == serverModel.getHosts() || serverModel.getHosts().size() == 0) {
                     throw new KubernetesPluginException("'" + gatewayModel.getName() + "' Istio Gateway needs one or" +
                                                         " more server hosts.");
                 }
     
-                if (serverModel.getPort().getNumber() <= 0) {
+                if (null == serverModel.getPort() || serverModel.getPort().getNumber() < 0) {
                     throw new KubernetesPluginException("'" + gatewayModel.getName() + "' Istio Gateway ports cannot" +
                                                         " be less than 0.");
                 }
                 
-                if (serverModel.getTls() != null && "SIMPLE".equals(serverModel.getTls().getMode()) &&
+                if (serverModel.getTls() != null && ("SIMPLE".equals(serverModel.getTls().getMode()) &&
                     (serverModel.getTls().getServerCertificate() == null ||
-                     serverModel.getTls().getPrivateKey() == null)) {
+                     serverModel.getTls().getPrivateKey() == null))) {
                     throw new KubernetesPluginException("'" + gatewayModel.getName() + "' Istio Gateway TLS mode is" +
                                                         " SIMPLE, hence serverCertificate and privateKey fields are" +
                                                         " required.");
                 }
     
-                if (serverModel.getTls() != null && "MUTUAL".equals(serverModel.getTls().getMode()) &&
+                if (serverModel.getTls() != null && ("MUTUAL".equals(serverModel.getTls().getMode()) &&
                     (serverModel.getTls().getServerCertificate() == null ||
                      serverModel.getTls().getPrivateKey() == null ||
-                     serverModel.getTls().getCaCertificates() == null)) {
+                     serverModel.getTls().getCaCertificates() == null))) {
                     throw new KubernetesPluginException("'" + gatewayModel.getName() + "' Istio Gateway TLS mode is" +
                                                         " MUTUAL, hence serverCertificate, privateKey and" +
                                                         " caCertificates fields are required.");
@@ -100,6 +105,11 @@ public class IstioGatewayHandler extends AbstractArtifactHandler {
         }
     }
     
+    /**
+     * Generate the artifacts.
+     * @param gatewayModel The gateway model.
+     * @throws KubernetesPluginException Error if occurred when writing to file.
+     */
     private void generate(IstioGatewayModel gatewayModel) throws KubernetesPluginException {
         try {
             Map<String, Object> gatewayYamlModel = new LinkedHashMap<>();
@@ -131,7 +141,7 @@ public class IstioGatewayHandler extends AbstractArtifactHandler {
                 
                 // hosts
                 if (null != serverModel.getHosts() && serverModel.getHosts().size() > 0) {
-                    server.put("hosts", serverModel.getHosts());
+                    server.put("hosts", new ArrayList<>(serverModel.getHosts()));
                 }
                 
                 // port
@@ -143,6 +153,7 @@ public class IstioGatewayHandler extends AbstractArtifactHandler {
                 }
                 server.put("port", port);
                 
+                // tls
                 Map<String, Object> tls = new LinkedHashMap<>();
                 tls.put("httpsRedirect", serverModel.getTls().isHttpsRedirect());
                 if (null != serverModel.getTls().getMode()) {
@@ -161,7 +172,6 @@ public class IstioGatewayHandler extends AbstractArtifactHandler {
                     serverModel.getTls().getSubjectAltNames().size() > 0) {
                     tls.put("subjectAltNames", serverModel.getTls().getSubjectAltNames());
                 }
-    
                 server.put("tls", tls);
     
                 servers.add(server);
