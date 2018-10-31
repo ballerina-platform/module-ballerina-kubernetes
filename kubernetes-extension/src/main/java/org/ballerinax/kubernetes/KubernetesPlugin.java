@@ -65,9 +65,11 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
 
     @Override
     public void process(PackageNode packageNode) {
-        if (!(packageNode instanceof BLangTestablePackage)) {
-            KubernetesContext.getInstance().addDataHolder(((BLangPackage) packageNode).packageID);
+        if (packageNode instanceof BLangTestablePackage) {
+            return;
         }
+    
+        KubernetesContext.getInstance().addDataHolder(((BLangPackage) packageNode).packageID);
     }
 
     @Override
