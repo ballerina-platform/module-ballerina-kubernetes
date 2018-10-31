@@ -54,7 +54,7 @@ public class IstioGatewayTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void simpleQuotaTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void allFieldsTest() throws IOException, InterruptedException, KubernetesPluginException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "all_fields.bal"), 0);
         
         // Check if docker image exists and correct
@@ -68,6 +68,18 @@ public class IstioGatewayTest {
         Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
         Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
         Assert.assertEquals(gateway.get("kind"), "Gateway", "Invalid kind.");
+    
+        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "my-gateway", "Invalid gateway name");
+        Assert.assertEquals(metadata.get("namespace"), "ballerina", "Invalid gateway name");
+    
+        Map<String, String> labels = (Map<String, String>) metadata.get("labels");
+        Assert.assertEquals(labels.get("label1"), "label1", "Invalid label");
+        Assert.assertEquals(labels.get("label2"), "label2", "Invalid label");
+    
+        Map<String, String> annotations = (Map<String, String>) metadata.get("annotations");
+        Assert.assertEquals(annotations.get("anno1"), "anno1Val", "Invalid annotation value");
+        Assert.assertEquals(annotations.get("anno2"), "anno2Val", "Invalid annotation value");
     
         Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
         Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
