@@ -18,6 +18,7 @@
 
 package org.ballerinax.kubernetes;
 
+import org.ballerinalang.compiler.BLangCompilerException;
 import org.ballerinalang.compiler.plugins.AbstractCompilerPlugin;
 import org.ballerinalang.compiler.plugins.SupportedAnnotationPackages;
 import org.ballerinalang.model.elements.PackageID;
@@ -140,8 +141,8 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                 validateDeploymentDependencies();
                 artifactManager.createArtifacts();
             } catch (KubernetesPluginException e) {
-                KubernetesPluginException wrapperEx = new KubernetesPluginException("package [" + packageID + "] " +
-                                                                                    e.getMessage(), e);
+                BLangCompilerException wrapperEx = new BLangCompilerException("package [" + packageID + "] " +
+                                                                                 e.getMessage(), e);
                 try {
                     KubernetesUtils.deleteDirectory(targetPath);
                 } catch (KubernetesPluginException ignored) {

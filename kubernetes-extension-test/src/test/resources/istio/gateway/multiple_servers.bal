@@ -22,7 +22,36 @@ import ballerinax/kubernetes;
     selector: {
         app: "my-gateway-controller"
     },
-    servers: []
+    servers: [
+        {
+            port: {
+                number: 80,
+                name: "http",
+                protocol: "HTTP"
+            },
+            hosts: [
+                "uk.bookinfo.com",
+                "eu.bookinfo.com"
+            ],
+            tls: {
+                httpsRedirect: true
+            }
+        },
+        {
+            port: {
+                number: 443,
+                name: "https",
+                protocol: "HTTPS"
+            },
+            hosts: [
+                "uk.bookinfo.com",
+                "eu.bookinfo.com"
+            ],
+            tls: {
+                httpsRedirect: false
+            }
+        }
+    ]
 }
 @kubernetes:Deployment {
     name: "all_fields",

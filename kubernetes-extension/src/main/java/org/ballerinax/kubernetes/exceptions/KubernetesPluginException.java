@@ -18,12 +18,10 @@
 
 package org.ballerinax.kubernetes.exceptions;
 
-import org.ballerinalang.compiler.BLangCompilerException;
-
 /**
  * Custom exception for kubernetes artifact generation errors.
  */
-public class KubernetesPluginException extends BLangCompilerException {
+public class KubernetesPluginException extends Exception {
 
     public KubernetesPluginException(String msg) {
         super(msg);
