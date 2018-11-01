@@ -25,7 +25,7 @@ import ballerinax/kubernetes;
     servers: [
         {
             port: {
-                number: "443",
+                number: 443,
                 name: "https",
                 protocol: "HTTPS"
             },

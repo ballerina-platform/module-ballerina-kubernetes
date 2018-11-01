@@ -375,6 +375,7 @@ public type IstioPortConfig record {
     int number;
     IstioPortProtocol protocol;
     string? name;
+    !...
 };
 
 public type IstioTLSOptionMode "PASSTHROUGH"|"SIMPLE"|"MUTUAL";
@@ -386,12 +387,14 @@ public type IstioTLSOptionConfig record {
     string? privateKey;
     string? caCertificates;
     string[]? subjectAltNames;
+    !...
 };
 
 public type IstioServerConfig record {
     IstioPortConfig port;
     string[] hosts;
     IstioTLSOptionConfig? tls;
+    !...
 };
 
 public type IstioGatewayConfig record {
@@ -401,6 +404,7 @@ public type IstioGatewayConfig record {
     map<string>? annotations;
     map<string> selector;
     IstioServerConfig[] servers;
+    !...
 };
 
 public annotation<service, endpoint> IstioGateway IstioGatewayConfig;

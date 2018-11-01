@@ -154,25 +154,27 @@ public class IstioGatewayHandler extends AbstractArtifactHandler {
                 server.put("port", port);
                 
                 // tls
-                Map<String, Object> tls = new LinkedHashMap<>();
-                tls.put("httpsRedirect", serverModel.getTls().isHttpsRedirect());
-                if (null != serverModel.getTls().getMode()) {
-                    tls.put("mode", serverModel.getTls().getMode());
+                if (null != serverModel.getTls()) {
+                    Map<String, Object> tls = new LinkedHashMap<>();
+                    tls.put("httpsRedirect", serverModel.getTls().isHttpsRedirect());
+                    if (null != serverModel.getTls().getMode()) {
+                        tls.put("mode", serverModel.getTls().getMode());
+                    }
+                    if (null != serverModel.getTls().getServerCertificate()) {
+                        tls.put("serverCertificate", serverModel.getTls().getServerCertificate());
+                    }
+                    if (null != serverModel.getTls().getPrivateKey()) {
+                        tls.put("privateKey", serverModel.getTls().getPrivateKey());
+                    }
+                    if (null != serverModel.getTls().getCaCertificates()) {
+                        tls.put("caCertificates", serverModel.getTls().getCaCertificates());
+                    }
+                    if (null != serverModel.getTls().getSubjectAltNames() &&
+                        serverModel.getTls().getSubjectAltNames().size() > 0) {
+                        tls.put("subjectAltNames", serverModel.getTls().getSubjectAltNames());
+                    }
+                    server.put("tls", tls);
                 }
-                if (null != serverModel.getTls().getServerCertificate()) {
-                    tls.put("serverCertificate", serverModel.getTls().getServerCertificate());
-                }
-                if (null != serverModel.getTls().getPrivateKey()) {
-                    tls.put("privateKey", serverModel.getTls().getPrivateKey());
-                }
-                if (null != serverModel.getTls().getCaCertificates()) {
-                    tls.put("caCertificates", serverModel.getTls().getCaCertificates());
-                }
-                if (null != serverModel.getTls().getSubjectAltNames() &&
-                    serverModel.getTls().getSubjectAltNames().size() > 0) {
-                    tls.put("subjectAltNames", serverModel.getTls().getSubjectAltNames());
-                }
-                server.put("tls", tls);
     
                 servers.add(server);
             }
