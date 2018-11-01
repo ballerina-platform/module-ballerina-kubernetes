@@ -25,18 +25,14 @@ import ballerinax/kubernetes;
     servers: [
         {
             port: {
-                number: "443",
-                name: "https",
-                protocol: "HTTPS"
+                number: 80,
+                name: "http",
+                protocol: "HTTP"
             },
             hosts: [
-                "httpbin.example.com"
-            ],
-            tls: {
-                mode: "SIMPLE",
-                serverCertificate: "/etc/istio/ingressgateway-certs/tls.crt",
-                privateKey: "/etc/istio/ingressgateway-certs/tls.key"
-            }
+                "uk.bookinfo.com",
+                "eu.bookinfo.com"
+            ]
         }
     ]
 }

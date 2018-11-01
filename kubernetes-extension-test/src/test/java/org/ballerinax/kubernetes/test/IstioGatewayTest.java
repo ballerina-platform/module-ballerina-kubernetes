@@ -174,6 +174,115 @@ public class IstioGatewayTest {
     }
     
     /**
+     * Build bal file with istio gateway annotation having no tls httpsRedirect field.
+     * @throws IOException Error when loading the generated yaml.
+     * @throws InterruptedException Error when compiling the ballerina file.
+     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
+     */
+    @Test
+    public void noTLSHttpRedirect() throws IOException, InterruptedException, KubernetesPluginException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "no_tls_https_redirect.bal"), 0);
+        
+        // Check if docker image exists and correct
+        validateDockerfile();
+        validateDockerImage();
+        
+        // Validate deployment yaml
+        File gatewayFile = Paths.get(targetPath).resolve("no_tls_https_redirect_istio_gateway.yaml").toFile();
+        Assert.assertTrue(gatewayFile.exists());
+        Yaml yamlProcessor = new Yaml();
+        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
+        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(gateway.get("kind"), "Gateway", "Invalid kind.");
+        
+        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "my-gateway", "Invalid gateway name");
+        
+        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
+        Assert.assertEquals(selector.get("app"), "my-gateway-controller", "Invalid selector.");
+        
+        List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
+        Map<String, Object> server1 = servers.get(0);
+        Map<String, Object> port1 = (Map<String, Object>) server1.get("port");
+        Assert.assertEquals(port1.get("number"), 80, "Invalid port number.");
+        Assert.assertEquals(port1.get("name"), "http", "Invalid port name.");
+        Assert.assertEquals(port1.get("protocol"), "HTTP", "Invalid port protocol.");
+        
+        List<String> hosts1 = (List<String>) server1.get("hosts");
+        Assert.assertTrue(hosts1.contains("uk.bookinfo.com"), "uk.bookinfo.com host not included");
+        Assert.assertTrue(hosts1.contains("eu.bookinfo.com"), "eu.bookinfo.com host not included");
+        
+        Map<String, Object> tls1 = (Map<String, Object>) server1.get("tls");
+        Assert.assertEquals(tls1.get("httpsRedirect"), false, "Invalid tls httpsRedirect value");
+        
+        KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesTestUtils.deleteDockerImage(dockerImage);
+    }
+    
+    /**
+     * Build bal file with istio gateway annotation having mutual mode TLS.
+     * @throws IOException Error when loading the generated yaml.
+     * @throws InterruptedException Error when compiling the ballerina file.
+     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
+     */
+    @Test
+    public void tlsMutualTest() throws IOException, InterruptedException, KubernetesPluginException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tls_mutual.bal"), 0);
+        
+        // Check if docker image exists and correct
+        validateDockerfile();
+        validateDockerImage();
+        
+        // Validate deployment yaml
+        File gatewayFile = Paths.get(targetPath).resolve("tls_mutual_istio_gateway.yaml").toFile();
+        Assert.assertTrue(gatewayFile.exists());
+        Yaml yamlProcessor = new Yaml();
+        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
+        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(gateway.get("kind"), "Gateway", "Invalid kind.");
+        
+        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "my-gateway", "Invalid gateway name");
+        
+        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
+        Assert.assertEquals(selector.get("app"), "my-gateway-controller", "Invalid selector.");
+        
+        List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
+        Map<String, Object> server1 = servers.get(0);
+        Map<String, Object> port1 = (Map<String, Object>) server1.get("port");
+        Assert.assertEquals(port1.get("number"), 443, "Invalid port number.");
+        Assert.assertEquals(port1.get("name"), "https", "Invalid port name.");
+        Assert.assertEquals(port1.get("protocol"), "HTTPS", "Invalid port protocol.");
+        
+        List<String> hosts1 = (List<String>) server1.get("hosts");
+        Assert.assertTrue(hosts1.contains("httpbin.example.com"), "httpbin.example.com host not included");
+        
+        Map<String, Object> tls1 = (Map<String, Object>) server1.get("tls");
+        Assert.assertEquals(tls1.get("httpsRedirect"), false, "Invalid tls httpsRedirect value");
+        Assert.assertEquals(tls1.get("serverCertificate"), "/etc/istio/ingressgateway-certs/tls.crt",
+                "Invalid tls serverCertificate value");
+        Assert.assertEquals(tls1.get("privateKey"), "/etc/istio/ingressgateway-certs/tls.key",
+                "Invalid tls privateKey value");
+        Assert.assertEquals(tls1.get("caCertificates"), "/etc/istio/ingressgateway-ca-certs/ca-chain.cert.pem",
+                "Invalid tls caCertificates value");
+        
+        KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesTestUtils.deleteDockerImage(dockerImage);
+    }
+    
+    /**
+     * Build bal file with istio gateway annotation having invalid mutual mode TLS.
+     * @throws IOException Error when loading the generated yaml.
+     * @throws InterruptedException Error when compiling the ballerina file.
+     */
+    @Test
+    public void invalidTlsMutualTest() throws IOException, InterruptedException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tls_mutual.bal"), 1);
+    }
+    
+    /**
      * Build bal file with no selector istio gateway annotations.
      * @throws IOException Error when loading the generated yaml.
      * @throws InterruptedException Error when compiling the ballerina file.
