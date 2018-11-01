@@ -103,17 +103,16 @@ public class IstioGatewayTest {
         KubernetesTestUtils.deleteDockerImage(dockerImage);
     }
     
-//    /**
-//     * Build bal file with deployment having invalid environment variables. This should fail.
-//     * @throws IOException Error when loading the generated yaml.
-//     * @throws InterruptedException Error when compiling the ballerina file.
-//     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
-//     */
-//    @Test
-//    public void invalidTest() throws IOException, InterruptedException, KubernetesPluginException {
-//        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "quota-with-inval-scope.bal"), 1);
-//        KubernetesUtils.deleteDirectory(targetPath);
-//    }
+    /**
+     * Build bal file with invalid port istio gateway annotations.
+     * @throws IOException Error when loading the generated yaml.
+     * @throws InterruptedException Error when compiling the ballerina file.
+     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
+     */
+    @Test()
+    public void invalidPortTest() throws IOException, InterruptedException, KubernetesPluginException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "invalid_port.bal"), 1);
+    }
     
     /**
      * Validate if Dockerfile is created.

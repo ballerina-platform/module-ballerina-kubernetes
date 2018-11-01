@@ -60,32 +60,32 @@ public class IstioGatewayHandler extends AbstractArtifactHandler {
             
             // Validate number of selectors.
             if (gatewayModel.getSelector().size() == 0) {
-                throw new KubernetesPluginException("'" + gatewayModel.getName() + "' Istio Gateway needs one or more" +
+                throw new KubernetesPluginException("'" + gatewayModel.getName() + "' istio gateway needs one or more" +
                                                     " selectors.");
             }
             
             // Validate number of servers.
             if (null == gatewayModel.getServers() || gatewayModel.getServers().size() == 0) {
-                throw new KubernetesPluginException("'" + gatewayModel.getName() + "' Istio Gateway needs one or more" +
+                throw new KubernetesPluginException("'" + gatewayModel.getName() + "' istio gateway needs one or more" +
                                                     " servers.");
             }
             
             // Validate server.hosts
             for (IstioServerModel serverModel : gatewayModel.getServers()) {
                 if (null == serverModel.getHosts() || serverModel.getHosts().size() == 0) {
-                    throw new KubernetesPluginException("'" + gatewayModel.getName() + "' Istio Gateway needs one or" +
+                    throw new KubernetesPluginException("'" + gatewayModel.getName() + "' istio gateway needs one or" +
                                                         " more server hosts.");
                 }
     
                 if (null == serverModel.getPort() || serverModel.getPort().getNumber() < 0) {
-                    throw new KubernetesPluginException("'" + gatewayModel.getName() + "' Istio Gateway ports cannot" +
-                                                        " be less than 0.");
+                    throw new KubernetesPluginException("'" + gatewayModel.getName() + "' istio gateway ports cannot" +
+                                                        " be less than 0. found: " + serverModel.getPort().getNumber());
                 }
                 
                 if (serverModel.getTls() != null && ("SIMPLE".equals(serverModel.getTls().getMode()) &&
                     (serverModel.getTls().getServerCertificate() == null ||
                      serverModel.getTls().getPrivateKey() == null))) {
-                    throw new KubernetesPluginException("'" + gatewayModel.getName() + "' Istio Gateway TLS mode is" +
+                    throw new KubernetesPluginException("'" + gatewayModel.getName() + "' istio gateway TLS mode is" +
                                                         " SIMPLE, hence serverCertificate and privateKey fields are" +
                                                         " required.");
                 }
@@ -94,7 +94,7 @@ public class IstioGatewayHandler extends AbstractArtifactHandler {
                     (serverModel.getTls().getServerCertificate() == null ||
                      serverModel.getTls().getPrivateKey() == null ||
                      serverModel.getTls().getCaCertificates() == null))) {
-                    throw new KubernetesPluginException("'" + gatewayModel.getName() + "' Istio Gateway TLS mode is" +
+                    throw new KubernetesPluginException("'" + gatewayModel.getName() + "' istio gateway TLS mode is" +
                                                         " MUTUAL, hence serverCertificate, privateKey and" +
                                                         " caCertificates fields are required.");
                 }
