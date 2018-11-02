@@ -25,6 +25,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_BASE_IMAGE;
 import static org.ballerinax.kubernetes.KubernetesConstants.UNIX_DEFAULT_DOCKER_HOST;
 import static org.ballerinax.kubernetes.KubernetesConstants.WINDOWS_DEFAULT_DOCKER_HOST;
 
@@ -67,7 +68,7 @@ public class DeploymentModel extends KubernetesModel {
         this.initialDelaySeconds = 10;
         this.buildImage = true;
         String baseImageVersion = getClass().getPackage().getImplementationVersion();
-        this.baseImage = "ballerina/ballerina-runtime:" + baseImageVersion;
+        this.baseImage = BALLERINA_BASE_IMAGE + ":" + baseImageVersion;
         this.push = false;
         this.labels = new LinkedHashMap<>();
         this.env = new LinkedHashMap<>();

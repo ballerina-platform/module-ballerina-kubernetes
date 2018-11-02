@@ -27,6 +27,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_BASE_IMAGE;
 import static org.ballerinax.kubernetes.KubernetesConstants.UNIX_DEFAULT_DOCKER_HOST;
 import static org.ballerinax.kubernetes.KubernetesConstants.WINDOWS_DEFAULT_DOCKER_HOST;
 
@@ -59,7 +60,7 @@ public class JobModel extends KubernetesModel {
         this.externalFiles = new HashSet<>();
         this.restartPolicy = KubernetesConstants.RestartPolicy.Never.name();
         String baseImageVersion = getClass().getPackage().getImplementationVersion();
-        this.setBaseImage("ballerina/ballerina-runtime:" + baseImageVersion);
+        this.setBaseImage(BALLERINA_BASE_IMAGE + ":" + baseImageVersion);
         this.setPush(false);
         this.buildImage = true;
         this.labels = new HashMap<>();
