@@ -52,7 +52,7 @@ public class DockerModel extends KubernetesModel {
         this.push = false;
         this.buildImage = true;
         String baseImageVersion = getClass().getPackage().getImplementationVersion();
-        this.baseImage = "ballerina/ballerina:" + baseImageVersion;
+        this.baseImage = "ballerina/ballerina-runtime:" + baseImageVersion;
         this.enableDebug = false;
         this.debugPort = 5005;
         String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());

@@ -45,7 +45,7 @@ public class HelmChartGeneratorTests {
         dockerModel.setService(true);
         dockerModel.setBalxFileName("hello.balx");
         dockerModel.setEnableDebug(true);
-        dockerModel.setBaseImage("ballerina/ballerina:latest");
+        dockerModel.setBaseImage("ballerina/ballerina-runtime:latest");
         dockerModel.setDebugPort(5005);
         dockerModel.setBuildImage(false);
         KubernetesContext context = KubernetesContext.getInstance();

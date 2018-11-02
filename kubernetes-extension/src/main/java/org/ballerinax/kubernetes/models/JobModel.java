@@ -59,7 +59,7 @@ public class JobModel extends KubernetesModel {
         this.externalFiles = new HashSet<>();
         this.restartPolicy = KubernetesConstants.RestartPolicy.Never.name();
         String baseImageVersion = getClass().getPackage().getImplementationVersion();
-        this.setBaseImage("ballerina/ballerina:" + baseImageVersion);
+        this.setBaseImage("ballerina/ballerina-runtime:" + baseImageVersion);
         this.setPush(false);
         this.buildImage = true;
         this.labels = new HashMap<>();

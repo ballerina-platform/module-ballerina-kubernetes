@@ -67,7 +67,7 @@ public class DeploymentModel extends KubernetesModel {
         this.initialDelaySeconds = 10;
         this.buildImage = true;
         String baseImageVersion = getClass().getPackage().getImplementationVersion();
-        this.baseImage = "ballerina/ballerina:" + baseImageVersion;
+        this.baseImage = "ballerina/ballerina-runtime:" + baseImageVersion;
         this.push = false;
         this.labels = new LinkedHashMap<>();
         this.env = new LinkedHashMap<>();
