@@ -46,7 +46,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |push|Push docker image to registry. This can only be true if image build is true.|false|
 |username|Username for the docker registry|null|
 |password|Password for the docker registry|null|
-|baseImage|Base image to create the docker image|ballerina/ballerina:latest|
+|baseImage|Base image to create the docker image|ballerina/ballerina-runtime:latest|
 |imagePullSecrets|Image pull secrets value|null|
 |singleYAML|Generate a single yaml file for all k8s resources|false|
 
@@ -139,7 +139,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |push|Push docker image to registry. This can only be true if image build is true.|false|
 |username|Username for the docker registry|null|
 |password|Password for the docker registry|null|
-|baseImage|Base image to create the docker image|ballerina/ballerina:latest|
+|baseImage|Base image to create the docker image|ballerina/ballerina-runtime:latest|
 
 ### @kubernetes:ResourceQuota{}
 - Support with ballerina services, endpoints and functions.

@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_BASE_IMAGE;
 import static org.ballerinax.kubernetes.KubernetesConstants.UNIX_DEFAULT_DOCKER_HOST;
 import static org.ballerinax.kubernetes.KubernetesConstants.WINDOWS_DEFAULT_DOCKER_HOST;
 
@@ -52,7 +53,7 @@ public class DockerModel extends KubernetesModel {
         this.push = false;
         this.buildImage = true;
         String baseImageVersion = getClass().getPackage().getImplementationVersion();
-        this.baseImage = "ballerina/ballerina:" + baseImageVersion;
+        this.baseImage = BALLERINA_BASE_IMAGE + ":" + baseImageVersion;
         this.enableDebug = false;
         this.debugPort = 5005;
         String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
