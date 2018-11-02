@@ -303,7 +303,7 @@ public class IstioGatewayTest {
     }
     
     /**
-     * Build bal file with istio gateway annotation having mutual mode TLS.
+     * Build bal file with istio gateway annotation having simple mode TLS.
      * @throws IOException Error when loading the generated yaml.
      * @throws InterruptedException Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
@@ -354,7 +354,7 @@ public class IstioGatewayTest {
     }
     
     /**
-     * Build bal file with istio gateway annotation having invalid mutual mode TLS.
+     * Build bal file with istio gateway annotation having invalid simple mode TLS.
      * @throws IOException Error when loading the generated yaml.
      * @throws InterruptedException Error when compiling the ballerina file.
      */
