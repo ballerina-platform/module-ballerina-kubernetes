@@ -36,15 +36,22 @@ hello_world_copy_file.bal)
 1. Compile the  hello_world_copy_file.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build hello_world_copy_file.bal
-@kubernetes:Service 			 - complete 1/1
-@kubernetes:Ingress 			 - complete 1/1
-@kubernetes:Secret 			 - complete 1/1
-@kubernetes:Deployment 			 - complete 1/1
-@kubernetes:Docker 			 - complete 3/3
-@kubernetes:Helm 			 - complete 1/1
+Compiling source
+    hello_world_copy_file.bal
+Generating executable
+    hello_world_copy_file.balx
+	@kubernetes:Service 			 - complete 1/1
+	@kubernetes:Ingress 			 - complete 1/1
+	@kubernetes:Secret 			 - complete 1/1
+	@kubernetes:Deployment 			 - complete 1/1
+	@kubernetes:Docker 			 - complete 3/3
+	@kubernetes:Helm 			 - complete 1/1
 
-Run following command to deploy kubernetes artifacts:
-kubectl apply -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample12/kubernetes/
+	Run the following command to deploy the Kubernetes artifacts:
+	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample12/kubernetes/
+
+	Run the following command to install the application using Helm:
+	helm install --name hello-world-copy-file-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample12/kubernetes/hello-world-copy-file-deployment
 ```
 
 2. hello_world_copy_file.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
@@ -83,7 +90,7 @@ hello_world_copy_file     latest              53559c0cd4f4        55 seconds ago
 
 4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample12/kubernetes/
+$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample12/kubernetes/
 deployment.extensions "hello-world-copy-file-deployment" created
 ingress.extensions "helloworldep-ingress" created
 secret "helloworldep-secure-socket" created
@@ -124,6 +131,6 @@ Data: Lorem ipsum dolor sit amet.
 
 7. Undeploy sample:
 ```bash
-$> kubectl delete -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample12/kubernetes/
+$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample12/kubernetes/
 
 ```

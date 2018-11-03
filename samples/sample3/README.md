@@ -32,13 +32,21 @@
 1. Compile the  foodstore.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build foodstore.bal
-@kubernetes:Service 			 - complete 2/2
-@kubernetes:Ingress 			 - complete 2/2
-@kubernetes:Deployment 			 - complete 1/1
-@kubernetes:Docker 			 - complete 3/3
-@kubernetes:Helm 			 - complete 1/1
-Run following command to deploy kubernetes artifacts: 
-kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample4/kubernetes/
+Compiling source
+    foodstore.bal
+Generating executable
+    foodstore.balx
+	@kubernetes:Service 			 - complete 2/2
+	@kubernetes:Ingress 			 - complete 2/2
+	@kubernetes:Deployment 			 - complete 1/1
+	@kubernetes:Docker 			 - complete 3/3
+	@kubernetes:Helm 			 - complete 1/1
+
+	Run the following command to deploy the Kubernetes artifacts:
+	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample3/kubernetes/
+
+	Run the following command to install the application using Helm:
+	helm install --name foodstore /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample3/kubernetes/foodstore
 ```
 
 2. foodstore.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
@@ -72,7 +80,7 @@ foodstore                   latest              df83ae43f69b        2 minutes ag
 
 4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample4/kubernetes/
+$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample3/kubernetes/
 deployment "foodstore" created
 ingress "burgerapi-ingress" created
 ingress "pizzaapi-ingress" created
@@ -126,5 +134,5 @@ Burger menu
 
 7. Undeploy sample:
 ```bash
-$> kubectl delete -f /Users/lakmal/ballerina/kubernetes/samples/sample4/kubernetes/
+$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample3/kubernetes/
 ```

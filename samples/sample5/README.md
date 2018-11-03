@@ -35,15 +35,23 @@
 1. Compile the  pizzashack.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build pizzashack.bal
-@kubernetes:Service 			 - complete 2/2
-@kubernetes:Ingress 			 - complete 2/2
-@kubernetes:Secret 			 - complete 1/1
-@kubernetes:Deployment 			 - complete 1/1
-@kubernetes:HPA 			 - complete 1/1
-@kubernetes:Docker 			 - complete 3/3
-@kubernetes:Helm 			 - complete 1/1
-Run following command to deploy kubernetes artifacts: 
-kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample5/kubernetes/
+Compiling source
+    pizzashack.bal
+Generating executable
+    pizzashack.balx
+	@kubernetes:Service 			 - complete 2/2
+	@kubernetes:Ingress 			 - complete 2/2
+	@kubernetes:Secret 			 - complete 1/1
+	@kubernetes:Deployment 			 - complete 1/1
+	@kubernetes:HPA 			 - complete 1/1
+	@kubernetes:Docker 			 - complete 3/3
+	@kubernetes:Helm 			 - complete 1/1
+
+	Run the following command to deploy the Kubernetes artifacts:
+	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample5/kubernetes/
+
+	Run the following command to install the application using Helm:
+	helm install --name pizzashack-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample5/kubernetes/pizzashack-deployment
 
 ```
 
@@ -82,7 +90,7 @@ ballerina.com/pizzashack     2.1.0              df83ae43f69b        2 minutes ag
 
 4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample5/kubernetes/
+$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample5/kubernetes/
 deployment.extensions "pizzashack-deployment" created
 horizontalpodautoscaler.autoscaling "pizzashack-hpa" created
 ingress.extensions "pizzaep-ingress" created
@@ -135,5 +143,5 @@ Get Customer resource !!!!
 
 7. Undeploy sample:
 ```bash
-$> kubectl delete -f /Users/lakmal/ballerina/kubernetes/samples/sample5/kubernetes/
+$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample5/kubernetes/
 ```

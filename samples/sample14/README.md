@@ -24,14 +24,21 @@
 1. Compile the  hello_world_k8s_namespace.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build hello_world_k8s_namespace.bal
-@kubernetes:Service 			 - complete 1/1
-@kubernetes:Ingress 			 - complete 1/1
-@kubernetes:Deployment 			 - complete 1/1
-@kubernetes:Docker 			 - complete 3/3
-@kubernetes:Helm 			 - complete 1/1
-Run following command to deploy kubernetes artifacts: 
-kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample14/kubernetes/
+Compiling source
+    hello_world_k8s_namespace.bal
+Generating executable
+    hello_world_k8s_namespace.balx
+	@kubernetes:Service 			 - complete 1/1
+	@kubernetes:Ingress 			 - complete 1/1
+	@kubernetes:Deployment 			 - complete 1/1
+	@kubernetes:Docker 			 - complete 3/3
+	@kubernetes:Helm 			 - complete 1/1
 
+	Run the following command to deploy the Kubernetes artifacts:
+	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample14/kubernetes/
+
+	Run the following command to install the application using Helm:
+	helm install --name hello-world-k8s-namespace-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample14/kubernetes/hello-world-k8s-namespace-deployment
 ```
 
 2. hello_world_k8s_namespace.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
@@ -67,7 +74,7 @@ namespace "ballerina" created
 
 5. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample14/kubernetes/
+$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample14/kubernetes/
 service "hello" created
 ingress.extensions "helloep-ingress" created
 deployment.extensions "hello-world-k8s-namespace-deployment" created

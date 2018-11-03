@@ -37,16 +37,23 @@
 1. Compile the  hello_world_persistence_volume_k8s.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build hello_world_persistence_volume_k8s.bal
-@kubernetes:Service 			 - complete 1/1
-@kubernetes:Ingress 			 - complete 1/1
-@kubernetes:Secret 			 - complete 1/1
-@kubernetes:VolumeClaim 		 - complete 1/1
-@kubernetes:Deployment 			 - complete 1/1
-@kubernetes:Docker 			 - complete 3/3
-@kubernetes:Helm 			 - complete 1/1
+Compiling source
+    hello_world_persistence_volume_k8s.bal
+Generating executable
+    hello_world_persistence_volume_k8s.balx
+	@kubernetes:Service 			 - complete 1/1
+	@kubernetes:Ingress 			 - complete 1/1
+	@kubernetes:Secret 			 - complete 1/1
+	@kubernetes:VolumeClaim 		 - complete 1/1
+	@kubernetes:Deployment 			 - complete 1/1
+	@kubernetes:Docker 			 - complete 3/3
+	@kubernetes:Helm 			 - complete 1/1
 
-Run following command to deploy kubernetes artifacts:
-kubectl apply -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample9/kubernetes/
+	Run the following command to deploy the Kubernetes artifacts:
+	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample9/kubernetes/
+
+	Run the following command to install the application using Helm:
+	helm install --name hello-world-persistence-volume-k8s-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample9/kubernetes/hello-world-persistence-volume-k8s-deployment
 ```
 
 2. hello_world_persistence_volume_k8s.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
@@ -92,7 +99,7 @@ persistentvolume "local-pv-2" created
 
 5. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample9/kubernetes/
+$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample9/kubernetes/
 deployment.extensions "hello-world-persistence-volume-k8s-deployment" created
 ingress.extensions "helloworldep-ingress" created
 secret "helloworldep-keystore" created
@@ -141,6 +148,6 @@ Hello World
 
 8. Undeploy sample:
 ```bash
-$> kubectl delete -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample9/kubernetes/
+$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample9/kubernetes/
 
 ```

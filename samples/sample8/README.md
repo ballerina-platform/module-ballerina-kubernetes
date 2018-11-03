@@ -40,16 +40,23 @@
 1. Compile the hello_world_config_map_k8s.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build hello_world_config_map_k8s.bal
-@kubernetes:Service 			 - complete 1/1
-@kubernetes:Ingress 			 - complete 1/1
-@kubernetes:Secret 			 - complete 1/1
-@kubernetes:ConfigMap 			 - complete 2/2
-@kubernetes:Deployment 			 - complete 1/1
-@kubernetes:Docker 			 - complete 3/3
-@kubernetes:Helm 			 - complete 1/1
+Compiling source
+    hello_world_config_map_k8s.bal
+Generating executable
+    hello_world_config_map_k8s.balx
+	@kubernetes:Service 			 - complete 1/1
+	@kubernetes:Ingress 			 - complete 1/1
+	@kubernetes:Secret 			 - complete 1/1
+	@kubernetes:ConfigMap 			 - complete 2/2
+	@kubernetes:Deployment 			 - complete 1/1
+	@kubernetes:Docker 			 - complete 3/3
+	@kubernetes:Helm 			 - complete 1/1
 
-Run following command to deploy kubernetes artifacts:
-kubectl apply -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample8/kubernetes/
+	Run the following command to deploy the Kubernetes artifacts:
+	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample8/kubernetes/
+
+	Run the following command to install the application using Helm:
+	helm install --name hello-world-config-map-k8s-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample8/kubernetes/hello-world-config-map-k8s-deployment
 ```
 
 2. hello_world_config_map_k8s.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
@@ -90,7 +97,7 @@ hello_world_config_map_k8s     latest              53559c0cd4f4        55 second
 
 4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample8/kubernetes/
+$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample8/kubernetes/
 configmap "helloworld-config-map" configured
 configmap "helloworld-ballerina-conf-config-map" configured
 deployment.extensions "hello-world-config-map-k8s-deployment" created
@@ -141,6 +148,6 @@ Data: Lorem ipsum dolor sit amet.
 
 7. Undeploy sample:
 ```bash
-$> kubectl delete -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample8/kubernetes/
+$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample8/kubernetes/
 
 ```
