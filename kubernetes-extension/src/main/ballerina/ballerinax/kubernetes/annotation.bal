@@ -167,7 +167,7 @@ public type ServiceType "NodePort"|"ClusterIP"|"LoadBalancer";
 public type ServiceConfiguration record {
     string name;
     map<string>? labels;
-    int port;
+    int? port;
     SessionAffinity? sessionAffinity;
     ServiceType? serviceType;
     !...

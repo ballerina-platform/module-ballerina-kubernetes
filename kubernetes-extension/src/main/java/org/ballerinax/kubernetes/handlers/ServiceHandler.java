@@ -56,7 +56,7 @@ public class ServiceHandler extends AbstractArtifactHandler {
                 .addNewPort()
                 .withProtocol(KubernetesConstants.KUBERNETES_SVC_PROTOCOL)
                 .withPort(serviceModel.getPort())
-                .withNewTargetPort(serviceModel.getPort())
+                .withNewTargetPort(serviceModel.getTargetPort())
                 .endPort()
                 .addToSelector(KubernetesConstants.KUBERNETES_SELECTOR_KEY, serviceModel.getSelector())
                 .withSessionAffinity(serviceModel.getSessionAffinity())
@@ -86,7 +86,7 @@ public class ServiceHandler extends AbstractArtifactHandler {
             serviceModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
             serviceModel.setSelector(balxFileName);
             generate(serviceModel);
-            deploymentModel.addPort(serviceModel.getPort());
+            deploymentModel.addPort(serviceModel.getTargetPort());
             OUT.print("\t@kubernetes:Service \t\t\t - complete " + count + "/" + serviceModels.size() + "\r");
         }
     }
