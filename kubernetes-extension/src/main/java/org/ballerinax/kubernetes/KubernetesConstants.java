@@ -69,6 +69,7 @@ public class KubernetesConstants {
     public static final String HELM_NAME = "name";
     public static final String HELM_VERSION = "version";
     public static final String HELM_VERSION_DEFAULT = "0.1.0";
+    public static final String BALLERINA_BASE_IMAGE = "ballerina/ballerina-runtime";
 
     /**
      * Restart policy enum.
