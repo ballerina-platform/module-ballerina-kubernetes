@@ -16,18 +16,23 @@
     └── kubernetes
         ├── docker
         │   └── Dockerfile
-        ├── hello_world_k8s_svc.yaml
-        └── hello_world_k8s_deployment.yaml
+        ├── hello-world-k8s-deployment
+        │   ├── Chart.yaml
+        │   └── templates
+        │       ├── hello_world_k8s_deployment.yaml
+        │       └── hello_world_k8s_svc.yaml
+        ├── hello_world_k8s_deployment.yaml
+        └── hello_world_k8s_svc.yaml
     ```
 ### How to run:
 
 1. Compile the  hello_world_k8s.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build hello_world_k8s.bal
-
-@kubernetes:Docker                     - complete 3/3
-@kubernetes:Deployment      - complete 1/1
-@kubernetes:Service         - complete 1/1
+@kubernetes:Service 			 - complete 1/1
+@kubernetes:Deployment 			 - complete 1/1
+@kubernetes:Docker 			 - complete 3/3
+@kubernetes:Helm 			 - complete 1/1
 
 Run following command to deploy kubernetes artifacts: 
 kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample1/kubernetes/
@@ -43,8 +48,13 @@ $> tree
 └── kubernetes
     ├── docker
     │   └── Dockerfile
-    ├── hello_world_k8s_svc.yaml
-    └── hello_world_k8s_deployment.yaml
+    ├── hello-world-k8s-deployment
+    │   ├── Chart.yaml
+    │   └── templates
+    │       ├── hello_world_k8s_deployment.yaml
+    │       └── hello_world_k8s_svc.yaml
+    ├── hello_world_k8s_deployment.yaml
+    └── hello_world_k8s_svc.yaml
 ```
 
 3. Verify the docker image is created:
@@ -80,7 +90,7 @@ helloworldep           NodePort    10.96.118.214    <none>        9090:32045/TCP
 
 Note that the node port is derived from `kubectl get svc` output.
 ```bash
-$> curl http://localhost:32045/HelloWorld/sayHello
+$> curl http://localhost:32045/helloWorld/sayHello
 Hello, World from service helloWorld !
 ```
 

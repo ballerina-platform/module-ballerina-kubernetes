@@ -1,8 +1,8 @@
 import ballerina/http;
 import ballerina/io;
 import ballerina/log;
-import ballerina/jdbc;
 import ballerina/config;
+import ballerinax/jdbc;
 import ballerinax/kubernetes;
 
 @kubernetes:Service {

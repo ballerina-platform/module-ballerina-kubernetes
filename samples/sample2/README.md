@@ -5,7 +5,7 @@
 - Following files will be generated from this sample.
     ``` 
     $> docker image
-    hello-world-k8s:latest
+    hello_world_k8s_config:latest
     
     $> tree
     ├── README.md
@@ -14,17 +14,22 @@
     └── kubernetes
         ├── docker
         │   └── Dockerfile
+        ├── hello-world-k8s-config-deployment
+        │   ├── Chart.yaml
+        │   └── templates
+        │       └── hello_world_k8s_config.yaml
         └── hello_world_k8s_config.yaml
     ```
 ### How to run:
 
 1. Compile the  hello_world_k8s_config.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
-$> ballerina build hello_world_k8s.bal
-@kubernetes:Docker 			 - complete 3/3 
-@kubernetes:Deployment 		 - complete 1/1
-@kubernetes:Service 		 - complete 1/1
-@kubernetes:Ingress 		 - complete 1/1
+$> ballerina build hello_world_k8s_config.bal
+@kubernetes:Service 			 - complete 1/1
+@kubernetes:Ingress 			 - complete 1/1
+@kubernetes:Deployment 			 - complete 1/1
+@kubernetes:Docker 			 - complete 3/3
+@kubernetes:Helm 			 - complete 1/1
 Run following command to deploy kubernetes artifacts: 
 kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample2/kubernetes/
 
@@ -33,12 +38,17 @@ kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample2/kubernetes/
 2. hello_world_k8s_config.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
+.
 ├── README.md
 ├── hello_world_k8s_config.bal
 ├── hello_world_k8s_config.balx
 └── kubernetes
     ├── docker
     │   └── Dockerfile
+    ├── hello-world-k8s-config-deployment
+    │   ├── Chart.yaml
+    │   └── templates
+    │       └── hello_world_k8s_config.yaml
     └── hello_world_k8s_config.yaml
 ```
 
@@ -86,7 +96,7 @@ from `kubectl get ingress` command.)_
  ```
 Use curl command with hostname to access the service.
 ```bash
-$> curl http://abc.com/HelloWorld/sayHello
+$> curl http://abc.com/helloWorld/sayHello
 Hello, World from service helloWorld !
 ```
 7. Undeploy sample:

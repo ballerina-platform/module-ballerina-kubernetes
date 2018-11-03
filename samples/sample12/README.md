@@ -9,11 +9,22 @@ hello_world_copy_file.bal)
     hello_world_copy_file:latest
     
     $> tree
+    ├── README.md
+    ├── data
+    │   └── data.txt
+    ├── hello_world_copy_file.bal
     ├── hello_world_copy_file.balx
     └── kubernetes
         ├── docker
         │   ├── Dockerfile
         │   └── data.txt
+        ├── hello-world-copy-file-deployment
+        │   ├── Chart.yaml
+        │   └── templates
+        │       ├── hello_world_copy_file_deployment.yaml
+        │       ├── hello_world_copy_file_ingress.yaml
+        │       ├── hello_world_copy_file_secret.yaml
+        │       └── hello_world_copy_file_svc.yaml
         ├── hello_world_copy_file_deployment.yaml
         ├── hello_world_copy_file_ingress.yaml
         ├── hello_world_copy_file_secret.yaml
@@ -25,12 +36,12 @@ hello_world_copy_file.bal)
 1. Compile the  hello_world_copy_file.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build hello_world_copy_file.bal
-@kubernetes:Service 			- complete 1/1
-@kubernetes:Ingress 			- complete 1/1
-@kubernetes:Secret 			    - complete 1/1
-@kubernetes:Docker 			    - complete 3/3
-@kubernetes:Deployment 			- complete 1/1
-
+@kubernetes:Service 			 - complete 1/1
+@kubernetes:Ingress 			 - complete 1/1
+@kubernetes:Secret 			 - complete 1/1
+@kubernetes:Deployment 			 - complete 1/1
+@kubernetes:Docker 			 - complete 3/3
+@kubernetes:Helm 			 - complete 1/1
 
 Run following command to deploy kubernetes artifacts:
 kubectl apply -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample12/kubernetes/
@@ -49,6 +60,13 @@ $> tree
         ├── docker
         │   ├── Dockerfile
         │   └── data.txt
+        ├── hello-world-copy-file-deployment
+        │   ├── Chart.yaml
+        │   └── templates
+        │       ├── hello_world_copy_file_deployment.yaml
+        │       ├── hello_world_copy_file_ingress.yaml
+        │       ├── hello_world_copy_file_secret.yaml
+        │       └── hello_world_copy_file_svc.yaml
         ├── hello_world_copy_file_deployment.yaml
         ├── hello_world_copy_file_ingress.yaml
         ├── hello_world_copy_file_secret.yaml
@@ -66,8 +84,8 @@ hello_world_copy_file     latest              53559c0cd4f4        55 seconds ago
 4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
 $> kubectl apply -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample12/kubernetes/
-deployment "hello-world-copy-file-deployment" created
-ingress "helloworldep-ingress" created
+deployment.extensions "hello-world-copy-file-deployment" created
+ingress.extensions "helloworldep-ingress" created
 secret "helloworldep-secure-socket" created
 service "helloworldep-svc" created
 ```
@@ -87,8 +105,8 @@ NAME                 HOSTS     ADDRESS   PORTS     AGE
 helloworld-ingress   abc.com             80, 443   6m
 
 $> kubectl get secrets
-NAME                    TYPE                                 DATA      AGE
-helloworldep-keystore   Opaque                                1         1m
+NAME                         TYPE                                  DATA      AGE
+helloworldep-secure-socket   Opaque                                2         36s
 
 ```
 
@@ -100,7 +118,7 @@ _(127.0.0.1 is only applicable to docker for mac users. Other users should map t
 from `kubectl get ingress` command.)_
 
 ```bash
-$>curl https://abc.com/helloWorld/data -k
+$> curl https://abc.com/helloWorld/data -k
 Data: Lorem ipsum dolor sit amet.
 ```
 

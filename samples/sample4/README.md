@@ -1,4 +1,4 @@
-## Sample6: Kubernetes SSL
+## Sample4: Kubernetes SSL
 
 - This sample runs simple ballerina hello world service in kubernetes cluster with https. Keystore will 
   automatically passed into relevant POD by using k8s secret volume mount.
@@ -8,33 +8,40 @@
 - Following files will be generated from this sample.
     ``` 
     $> docker image
-    hello_world_k8s:latest
+    hello_world_ssl_k8s:latest
     
     $> tree
-        .
-        ├── README.md
-        ├── hello_world_ssl_k8s.bal
-        ├── hello_world_ssl_k8s.balx
-        └── kubernetes
-            ├── docker
-            │   └── Dockerfile
-            ├── hello_world_ssl_k8s_deployment.yaml
-            ├── hello_world_ssl_k8s_ingress.yaml
-            ├── hello_world_ssl_k8s_secret.yaml
-            └── hello_world_ssl_k8s_svc.yaml
+    ├── README.md
+    ├── hello_world_ssl_k8s.bal
+    ├── hello_world_ssl_k8s.balx
+    └── kubernetes
+        ├── docker
+        │   └── Dockerfile
+        ├── hello-world-ssl-k8s-deployment
+        │   ├── Chart.yaml
+        │   └── templates
+        │       ├── hello_world_ssl_k8s_deployment.yaml
+        │       ├── hello_world_ssl_k8s_ingress.yaml
+        │       ├── hello_world_ssl_k8s_secret.yaml
+        │       └── hello_world_ssl_k8s_svc.yaml
+        ├── hello_world_ssl_k8s_deployment.yaml
+        ├── hello_world_ssl_k8s_ingress.yaml
+        ├── hello_world_ssl_k8s_secret.yaml
+        └── hello_world_ssl_k8s_svc.yaml
     ```
 ### How to run:
 
 1. Compile the  hello_world_ssl_k8s.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build hello_world_ssl_k8s.bal
-@kubernetes:Docker 			 - complete 3/3 
-@kubernetes:Deployment 		 - complete 1/1
-@kubernetes:Service 		 - complete 1/1
-@kubernetes:Secret 		 - complete 1/1
-@kubernetes:Ingress 		 - complete 1/1
+@kubernetes:Service 			 - complete 1/1
+@kubernetes:Ingress 			 - complete 1/1
+@kubernetes:Secret 			 - complete 1/1
+@kubernetes:Deployment 			 - complete 1/1
+@kubernetes:Docker 			 - complete 3/3
+@kubernetes:Helm 			 - complete 1/1
 Run following command to deploy kubernetes artifacts: 
-kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample6/kubernetes/
+kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample4/kubernetes/
 ```
 
 2. hello_world_ssl_k8s.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
@@ -47,6 +54,13 @@ $> tree
 └── kubernetes
     ├── docker
     │   └── Dockerfile
+    ├── hello-world-ssl-k8s-deployment
+    │   ├── Chart.yaml
+    │   └── templates
+    │       ├── hello_world_ssl_k8s_deployment.yaml
+    │       ├── hello_world_ssl_k8s_ingress.yaml
+    │       ├── hello_world_ssl_k8s_secret.yaml
+    │       └── hello_world_ssl_k8s_svc.yaml
     ├── hello_world_ssl_k8s_deployment.yaml
     ├── hello_world_ssl_k8s_ingress.yaml
     ├── hello_world_ssl_k8s_secret.yaml
@@ -63,8 +77,9 @@ hello_world_ssl_k8s       latest              df83ae43f69b        2 minutes ago 
 
 4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample6/kubernetes/
-ingress "helloworld-ingress" created
+$> kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample4/kubernetes/
+deployment.extensions "hello-world-ssl-k8s-deployment" created
+ingress.extensions "helloworldsecuredep-ingress" created
 secret "helloworldsecuredep-keystore" created
 service "helloworldsecuredep-svc" created
 ```
@@ -97,12 +112,12 @@ from `kubectl get ingress` command.)_
 Use curl command with hostname to access the service.
 ```bash
 $> curl https://abc.com/helloWorld/sayHello -k
-Hello, World from service helloWorld !
+Hello, World from secured service !
 
 
 7. Undeploy sample:
 ```bash
-$> kubectl delete -f /Users/lakmal/ballerina/kubernetes/samples/sample6/kubernetes/
+$> kubectl delete -f /Users/lakmal/ballerina/kubernetes/samples/sample4/kubernetes/
 
 
 ```

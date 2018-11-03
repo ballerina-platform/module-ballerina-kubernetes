@@ -9,15 +9,27 @@
     hello_world_persistence_volume_k8s:latest
     
     $> tree
-      ├── hello_world_persistence_volume_k8s.balx
-      ├── kubernetes
-         ├── docker
-         │   └── Dockerfile
-         ├── hello_world_persistence_volume_k8s_deployment.yaml
-         ├── hello_world_persistence_volume_k8s_ingress.yaml
-         ├── hello_world_persistence_volume_k8s_secret.yaml
-         ├── hello_world_persistence_volume_k8s_svc.yaml
-         └── hello_world_persistence_volume_k8s_volume_claim.yaml
+    ├── README.md
+    ├── hello_world_persistence_volume_k8s.bal
+    ├── hello_world_persistence_volume_k8s.balx
+    ├── kubernetes
+    │   ├── docker
+    │   │   └── Dockerfile
+    │   ├── hello-world-persistence-volume-k8s-deployment
+    │   │   ├── Chart.yaml
+    │   │   └── templates
+    │   │       ├── hello_world_persistence_volume_k8s_deployment.yaml
+    │   │       ├── hello_world_persistence_volume_k8s_ingress.yaml
+    │   │       ├── hello_world_persistence_volume_k8s_secret.yaml
+    │   │       ├── hello_world_persistence_volume_k8s_svc.yaml
+    │   │       └── hello_world_persistence_volume_k8s_volume_claim.yaml
+    │   ├── hello_world_persistence_volume_k8s_deployment.yaml
+    │   ├── hello_world_persistence_volume_k8s_ingress.yaml
+    │   ├── hello_world_persistence_volume_k8s_secret.yaml
+    │   ├── hello_world_persistence_volume_k8s_svc.yaml
+    │   └── hello_world_persistence_volume_k8s_volume_claim.yaml
+    └── volumes
+        └── persistent-volume.yaml
   
     ```
 ### How to run:
@@ -25,11 +37,13 @@
 1. Compile the  hello_world_persistence_volume_k8s.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build hello_world_persistence_volume_k8s.bal
-@kubernetes:Docker 				 - complete 3/3
-@kubernetes:Deployment 			 - complete 1/1
+@kubernetes:Service 			 - complete 1/1
 @kubernetes:Ingress 			 - complete 1/1
 @kubernetes:Secret 			 - complete 1/1
-@kubernetes:volumeClaim 		 - complete 1/1
+@kubernetes:VolumeClaim 		 - complete 1/1
+@kubernetes:Deployment 			 - complete 1/1
+@kubernetes:Docker 			 - complete 3/3
+@kubernetes:Helm 			 - complete 1/1
 
 Run following command to deploy kubernetes artifacts:
 kubectl apply -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample9/kubernetes/
@@ -45,6 +59,14 @@ $> tree
 ├── kubernetes
 │   ├── docker
 │   │   └── Dockerfile
+│   ├── hello-world-persistence-volume-k8s-deployment
+│   │   ├── Chart.yaml
+│   │   └── templates
+│   │       ├── hello_world_persistence_volume_k8s_deployment.yaml
+│   │       ├── hello_world_persistence_volume_k8s_ingress.yaml
+│   │       ├── hello_world_persistence_volume_k8s_secret.yaml
+│   │       ├── hello_world_persistence_volume_k8s_svc.yaml
+│   │       └── hello_world_persistence_volume_k8s_volume_claim.yaml
 │   ├── hello_world_persistence_volume_k8s_deployment.yaml
 │   ├── hello_world_persistence_volume_k8s_ingress.yaml
 │   ├── hello_world_persistence_volume_k8s_secret.yaml
@@ -64,14 +86,15 @@ hello_world_persistence_volume_k8s     latest              53559c0cd4f4        5
 
 4. Create sample kubernetes volume using following command.
  ```bash
-kubectl create -f ./volumes/persistent-volume.yaml
+$> kubectl create -f ./volumes/persistent-volume.yaml
+persistentvolume "local-pv-2" created
 ```
 
 5. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
 $> kubectl apply -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample9/kubernetes/
-deployment "hello-world-persistence-volume-k8s-deployment" created
-ingress "helloworld-ingress" created
+deployment.extensions "hello-world-persistence-volume-k8s-deployment" created
+ingress.extensions "helloworldep-ingress" created
 secret "helloworldep-keystore" created
 service "helloworldep-svc" created
 persistentvolumeclaim "local-pv-2" created
@@ -112,7 +135,7 @@ _(127.0.0.1 is only applicable to docker for mac users. Other users should map t
 from `kubectl get ingress` command.)_
 
 ```bash
-$>curl https://abc.com/helloWorld/sayHello -k
+$> curl https://abc.com/helloWorld/sayHello -k
 Hello World
 ```
 

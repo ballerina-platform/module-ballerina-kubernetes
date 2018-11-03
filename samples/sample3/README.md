@@ -11,25 +11,32 @@
     foodstore:latest 
     
     $> tree
-        ├── README.md
-        ├── foodstore.bal
-        ├── foodstore.balx
-        └── kubernetes
-            ├── docker
-            │   └── Dockerfile
-            ├── foodstore_deployment.yaml
-            ├── foodstore_ingress.yaml
-            └── foodstore_svc.yaml
+    ├── README.md
+    ├── foodstore.bal
+    ├── foodstore.balx
+    └── kubernetes
+        ├── docker
+        │   └── Dockerfile
+        ├── foodstore
+        │   ├── Chart.yaml
+        │   └── templates
+        │       ├── foodstore_deployment.yaml
+        │       ├── foodstore_ingress.yaml
+        │       └── foodstore_svc.yaml
+        ├── foodstore_deployment.yaml
+        ├── foodstore_ingress.yaml
+        └── foodstore_svc.yaml
     ```
 ### How to run:
 
 1. Compile the  foodstore.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build foodstore.bal
-@kubernetes:Docker 			 - complete 3/3 
-@kubernetes:Deployment 		 - complete 1/1
-@kubernetes:Service 		 - complete 2/2
-@kubernetes:Ingress 		 - complete 2/2
+@kubernetes:Service 			 - complete 2/2
+@kubernetes:Ingress 			 - complete 2/2
+@kubernetes:Deployment 			 - complete 1/1
+@kubernetes:Docker 			 - complete 3/3
+@kubernetes:Helm 			 - complete 1/1
 Run following command to deploy kubernetes artifacts: 
 kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample4/kubernetes/
 ```
@@ -37,15 +44,22 @@ kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample4/kubernetes/
 2. foodstore.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
-    ├── README.md
-    ├── foodstore.bal
-    ├── foodstore.balx
-    └── kubernetes
-        ├── docker
-        │   └── Dockerfile
-        ├── foodstore_deployment.yaml
-        ├── foodstore_ingress.yaml
-        └── foodstore_svc.yaml
+.
+├── README.md
+├── foodstore.bal
+├── foodstore.balx
+└── kubernetes
+    ├── docker
+    │   └── Dockerfile
+    ├── foodstore
+    │   ├── Chart.yaml
+    │   └── templates
+    │       ├── foodstore_deployment.yaml
+    │       ├── foodstore_ingress.yaml
+    │       └── foodstore_svc.yaml
+    ├── foodstore_deployment.yaml
+    ├── foodstore_ingress.yaml
+    └── foodstore_svc.yaml
 ```
 
 3. Verify the docker image is created:
@@ -104,10 +118,10 @@ from `kubectl get ingress` command.)_
 Use curl command with hostname to access the service.
 ```bash
 $> curl http://pizza.com/pizzastore/pizza/menu
-Get pizza menu
+Pizza menu
 
-$>curl http://burger.com/menu
-Get burger menu
+$> curl http://burger.com/menu
+Burger menu
 ```
 
 7. Undeploy sample:
