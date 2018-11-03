@@ -52,9 +52,14 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         }
         List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =
                 ((BLangRecordLiteral) ((BLangEndpoint) endpointNode).configurationExpr).getKeyValuePairs();
+        // If service annotation port is not empty, then endpoint port used is used for the k8s svc target port while
+        // service annotation port is used for k8s port.
+        // If service annotation port is empty, then endpoint port is used for both port and target port of the k8s
+        // svc.
         if (serviceModel.getPort() == -1) {
             serviceModel.setPort(extractPort(endpointConfig));
         }
+        serviceModel.setTargetPort(extractPort(endpointConfig));
         KubernetesContext.getInstance().getDataHolder().addBEndpointToK8sServiceMap(endpointNode.getName().getValue()
                 , serviceModel);
     }
@@ -73,7 +78,14 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         }
         List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =
                 ((BLangRecordLiteral) anonymousEndpoint).getKeyValuePairs();
-        serviceModel.setPort(extractPort(endpointConfig));
+        // If service annotation port is not empty, then endpoint port used is used for the k8s svc target port while
+        // service annotation port is used for k8s port.
+        // If service annotation port is empty, then endpoint port is used for both port and target port of the k8s
+        // svc.
+        if (serviceModel.getPort() == -1) {
+            serviceModel.setPort(extractPort(endpointConfig));
+        }
+        serviceModel.setTargetPort(extractPort(endpointConfig));
         KubernetesContext.getInstance().getDataHolder().addBEndpointToK8sServiceMap(serviceNode.getName().getValue(),
                 serviceModel);
     }

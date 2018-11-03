@@ -29,13 +29,16 @@ public class ServiceModel extends KubernetesModel {
     
     private Map<String, String> labels;
     private String serviceType;
-    private int port = -1;
+    private int port;
+    private int targetPort;
     private String selector;
     private String sessionAffinity;
 
     public ServiceModel() {
         serviceType = KubernetesConstants.ServiceType.ClusterIP.name();
         labels = new HashMap<>();
+        port = -1;
+        targetPort = -1;
     }
 
     public Map<String, String> getLabels() {
@@ -65,7 +68,15 @@ public class ServiceModel extends KubernetesModel {
     public void setPort(int port) {
         this.port = port;
     }
-
+    
+    public int getTargetPort() {
+        return targetPort;
+    }
+    
+    public void setTargetPort(int targetPort) {
+        this.targetPort = targetPort;
+    }
+    
     public String getSelector() {
         return selector;
     }

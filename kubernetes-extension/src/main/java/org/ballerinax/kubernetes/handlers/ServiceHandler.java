@@ -56,7 +56,7 @@ public class ServiceHandler extends AbstractArtifactHandler {
                 .addNewPort()
                 .withProtocol(KubernetesConstants.KUBERNETES_SVC_PROTOCOL)
                 .withPort(serviceModel.getPort())
-                .withNewTargetPort(serviceModel.getPort())
+                .withNewTargetPort(serviceModel.getTargetPort())
                 .endPort()
                 .addToSelector(KubernetesConstants.KUBERNETES_SELECTOR_KEY, serviceModel.getSelector())
                 .withSessionAffinity(serviceModel.getSessionAffinity())
