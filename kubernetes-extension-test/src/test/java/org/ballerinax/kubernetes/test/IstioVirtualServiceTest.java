@@ -145,17 +145,66 @@ public class IstioVirtualServiceTest {
         
         Map<String, Object> http1 = http.get(0);
         List<Map<String, Object>> match = (List<Map<String, Object>>) http1.get("match");
-        Map<String, Map<String, String>> headers = (Map<String, Map<String, String>>)match.get(0).get("headers");
+        Map<String, Map<String, String>> headers = (Map<String, Map<String, String>>) match.get(0).get("headers");
         Assert.assertEquals(headers.get("end-user").get("exact"), "jason", "Invalid match header end-user");
     
         Map<String, String> uri = (Map<String, String>) match.get(0).get("uri");
         Assert.assertEquals(uri.get("prefix"), "/ratings/v2/", "Invalid match uri prefix");
-        
+    
         List<Map<String, Map<String, String>>> route = (List<Map<String, Map<String, String>>>) http1.get("route");
         Assert.assertEquals(route.get(0).get("destination").get("host"), "ratings.prod.svc.cluster.local",
                 "Invalid route destination host");
         
         KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesTestUtils.deleteDockerImage(dockerImage);
+    }
+    
+    /**
+     * Build bal file with istio virtual service annotation with destination weight.
+     * @throws IOException Error when loading the generated yaml.
+     * @throws InterruptedException Error when compiling the ballerina file.
+     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
+     */
+    @Test
+    public void destinationWeightTest() throws IOException, InterruptedException, KubernetesPluginException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "destination_weight.bal"), 0);
+        
+        // Check if docker image exists and correct
+        validateDockerfile();
+        validateDockerImage();
+        
+        // Validate deployment yaml
+        File gatewayFile = Paths.get(targetPath).resolve("destination_weight_istio_virtual_service.yaml").toFile();
+        Assert.assertTrue(gatewayFile.exists());
+        Yaml yamlProcessor = new Yaml();
+        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
+        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(gateway.get("kind"), "VirtualService", "Invalid kind.");
+        
+        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "reviews-route", "Invalid gateway name");
+        
+        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        List<String> hosts = (List<String>) spec.get("hosts");
+        Assert.assertEquals(hosts.get(0), "reviews.prod.svc.cluster.local", "Invalid host value.");
+    
+        List<Map<String, Object>> http = (List<Map<String, Object>>) spec.get("http");
+        Assert.assertEquals(http.size(), 1, "Invalid number of http items");
+    
+        List<Map<String, Object>> route = (List<Map<String, Object>>) http.get(0).get("route");
+        Map<String, Object> destination1 = (Map<String, Object>) route.get(0).get("destination");
+        Assert.assertEquals(destination1.get("host"), "reviews.prod.svc.cluster.local",
+                "Invalid route destination host");
+        Assert.assertEquals(destination1.get("subset"), "v2", "Invalid route destination subset");
+        Assert.assertEquals(route.get(0).get("weight"), 25, "Invalid route weight");
+    
+        Map<String, Object> destination2 = (Map<String, Object>) route.get(1).get("destination");
+        Assert.assertEquals(destination2.get("host"), "reviews.prod.svc.cluster.local",
+                "Invalid route destination host");
+        Assert.assertEquals(destination2.get("subset"), "v1", "Invalid route destination subset");
+        Assert.assertEquals(route.get(1).get("weight"), 75, "Invalid route weight");
+        
+//        KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(dockerImage);
     }
     

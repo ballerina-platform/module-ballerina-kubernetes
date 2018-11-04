@@ -18,29 +18,26 @@ import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:IstioVirtualService {
-    name: "ratings-route",
+    name: "reviews-route",
     hosts: [
-        "ratings.prod.svc.cluster.local"
+        "reviews.prod.svc.cluster.local"
     ],
     http: [
         {
-            ^"match": [
-                {
-                    headers: {
-                        ^"end-user": {
-                            exact: "jason"
-                        }
-                    },
-                    uri: {
-                        prefix: "/ratings/v2/"
-                    }
-                }
-            ],
             route: [
                 {
                     destination: {
-                        host: "ratings.prod.svc.cluster.local"
-                    }
+                        host: "reviews.prod.svc.cluster.local",
+                        subset: "v2"
+                    },
+                    weight: 25
+                },
+                {
+                    destination: {
+                        host: "reviews.prod.svc.cluster.local",
+                        subset: "v1"
+                    },
+                    weight: 75
                 }
             ]
         }

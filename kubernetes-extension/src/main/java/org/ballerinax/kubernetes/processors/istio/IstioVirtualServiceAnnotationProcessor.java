@@ -22,6 +22,7 @@ import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.EndpointNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
+import org.ballerinalang.model.types.TypeTags;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.istio.IstioVirtualService;
@@ -136,7 +137,16 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
             }
             return mapModels;
         } else if (annotationValue instanceof BLangLiteral) {
-            return resolveValue(((BLangLiteral) annotationValue).getValue().toString());
+            BLangLiteral literal = (BLangLiteral) annotationValue;
+            if (literal.typeTag == TypeTags.INT_TAG) {
+                return Integer.parseInt((literal).getValue().toString());
+            } else if (literal.typeTag == TypeTags.BOOLEAN_TAG) {
+                return Boolean.parseBoolean((literal).getValue().toString());
+            } else if (literal.typeTag == TypeTags.FLOAT_TAG) {
+                return Float.parseFloat((literal).getValue().toString());
+            } else {
+                return resolveValue((literal).getValue().toString());
+            }
         } else {
             throw new KubernetesPluginException("Unable to resolve annotation values.");
         }

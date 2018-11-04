@@ -70,7 +70,6 @@ import ballerinax/kubernetes;
     ]
 }
 @kubernetes:Deployment {
-    name: "all_fields",
     image: "pizza-shop:latest"
 }
 @kubernetes:Service {name: "hello"}
