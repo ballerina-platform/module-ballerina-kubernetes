@@ -20,7 +20,6 @@ package org.ballerinax.kubernetes.processors.istio;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.EndpointNode;
-import org.ballerinalang.model.tree.FunctionNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -58,15 +57,6 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
     
     @Override
     public void processAnnotation(EndpointNode endpointNode, AnnotationAttachmentNode attachmentNode)
-            throws KubernetesPluginException {
-        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
-    
-        this.processIstioVSAnnotation(keyValues);
-    }
-    
-    @Override
-    public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException {
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
@@ -113,8 +103,18 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                     List<Object> httpModels = (List<Object>) processAnnotation(httpFields);
                     vsModel.setHttp(httpModels);
                     break;
+                case tls:
+                    BLangArrayLiteral tlsFields = (BLangArrayLiteral) gatewayField.getValue();
+                    List<Object> tlsModels = (List<Object>) processAnnotation(tlsFields);
+                    vsModel.setTls(tlsModels);
+                    break;
+                case tcp:
+                    BLangArrayLiteral tcpFields = (BLangArrayLiteral) gatewayField.getValue();
+                    List<Object> tcpModels = (List<Object>) processAnnotation(tcpFields);
+                    vsModel.setTcp(tcpModels);
+                    break;
                 default:
-                    throw new KubernetesPluginException("Unknown field found for istio gateway.");
+                    throw new KubernetesPluginException("Unknown field found for istio virtual service.");
             }
         }
         KubernetesContext.getInstance().getDataHolder().addIstioVirtualServiceModels(vsModel);

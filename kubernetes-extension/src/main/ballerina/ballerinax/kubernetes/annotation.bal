@@ -452,7 +452,6 @@ public type HTTPRedirectRewriteConfig record {
     !...
 };
 
-
 public type HTTPRetryConfig record {
     int attempts;
     string perTryTimeout;
@@ -483,15 +482,15 @@ public type CorsPolicyConfig record {
     string[]? allowHeaders;
     string[]? exposeHeaders;
     string? maxAge;
-    boolean allowCredentials;
+    boolean? allowCredentials;
     !...
 };
 
 public type HTTPRouteConfig record {
-    HTTPMatchRequestConfig[]? ^"match";
-    DestinationWeightConfig[]? route;
-    HTTPRedirectRewriteConfig? redirect;
-    HTTPRedirectRewriteConfig? rewrite;
+    HTTPMatchRequestConfig[] ^"match";
+    DestinationWeightConfig[] route;
+    HTTPRedirectRewriteConfig redirect;
+    HTTPRedirectRewriteConfig rewrite;
     string? ^"timeout";
     HTTPRetryConfig? ^"retries";
     HTTPFaultInjectionConfig? fault;
@@ -530,17 +529,17 @@ public type TCPRoute record {
     !...
 };
 
-public type IstioVirutalServiceConfig record {
+public type IstioVirtualServiceConfig record {
     string name;
     string? namespace;
     map<string>? labels;
     map<string>? annotations;
     string[] hosts;
     string[]? gateways;
-    HTTPRouteConfig[]? http;
-    TLSRouteConfig[]? tls;
-    TCPRoute[]? tcp;
+    HTTPRouteConfig[] http;
+    TLSRouteConfig[] tls;
+    TCPRoute[] tcp;
     !...
 };
 
-public annotation<service, endpoint> IstioVirutalService IstioVirutalServiceConfig;
+public annotation<service, endpoint> IstioVirtualService IstioVirtualServiceConfig;

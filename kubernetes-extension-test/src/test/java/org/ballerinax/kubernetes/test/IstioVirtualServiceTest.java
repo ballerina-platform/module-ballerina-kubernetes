@@ -81,23 +81,31 @@ public class IstioVirtualServiceTest {
         Assert.assertEquals(annotations.get("anno1"), "anno1Val", "Invalid annotation value");
         Assert.assertEquals(annotations.get("anno2"), "anno2Val", "Invalid annotation value");
         
-//        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
-//        Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
-//        Assert.assertEquals(selector.get("app"), "my-gateway-controller", "Invalid selector.");
-//
-//        List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
-//        Map<String, Object> server = servers.get(0);
-//        Map<String, Object> port = (Map<String, Object>) server.get("port");
-//        Assert.assertEquals(port.get("number"), 80, "Invalid port number.");
-//        Assert.assertEquals(port.get("name"), "http", "Invalid port name.");
-//        Assert.assertEquals(port.get("protocol"), "HTTP", "Invalid port protocol.");
-//
-//        List<String> hosts = (List<String>) server.get("hosts");
-//        Assert.assertTrue(hosts.contains("uk.bookinfo.com"), "uk.bookinfo.com host not included");
-//        Assert.assertTrue(hosts.contains("eu.bookinfo.com"), "eu.bookinfo.com host not included");
-//
-//        Map<String, Object> tls = (Map<String, Object>) server.get("tls");
-//        Assert.assertEquals(tls.get("httpsRedirect"), true, "Invalid tls httpsRedirect value");
+        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        List<String> hosts = (List<String>) spec.get("hosts");
+        Assert.assertEquals(hosts.get(0), "reviews.prod.svc.cluster.local", "Invalid host value.");
+
+        List<Map<String, Object>> http = (List<Map<String, Object>>) spec.get("http");
+        Assert.assertEquals(http.size(), 2, "Invalid number of http items");
+        
+        Map<String, Object> http1 = http.get(0);
+        List<Map<String, Map<String, String>>> match1 = (List<Map<String, Map<String, String>>>) http1.get("match");
+        Assert.assertEquals(match1.get(0).get("uri").get("prefix"), "/wpcatalog", "Invalid match uri prefix");
+        Assert.assertEquals(match1.get(1).get("uri").get("prefix"), "/consumercatalog", "Invalid match uri prefix");
+    
+        Map<String, String> rewrite = (Map<String, String>) http1.get("rewrite");
+        Assert.assertEquals(rewrite.get("uri"), "/newcatalog", "Invalid rewrite uri");
+    
+        List<Map<String, Map<String, String>>> route1 = (List<Map<String, Map<String, String>>>) http1.get("route");
+        Assert.assertEquals(route1.get(0).get("destination").get("host"), "reviews.prod.svc.cluster.local",
+                "Invalid route destination host");
+        Assert.assertEquals(route1.get(0).get("destination").get("subset"), "v2", "Invalid route destination subset");
+    
+        Map<String, Object> http2 = http.get(1);
+        List<Map<String, Map<String, String>>> route2 = (List<Map<String, Map<String, String>>>) http2.get("route");
+        Assert.assertEquals(route2.get(0).get("destination").get("host"), "reviews.prod.svc.cluster.local",
+                "Invalid route destination host");
+        Assert.assertEquals(route2.get(0).get("destination").get("subset"), "v1", "Invalid route destination subset");
         
         KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(dockerImage);
