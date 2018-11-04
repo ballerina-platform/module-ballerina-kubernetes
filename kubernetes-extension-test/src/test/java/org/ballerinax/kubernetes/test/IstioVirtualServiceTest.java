@@ -345,6 +345,52 @@ public class IstioVirtualServiceTest {
     }
     
     /**
+     * Build bal file with istio virtual service annotation with http fault injection.
+     * @throws IOException Error when loading the generated yaml.
+     * @throws InterruptedException Error when compiling the ballerina file.
+     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
+     */
+    @Test
+    public void httpFaultInjectionTest() throws IOException, InterruptedException, KubernetesPluginException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "http_fault_injection.bal"), 0);
+        
+        // Check if docker image exists and correct
+        validateDockerfile();
+        validateDockerImage();
+        
+        // Validate deployment yaml
+        File gatewayFile = Paths.get(targetPath).resolve("http_fault_injection_istio_virtual_service.yaml").toFile();
+        Assert.assertTrue(gatewayFile.exists());
+        Yaml yamlProcessor = new Yaml();
+        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
+        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(gateway.get("kind"), "VirtualService", "Invalid kind.");
+        
+        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "ratings-route", "Invalid gateway name");
+        
+        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        List<String> hosts = (List<String>) spec.get("hosts");
+        Assert.assertEquals(hosts.get(0), "ratings.prod.svc.cluster.local", "Invalid host value.");
+        
+        List<Map<String, Object>> http = (List<Map<String, Object>>) spec.get("http");
+        Assert.assertEquals(http.size(), 1, "Invalid number of http items");
+        
+        List<Map<String, Object>> route = (List<Map<String, Object>>) http.get(0).get("route");
+        Map<String, Object> destination1 = (Map<String, Object>) route.get(0).get("destination");
+        Assert.assertEquals(destination1.get("host"), "ratings.prod.svc.cluster.local",
+                "Invalid route destination host");
+        Assert.assertEquals(destination1.get("subset"), "v1", "Invalid route destination subset");
+        
+        Map<String, Map<String, Object>> fault = (Map<String, Map<String, Object>>) http.get(0).get("fault");
+        Assert.assertEquals(fault.get("abort").get("percent"), 10, "Invalid fault abort percent");
+        Assert.assertEquals(fault.get("abort").get("httpStatus"), 400, "Invalid fault abort http status code");
+        
+        KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesTestUtils.deleteDockerImage(dockerImage);
+    }
+    
+    /**
      * Validate if Dockerfile is created.
      */
     public void validateDockerfile() {
