@@ -502,7 +502,7 @@ public type HTTPRouteConfig record {
 
 public type TLSMatchAttributesConfig record {
     string[] sniHosts;
-    string[] destinationSubnets;
+    string[]? destinationSubnets;
     int? port;
     map<string>? sourceLabels;
     string[] gateways;
@@ -516,7 +516,7 @@ public type TLSRouteConfig record {
 };
 
 public type L4MatchAttributesConfig record {
-    string[] destinationSubnets;
+    string[]? destinationSubnets;
     int? port;
     map<string>? sourceLabels;
     string[] gateways;

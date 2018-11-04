@@ -48,21 +48,21 @@ public class IstioVirtualServiceTest {
     private final String dockerImage = "pizza-shop:latest";
     
     /**
-     * Build bal file with istio virtual service annotations.
+     * Build bal file with istio virtual service annotation with http route.
      * @throws IOException Error when loading the generated yaml.
      * @throws InterruptedException Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void simpleVirtualServiceTest() throws IOException, InterruptedException, KubernetesPluginException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "simple_vs.bal"), 0);
+    public void httpRouteTest() throws IOException, InterruptedException, KubernetesPluginException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "http_route.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate deployment yaml
-        File gatewayFile = Paths.get(targetPath).resolve("simple_vs_istio_virtual_service.yaml").toFile();
+        File gatewayFile = Paths.get(targetPath).resolve("http_route_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
@@ -438,6 +438,64 @@ public class IstioVirtualServiceTest {
         Assert.assertEquals(((List<String>) corsPolicy.get("allowHeaders")).get(0), "X-Foo-Bar",
                 "Invalid cors allowHeaders");
         Assert.assertEquals(corsPolicy.get("maxAge"), "1d", "Invalid cors maxAge");
+        
+        KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesTestUtils.deleteDockerImage(dockerImage);
+    }
+    
+    /**
+     * Build bal file with istio virtual service annotation with tls route.
+     * @throws IOException Error when loading the generated yaml.
+     * @throws InterruptedException Error when compiling the ballerina file.
+     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
+     */
+    @Test
+    public void tlsRouteTest() throws IOException, InterruptedException, KubernetesPluginException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tls_route.bal"), 0);
+        
+        // Check if docker image exists and correct
+        validateDockerfile();
+        validateDockerImage();
+        
+        // Validate deployment yaml
+        File gatewayFile = Paths.get(targetPath).resolve("tls_route_istio_virtual_service.yaml").toFile();
+        Assert.assertTrue(gatewayFile.exists());
+        Yaml yamlProcessor = new Yaml();
+        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
+        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(gateway.get("kind"), "VirtualService", "Invalid kind.");
+        
+        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "bookinfo-sni", "Invalid gateway name");
+        
+        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        List<String> hosts = (List<String>) spec.get("hosts");
+        Assert.assertEquals(hosts.get(0), "*.bookinfo.com", "Invalid host value.");
+        List<String> gateways = (List<String>) spec.get("gateways");
+        Assert.assertEquals(gateways.get(0), "mygateway", "Invalid gateways value.");
+        
+        List<Map<String, Object>> tls = (List<Map<String, Object>>) spec.get("tls");
+        Assert.assertEquals(tls.size(), 2, "Invalid number of tls items");
+        
+        Map<String, Object> tls1 = tls.get(0);
+        List<Map<String, Object>> match1 = (List<Map<String, Object>>) tls1.get("match");
+        Assert.assertEquals(match1.get(0).get("port"), 443, "Invalid match port");
+        Assert.assertEquals(((List<String>) match1.get(0).get("sniHosts")).get(0), "login.bookinfo.com",
+                "Invalid match sniHosts");
+        
+        List<Map<String, Map<String, String>>> route1 = (List<Map<String, Map<String, String>>>) tls1.get("route");
+        Assert.assertEquals(route1.get(0).get("destination").get("host"), "login.prod.svc.cluster.local",
+                "Invalid route destination host");
+        
+        Map<String, Object> tls2 = tls.get(1);
+        List<Map<String, Object>> match2 = (List<Map<String, Object>>) tls2.get("match");
+        Assert.assertEquals(match2.get(0).get("port"), 443, "Invalid match port");
+        Assert.assertEquals(((List<String>) match2.get(0).get("sniHosts")).get(0), "reviews.bookinfo.com",
+                "Invalid match sniHosts");
+    
+        List<Map<String, Map<String, String>>> route2 = (List<Map<String, Map<String, String>>>) tls2.get("route");
+        Assert.assertEquals(route2.get(0).get("destination").get("host"), "reviews.prod.svc.cluster.local",
+                "Invalid route destination host");
         
         KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(dockerImage);
