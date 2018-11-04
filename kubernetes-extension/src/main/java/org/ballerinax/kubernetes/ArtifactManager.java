@@ -31,6 +31,7 @@ import org.ballerinax.kubernetes.handlers.ResourceQuotaHandler;
 import org.ballerinax.kubernetes.handlers.SecretHandler;
 import org.ballerinax.kubernetes.handlers.ServiceHandler;
 import org.ballerinax.kubernetes.handlers.istio.IstioGatewayHandler;
+import org.ballerinax.kubernetes.handlers.istio.IstioVirtualHandler;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
@@ -79,6 +80,7 @@ class ArtifactManager {
         new DockerHandler().createArtifacts();
         new HelmChartHandler().createArtifacts();
         new IstioGatewayHandler().createArtifacts();
+        new IstioVirtualHandler().createArtifacts();
         printKubernetesInstructions(outputDir);
     }
 

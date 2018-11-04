@@ -19,6 +19,7 @@
 package org.ballerinax.kubernetes.models;
 
 import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
+import org.ballerinax.kubernetes.models.istio.IstioVirtualService;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,6 +43,7 @@ public class KubernetesDataHolder {
     private Set<PersistentVolumeClaimModel> volumeClaimModelSet;
     private Set<ResourceQuotaModel> resourceQuotaModels;
     private Set<IstioGatewayModel> istioGatewayModels;
+    private Set<IstioVirtualService> istioVirtualServiceModels;
     private JobModel jobModel;
     private String balxFilePath;
     private String outputDir;
@@ -57,6 +59,7 @@ public class KubernetesDataHolder {
         this.deploymentModel = new DeploymentModel();
         this.resourceQuotaModels = new HashSet<>();
         this.istioGatewayModels = new LinkedHashSet<>();
+        this.istioVirtualServiceModels = new LinkedHashSet<>();
 //        this.namespace = "";
     }
 
@@ -190,5 +193,13 @@ public class KubernetesDataHolder {
     
     public void addIstioGatewayModel(IstioGatewayModel istioGatewayModel) {
         this.istioGatewayModels.add(istioGatewayModel);
+    }
+    
+    public Set<IstioVirtualService> getIstioVirtualServiceModels() {
+        return istioVirtualServiceModels;
+    }
+    
+    public void addIstioVirtualServiceModels(IstioVirtualService istioVirtualServiceModel) {
+        this.istioVirtualServiceModels.add(istioVirtualServiceModel);
     }
 }

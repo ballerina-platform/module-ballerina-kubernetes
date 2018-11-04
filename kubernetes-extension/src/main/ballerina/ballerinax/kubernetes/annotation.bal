@@ -409,13 +409,138 @@ public type IstioGatewayConfig record {
 
 public annotation<service, endpoint> IstioGateway IstioGatewayConfig;
 
+public type StringMatch record {
+    string? exact;
+    string? prefix;
+    string? regex;
+    !...
+};
+
+public type HTTPMatchRequestConfig record {
+    StringMatch? uri;
+    StringMatch? scheme;
+    StringMatch? method;
+    StringMatch? authority;
+    map<StringMatch>? headers;
+    int? port;
+    map<string>? sourceLabels;
+    string[]? gateways;
+    !...
+};
+
+public type PortSelectorConfig record {
+    int number;
+    !...
+};
+
+public type DestinationConfig record {
+    string host;
+    string subset;
+    PortSelectorConfig? port;
+    !...
+};
+
+public type DestinationWeightConfig record {
+    DestinationConfig destination;
+    int weight;
+    !...
+};
+
+public type HTTPRedirectRewriteConfig record {
+    string? uri;
+    string? authority;
+    !...
+};
+
+
+public type HTTPRetryConfig record {
+    int attempts;
+    string perTryTimeout;
+    !...
+};
+
+public type HTTPFaultInjectionDelayConfig record {
+    int percent;
+    string fixedDelay;
+    !...
+};
+
+public type HTTPFaultInjectionAbortConfig record {
+    int percent;
+    int httpStatus;
+    !...
+};
+
+public type HTTPFaultInjectionConfig record {
+    HTTPFaultInjectionDelayConfig? delay;
+    HTTPFaultInjectionAbortConfig? ^"abort";
+    !...
+};
+
+public type CorsPolicyConfig record {
+    string[]? allowOrigin;
+    string[]? allowMethods;
+    string[]? allowHeaders;
+    string[]? exposeHeaders;
+    string? maxAge;
+    boolean allowCredentials;
+    !...
+};
+
+public type HTTPRouteConfig record {
+    HTTPMatchRequestConfig[]? ^"match";
+    DestinationWeightConfig[]? route;
+    HTTPRedirectRewriteConfig? redirect;
+    HTTPRedirectRewriteConfig? rewrite;
+    string? ^"timeout";
+    HTTPRetryConfig? ^"retries";
+    HTTPFaultInjectionConfig? fault;
+    DestinationConfig? mirror;
+    CorsPolicyConfig? corsPolicy;
+    map<string>? appendHeaders;
+    !...
+};
+
+public type TLSMatchAttributesConfig record {
+    string[] sniHosts;
+    string[] destinationSubnets;
+    int? port;
+    map<string>? sourceLabels;
+    string[] gateways;
+    !...
+};
+
+public type TLSRouteConfig record {
+    TLSMatchAttributesConfig[] ^"match";
+    DestinationWeightConfig[] route;
+    !...
+};
+
+public type L4MatchAttributesConfig record {
+    string[] destinationSubnets;
+    int? port;
+    map<string>? sourceLabels;
+    string[] gateways;
+    !...
+};
+
+public type TCPRoute record {
+    L4MatchAttributesConfig[] ^"match";
+    DestinationWeightConfig[] route;
+    !...
+};
+
 public type IstioVirutalServiceConfig record {
     string name;
     string? namespace;
     map<string>? labels;
     map<string>? annotations;
     string[] hosts;
-
+    string[]? gateways;
+    HTTPRouteConfig[]? http;
+    TLSRouteConfig[]? tls;
+    TCPRoute[]? tcp;
+    !...
 };
 
 public annotation<service, endpoint> IstioVirutalService IstioVirutalServiceConfig;
