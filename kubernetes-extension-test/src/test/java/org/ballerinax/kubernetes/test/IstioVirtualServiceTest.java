@@ -502,6 +502,53 @@ public class IstioVirtualServiceTest {
     }
     
     /**
+     * Build bal file with istio virtual service annotation with tcp route.
+     * @throws IOException Error when loading the generated yaml.
+     * @throws InterruptedException Error when compiling the ballerina file.
+     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
+     */
+    @Test
+    public void tcpRouteTest() throws IOException, InterruptedException, KubernetesPluginException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tcp_route.bal"), 0);
+        
+        // Check if docker image exists and correct
+        validateDockerfile();
+        validateDockerImage();
+        
+        // Validate deployment yaml
+        File gatewayFile = Paths.get(targetPath).resolve("tcp_route_istio_virtual_service.yaml").toFile();
+        Assert.assertTrue(gatewayFile.exists());
+        Yaml yamlProcessor = new Yaml();
+        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
+        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(gateway.get("kind"), "VirtualService", "Invalid kind.");
+        
+        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "bookinfo-Mongo", "Invalid gateway name");
+        
+        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        List<String> hosts = (List<String>) spec.get("hosts");
+        Assert.assertEquals(hosts.get(0), "mongo.prod.svc.cluster.local", "Invalid host value.");
+        
+        List<Map<String, Object>> tcpList = (List<Map<String, Object>>) spec.get("tcp");
+        Assert.assertEquals(tcpList.size(), 1, "Invalid number of tls items");
+        
+        Map<String, Object> tcp = tcpList.get(0);
+        List<Map<String, Object>> match1 = (List<Map<String, Object>>) tcp.get("match");
+        Assert.assertEquals(match1.get(0).get("port"), 27017, "Invalid match port");
+        
+        List<Map<String, Object>> route = (List<Map<String, Object>>) tcp.get("route");
+        Map<String, Object> destination = (Map<String, Object>) route.get(0).get("destination");
+        Assert.assertEquals(destination.get("host"), "mongo.backup.svc.cluster.local",
+                "Invalid route destination host");
+        Assert.assertEquals(((Map<String, Object>) destination.get("port")).get("number"), 5555,
+                "Invalid destination port");
+        
+        KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesTestUtils.deleteDockerImage(dockerImage);
+    }
+    
+    /**
      * Validate if Dockerfile is created.
      */
     public void validateDockerfile() {
