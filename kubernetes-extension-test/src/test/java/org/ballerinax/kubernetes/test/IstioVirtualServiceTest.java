@@ -204,7 +204,97 @@ public class IstioVirtualServiceTest {
         Assert.assertEquals(destination2.get("subset"), "v1", "Invalid route destination subset");
         Assert.assertEquals(route.get(1).get("weight"), 75, "Invalid route weight");
         
-//        KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesTestUtils.deleteDockerImage(dockerImage);
+    }
+    
+    
+    
+    /**
+     * Build bal file with istio virtual service annotation with destination timeout.
+     * @throws IOException Error when loading the generated yaml.
+     * @throws InterruptedException Error when compiling the ballerina file.
+     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
+     */
+    @Test
+    public void destinationTest() throws IOException, InterruptedException, KubernetesPluginException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "destination.bal"), 0);
+        
+        // Check if docker image exists and correct
+        validateDockerfile();
+        validateDockerImage();
+        
+        // Validate deployment yaml
+        File gatewayFile = Paths.get(targetPath).resolve("destination_istio_virtual_service.yaml").toFile();
+        Assert.assertTrue(gatewayFile.exists());
+        Yaml yamlProcessor = new Yaml();
+        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
+        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(gateway.get("kind"), "VirtualService", "Invalid kind.");
+        
+        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "reviews-route", "Invalid gateway name");
+        
+        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        List<String> hosts = (List<String>) spec.get("hosts");
+        Assert.assertEquals(hosts.get(0), "reviews.prod.svc.cluster.local", "Invalid host value.");
+        
+        List<Map<String, Object>> http = (List<Map<String, Object>>) spec.get("http");
+        Assert.assertEquals(http.size(), 1, "Invalid number of http items");
+    
+        Assert.assertEquals(http.get(0).get("timeout"), "5s", "Invalid timeout value");
+        
+        List<Map<String, Object>> route = (List<Map<String, Object>>) http.get(0).get("route");
+        Map<String, Object> destination1 = (Map<String, Object>) route.get(0).get("destination");
+        Assert.assertEquals(destination1.get("host"), "reviews.prod.svc.cluster.local",
+                "Invalid route destination host");
+        
+        KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesTestUtils.deleteDockerImage(dockerImage);
+    }
+    
+    /**
+     * Build bal file with istio virtual service annotations with http redirect.
+     * @throws IOException Error when loading the generated yaml.
+     * @throws InterruptedException Error when compiling the ballerina file.
+     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
+     */
+    @Test
+    public void httpRedirectTest() throws IOException, InterruptedException, KubernetesPluginException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "http_redirect.bal"), 0);
+        
+        // Check if docker image exists and correct
+        validateDockerfile();
+        validateDockerImage();
+        
+        // Validate deployment yaml
+        File gatewayFile = Paths.get(targetPath).resolve("http_redirect_istio_virtual_service.yaml").toFile();
+        Assert.assertTrue(gatewayFile.exists());
+        Yaml yamlProcessor = new Yaml();
+        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
+        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(gateway.get("kind"), "VirtualService", "Invalid kind.");
+        
+        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "ratings-route", "Invalid gateway name");
+        
+        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        List<String> hosts = (List<String>) spec.get("hosts");
+        Assert.assertEquals(hosts.get(0), "ratings.prod.svc.cluster.local", "Invalid host value.");
+        
+        List<Map<String, Object>> https = (List<Map<String, Object>>) spec.get("http");
+        Assert.assertEquals(https.size(), 1, "Invalid number of http items");
+        
+        Map<String, Object> http = https.get(0);
+        List<Map<String, Map<String, String>>> match1 = (List<Map<String, Map<String, String>>>) http.get("match");
+        Assert.assertEquals(match1.get(0).get("uri").get("exact"), "/v1/getProductRatings", "Invalid match uri prefix");
+        
+        Map<String, String> redirect = (Map<String, String>) http.get("redirect");
+        Assert.assertEquals(redirect.get("uri"), "/v1/bookRatings", "Invalid redirect uri");
+        Assert.assertEquals(redirect.get("authority"), "newratings.default.svc.cluster.local",
+                "Invalid redirect authority");
+        
+        KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(dockerImage);
     }
     

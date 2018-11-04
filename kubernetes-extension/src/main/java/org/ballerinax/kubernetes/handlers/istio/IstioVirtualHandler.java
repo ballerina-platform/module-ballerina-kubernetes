@@ -49,7 +49,7 @@ public class IstioVirtualHandler extends AbstractArtifactHandler {
         for (IstioVirtualService vsModel : istioVSModels) {
             count++;
             generate(vsModel);
-            OUT.print("\t@kubernetes:IstioVirtualService \t\t - complete " + count + "/" + istioVSModels.size() + "\r");
+            OUT.print("\t@kubernetes:IstioVirtualService \t - complete " + count + "/" + istioVSModels.size() + "\r");
         }
     }
     
