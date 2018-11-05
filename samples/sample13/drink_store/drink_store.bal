@@ -149,7 +149,7 @@ function getHotDrinkPrice(json payload) returns (json){
         item.price;
         match result {
             float value => {
-                float priceVariation = roundFloat(value*(celciusValue/100),2);
+                float priceVariation = roundFloat(value*(celciusValue/100), 2);
                 if(celciusValue < 15){
                     // Increase Hot drink price on cold days.
                     item.price = roundFloat((value + priceVariation), 2);
@@ -170,7 +170,7 @@ function getHotDrinkPrice(json payload) returns (json){
     return items;
 }
 
-function roundFloat(float value, int decimalPlaces) returns float {
+function roundFloat(float value, float decimalPlaces) returns float {
     float factor = math:pow(10, decimalPlaces);
     return  <float> math:round(value * factor)/factor;
 }

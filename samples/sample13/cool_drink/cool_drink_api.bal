@@ -1,9 +1,9 @@
 import ballerina/http;
-import ballerinax/kubernetes;
 import ballerina/io;
-import ballerina/jdbc;
 import ballerina/log;
 import ballerina/config;
+import ballerinax/jdbc;
+import ballerinax/kubernetes;
 
 @kubernetes:Service {
     name: "cooldrink-backend"

@@ -11,10 +11,23 @@
     hello_world_config_map_k8s:latest
     
     $> tree
+    ├── README.md
+    ├── conf
+    │   ├── ballerina.conf
+    │   └── data.txt
+    ├── hello_world_config_map_k8s.bal
     ├── hello_world_config_map_k8s.balx
     └── kubernetes
         ├── docker
         │   └── Dockerfile
+        ├── hello-world-config-map-k8s-deployment
+        │   ├── Chart.yaml
+        │   └── templates
+        │       ├── hello_world_config_map_k8s_config_map.yaml
+        │       ├── hello_world_config_map_k8s_deployment.yaml
+        │       ├── hello_world_config_map_k8s_ingress.yaml
+        │       ├── hello_world_config_map_k8s_secret.yaml
+        │       └── hello_world_config_map_k8s_svc.yaml
         ├── hello_world_config_map_k8s_config_map.yaml
         ├── hello_world_config_map_k8s_deployment.yaml
         ├── hello_world_config_map_k8s_ingress.yaml
@@ -24,36 +37,54 @@
     ```
 ### How to run:
 
-1. Compile the  hello_world_config_map_k8s.bal file. Command to run kubernetes artifacts will be printed on success:
+1. Compile the hello_world_config_map_k8s.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build hello_world_config_map_k8s.bal
-@kubernetes:Docker 			         - complete 3/3
-@kubernetes:Deployment 		 - complete 1/1
-@kubernetes:Service 		 - complete 1/1
-@kubernetes:Secret  		 - complete 1/1
-@kubernetes:ConfigMap 		 - complete 1/1
+Compiling source
+    hello_world_config_map_k8s.bal
+Generating executable
+    hello_world_config_map_k8s.balx
+	@kubernetes:Service 			 - complete 1/1
+	@kubernetes:Ingress 			 - complete 1/1
+	@kubernetes:Secret 			 - complete 1/1
+	@kubernetes:ConfigMap 			 - complete 2/2
+	@kubernetes:Deployment 			 - complete 1/1
+	@kubernetes:Docker 			 - complete 3/3
+	@kubernetes:Helm 			 - complete 1/1
 
-Run following command to deploy kubernetes artifacts:
-kubectl apply -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample8/kubernetes/
+	Run the following command to deploy the Kubernetes artifacts:
+	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample8/kubernetes/
+
+	Run the following command to install the application using Helm:
+	helm install --name hello-world-config-map-k8s-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample8/kubernetes/hello-world-config-map-k8s-deployment
 ```
 
 2. hello_world_config_map_k8s.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
-    ├── README.md
-    ├── conf
-    │   └── ballerina.conf
-    ├── hello_world_config_map_k8s.bal
-    ├── hello_world_config_map_k8s.balx
-    ├── hello_world_secret_mount_k8s.balx
-    └── kubernetes
-        ├── docker
-        │   └── Dockerfile
-        ├── hello_world_config_map_k8s_config_map.yaml
-        ├── hello_world_config_map_k8s_deployment.yaml
-        ├── hello_world_config_map_k8s_ingress.yaml
-        ├── hello_world_config_map_k8s_secret.yaml
-        └── hello_world_config_map_k8s_svc.yaml
+.
+├── README.md
+├── conf
+│   ├── ballerina.conf
+│   └── data.txt
+├── hello_world_config_map_k8s.bal
+├── hello_world_config_map_k8s.balx
+└── kubernetes
+    ├── docker
+    │   └── Dockerfile
+    ├── hello-world-config-map-k8s-deployment
+    │   ├── Chart.yaml
+    │   └── templates
+    │       ├── hello_world_config_map_k8s_config_map.yaml
+    │       ├── hello_world_config_map_k8s_deployment.yaml
+    │       ├── hello_world_config_map_k8s_ingress.yaml
+    │       ├── hello_world_config_map_k8s_secret.yaml
+    │       └── hello_world_config_map_k8s_svc.yaml
+    ├── hello_world_config_map_k8s_config_map.yaml
+    ├── hello_world_config_map_k8s_deployment.yaml
+    ├── hello_world_config_map_k8s_ingress.yaml
+    ├── hello_world_config_map_k8s_secret.yaml
+    └── hello_world_config_map_k8s_svc.yaml
 
 ```
 
@@ -66,11 +97,12 @@ hello_world_config_map_k8s     latest              53559c0cd4f4        55 second
 
 4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample8/kubernetes/
-configmap "ballerina-config" created
-deployment "hello-world-config-map-k8s-deployment" created
-ingress "helloworld-ingress" created
-secret "helloworldep-keystore" created
+$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample8/kubernetes/
+configmap "helloworld-config-map" configured
+configmap "helloworld-ballerina-conf-config-map" configured
+deployment.extensions "hello-world-config-map-k8s-deployment" created
+ingress.extensions "helloworldep-ingress" created
+secret "helloworldep-secure-socket" created
 service "helloworldep-svc" created
 ```
 
@@ -85,16 +117,17 @@ NAME               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
 helloworldep-svc   ClusterIP   10.100.232.242   <none>        9090/TCP   6m
 
 $> kubectl get ingress
-NAME                 HOSTS     ADDRESS   PORTS     AGE
-helloworld-ingress   abc.com             80, 443   6m
+NAME                   HOSTS     ADDRESS   PORTS     AGE
+helloworldep-ingress   abc.com             80, 443   25s
 
 $> kubectl get secrets
-NAME                    TYPE                                 DATA      AGE
-helloworldep-keystore   Opaque                                1         1m
+NAME                         TYPE                                  DATA      AGE
+helloworldep-secure-socket   Opaque                                2         1m
 
 $> kubectl get configmaps
-NAME               DATA      AGE
-ballerina-config   1         7m
+NAME                                   DATA      AGE
+helloworld-ballerina-conf-config-map   1         4s
+helloworld-config-map                  1         4s
 ```
 
 6. Access the hello world service with curl command:
@@ -105,16 +138,16 @@ _(127.0.0.1 is only applicable to docker for mac users. Other users should map t
 from `kubectl get ingress` command.)_
 
 ```bash
-$>curl https://abc.com/helloWorld/config/john -k
+$> curl https://abc.com/helloWorld/config/john -k
 {userId: john@ballerina.com, groups: apim,esb}
-$>curl https://abc.com/helloWorld/config/jane -k
+$> curl https://abc.com/helloWorld/config/jane -k
 {userId: jane3@ballerina.com, groups: esb}
-$>curl https://abc.com/helloWorld/data -k
+$> curl https://abc.com/helloWorld/data -k
 Data: Lorem ipsum dolor sit amet.
 ```
 
 7. Undeploy sample:
 ```bash
-$> kubectl delete -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample8/kubernetes/
+$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample8/kubernetes/
 
 ```

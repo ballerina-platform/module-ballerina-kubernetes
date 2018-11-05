@@ -1,4 +1,4 @@
-## Sample4: Ballerina service with http and https endpoint
+## Sample5: Ballerina service with http and https endpoint
 
 - This sample deploy ballerina program with http and https urls.
 - The ingress is configured so that two APIs can be accessed as following.
@@ -10,30 +10,48 @@
     ballerina.com/pizzashack:2.1.0 
     
     $> tree
-        ├── README.md
-        ├── kubernetes
-        │   ├── docker
-        │   │   └── Dockerfile
-        │   ├── pizzashack_deployment.yaml
-        │   ├── pizzashack_hpa.yaml
-        │   ├── pizzashack_ingress.yaml
-        │   └── pizzashack_svc.yaml
-        ├── pizzashack.bal
-        └── pizzashack.balx
+    ├── README.md
+    ├── kubernetes
+    │   ├── docker
+    │   │   └── Dockerfile
+    │   ├── pizzashack-deployment
+    │   │   ├── Chart.yaml
+    │   │   └── templates
+    │   │       ├── pizzashack_deployment.yaml
+    │   │       ├── pizzashack_hpa.yaml
+    │   │       ├── pizzashack_ingress.yaml
+    │   │       ├── pizzashack_secret.yaml
+    │   │       └── pizzashack_svc.yaml
+    │   ├── pizzashack_deployment.yaml
+    │   ├── pizzashack_hpa.yaml
+    │   ├── pizzashack_ingress.yaml
+    │   ├── pizzashack_secret.yaml
+    │   └── pizzashack_svc.yaml
+    ├── pizzashack.bal
+    └── pizzashack.balx
     ```
 ### How to run:
 
 1. Compile the  pizzashack.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build pizzashack.bal
-@kubernetes:Service 			 - complete 2/2
-@kubernetes:Ingress 			 - complete 2/2
-@kubernetes:Secret 			     - complete 1/1
-@kubernetes:Docker 			     - complete 3/3
-@kubernetes:HPA 			     - complete 1/1
-@kubernetes:Deployment 			 - complete 1/1
-Run following command to deploy kubernetes artifacts: 
-kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample3/kubernetes/
+Compiling source
+    pizzashack.bal
+Generating executable
+    pizzashack.balx
+	@kubernetes:Service 			 - complete 2/2
+	@kubernetes:Ingress 			 - complete 2/2
+	@kubernetes:Secret 			 - complete 1/1
+	@kubernetes:Deployment 			 - complete 1/1
+	@kubernetes:HPA 			 - complete 1/1
+	@kubernetes:Docker 			 - complete 3/3
+	@kubernetes:Helm 			 - complete 1/1
+
+	Run the following command to deploy the Kubernetes artifacts:
+	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample5/kubernetes/
+
+	Run the following command to install the application using Helm:
+	helm install --name pizzashack-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample5/kubernetes/pizzashack-deployment
 
 ```
 
@@ -45,9 +63,18 @@ $> tree
 ├── kubernetes
 │   ├── docker
 │   │   └── Dockerfile
+│   ├── pizzashack-deployment
+│   │   ├── Chart.yaml
+│   │   └── templates
+│   │       ├── pizzashack_deployment.yaml
+│   │       ├── pizzashack_hpa.yaml
+│   │       ├── pizzashack_ingress.yaml
+│   │       ├── pizzashack_secret.yaml
+│   │       └── pizzashack_svc.yaml
 │   ├── pizzashack_deployment.yaml
 │   ├── pizzashack_hpa.yaml
 │   ├── pizzashack_ingress.yaml
+│   ├── pizzashack_secret.yaml
 │   └── pizzashack_svc.yaml
 ├── pizzashack.bal
 └── pizzashack.balx
@@ -63,11 +90,11 @@ ballerina.com/pizzashack     2.1.0              df83ae43f69b        2 minutes ag
 
 4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample3/kubernetes/
-deployment "pizzashack-deployment" created
-horizontalpodautoscaler "pizzashack-hpa" created
-ingress "pizzaep-ingress" created
-ingress "pizzaepsecured-ingress" created
+$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample5/kubernetes/
+deployment.extensions "pizzashack-deployment" created
+horizontalpodautoscaler.autoscaling "pizzashack-hpa" created
+ingress.extensions "pizzaep-ingress" created
+ingress.extensions "pizzaepsecured-ingress" created
 secret "pizzaepsecured-keystore" created
 service "pizzaepsecured-svc" created
 service "pizzaep-svc" created
@@ -82,15 +109,16 @@ pizzashack-deployment-d6747b8b9-64n7d   1/1       Running   0          39m
 
 
 $> kubectl get svc
-NAME                                              TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
-pizzaep-svc                                       ClusterIP      10.99.151.55     <none>        9090/TCP                     1m
+NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+pizzaep-svc          ClusterIP   10.108.63.96    <none>        9090/TCP   59s
+pizzaepsecured-svc   ClusterIP   10.101.253.24   <none>        9095/TCP   59s
 
 
 
 $> kubectl get ingress
-NAME                     HOSTS                      ADDRESS   PORTS     AGE
-pizzaep-ingress          internal.pizzashack.com             80, 443   37s
-pizzaepsecured-ingress   pizzashack.com                      80, 443   37s
+NAME                     HOSTS                     ADDRESS   PORTS     AGE
+pizzaep-ingress          internal.pizzashack.com             80        1m
+pizzaepsecured-ingress   pizzashack.com                      80, 443   1m
 ```
 
 6. Access the hello world service with curl command:
@@ -109,11 +137,11 @@ Use curl command with hostname to access the service.
 $> curl http://internal.pizzashack.com/customer
 Get Customer resource !!!!
 
-$>curl https://pizzashack.com/customer -k
+$> curl https://pizzashack.com/customer -k
 Get Customer resource !!!!
 ```
 
 7. Undeploy sample:
 ```bash
-$> kubectl delete -f /Users/lakmal/ballerina/kubernetes/samples/sample3/kubernetes/
+$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample5/kubernetes/
 ```
