@@ -19,6 +19,8 @@
 package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
+import org.ballerinalang.model.tree.EndpointNode;
+import org.ballerinalang.model.tree.FunctionNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
@@ -41,12 +43,30 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
  * Resource quota annotation processor.
  */
 public class ResourceQuotaAnnotationPreprocessor extends AbstractAnnotationProcessor {
+    
     @Override
-    public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode) throws
-            KubernetesPluginException {
+    public void processAnnotation(EndpointNode endpointNode, AnnotationAttachmentNode attachmentNode)
+            throws KubernetesPluginException {
+        processResourceQuotaAnnotation((BLangAnnotationAttachment) attachmentNode);
+    }
+    
+    @Override
+    public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode)
+            throws KubernetesPluginException {
+        processResourceQuotaAnnotation((BLangAnnotationAttachment) attachmentNode);
+    }
+    
+    @Override
+    public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode)
+            throws KubernetesPluginException {
+        processResourceQuotaAnnotation((BLangAnnotationAttachment) attachmentNode);
+    }
+    
+    private void processResourceQuotaAnnotation(BLangAnnotationAttachment attachmentNode)
+            throws KubernetesPluginException {
         Set<ResourceQuotaModel> resourceQuotaModels = new HashSet<>();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
+                ((BLangRecordLiteral) attachmentNode.expr).getKeyValuePairs();
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
             List<BLangExpression> secretAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
             for (BLangExpression bLangExpression : secretAnnotation) {
