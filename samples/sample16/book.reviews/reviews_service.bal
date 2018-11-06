@@ -1,12 +1,6 @@
 import ballerina/http;
 import ballerina/io;
 
-table<Review> tbReviews = table {
-    { id, content },
-    [ { "B1", "Review of book1" },
-        { "B2", "Review of book2" }
-    ]
-};
 
 endpoint http:Listener bookReviewEP {
     port: 7070
@@ -21,6 +15,13 @@ service<http:Service> reviewService bind bookReviewEP {
         path: "/{id}"
     }
     getReview (endpoint caller, http:Request request, string id) {
+        table<Review> tbReviews = table {
+            { id, content },
+            [ { "B1", "Review of book1" },
+                { "B2", "Review of book2" }
+            ]
+        };
+
         string reviewContent = "(no reviews found)";
         while (tbReviews.hasNext()) {
             Review review = check <Review>tbReviews.getNext();
