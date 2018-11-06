@@ -202,16 +202,6 @@ public class IstioGatewayTest {
     }
     
     /**
-     * Build bal file with no selector istio gateway annotations.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
-     */
-    @Test()
-    public void noServersTest() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "no_servers.bal"), 1);
-    }
-    
-    /**
      * Build bal file with istio gateway annotation having no tls httpsRedirect field.
      * @throws IOException Error when loading the generated yaml.
      * @throws InterruptedException Error when compiling the ballerina file.
@@ -366,6 +356,90 @@ public class IstioGatewayTest {
                 "Invalid tls serverCertificate value");
         Assert.assertEquals(tls1.get("privateKey"), "/etc/istio/ingressgateway-certs/tls.key",
                 "Invalid tls privateKey value");
+        
+        KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesTestUtils.deleteDockerImage(dockerImage);
+    }
+    
+    /**
+     * Build bal file with istio gateway annotation with no values for endpoint.
+     * @throws IOException Error when loading the generated yaml.
+     * @throws InterruptedException Error when compiling the ballerina file.
+     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
+     */
+    @Test
+    public void emptyAnnoForEndpointTest() throws IOException, InterruptedException, KubernetesPluginException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "empty_annotation_ep.bal"), 0);
+        
+        // Check if docker image exists and correct
+        validateDockerfile();
+        validateDockerImage();
+        
+        // Validate deployment yaml
+        File gatewayFile = Paths.get(targetPath).resolve("empty_annotation_ep_istio_gateway.yaml").toFile();
+        Assert.assertTrue(gatewayFile.exists());
+        Yaml yamlProcessor = new Yaml();
+        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
+        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(gateway.get("kind"), "Gateway", "Invalid kind.");
+        
+        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "helloep-istio-gw", "Invalid gateway name");
+        
+        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
+        Assert.assertEquals(selector.get("istio"), "ingressgateway", "Invalid selector.");
+        
+        List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
+        Map<String, Object> server = servers.get(0);
+        Map<String, Object> port = (Map<String, Object>) server.get("port");
+        Assert.assertEquals(port.get("number"), 9090, "Invalid port number.");
+        Assert.assertEquals(port.get("protocol"), "HTTP", "Invalid port protocol.");
+        
+        List<String> hosts = (List<String>) server.get("hosts");
+        Assert.assertTrue(hosts.contains("*"), "* host not included");
+        
+        KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesTestUtils.deleteDockerImage(dockerImage);
+    }
+    
+    /**
+     * Build bal file with istio gateway annotation with no values for service.
+     * @throws IOException Error when loading the generated yaml.
+     * @throws InterruptedException Error when compiling the ballerina file.
+     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
+     */
+    @Test
+    public void emptyAnnoForSvcTest() throws IOException, InterruptedException, KubernetesPluginException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "empty_annotation_svc.bal"), 0);
+        
+        // Check if docker image exists and correct
+        validateDockerfile();
+        validateDockerImage();
+        
+        // Validate deployment yaml
+        File gatewayFile = Paths.get(targetPath).resolve("empty_annotation_svc_istio_gateway.yaml").toFile();
+        Assert.assertTrue(gatewayFile.exists());
+        Yaml yamlProcessor = new Yaml();
+        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
+        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(gateway.get("kind"), "Gateway", "Invalid kind.");
+        
+        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "helloworld-istio-gw", "Invalid gateway name");
+        
+        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
+        Assert.assertEquals(selector.get("istio"), "ingressgateway", "Invalid selector.");
+        
+        List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
+        Map<String, Object> server = servers.get(0);
+        Map<String, Object> port = (Map<String, Object>) server.get("port");
+        Assert.assertEquals(port.get("number"), 9090, "Invalid port number.");
+        Assert.assertEquals(port.get("protocol"), "HTTP", "Invalid port protocol.");
+        
+        List<String> hosts = (List<String>) server.get("hosts");
+        Assert.assertTrue(hosts.contains("*"), "* host not included");
         
         KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(dockerImage);

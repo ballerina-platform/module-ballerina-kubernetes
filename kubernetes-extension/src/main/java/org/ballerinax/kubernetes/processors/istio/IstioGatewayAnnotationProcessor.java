@@ -22,6 +22,7 @@ import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.EndpointNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
+import org.ballerinalang.model.tree.expressions.RecordLiteralNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
@@ -29,14 +30,20 @@ import org.ballerinax.kubernetes.models.istio.IstioPortModel;
 import org.ballerinax.kubernetes.models.istio.IstioServerModel;
 import org.ballerinax.kubernetes.processors.AbstractAnnotationProcessor;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
+import org.wso2.ballerinalang.compiler.tree.BLangEndpoint;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.ISTIO_GATEWAY_POSTFIX;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getArray;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
@@ -49,7 +56,34 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
     
-        this.processIstioGatewayAnnotation(keyValues);
+        IstioGatewayModel gwModel = this.processIstioGatewayAnnotation(keyValues);
+        if (isBlank(gwModel.getName())) {
+            gwModel.setName(getValidName(serviceNode.getName().getValue()) + ISTIO_GATEWAY_POSTFIX);
+        }
+        RecordLiteralNode anonymousEndpoint = serviceNode.getAnonymousEndpointBind();
+        List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =
+                ((BLangRecordLiteral) anonymousEndpoint).getKeyValuePairs();
+        
+        if (null == gwModel.getServers() || gwModel.getServers().size() == 0) {
+            List<IstioServerModel> serversModel = new LinkedList<>();
+            IstioServerModel serverModel = new IstioServerModel();
+            
+            IstioPortModel portModel = new IstioPortModel();
+            portModel.setNumber(extractPort(endpointConfig));
+            portModel.setProtocol("HTTP");
+            serverModel.setPort(portModel);
+    
+            if (null == serverModel.getHosts() || serverModel.getHosts().size() == 0) {
+                Set<String> hosts = new LinkedHashSet<>();
+                hosts.add("*");
+                serverModel.setHosts(hosts);
+            }
+            
+            serversModel.add(serverModel);
+            gwModel.setServers(serversModel);
+        }
+        
+        KubernetesContext.getInstance().getDataHolder().addIstioGatewayModel(gwModel);
     }
     
     @Override
@@ -58,7 +92,34 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
     
-        this.processIstioGatewayAnnotation(keyValues);
+        IstioGatewayModel gwModel = this.processIstioGatewayAnnotation(keyValues);
+        if (isBlank(gwModel.getName())) {
+            gwModel.setName(getValidName(endpointNode.getName().getValue()) + ISTIO_GATEWAY_POSTFIX);
+        }
+        
+        List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =
+                ((BLangRecordLiteral) ((BLangEndpoint) endpointNode).configurationExpr).getKeyValuePairs();
+        
+        if (null == gwModel.getServers() || gwModel.getServers().size() == 0) {
+            List<IstioServerModel> serversModel = new LinkedList<>();
+            IstioServerModel serverModel = new IstioServerModel();
+        
+            IstioPortModel portModel = new IstioPortModel();
+            portModel.setNumber(extractPort(endpointConfig));
+            portModel.setProtocol("HTTP");
+            serverModel.setPort(portModel);
+        
+            if (null == serverModel.getHosts() || serverModel.getHosts().size() == 0) {
+                Set<String> hosts = new LinkedHashSet<>();
+                hosts.add("*");
+                serverModel.setHosts(hosts);
+            }
+        
+            serversModel.add(serverModel);
+            gwModel.setServers(serversModel);
+        }
+        
+        KubernetesContext.getInstance().getDataHolder().addIstioGatewayModel(gwModel);
     }
     
     /**
@@ -66,7 +127,7 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
      * @param gatewayFields Fields of the gateway annotation.
      * @throws KubernetesPluginException Unable to process annotations.
      */
-    private void processIstioGatewayAnnotation(List<BLangRecordLiteral.BLangRecordKeyValue> gatewayFields)
+    private IstioGatewayModel processIstioGatewayAnnotation(List<BLangRecordLiteral.BLangRecordKeyValue> gatewayFields)
             throws KubernetesPluginException {
         IstioGatewayModel gatewayModel = new IstioGatewayModel();
         for (BLangRecordLiteral.BLangRecordKeyValue gatewayField : gatewayFields) {
@@ -96,7 +157,8 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
                     throw new KubernetesPluginException("Unknown field found for istio gateway.");
             }
         }
-        KubernetesContext.getInstance().getDataHolder().addIstioGatewayModel(gatewayModel);
+        
+        return gatewayModel;
     }
     
     /**
@@ -201,6 +263,22 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
         }
         
         server.setTls(tlsOptions);
+    }
+    
+    private int extractPort(List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig) throws
+            KubernetesPluginException {
+        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : endpointConfig) {
+            String key = keyValue.getKey().toString();
+            if ("port".equals(key)) {
+                try {
+                    return Integer.parseInt(keyValue.getValue().toString());
+                } catch (NumberFormatException e) {
+                    throw new KubernetesPluginException("Listener endpoint port must be an integer to use " +
+                                                        "@kubernetes annotations.");
+                }
+            }
+        }
+        throw new KubernetesPluginException("Unable to extract port from endpoint");
     }
     
     private enum TLSOptionConfig {

@@ -92,11 +92,4 @@ public class IstioGatewayModel extends KubernetesModel {
         return Objects.hash(getName());
     }
     
-//    public Represent getYamlRepresenter() {
-//        return o -> {
-//            IstioGatewayModel gatewayModel = (IstioGatewayModel) o;
-//
-//            return new ScalarNode()
-//        };
-//    }
 }

@@ -17,13 +17,7 @@
 import ballerina/http;
 import ballerinax/kubernetes;
 
-@kubernetes:IstioGateway {
-    name: "my-gateway",
-    selector: {
-        app: "my-gateway-controller"
-    },
-    servers: []
-}
+@kubernetes:IstioGateway {}
 @kubernetes:Deployment {
     name: "all_fields",
     image: "pizza-shop:latest"
