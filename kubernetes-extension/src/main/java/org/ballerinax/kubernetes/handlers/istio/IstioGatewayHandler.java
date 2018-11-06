@@ -59,9 +59,10 @@ public class IstioGatewayHandler extends AbstractArtifactHandler {
             count++;
             
             // Validate number of selectors.
-            if (gatewayModel.getSelector().size() == 0) {
-                throw new KubernetesPluginException("'" + gatewayModel.getName() + "' istio gateway needs one or more" +
-                                                    " selectors.");
+            if (null == gatewayModel.getSelector() || gatewayModel.getSelector().size() == 0) {
+                Map<String, String> selectors = new LinkedHashMap<>();
+                selectors.put("istio", "ingressgateway");
+                gatewayModel.setSelector(selectors);;
             }
             
             // Validate number of servers.

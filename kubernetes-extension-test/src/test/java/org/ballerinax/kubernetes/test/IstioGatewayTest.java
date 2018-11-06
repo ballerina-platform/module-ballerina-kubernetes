@@ -179,8 +179,26 @@ public class IstioGatewayTest {
      * @throws InterruptedException Error when compiling the ballerina file.
      */
     @Test()
-    public void noSelectorTest() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "no_selector.bal"), 1);
+    public void noSelectorTest() throws IOException, InterruptedException, KubernetesPluginException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "no_selector.bal"), 0);
+    
+        // Check if docker image exists and correct
+        validateDockerfile();
+        validateDockerImage();
+    
+        // Validate deployment yaml
+        File gatewayFile = Paths.get(targetPath).resolve("no_selector_istio_gateway.yaml").toFile();
+        Assert.assertTrue(gatewayFile.exists());
+        Yaml yamlProcessor = new Yaml();
+        
+        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
+    
+        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
+        Assert.assertEquals(selector.get("istio"), "ingressgateway", "Invalid selector.");
+    
+        KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesTestUtils.deleteDockerImage(dockerImage);
     }
     
     /**

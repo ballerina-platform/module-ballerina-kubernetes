@@ -20,7 +20,6 @@ import ballerinax/kubernetes;
 @kubernetes:IstioGateway {
     name: "my-gateway",
     namespace: "ballerina",
-    selector: {},
     servers: [
         {
             port: {
