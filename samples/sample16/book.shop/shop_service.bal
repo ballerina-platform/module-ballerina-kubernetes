@@ -1,15 +1,20 @@
 import ballerina/http;
+import ballerinax/kubernetes;
 
+@kubernetes:Deployment {}
+@kubernetes:Service {}
+@kubernetes:IstioGateway {}
+@kubernetes:IstioVirtualService {}
 endpoint http:Listener bookShopEP {
     port: 9090
 };
 
 endpoint http:Client bookDetailsEP {
-    url: "http://localhost:8080"
+    url: "http://book-detail:8080"
 };
 
 endpoint http:Client bookReviewEP {
-    url: "http://localhost:7070"
+    url: "http://book-review:7070"
 };
 
 @http:ServiceConfig {

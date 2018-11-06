@@ -1,6 +1,12 @@
 import ballerina/http;
+import ballerinax/kubernetes;
 
-
+@kubernetes:Deployment {
+    singleYAML: true
+}
+@kubernetes:Service {
+    name: "book-detail"
+}
 endpoint http:Listener bookDetailEP {
     port: 8080
 };

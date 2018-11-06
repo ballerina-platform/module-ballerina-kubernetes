@@ -107,6 +107,7 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
             IstioPortModel portModel = new IstioPortModel();
             portModel.setNumber(extractPort(endpointConfig));
             portModel.setProtocol("HTTP");
+            portModel.setName("http");
             serverModel.setPort(portModel);
         
             if (null == serverModel.getHosts() || serverModel.getHosts().size() == 0) {

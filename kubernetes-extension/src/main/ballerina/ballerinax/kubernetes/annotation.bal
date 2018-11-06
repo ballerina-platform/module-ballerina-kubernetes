@@ -374,7 +374,7 @@ public type IstioPortProtocol "HTTP"|"HTTPS"|"GRPC"|"HTTP2"|"MONGO"|"TCP"|"TLS";
 public type IstioPortConfig record {
     int number;
     IstioPortProtocol protocol;
-    string? name;
+    string name;
     !...
 };
 

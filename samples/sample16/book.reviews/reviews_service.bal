@@ -1,7 +1,12 @@
 import ballerina/http;
-import ballerina/io;
+import ballerinax/kubernetes;
 
-
+@kubernetes:Deployment {
+    singleYAML: true
+}
+@kubernetes:Service {
+    name: "book-review"
+}
 endpoint http:Listener bookReviewEP {
     port: 7070
 };

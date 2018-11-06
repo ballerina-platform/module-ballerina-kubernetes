@@ -149,9 +149,7 @@ public class IstioGatewayHandler extends AbstractArtifactHandler {
                 Map<String, Object> port = new LinkedHashMap<>();
                 port.put("number", serverModel.getPort().getNumber());
                 port.put("protocol", serverModel.getPort().getProtocol());
-                if (null != serverModel.getPort().getName()) {
-                    port.put("name", serverModel.getPort().getName());
-                }
+                port.put("name", serverModel.getPort().getName());
                 server.put("port", port);
                 
                 // tls
