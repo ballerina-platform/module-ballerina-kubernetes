@@ -32,7 +32,7 @@ public class IstioVirtualService extends KubernetesModel {
     private Map<String, String> annotations;
     private List<String> hosts;
     private List<String> gateways;
-    private List<Object> http;
+    private List<IstioHttpRoute> http;
     private List<Object> tls;
     private List<Object> tcp;
     
@@ -76,11 +76,11 @@ public class IstioVirtualService extends KubernetesModel {
         this.gateways = gateways;
     }
     
-    public List<Object> getHttp() {
+    public List<IstioHttpRoute> getHttp() {
         return http;
     }
     
-    public void setHttp(List<Object> http) {
+    public void setHttp(List<IstioHttpRoute> http) {
         this.http = http;
     }
     

@@ -20,6 +20,10 @@ package org.ballerinax.kubernetes.handlers.istio;
 
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.AbstractArtifactHandler;
+import org.ballerinax.kubernetes.models.istio.IstioDestination;
+import org.ballerinax.kubernetes.models.istio.IstioDestinationWeight;
+import org.ballerinax.kubernetes.models.istio.IstioHttpRedirect;
+import org.ballerinax.kubernetes.models.istio.IstioHttpRoute;
 import org.ballerinax.kubernetes.models.istio.IstioVirtualService;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.yaml.snakeyaml.DumperOptions;
@@ -27,6 +31,8 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,7 +42,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 /**
  * Generates istio virtual service artifacts.
  */
-public class IstioVirtualHandler extends AbstractArtifactHandler {
+public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
     @Override
     public void createArtifacts() throws KubernetesPluginException {
         Set<IstioVirtualService> istioVSModels = dataHolder.getIstioVirtualServiceModels();
@@ -84,7 +90,7 @@ public class IstioVirtualHandler extends AbstractArtifactHandler {
             }
     
             if (null != vsModel.getHttp() && vsModel.getHttp().size() > 0) {
-                spec.put("http", vsModel.getHttp());
+                spec.put("http", parseHttpRouteList(vsModel.getHttp()));
             }
             
             if (null != vsModel.getTls() && vsModel.getTls().size() > 0) {
@@ -108,5 +114,87 @@ public class IstioVirtualHandler extends AbstractArtifactHandler {
             String errorMessage = "Error while generating yaml file for istio virtual service: " + vsModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
+    }
+    
+    private Object parseHttpRouteList(List<IstioHttpRoute> http) {
+        List<Map<String, Object>> httpList = new LinkedList<>();
+        for (IstioHttpRoute httpRoute : http) {
+            Map<String, Object> httpMap = new LinkedHashMap<>();
+            if (null != httpRoute.getMatch()) {
+                httpMap.put("match", httpRoute.getMatch());
+            }
+            if (null != httpRoute.getRoute() && httpRoute.getRoute().size() != 0) {
+                httpMap.put("route", parseRouteList(httpRoute.getRoute()));
+            }
+            if (null != httpRoute.getRedirect()) {
+                httpMap.put("redirect", parseRedirect(httpRoute.getRedirect()));
+            }
+            if (null != httpRoute.getRewrite()) {
+                httpMap.put("rewrite", httpRoute.getRewrite());
+            }
+            if (null != httpRoute.getTimeout()) {
+                httpMap.put("timeout", httpRoute.getTimeout());
+            }
+            if (null != httpRoute.getRetries()) {
+                httpMap.put("retries", httpRoute.getRetries());
+            }
+            if (null != httpRoute.getFault()) {
+                httpMap.put("fault", httpRoute.getFault());
+            }
+            if (null != httpRoute.getMirror()) {
+                httpMap.put("mirror", httpRoute.getMirror());
+            }
+            if (null != httpRoute.getCorsPolicy()) {
+                httpMap.put("corsPolicy", httpRoute.getCorsPolicy());
+            }
+            if (null != httpRoute.getAppendHeaders()) {
+                httpMap.put("appendHeaders", httpRoute.getAppendHeaders());
+            }
+            httpList.add(httpMap);
+        }
+        
+        return httpList;
+    }
+    
+    private Map<String, String> parseRedirect(IstioHttpRedirect redirect) {
+        Map<String, String> redirectMap = new LinkedHashMap<>();
+        if (null != redirect.getUri()) {
+            redirectMap.put("uri", redirect.getUri());
+        }
+        if (null != redirect.getAuthority()) {
+            redirectMap.put("authority", redirect.getAuthority());
+        }
+        return redirectMap;
+    }
+    
+    private Object parseRouteList(List<IstioDestinationWeight> route) {
+        List<Map<String, Object>> destinationWeightList = new LinkedList<>();
+        for (IstioDestinationWeight destinationWeight : route) {
+            Map<String, Object> destinationWeightMap = new LinkedHashMap<>();
+            if (null != destinationWeight.getDestination()) {
+                destinationWeightMap.put("destination", parseDestination(destinationWeight.getDestination()));
+            }
+            if (destinationWeight.getWeight() != -1) {
+                destinationWeightMap.put("weight", destinationWeight.getWeight());
+            }
+            destinationWeightList.add(destinationWeightMap);
+        }
+        return destinationWeightList;
+    }
+    
+    private Map<String, Object> parseDestination(IstioDestination destination) {
+        Map<String, Object> destinationMap = new LinkedHashMap<>();
+        if (null != destination.getHost()) {
+            destinationMap.put("host", destination.getHost());
+        }
+        if (null != destination.getSubset()) {
+            destinationMap.put("subset", destination.getSubset());
+        }
+        if (-1 != destination.getPort()) {
+            Map<String, Integer> port = new LinkedHashMap<>();
+            port.put("number", destination.getPort());
+            destinationMap.put("port", port);
+        }
+        return destinationMap;
     }
 }
