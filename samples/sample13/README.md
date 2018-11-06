@@ -5,9 +5,9 @@
 - Following files will be generated from this sample.
     ``` 
     $> docker images
-    hot_drink        :latest 
-    cool_drink       :latest 
-    drink_store    :latest
+    hot_drink:latest 
+    cool_drink:latest 
+    drink_store:latest
     
     $> tree
     target
@@ -208,10 +208,10 @@ from `kubectl get ingress` command.)_
 ```
 ```bash
 
-$>curl https://drinkstore.com/store/getTempreature -k
+$> curl https://drinkstore.com/store/getTempreature -k
 Tempreture in San Francisco: 17.56 clecius. Sunny.
 
-$>curl https://drinkstore.com/store/coolDrink -k
+$> curl https://drinkstore.com/store/coolDrink -k
 [{"id":1,"name":"Lime Soda","description":"Sparkling Soda with Lime","price":11.76,"diff":"+1.76"},{"id":2,"name":"Mango Juice","description":"Fresh Mango Juice with milk","price":17.63,"diff":"+2.63"},{"id":3,"name":"Mojito","description":"White rum, sugar, lime juice, soda water, and mint. ","price":23.51,"diff":"+3.51"}]
 
 

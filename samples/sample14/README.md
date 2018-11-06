@@ -13,6 +13,10 @@
     └── kubernetes
         ├── docker
         │   └── Dockerfile
+        ├── hello-world-k8s-namespace-deployment
+        │   ├── Chart.yaml
+        │   └── templates
+        │       └── hello_world_k8s_namespace.yaml
         └── hello_world_k8s_namespace.yaml
     ```
 ### How to run:
@@ -20,24 +24,37 @@
 1. Compile the  hello_world_k8s_namespace.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build hello_world_k8s_namespace.bal
-@kubernetes:Docker 			 - complete 3/3 
-@kubernetes:Deployment 		 - complete 1/1
-@kubernetes:Service 		 - complete 1/1
-@kubernetes:Ingress 		 - complete 1/1
-Run following command to deploy kubernetes artifacts: 
-kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample14/kubernetes/
+Compiling source
+    hello_world_k8s_namespace.bal
+Generating executable
+    hello_world_k8s_namespace.balx
+	@kubernetes:Service 			 - complete 1/1
+	@kubernetes:Ingress 			 - complete 1/1
+	@kubernetes:Deployment 			 - complete 1/1
+	@kubernetes:Docker 			 - complete 3/3
+	@kubernetes:Helm 			 - complete 1/1
 
+	Run the following command to deploy the Kubernetes artifacts:
+	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample14/kubernetes/
+
+	Run the following command to install the application using Helm:
+	helm install --name hello-world-k8s-namespace-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample14/kubernetes/hello-world-k8s-namespace-deployment
 ```
 
 2. hello_world_k8s_namespace.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
+.
 ├── README.md
 ├── hello_world_k8s_namespace.bal
 ├── hello_world_k8s_namespace.balx
 └── kubernetes
     ├── docker
     │   └── Dockerfile
+    ├── hello-world-k8s-namespace-deployment
+    │   ├── Chart.yaml
+    │   └── templates
+    │       └── hello_world_k8s_namespace.yaml
     └── hello_world_k8s_namespace.yaml
 ```
 
@@ -52,15 +69,15 @@ hello_world_k8s_namespace      latest              df83ae43f69b        2 minutes
 4. Create a namespace as `ballerina` in Kubernetes.
 ```bash
 $> kubectl create namespace ballerina
-namespace/ballerina created
+namespace "ballerina" created
 ```
 
 5. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/lakmal/ballerina/kubernetes/samples/sample2/kubernetes/
-service "helloep-svc" created
-deployment "hello-world-k8s-namespace-deployment" created
-ingress "helloworld-ingress" created
+$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample14/kubernetes/
+service "hello" created
+ingress.extensions "helloep-ingress" created
+deployment.extensions "hello-world-k8s-namespace-deployment" created
 ```
 
 6. Verify kubernetes deployment,service and ingress is running:
@@ -71,12 +88,12 @@ hello-world-k8s-namespace-deployment-54768647ff-m64v9   1/1       Running   0   
 
 
 $> kubectl get svc -n ballerina
-NAME                                              TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
-helloep-svc                                       ClusterIP      10.110.199.222   <none>        9090/TCP                     3m
+NAME      TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+hello     ClusterIP   10.102.82.244   <none>        9090/TCP   16s
 
 $> kubectl get ingress -n ballerina
-NAME                 HOSTS     ADDRESS   PORTS     AGE
-helloworld-ingress   abc.com             80, 443   4m
+NAME              HOSTS     ADDRESS   PORTS     AGE
+helloep-ingress   abc.com             80        21s
 ```
 
 7. Access the hello world service with curl command:
@@ -91,13 +108,13 @@ from `kubectl get ingress` command.)_
  ```
 Use curl command with hostname to access the service.
 ```bash
-$> curl http://abc.com/HelloWorld/sayHello
+$> curl http://abc.com/helloWorld/sayHello
 Hello, World from service helloWorld !
 ```
 
 8. Undeploy sample:
 ```bash
-$> kubectl delete -f ./kubernetes/samples/sample14/kubernetes/
+$> kubectl delete -f ./kubernetes/
 service "hello" deleted
 ingress.extensions "helloep-ingress" deleted
 deployment.extensions "hello-world-k8s-namespace-deployment" deleted

@@ -1,4 +1,4 @@
-## Sample5: Kubernetes Hello World in Google Cloud Environment
+## Sample6: Kubernetes Hello World in Google Cloud Environment
 
 - This sample runs  ballerina hello world service in GCE kubernetes cluster with enableLiveness probe and  hostname
  mapping for ingress. 
@@ -7,20 +7,26 @@
 - Following files will be generated from this sample.
     ``` 
     $> docker image
-    anuruddhal/gce-sample:1.0
+    hemikak/gce-sample:1.0
     
     $> tree
-        .
-        ├── hello_world_gce.balx
-        └── target
-            └── hello_world_gce
-                └── kubernetes
-                    ├── docker
-                    │   └── Dockerfile
-                    ├── hello_world_gce-deployment.yaml
-                    ├── helloWorld-hpa.yaml
-                    ├── helloWorld-ingress.yaml
-                    └── helloWorld-svc.yaml
+    ├── README.md
+    ├── hello_world_gce.bal
+    ├── hello_world_gce.balx
+    └── kubernetes
+        ├── docker
+        │   └── Dockerfile
+        ├── hello-world-gce-deployment
+        │   ├── Chart.yaml
+        │   └── templates
+        │       ├── hello_world_gce_deployment.yaml
+        │       ├── hello_world_gce_hpa.yaml
+        │       ├── hello_world_gce_ingress.yaml
+        │       └── hello_world_gce_svc.yaml
+        ├── hello_world_gce_deployment.yaml
+        ├── hello_world_gce_hpa.yaml
+        ├── hello_world_gce_ingress.yaml
+        └── hello_world_gce_svc.yaml
     ```
 ### How to run:
 
@@ -35,42 +41,58 @@ export DOCKER_PASSWORD=<password>
 3. Compile the  hello_world_gce.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
 $> ballerina build hello_world_gce.bal
-@kubernetes:Docker 				    - complete 3/3
-@kubernetes:HPA 			- complete 1/1
-@kubernetes:Deployment 	    - complete 1/1
-@kubernetes:Ingress 		- complete 1/1
+Compiling source
+    hello_world_gce.bal
+Generating executable
+    hello_world_gce.balx
+	@kubernetes:Service 			 - complete 1/1
+	@kubernetes:Ingress 			 - complete 1/1
+	@kubernetes:Deployment 			 - complete 1/1
+	@kubernetes:HPA 			 - complete 1/1
+	@kubernetes:Docker 			 - complete 3/3
+	@kubernetes:Helm 			 - complete 1/1
 
-Run following command to deploy kubernetes artifacts:
-kubectl apply -f /Users/anuruddha/Repos/ballerinax/kubernetes/samples/sample5/kubernetes/
+	Run the following command to deploy the Kubernetes artifacts:
+	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample6/kubernetes/
+
+	Run the following command to install the application using Helm:
+	helm install --name hello-world-gce-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample6/kubernetes/hello-world-gce-deployment
 ```
 
 4. hello_world_gce.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
 .
+├── README.md
+├── hello_world_gce.bal
 ├── hello_world_gce.balx
-└── target
-    └── hello_world_gce
-        └── kubernetes
-            ├── docker
-            │   └── Dockerfile
-            ├── hello_world_gce-deployment.yaml
-            ├── helloWorld-hpa.yaml
-            ├── helloWorld-ingress.yaml
-            └── helloWorld-svc.yaml
+└── kubernetes
+    ├── docker
+    │   └── Dockerfile
+    ├── hello-world-gce-deployment
+    │   ├── Chart.yaml
+    │   └── templates
+    │       ├── hello_world_gce_deployment.yaml
+    │       ├── hello_world_gce_hpa.yaml
+    │       ├── hello_world_gce_ingress.yaml
+    │       └── hello_world_gce_svc.yaml
+    ├── hello_world_gce_deployment.yaml
+    ├── hello_world_gce_hpa.yaml
+    ├── hello_world_gce_ingress.yaml
+    └── hello_world_gce_svc.yaml
 ```
 
 5. Verify the docker image is created:
 ```bash
 $> docker images
 REPOSITORY                   TAG                 IMAGE ID            CREATED             SIZE
-anuruddhal/gce-sample        1.0                 88cabd203149        4 minutes ago       102MB
+hemikak/gce-sample        1.0                 88cabd203149        4 minutes ago       102MB
 
 ```
 
 6. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl create -f target/hello_world_gce/kubernetes
+$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample6/kubernetes/
 deployment "hello_world_gce-deployment" created
 horizontalpodautoscaler "helloworld" created
 ingress "helloworld" created
@@ -115,7 +137,7 @@ Hello, World from service helloWorld !
 
 9. Undeploy sample:
 ```bash
-$> kubectl delete -f ./target/hello_world_gce/kubernetes
+$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample6/kubernetes/
 ```
 ## Troubleshooting
 - Run following commands to deploy ingress backend and controller
