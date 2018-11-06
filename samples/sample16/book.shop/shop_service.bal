@@ -48,7 +48,7 @@ service<http:Service> shopService bind bookShopEP {
                     }
                 } else {
                     http:Response errResponse = new;
-                    json serverErr = { message: "book not found: " + untaint id };
+                    json serverErr = { message: string `book not found: {{untaint id}}` };
                     errResponse.setJsonPayload(serverErr, contentType = "application/json");
                     errResponse.statusCode = 404;
                     _ = caller -> respond(errResponse);
