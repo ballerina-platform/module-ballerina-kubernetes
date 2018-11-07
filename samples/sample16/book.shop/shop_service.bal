@@ -6,7 +6,7 @@ import ballerinax/kubernetes;
 @kubernetes:IstioGateway {}
 @kubernetes:IstioVirtualService {}
 endpoint http:Listener bookShopEP {
-    port: 9090
+    port: 9080
 };
 
 endpoint http:Client bookDetailsEP {

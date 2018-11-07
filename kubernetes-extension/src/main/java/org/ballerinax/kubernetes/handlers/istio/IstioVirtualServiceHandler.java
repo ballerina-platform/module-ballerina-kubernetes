@@ -20,6 +20,8 @@ package org.ballerinax.kubernetes.handlers.istio;
 
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.AbstractArtifactHandler;
+import org.ballerinax.kubernetes.models.KubernetesContext;
+import org.ballerinax.kubernetes.models.ServiceModel;
 import org.ballerinax.kubernetes.models.istio.IstioDestination;
 import org.ballerinax.kubernetes.models.istio.IstioDestinationWeight;
 import org.ballerinax.kubernetes.models.istio.IstioHttpRedirect;
@@ -186,6 +188,11 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
         Map<String, Object> destinationMap = new LinkedHashMap<>();
         if (null != destination.getHost()) {
             destinationMap.put("host", destination.getHost());
+        } else {
+    
+            ServiceModel serviceModel = KubernetesContext.getInstance().getDataHolder().getServiceModel(
+                    destination.getServiceName());
+            destination.setHost(serviceModel.getName());
         }
         if (null != destination.getSubset()) {
             destinationMap.put("subset", destination.getSubset());

@@ -26,7 +26,6 @@ import org.ballerinalang.model.tree.expressions.RecordLiteralNode;
 import org.ballerinalang.model.types.TypeTags;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
-import org.ballerinax.kubernetes.models.ServiceModel;
 import org.ballerinax.kubernetes.models.istio.IstioDestination;
 import org.ballerinax.kubernetes.models.istio.IstioDestinationWeight;
 import org.ballerinax.kubernetes.models.istio.IstioHttpRedirect;
@@ -125,8 +124,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
             IstioDestinationWeight destinationWeight = new IstioDestinationWeight();
             
             IstioDestination destination = new IstioDestination();
-            ServiceModel serviceModel = KubernetesContext.getInstance().getDataHolder().getServiceModel(vsName);
-            destination.setHost(serviceModel.getName());
+            destination.setServiceName(vsName);
             destination.setPort(extractPort(endpointConfig));
             destinationWeight.setDestination(destination);
             

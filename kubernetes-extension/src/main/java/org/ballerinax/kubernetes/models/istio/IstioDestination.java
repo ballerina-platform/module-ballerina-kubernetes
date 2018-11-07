@@ -22,10 +22,18 @@ package org.ballerinax.kubernetes.models.istio;
  * Istio virtual service annotation's http route destination model class.
  */
 public class IstioDestination {
+    private String serviceName;
     private String host;
     private String subset;
-    // How it comes in yaml port: {number: 80}
     private int port = -1;
+    
+    public String getServiceName() {
+        return serviceName;
+    }
+    
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
     
     public String getHost() {
         return host;

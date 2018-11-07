@@ -30,7 +30,6 @@ import org.ballerinax.kubernetes.models.istio.IstioPortModel;
 import org.ballerinax.kubernetes.models.istio.IstioServerModel;
 import org.ballerinax.kubernetes.processors.AbstractAnnotationProcessor;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
-import org.wso2.ballerinalang.compiler.tree.BLangEndpoint;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
@@ -97,15 +96,12 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
             gwModel.setName(getValidName(endpointNode.getName().getValue()) + ISTIO_GATEWAY_POSTFIX);
         }
         
-        List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =
-                ((BLangRecordLiteral) ((BLangEndpoint) endpointNode).configurationExpr).getKeyValuePairs();
-        
         if (null == gwModel.getServers() || gwModel.getServers().size() == 0) {
             List<IstioServerModel> serversModel = new LinkedList<>();
             IstioServerModel serverModel = new IstioServerModel();
         
             IstioPortModel portModel = new IstioPortModel();
-            portModel.setNumber(extractPort(endpointConfig));
+            portModel.setNumber(80);
             portModel.setProtocol("HTTP");
             portModel.setName("http");
             serverModel.setPort(portModel);
