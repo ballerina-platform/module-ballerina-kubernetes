@@ -24,6 +24,7 @@ import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.ServiceModel;
 import org.ballerinax.kubernetes.models.istio.IstioDestination;
 import org.ballerinax.kubernetes.models.istio.IstioDestinationWeight;
+import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
 import org.ballerinax.kubernetes.models.istio.IstioHttpRedirect;
 import org.ballerinax.kubernetes.models.istio.IstioHttpRoute;
 import org.ballerinax.kubernetes.models.istio.IstioVirtualService;
@@ -36,7 +37,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.ISTIO_VIRTUAL_SERVICE_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
@@ -47,21 +47,22 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
     @Override
     public void createArtifacts() throws KubernetesPluginException {
-        Set<IstioVirtualService> istioVSModels = dataHolder.getIstioVirtualServiceModels();
+        Map<String, IstioVirtualService> istioVSModels = dataHolder.getIstioVirtualServiceModels();
         int size = istioVSModels.size();
         if (size > 0) {
             OUT.println();
         }
     
         int count = 0;
-        for (IstioVirtualService vsModel : istioVSModels) {
+        for (Map.Entry<String, IstioVirtualService> vsModel : istioVSModels.entrySet()) {
             count++;
             generate(vsModel);
             OUT.print("\t@kubernetes:IstioVirtualService \t - complete " + count + "/" + istioVSModels.size() + "\r");
         }
     }
     
-    private void generate(IstioVirtualService vsModel) throws KubernetesPluginException {
+    private void generate(Map.Entry<String, IstioVirtualService> vsModelEntry) throws KubernetesPluginException {
+        IstioVirtualService vsModel = vsModelEntry.getValue();
         try {
             Map<String, Object> vsYamlModel = new LinkedHashMap<>();
             vsYamlModel.put("apiVersion", "networking.istio.io/v1alpha3");
@@ -87,20 +88,35 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
                 spec.put("hosts", vsModel.getHosts());
             }
     
-            if (null != vsModel.getGateways() && vsModel.getGateways().size() > 0) {
-                spec.put("gateways", vsModel.getGateways());
-            }
-    
-            if (null != vsModel.getHttp() && vsModel.getHttp().size() > 0) {
-                spec.put("http", parseHttpRouteList(vsModel.getHttp()));
-            }
-            
             if (null != vsModel.getTls() && vsModel.getTls().size() > 0) {
                 spec.put("tls", vsModel.getTls());
             }
     
             if (null != vsModel.getTcp() && vsModel.getTcp().size() > 0) {
                 spec.put("tcp", vsModel.getTcp());
+            }
+    
+            // parse and add default values for http list if tls and tcp are not set
+            if (null == vsModel.getTls() && null == vsModel.getTcp()) {
+                spec.put("http", parseHttpRouteList(vsModelEntry.getKey(), vsModel.getHttp()));
+            }
+    
+            if (null == vsModel.getGateways()) {
+                vsModel.setGateways(new LinkedList<>());
+            }
+            
+            if (vsModel.getGateways().size() == 0) {
+                IstioGatewayModel gwModel =
+                        KubernetesContext.getInstance().getDataHolder().getIstioGatewayModel(vsModelEntry.getKey());
+    
+                if (null != gwModel) {
+                    vsModel.getGateways().add(gwModel.getName());
+                }
+            }
+            
+            // when gateways are not set, it will apply to all side cars.
+            if (vsModel.getGateways().size() != 0) {
+                spec.put("gateways", vsModel.getGateways());
             }
     
             vsYamlModel.put("spec", spec);
@@ -118,15 +134,20 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
         }
     }
     
-    private Object parseHttpRouteList(List<IstioHttpRoute> http) {
+    private Object parseHttpRouteList(String serviceName, List<IstioHttpRoute> http) {
+        if (null == http) {
+            http = new LinkedList<>();
+        }
+        
+        if (http.size() == 0) {
+            http.add(new IstioHttpRoute());
+        }
+        
         List<Map<String, Object>> httpList = new LinkedList<>();
         for (IstioHttpRoute httpRoute : http) {
             Map<String, Object> httpMap = new LinkedHashMap<>();
             if (null != httpRoute.getMatch()) {
                 httpMap.put("match", httpRoute.getMatch());
-            }
-            if (null != httpRoute.getRoute() && httpRoute.getRoute().size() != 0) {
-                httpMap.put("route", parseRouteList(httpRoute.getRoute()));
             }
             if (null != httpRoute.getRedirect()) {
                 httpMap.put("redirect", parseRedirect(httpRoute.getRedirect()));
@@ -152,6 +173,10 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
             if (null != httpRoute.getAppendHeaders()) {
                 httpMap.put("appendHeaders", httpRoute.getAppendHeaders());
             }
+            
+            // route is mandatory, no need to null check
+            httpMap.put("route", parseRouteList(serviceName, httpRoute.getRoute()));
+            
             httpList.add(httpMap);
         }
         
@@ -169,39 +194,55 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
         return redirectMap;
     }
     
-    private Object parseRouteList(List<IstioDestinationWeight> route) {
+    private Object parseRouteList(String serviceName, List<IstioDestinationWeight> route) {
+        if (route == null) {
+            route = new LinkedList<>();
+        }
+        
+        if (route.size() == 0) {
+            route.add(new IstioDestinationWeight());
+        }
+        
         List<Map<String, Object>> destinationWeightList = new LinkedList<>();
         for (IstioDestinationWeight destinationWeight : route) {
             Map<String, Object> destinationWeightMap = new LinkedHashMap<>();
-            if (null != destinationWeight.getDestination()) {
-                destinationWeightMap.put("destination", parseDestination(destinationWeight.getDestination()));
-            }
             if (destinationWeight.getWeight() != -1) {
                 destinationWeightMap.put("weight", destinationWeight.getWeight());
             }
+    
+            destinationWeightMap.put("destination", parseDestination(serviceName, destinationWeight.getDestination()));
             destinationWeightList.add(destinationWeightMap);
         }
         return destinationWeightList;
     }
     
-    private Map<String, Object> parseDestination(IstioDestination destination) {
-        Map<String, Object> destinationMap = new LinkedHashMap<>();
-        if (null != destination.getHost()) {
-            destinationMap.put("host", destination.getHost());
-        } else {
+    private Map<String, Object> parseDestination(String serviceName, IstioDestination destination) {
+        if (null == destination) {
+            destination = new IstioDestination();
+        }
     
-            ServiceModel serviceModel = KubernetesContext.getInstance().getDataHolder().getServiceModel(
-                    destination.getServiceName());
+        ServiceModel serviceModel = KubernetesContext.getInstance().getDataHolder().getServiceModel(serviceName);
+        if (null == destination.getHost()) {
             destination.setHost(serviceModel.getName());
         }
+        
+        if (-1 == destination.getPort()) {
+            destination.setPort(serviceModel.getPort());
+        }
+        
+        Map<String, Object> destinationMap = new LinkedHashMap<>();
+    
+        // host is mandatory, no need to check null as defaults are set.
+        destinationMap.put("host", destination.getHost());
+        
         if (null != destination.getSubset()) {
             destinationMap.put("subset", destination.getSubset());
         }
-        if (-1 != destination.getPort()) {
-            Map<String, Integer> port = new LinkedHashMap<>();
-            port.put("number", destination.getPort());
-            destinationMap.put("port", port);
-        }
+        
+        // port and it's number is mandatory, no need to null check as defaults are set.
+        Map<String, Integer> port = new LinkedHashMap<>();
+        port.put("number", serviceModel.getPort());
+        destinationMap.put("port", port);
         return destinationMap;
     }
 }

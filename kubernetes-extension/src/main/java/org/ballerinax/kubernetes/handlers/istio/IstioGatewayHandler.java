@@ -32,7 +32,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.ISTIO_GATEWAY_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
@@ -48,14 +47,14 @@ public class IstioGatewayHandler extends AbstractArtifactHandler {
      */
     @Override
     public void createArtifacts() throws KubernetesPluginException {
-        Set<IstioGatewayModel> gatewayModels = dataHolder.getIstioGatewayModels();
+        Map<String, IstioGatewayModel> gatewayModels = dataHolder.getIstioGatewayModels();
         int size = gatewayModels.size();
         if (size > 0) {
             OUT.println();
         }
         
         int count = 0;
-        for (IstioGatewayModel gatewayModel : gatewayModels) {
+        for (IstioGatewayModel gatewayModel : gatewayModels.values()) {
             count++;
             
             // Validate number of selectors.

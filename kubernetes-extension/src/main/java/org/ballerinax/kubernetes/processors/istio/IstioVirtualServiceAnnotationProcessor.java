@@ -22,7 +22,6 @@ import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.EndpointNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
-import org.ballerinalang.model.tree.expressions.RecordLiteralNode;
 import org.ballerinalang.model.types.TypeTags;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
@@ -33,7 +32,6 @@ import org.ballerinax.kubernetes.models.istio.IstioHttpRoute;
 import org.ballerinax.kubernetes.models.istio.IstioVirtualService;
 import org.ballerinax.kubernetes.processors.AbstractAnnotationProcessor;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
-import org.wso2.ballerinalang.compiler.tree.BLangEndpoint;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
@@ -44,7 +42,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static org.ballerinax.kubernetes.KubernetesConstants.ISTIO_GATEWAY_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.ISTIO_VIRTUAL_SERVICE_POSTFIX;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getArray;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
@@ -68,13 +65,10 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
         if (isBlank(vsModel.getName())) {
             vsModel.setName(getValidName(serviceNode.getName().getValue()) + ISTIO_VIRTUAL_SERVICE_POSTFIX);
         }
-        RecordLiteralNode anonymousEndpoint = serviceNode.getAnonymousEndpointBind();
-        List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =
-                ((BLangRecordLiteral) anonymousEndpoint).getKeyValuePairs();
-    
-        setDefaultValues(serviceNode.getName().getValue(), vsModel, endpointConfig);
-    
-        KubernetesContext.getInstance().getDataHolder().addIstioVirtualServiceModels(vsModel);
+        
+        setDefaultValues(vsModel);
+        KubernetesContext.getInstance().getDataHolder().addIstioVirtualServiceModel(serviceNode.getName().getValue(),
+                vsModel);
     }
     
     @Override
@@ -88,50 +82,16 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
             vsModel.setName(getValidName(endpointNode.getName().getValue()) + ISTIO_VIRTUAL_SERVICE_POSTFIX);
         }
     
-        List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =
-                ((BLangRecordLiteral) ((BLangEndpoint) endpointNode).configurationExpr).getKeyValuePairs();
-    
-        setDefaultValues(endpointNode.getName().getValue(), vsModel, endpointConfig);
-    
-        KubernetesContext.getInstance().getDataHolder().addIstioVirtualServiceModels(vsModel);
+        setDefaultValues(vsModel);
+        KubernetesContext.getInstance().getDataHolder().addIstioVirtualServiceModel(endpointNode.getName().getValue(),
+                vsModel);
     }
     
-    private void setDefaultValues(String vsName, IstioVirtualService vsModel,
-                                  List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig)
-            throws KubernetesPluginException {
+    private void setDefaultValues(IstioVirtualService vsModel) {
         if (null == vsModel.getHosts() || vsModel.getHosts().size() == 0) {
             List<String> hosts = new LinkedList<>();
             hosts.add("*");
             vsModel.setHosts(hosts);
-        }
-        
-        if (null == vsModel.getGateways() || vsModel.getGateways().size() == 0) {
-            List<String> gateways = new LinkedList<>();
-            gateways.add(getValidName(vsName) + ISTIO_GATEWAY_POSTFIX);
-            vsModel.setGateways(gateways);
-        }
-    
-        if ((null == vsModel.getHttp() || vsModel.getHttp().size() == 0) &&
-            (null == vsModel.getTls() || vsModel.getTls().size() == 0) &&
-            (null == vsModel.getTcp() || vsModel.getTcp().size() == 0)) {
-            vsModel.setHttp(new LinkedList<>());
-        }
-        
-        if ((null == vsModel.getTls() && null == vsModel.getTcp()) && vsModel.getHttp().size() == 0) {
-            List<IstioHttpRoute> httpRoutes = new LinkedList<>();
-            IstioHttpRoute httpRoute = new IstioHttpRoute();
-            List<IstioDestinationWeight> destinationWeights = new LinkedList<>();
-            IstioDestinationWeight destinationWeight = new IstioDestinationWeight();
-            
-            IstioDestination destination = new IstioDestination();
-            destination.setServiceName(vsName);
-            destination.setPort(extractPort(endpointConfig));
-            destinationWeight.setDestination(destination);
-            
-            destinationWeights.add(destinationWeight);
-            httpRoute.setRoute(destinationWeights);
-            httpRoutes.add(httpRoute);
-            vsModel.setHttp(httpRoutes);
         }
     }
     
@@ -333,22 +293,6 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
         } else {
             throw new KubernetesPluginException("Unable to resolve annotation values.");
         }
-    }
-    
-    private int extractPort(List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig) throws
-            KubernetesPluginException {
-        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : endpointConfig) {
-            String key = keyValue.getKey().toString();
-            if ("port".equals(key)) {
-                try {
-                    return Integer.parseInt(keyValue.getValue().toString());
-                } catch (NumberFormatException e) {
-                    throw new KubernetesPluginException("Listener endpoint port must be an integer to use " +
-                                                        "@kubernetes annotations.");
-                }
-            }
-        }
-        throw new KubernetesPluginException("Unable to extract port from endpoint");
     }
     
     private enum IstioDestinationConfig {

@@ -23,7 +23,7 @@ import org.ballerinax.kubernetes.models.istio.IstioVirtualService;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,8 +42,8 @@ public class KubernetesDataHolder {
     private Set<ConfigMapModel> configMapModelSet;
     private Set<PersistentVolumeClaimModel> volumeClaimModelSet;
     private Set<ResourceQuotaModel> resourceQuotaModels;
-    private Set<IstioGatewayModel> istioGatewayModels;
-    private Set<IstioVirtualService> istioVirtualServiceModels;
+    private Map<String, IstioGatewayModel> istioGatewayModels;
+    private Map<String, IstioVirtualService> istioVirtualServiceModels;
     private JobModel jobModel;
     private String balxFilePath;
     private String outputDir;
@@ -58,8 +58,8 @@ public class KubernetesDataHolder {
         this.ingressModelSet = new HashSet<>();
         this.deploymentModel = new DeploymentModel();
         this.resourceQuotaModels = new HashSet<>();
-        this.istioGatewayModels = new LinkedHashSet<>();
-        this.istioVirtualServiceModels = new LinkedHashSet<>();
+        this.istioGatewayModels = new LinkedHashMap<>();
+        this.istioVirtualServiceModels = new LinkedHashMap<>();
 //        this.namespace = "";
     }
 
@@ -187,19 +187,27 @@ public class KubernetesDataHolder {
         this.namespace = namespace;
     }
     
-    public Set<IstioGatewayModel> getIstioGatewayModels() {
+    public Map<String, IstioGatewayModel> getIstioGatewayModels() {
         return istioGatewayModels;
     }
     
-    public void addIstioGatewayModel(IstioGatewayModel istioGatewayModel) {
-        this.istioGatewayModels.add(istioGatewayModel);
+    public IstioGatewayModel getIstioGatewayModel(String serviceName) {
+        return istioGatewayModels.get(serviceName);
     }
     
-    public Set<IstioVirtualService> getIstioVirtualServiceModels() {
+    public void addIstioGatewayModel(String serviceName, IstioGatewayModel istioGatewayModel) {
+        this.istioGatewayModels.put(serviceName, istioGatewayModel);
+    }
+    
+    public Map<String, IstioVirtualService> getIstioVirtualServiceModels() {
         return istioVirtualServiceModels;
     }
     
-    public void addIstioVirtualServiceModels(IstioVirtualService istioVirtualServiceModel) {
-        this.istioVirtualServiceModels.add(istioVirtualServiceModel);
+    public IstioVirtualService getIstioVirtualServiceModel(String serviceName) {
+        return istioVirtualServiceModels.get(serviceName);
+    }
+    
+    public void addIstioVirtualServiceModel(String serviceName, IstioVirtualService istioVirtualServiceModel) {
+        this.istioVirtualServiceModels.put(serviceName, istioVirtualServiceModel);
     }
 }

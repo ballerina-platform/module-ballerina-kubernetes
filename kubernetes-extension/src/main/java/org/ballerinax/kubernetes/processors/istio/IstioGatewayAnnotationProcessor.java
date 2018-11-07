@@ -82,7 +82,7 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
             gwModel.setServers(serversModel);
         }
         
-        KubernetesContext.getInstance().getDataHolder().addIstioGatewayModel(gwModel);
+        KubernetesContext.getInstance().getDataHolder().addIstioGatewayModel(serviceNode.getName().getValue(), gwModel);
     }
     
     @Override
@@ -116,7 +116,8 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
             gwModel.setServers(serversModel);
         }
         
-        KubernetesContext.getInstance().getDataHolder().addIstioGatewayModel(gwModel);
+        KubernetesContext.getInstance().getDataHolder().addIstioGatewayModel(endpointNode.getName().getValue(),
+                gwModel);
     }
     
     /**

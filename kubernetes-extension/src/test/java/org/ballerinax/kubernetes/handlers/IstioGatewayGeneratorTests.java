@@ -75,7 +75,7 @@ public class IstioGatewayGeneratorTests {
         
         istioGatewayModel.setServers(serverModels);
         
-        KubernetesContext.getInstance().getDataHolder().addIstioGatewayModel(istioGatewayModel);
+        KubernetesContext.getInstance().getDataHolder().addIstioGatewayModel("sample-svc", istioGatewayModel);
         try {
             new IstioGatewayHandler().createArtifacts();
             File yamlFile = new File("target" + File.separator + "kubernetes" + File.separator +
