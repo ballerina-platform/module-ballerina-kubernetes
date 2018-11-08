@@ -87,6 +87,11 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                 vsModel);
     }
     
+    /**
+     * Sets default values for istio virtual service model.
+     *
+     * @param vsModel The virtual service model.
+     */
     private void setDefaultValues(IstioVirtualService vsModel) {
         if (null == vsModel.getHosts() || vsModel.getHosts().size() == 0) {
             List<String> hosts = new LinkedList<>();
@@ -96,61 +101,70 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
     }
     
     /**
-     * Process @Kubernetes:IstioGateway annotation.
-     * @param gatewayFields Fields of the gateway annotation.
+     * Process @Kubernetes:IstioVirtualService annotation.
+     *
+     * @param vsFields Fields of the virtual service annotation.
      * @throws KubernetesPluginException Unable to process annotations.
      */
-    private IstioVirtualService processIstioVSAnnotation(List<BLangRecordLiteral.BLangRecordKeyValue> gatewayFields)
+    private IstioVirtualService processIstioVSAnnotation(List<BLangRecordLiteral.BLangRecordKeyValue> vsFields)
             throws KubernetesPluginException {
         IstioVirtualService vsModel = new IstioVirtualService();
-        for (BLangRecordLiteral.BLangRecordKeyValue gatewayField : gatewayFields) {
-            switch (IstioVSConfig.valueOf(gatewayField.getKey().toString())) {
+        for (BLangRecordLiteral.BLangRecordKeyValue vsField : vsFields) {
+            switch (IstioVSConfig.valueOf(vsField.getKey().toString())) {
                 case name:
-                    vsModel.setName(resolveValue(gatewayField.getValue().toString()));
+                    vsModel.setName(resolveValue(vsField.getValue().toString()));
                     break;
                 case namespace:
-                    vsModel.setNamespace(resolveValue(gatewayField.getValue().toString()));
+                    vsModel.setNamespace(resolveValue(vsField.getValue().toString()));
                     break;
                 case labels:
-                    BLangRecordLiteral labelsField = (BLangRecordLiteral) gatewayField.getValue();
+                    BLangRecordLiteral labelsField = (BLangRecordLiteral) vsField.getValue();
                     vsModel.setLabels(getMap(labelsField.getKeyValuePairs()));
                     break;
                 case annotations:
-                    BLangRecordLiteral annotationsField = (BLangRecordLiteral) gatewayField.getValue();
+                    BLangRecordLiteral annotationsField = (BLangRecordLiteral) vsField.getValue();
                     vsModel.setAnnotations(getMap(annotationsField.getKeyValuePairs()));
                     break;
                 case hosts:
-                    BLangArrayLiteral hostsField = (BLangArrayLiteral) gatewayField.getValue();
+                    BLangArrayLiteral hostsField = (BLangArrayLiteral) vsField.getValue();
                     List<String> hostsList = new ArrayList<>(getArray(hostsField));
                     vsModel.setHosts(hostsList);
                     break;
                 case gateways:
-                    BLangArrayLiteral gatewaysField = (BLangArrayLiteral)  gatewayField.getValue();
+                    BLangArrayLiteral gatewaysField = (BLangArrayLiteral)  vsField.getValue();
                     List<String> gatewayList = new ArrayList<>(getArray(gatewaysField));
                     vsModel.setGateways(gatewayList);
                     break;
                 case http:
-                    BLangArrayLiteral httpFields = (BLangArrayLiteral) gatewayField.getValue();
+                    BLangArrayLiteral httpFields = (BLangArrayLiteral) vsField.getValue();
                     List<IstioHttpRoute> httpModels = processHttpAnnotation(httpFields);
                     vsModel.setHttp(httpModels);
                     break;
                 case tls:
-                    BLangArrayLiteral tlsFields = (BLangArrayLiteral) gatewayField.getValue();
+                    BLangArrayLiteral tlsFields = (BLangArrayLiteral) vsField.getValue();
                     List<Object> tlsModels = (List<Object>) processAnnotation(tlsFields);
                     vsModel.setTls(tlsModels);
                     break;
                 case tcp:
-                    BLangArrayLiteral tcpFields = (BLangArrayLiteral) gatewayField.getValue();
+                    BLangArrayLiteral tcpFields = (BLangArrayLiteral) vsField.getValue();
                     List<Object> tcpModels = (List<Object>) processAnnotation(tcpFields);
                     vsModel.setTcp(tcpModels);
                     break;
                 default:
-                    throw new KubernetesPluginException("Unknown field found for istio virtual service.");
+                    throw new KubernetesPluginException("Unknown field found for istio virtual service: " +
+                                                        vsField.getKey().toString());
             }
         }
         return vsModel;
     }
     
+    /**
+     * Process http annotation array of the virtual service annotation to a model.
+     *
+     * @param httpArray The list of http fields.
+     * @return Converted list of Istio http routes.
+     * @throws KubernetesPluginException When an unknown field is found.
+     */
     private List<IstioHttpRoute> processHttpAnnotation(BLangArrayLiteral httpArray) throws KubernetesPluginException {
         List<IstioHttpRoute> httpRoutes = new LinkedList<>();
         for (ExpressionNode expression : httpArray.getExpressions()) {
@@ -179,7 +193,8 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                                     break;
                                 default:
                                     throw new KubernetesPluginException(
-                                            "Unknown field found for istio virtual service.");
+                                            "Unknown field found for istio virtual service: " +
+                                            redirectField.getKey().toString());
                             }
                         }
                         httpRoute.setRedirect(httpRedirect);
@@ -206,7 +221,8 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                         httpRoute.setAppendHeaders(getMap(((BLangRecordLiteral) httpField.valueExpr).keyValuePairs));
                         break;
                     default:
-                        throw new KubernetesPluginException("Unknown field found for istio virtual service.");
+                        throw new KubernetesPluginException("Unknown field found for istio virtual service: " +
+                                                            httpField.getKey().toString());
                 }
             }
             httpRoutes.add(httpRoute);
@@ -214,6 +230,13 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
         return httpRoutes;
     }
     
+    /**
+     * Process routes of http annotation to a model.
+     *
+     * @param routeArray The list of routes.
+     * @return A list of istio destination weight models.
+     * @throws KubernetesPluginException When an unknown field is found.
+     */
     private List<IstioDestinationWeight> processRoutesAnnotation(BLangArrayLiteral routeArray)
             throws KubernetesPluginException {
         List<IstioDestinationWeight> destinationWeights = new LinkedList<>();
@@ -231,7 +254,8 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                         destinationWeight.setWeight(Integer.parseInt((routeField).getValue().toString()));
                         break;
                     default:
-                        throw new KubernetesPluginException("Unknown field found for istio virtual service.");
+                        throw new KubernetesPluginException("Unknown field found for istio virtual service: " +
+                                                            routeField.getKey().toString());
                 }
             }
             destinationWeights.add(destinationWeight);
@@ -240,6 +264,13 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
         return destinationWeights;
     }
     
+    /**
+     * Process destination of the destination weight annotation to a model.
+     *
+     * @param destinationFields The destination field.
+     * @return A istio destination model.
+     * @throws KubernetesPluginException When an unknown field is found.
+     */
     private IstioDestination processDestinationAnnotation(BLangRecordLiteral destinationFields)
             throws KubernetesPluginException {
         IstioDestination destination = new IstioDestination();
@@ -264,23 +295,30 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
         return destination;
     }
     
-    private Object processAnnotation(ExpressionNode annotationValue) throws KubernetesPluginException {
-        if (annotationValue instanceof BLangArrayLiteral) {
-            BLangArrayLiteral arrayValue = (BLangArrayLiteral) annotationValue;
+    /**
+     * Converts an array, a record or a literal to simple models.
+     *
+     * @param value The value to convert to.
+     * @return A model application to the type received.
+     * @throws KubernetesPluginException When an unknown type of value is found.
+     */
+    private Object processAnnotation(ExpressionNode value) throws KubernetesPluginException {
+        if (value instanceof BLangArrayLiteral) {
+            BLangArrayLiteral arrayValue = (BLangArrayLiteral) value;
             List<Object> arrayModels = new LinkedList<>();
             for (ExpressionNode expression : arrayValue.getExpressions()) {
                 arrayModels.add(processAnnotation(expression));
             }
             return arrayModels;
-        } else if (annotationValue instanceof BLangRecordLiteral) {
-            BLangRecordLiteral serverFieldRecord = (BLangRecordLiteral) annotationValue;
+        } else if (value instanceof BLangRecordLiteral) {
+            BLangRecordLiteral serverFieldRecord = (BLangRecordLiteral) value;
             Map<String, Object> mapModels = new LinkedHashMap<>();
             for (BLangRecordLiteral.BLangRecordKeyValue keyValuePair : serverFieldRecord.getKeyValuePairs()) {
                 mapModels.put(keyValuePair.getKey().toString(), processAnnotation(keyValuePair.getValue()));
             }
             return mapModels;
-        } else if (annotationValue instanceof BLangLiteral) {
-            BLangLiteral literal = (BLangLiteral) annotationValue;
+        } else if (value instanceof BLangLiteral) {
+            BLangLiteral literal = (BLangLiteral) value;
             if (literal.typeTag == TypeTags.INT_TAG) {
                 return Integer.parseInt((literal).getValue().toString());
             } else if (literal.typeTag == TypeTags.BOOLEAN_TAG) {

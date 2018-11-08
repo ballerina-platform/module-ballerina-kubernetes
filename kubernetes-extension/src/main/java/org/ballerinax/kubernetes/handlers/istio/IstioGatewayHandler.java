@@ -43,7 +43,7 @@ public class IstioGatewayHandler extends AbstractArtifactHandler {
     
     /**
      * {@inheritDoc}
-     * Performs validations.
+     * Performs validations and creates the artifacts.
      */
     @Override
     public void createArtifacts() throws KubernetesPluginException {

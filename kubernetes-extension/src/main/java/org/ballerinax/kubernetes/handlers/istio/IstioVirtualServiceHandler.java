@@ -45,6 +45,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
  * Generates istio virtual service artifacts.
  */
 public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
+    
     @Override
     public void createArtifacts() throws KubernetesPluginException {
         Map<String, IstioVirtualService> istioVSModels = dataHolder.getIstioVirtualServiceModels();
@@ -56,13 +57,19 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
         int count = 0;
         for (Map.Entry<String, IstioVirtualService> vsModel : istioVSModels.entrySet()) {
             count++;
-            generate(vsModel);
+            generate(vsModel.getKey(), vsModel.getValue());
             OUT.print("\t@kubernetes:IstioVirtualService \t - complete " + count + "/" + istioVSModels.size() + "\r");
         }
     }
     
-    private void generate(Map.Entry<String, IstioVirtualService> vsModelEntry) throws KubernetesPluginException {
-        IstioVirtualService vsModel = vsModelEntry.getValue();
+    /**
+     * Generate artifact for istio virtual service model.
+     *
+     * @param serviceName The name of the service in which the virtual service routes to.
+     * @param vsModel     The virtual service model.
+     * @throws KubernetesPluginException Error when writing artifact files.
+     */
+    private void generate(String serviceName, IstioVirtualService vsModel) throws KubernetesPluginException {
         try {
             Map<String, Object> vsYamlModel = new LinkedHashMap<>();
             vsYamlModel.put("apiVersion", "networking.istio.io/v1alpha3");
@@ -90,7 +97,7 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
     
             if (vsModel.getGateways().size() == 0) {
                 IstioGatewayModel gwModel =
-                        KubernetesContext.getInstance().getDataHolder().getIstioGatewayModel(vsModelEntry.getKey());
+                        KubernetesContext.getInstance().getDataHolder().getIstioGatewayModel(serviceName);
         
                 if (null != gwModel) {
                     vsModel.getGateways().add(gwModel.getName());
@@ -112,7 +119,7 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
     
             // parse and add default values for http list if tls and tcp are not set
             if (null == vsModel.getTls() && null == vsModel.getTcp()) {
-                spec.put("http", parseHttpRouteList(vsModelEntry.getKey(), vsModel.getHttp()));
+                spec.put("http", parseHttpRouteList(serviceName, vsModel.getHttp()));
             }
     
             if (null == vsModel.getGateways()) {
@@ -134,6 +141,13 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
         }
     }
     
+    /**
+     * Parsing a list of http routes to yaml maps.
+     *
+     * @param serviceName The name of the service where to route to.
+     * @param http        The list of http routes.
+     * @return A list of yaml maps.
+     */
     private Object parseHttpRouteList(String serviceName, List<IstioHttpRoute> http) {
         if (null == http) {
             http = new LinkedList<>();
@@ -183,6 +197,12 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
         return httpList;
     }
     
+    /**
+     * Parse an http redirect object to yaml maps.
+     *
+     * @param redirect The redirect object.
+     * @return A yaml map.
+     */
     private Map<String, String> parseRedirect(IstioHttpRedirect redirect) {
         Map<String, String> redirectMap = new LinkedHashMap<>();
         if (null != redirect.getUri()) {
@@ -194,6 +214,13 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
         return redirectMap;
     }
     
+    /**
+     * Parse an route list to a yaml map.
+     *
+     * @param serviceName The name of the service.
+     * @param route       The list of destination weights
+     * @return A list of yaml maps.
+     */
     private Object parseRouteList(String serviceName, List<IstioDestinationWeight> route) {
         if (route == null) {
             route = new LinkedList<>();
@@ -216,6 +243,13 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
         return destinationWeightList;
     }
     
+    /**
+     * Parse destination object to yaml map.
+     *
+     * @param serviceName The name of the service which is routed to.
+     * @param destination The destination object.
+     * @return A yaml map.
+     */
     private Map<String, Object> parseDestination(String serviceName, IstioDestination destination) {
         if (null == destination) {
             destination = new IstioDestination();

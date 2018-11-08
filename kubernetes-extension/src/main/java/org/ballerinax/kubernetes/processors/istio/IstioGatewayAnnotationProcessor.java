@@ -22,7 +22,6 @@ import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.EndpointNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
-import org.ballerinalang.model.tree.expressions.RecordLiteralNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
@@ -59,29 +58,8 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
         if (isBlank(gwModel.getName())) {
             gwModel.setName(getValidName(serviceNode.getName().getValue()) + ISTIO_GATEWAY_POSTFIX);
         }
-        RecordLiteralNode anonymousEndpoint = serviceNode.getAnonymousEndpointBind();
-        List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =
-                ((BLangRecordLiteral) anonymousEndpoint).getKeyValuePairs();
         
-        if (null == gwModel.getServers() || gwModel.getServers().size() == 0) {
-            List<IstioServerModel> serversModel = new LinkedList<>();
-            IstioServerModel serverModel = new IstioServerModel();
-            
-            IstioPortModel portModel = new IstioPortModel();
-            portModel.setNumber(extractPort(endpointConfig));
-            portModel.setProtocol("HTTP");
-            serverModel.setPort(portModel);
-    
-            if (null == serverModel.getHosts() || serverModel.getHosts().size() == 0) {
-                Set<String> hosts = new LinkedHashSet<>();
-                hosts.add("*");
-                serverModel.setHosts(hosts);
-            }
-            
-            serversModel.add(serverModel);
-            gwModel.setServers(serversModel);
-        }
-        
+        setDefaultValues(gwModel);
         KubernetesContext.getInstance().getDataHolder().addIstioGatewayModel(serviceNode.getName().getValue(), gwModel);
     }
     
@@ -95,33 +73,41 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
         if (isBlank(gwModel.getName())) {
             gwModel.setName(getValidName(endpointNode.getName().getValue()) + ISTIO_GATEWAY_POSTFIX);
         }
-        
-        if (null == gwModel.getServers() || gwModel.getServers().size() == 0) {
-            List<IstioServerModel> serversModel = new LinkedList<>();
-            IstioServerModel serverModel = new IstioServerModel();
-        
-            IstioPortModel portModel = new IstioPortModel();
-            portModel.setNumber(80);
-            portModel.setProtocol("HTTP");
-            portModel.setName("http");
-            serverModel.setPort(portModel);
-        
-            if (null == serverModel.getHosts() || serverModel.getHosts().size() == 0) {
-                Set<String> hosts = new LinkedHashSet<>();
-                hosts.add("*");
-                serverModel.setHosts(hosts);
-            }
-        
-            serversModel.add(serverModel);
-            gwModel.setServers(serversModel);
-        }
-        
+    
+        setDefaultValues(gwModel);
         KubernetesContext.getInstance().getDataHolder().addIstioGatewayModel(endpointNode.getName().getValue(),
                 gwModel);
     }
     
     /**
+     * Set default values for the gateway model.
+     *
+     * @param gwModel The gateway model.
+     */
+    private void setDefaultValues(IstioGatewayModel gwModel) {
+        if (null == gwModel.getServers() || gwModel.getServers().size() == 0) {
+            List<IstioServerModel> serversModel = new LinkedList<>();
+            IstioServerModel serverModel = new IstioServerModel();
+            
+            IstioPortModel portModel = new IstioPortModel();
+            portModel.setNumber(80);
+            portModel.setProtocol("HTTP");
+            serverModel.setPort(portModel);
+            
+            if (null == serverModel.getHosts() || serverModel.getHosts().size() == 0) {
+                Set<String> hosts = new LinkedHashSet<>();
+                hosts.add("*");
+                serverModel.setHosts(hosts);
+            }
+            
+            serversModel.add(serverModel);
+            gwModel.setServers(serversModel);
+        }
+    }
+    
+    /**
      * Process @Kubernetes:IstioGateway annotation.
+     *
      * @param gatewayFields Fields of the gateway annotation.
      * @throws KubernetesPluginException Unable to process annotations.
      */
@@ -161,6 +147,7 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
     
     /**
      * Process server field of @Kubernetes:IstioGateway annotation.
+     *
      * @param gatewayModel The gateway model.
      * @param serversField List of servers of the gateway.
      * @throws KubernetesPluginException Unable to process annotation
@@ -198,7 +185,8 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
     
     /**
      * Process port fields of @Kubernetes:IstioGateway annotations's server field.
-     * @param server The server model.
+     *
+     * @param server     The server model.
      * @param portFields The fields of the server's port.
      * @throws KubernetesPluginException Unable to process annotation
      */
@@ -226,7 +214,8 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
     
     /**
      * Process tls option fields of @Kubernetes:IstioGateway annotations's server field.
-     * @param server The server model.
+     *
+     * @param server    The server model.
      * @param tlsFields The fields of the server's tls options.
      * @throws KubernetesPluginException Unable to process annotation
      */
@@ -261,22 +250,6 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
         }
         
         server.setTls(tlsOptions);
-    }
-    
-    private int extractPort(List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig) throws
-            KubernetesPluginException {
-        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : endpointConfig) {
-            String key = keyValue.getKey().toString();
-            if ("port".equals(key)) {
-                try {
-                    return Integer.parseInt(keyValue.getValue().toString());
-                } catch (NumberFormatException e) {
-                    throw new KubernetesPluginException("Listener endpoint port must be an integer to use " +
-                                                        "@kubernetes annotations.");
-                }
-            }
-        }
-        throw new KubernetesPluginException("Unable to extract port from endpoint");
     }
     
     private enum TLSOptionConfig {
