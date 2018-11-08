@@ -445,7 +445,7 @@ public class IstioGatewayTest {
         List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
         Map<String, Object> server = servers.get(0);
         Map<String, Object> port = (Map<String, Object>) server.get("port");
-        Assert.assertEquals(port.get("number"), 9090, "Invalid port number.");
+        Assert.assertEquals(port.get("number"), 80, "Invalid port number.");
         Assert.assertEquals(port.get("protocol"), "HTTP", "Invalid port protocol.");
         
         List<String> hosts = (List<String>) server.get("hosts");

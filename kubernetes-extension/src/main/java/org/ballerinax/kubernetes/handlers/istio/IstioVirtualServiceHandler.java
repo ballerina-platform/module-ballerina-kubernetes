@@ -95,18 +95,20 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
                 spec.put("hosts", vsModel.getHosts());
             }
     
-            if (vsModel.getGateways().size() == 0) {
-                IstioGatewayModel gwModel =
-                        KubernetesContext.getInstance().getDataHolder().getIstioGatewayModel(serviceName);
-        
-                if (null != gwModel) {
-                    vsModel.getGateways().add(gwModel.getName());
+            if (vsModel.getGateways() != null) {
+                if (vsModel.getGateways().size() == 0) {
+                    IstioGatewayModel gwModel =
+                            KubernetesContext.getInstance().getDataHolder().getIstioGatewayModel(serviceName);
+            
+                    if (null != gwModel) {
+                        vsModel.getGateways().add(gwModel.getName());
+                    }
                 }
-            }
-    
-            // when gateways are not set, it will apply to all side cars.
-            if (vsModel.getGateways().size() != 0) {
-                spec.put("gateways", vsModel.getGateways());
+        
+                // when gateways are not set, it will apply to all side cars.
+                if (vsModel.getGateways().size() != 0) {
+                    spec.put("gateways", vsModel.getGateways());
+                }
             }
     
             if (null != vsModel.getTls() && vsModel.getTls().size() > 0) {

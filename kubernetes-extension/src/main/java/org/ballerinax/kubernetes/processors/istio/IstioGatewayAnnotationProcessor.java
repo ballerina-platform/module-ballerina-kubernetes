@@ -106,7 +106,7 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
     }
     
     /**
-     * Process @Kubernetes:IstioGateway annotation.
+     * Process @kubernetes:IstioGateway annotation.
      *
      * @param gatewayFields Fields of the gateway annotation.
      * @throws KubernetesPluginException Unable to process annotations.
@@ -146,7 +146,7 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
     }
     
     /**
-     * Process server field of @Kubernetes:IstioGateway annotation.
+     * Process server field of @kubernetes:IstioGateway annotation.
      *
      * @param gatewayModel The gateway model.
      * @param serversField List of servers of the gateway.
@@ -184,7 +184,7 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
     }
     
     /**
-     * Process port fields of @Kubernetes:IstioGateway annotations's server field.
+     * Process port fields of @kubernetes:IstioGateway annotations's server field.
      *
      * @param server     The server model.
      * @param portFields The fields of the server's port.
@@ -213,7 +213,7 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
     }
     
     /**
-     * Process tls option fields of @Kubernetes:IstioGateway annotations's server field.
+     * Process tls option fields of @kubernetes:IstioGateway annotations's server field.
      *
      * @param server    The server model.
      * @param tlsFields The fields of the server's tls options.

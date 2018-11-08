@@ -101,7 +101,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
     }
     
     /**
-     * Process @Kubernetes:IstioVirtualService annotation.
+     * Process @kubernetes:IstioVirtualService annotation.
      *
      * @param vsFields Fields of the virtual service annotation.
      * @throws KubernetesPluginException Unable to process annotations.
