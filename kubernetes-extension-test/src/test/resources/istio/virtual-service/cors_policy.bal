@@ -36,8 +36,7 @@ import ballerinax/kubernetes;
                 allowOrigin: ["example.com"],
                 allowMethods: ["POST", "GET"],
                 allowCredentials: false,
-                allowHeaders: ["X-Foo-Bar"],
-                maxAge: "1d"
+                allowHeaders: ["X-Foo-Bar"]
             }
         }
     ]

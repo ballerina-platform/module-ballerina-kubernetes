@@ -40,7 +40,7 @@ import ballerinax/kubernetes;
     ]
 }
 @kubernetes:Deployment {
-    name: "all_fields",
+    name: "tls_simple_invalid",
     image: "pizza-shop:latest"
 }
 @kubernetes:Service {name: "hello"}

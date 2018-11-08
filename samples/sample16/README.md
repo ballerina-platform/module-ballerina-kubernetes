@@ -1,7 +1,8 @@
 ## Sample16: Istio Gateway and Virtual Service generation
 
 - This sample uses 3 microservices implementing a book shop.
-- Traffic is managed through an istio gateway and virtual service which gets generated through annotations.
+- Traffic is managed through an istio gateway and virtual service which gets generated through @kubernetes:IstioGateway 
+and @kubernetes:IstioVirtualService annotations.
 - Following are the microservices:  
     - `book.details` module has a service which gets details of a book. These details include the author and the price 
     of a book.

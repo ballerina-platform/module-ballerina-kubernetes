@@ -23,6 +23,8 @@ import java.util.Map;
 
 /**
  * Istio virtual service annotation's http route model class.
+ *
+ * @since 0.983.0
  */
 public class IstioHttpRoute {
     private List<Object> match;

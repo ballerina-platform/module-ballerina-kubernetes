@@ -46,6 +46,8 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
  * Istio gateway annotation processor.
+ *
+ * @since 0.983.0
  */
 public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor {
     @Override
@@ -92,6 +94,7 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
             IstioPortModel portModel = new IstioPortModel();
             portModel.setNumber(80);
             portModel.setProtocol("HTTP");
+            portModel.setName("http");
             serverModel.setPort(portModel);
             
             if (null == serverModel.getHosts() || serverModel.getHosts().size() == 0) {

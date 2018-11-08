@@ -20,6 +20,8 @@ package org.ballerinax.kubernetes.models.istio;
 
 /**
  * Istio virtual service annotation's http route destination model class.
+ *
+ * @since 0.983.0
  */
 public class IstioDestination {
     private String host;

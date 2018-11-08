@@ -54,7 +54,7 @@ import ballerinax/kubernetes;
     ]
 }
 @kubernetes:Deployment {
-    name: "all_fields",
+    name: "multiple_servers",
     image: "pizza-shop:latest"
 }
 @kubernetes:Service {name: "hello"}

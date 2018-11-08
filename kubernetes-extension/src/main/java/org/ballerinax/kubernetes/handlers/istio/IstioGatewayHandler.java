@@ -38,6 +38,8 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 
 /**
  * Generates istio gateway artifacts.
+ *
+ * @since 0.983.0
  */
 public class IstioGatewayHandler extends AbstractArtifactHandler {
     

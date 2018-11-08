@@ -39,6 +39,8 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDocker
 
 /**
  * Test cases for generating istio virtual service artifacts.
+ *
+ * @since 0.983.0
  */
 public class IstioVirtualServiceTest {
     
@@ -443,7 +445,6 @@ public class IstioVirtualServiceTest {
         Assert.assertEquals(corsPolicy.get("allowCredentials"), false, "Invalid cors allowCredentials");
         Assert.assertEquals(((List<String>) corsPolicy.get("allowHeaders")).get(0), "X-Foo-Bar",
                 "Invalid cors allowHeaders");
-        Assert.assertEquals(corsPolicy.get("maxAge"), "1d", "Invalid cors maxAge");
         
         KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(dockerImage);
@@ -532,7 +533,7 @@ public class IstioVirtualServiceTest {
         Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
         
         Map<String, Object> metadata = (Map<String, Object>) virtualSvc.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "bookinfo-Mongo", "Invalid virtual service name");
+        Assert.assertEquals(metadata.get("name"), "bookinfo-mongo", "Invalid virtual service name");
         
         Map<String, Object> spec = (Map<String, Object>) virtualSvc.get("spec");
         List<String> hosts = (List<String>) spec.get("hosts");

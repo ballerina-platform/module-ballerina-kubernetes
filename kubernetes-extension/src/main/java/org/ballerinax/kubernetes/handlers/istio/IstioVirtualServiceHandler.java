@@ -43,6 +43,8 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 
 /**
  * Generates istio virtual service artifacts.
+ *
+ * @since 0.983.0
  */
 public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
     
@@ -102,6 +104,11 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
             
                     if (null != gwModel) {
                         vsModel.getGateways().add(gwModel.getName());
+                    } else {
+                        throw new KubernetesPluginException("Unable to resolve a gateway for '" + vsModel + "' " +
+                                                            "virtual service. Add @kubernetes:IstioGateway annotation" +
+                                                            " to your endpoint or service, else explicitly state to " +
+                                                            "use the 'mesh' gateway.");
                     }
                 }
         
@@ -165,11 +172,11 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
             if (null != httpRoute.getMatch()) {
                 httpMap.put("match", httpRoute.getMatch());
             }
-            if (null != httpRoute.getRedirect()) {
-                httpMap.put("redirect", parseRedirect(httpRoute.getRedirect()));
-            }
             if (null != httpRoute.getRewrite()) {
                 httpMap.put("rewrite", httpRoute.getRewrite());
+            }
+            if (null != httpRoute.getRedirect()) {
+                httpMap.put("redirect", parseRedirect(httpRoute.getRedirect()));
             }
             if (null != httpRoute.getTimeout()) {
                 httpMap.put("timeout", httpRoute.getTimeout());
@@ -189,10 +196,13 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
             if (null != httpRoute.getAppendHeaders()) {
                 httpMap.put("appendHeaders", httpRoute.getAppendHeaders());
             }
-            
-            // route is mandatory, no need to null check
-            httpMap.put("route", parseRouteList(serviceName, httpRoute.getRoute()));
-            
+    
+            // route and redirect cannot exists together.
+            if (null == httpRoute.getRedirect()) {
+                // route is mandatory, no need to null check
+                httpMap.put("route", parseRouteList(serviceName, httpRoute.getRoute()));
+            }
+    
             httpList.add(httpMap);
         }
         

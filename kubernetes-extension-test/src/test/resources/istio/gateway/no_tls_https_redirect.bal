@@ -37,7 +37,7 @@ import ballerinax/kubernetes;
     ]
 }
 @kubernetes:Deployment {
-    name: "all_fields",
+    name: "no_tls_https_redirect",
     image: "pizza-shop:latest"
 }
 @kubernetes:Service {name: "hello"}

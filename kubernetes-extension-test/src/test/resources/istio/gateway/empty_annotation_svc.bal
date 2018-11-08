@@ -18,7 +18,7 @@ import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:Deployment {
-    name: "all_fields",
+    name: "empty_annotation",
     image: "pizza-shop:latest"
 }
 @kubernetes:Service {name: "hello"}

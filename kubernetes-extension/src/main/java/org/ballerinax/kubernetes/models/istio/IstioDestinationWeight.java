@@ -20,6 +20,8 @@ package org.ballerinax.kubernetes.models.istio;
 
 /**
  * Istio virtual service annotation's http route destination weight model class.
+ *
+ * @since 0.983.0
  */
 public class IstioDestinationWeight {
     private IstioDestination destination;
