@@ -1,4 +1,4 @@
-## Sample13: Istio Gateway and Virtual Service generation
+## Sample16: Istio Gateway and Virtual Service generation
 
 - This sample uses 3 microservices implementing a book shop.
 - Traffic is managed through an istio gateway and virtual service which gets generated through annotations.
@@ -10,6 +10,8 @@
     information of a book and responses back to the client collectively.
 - `book.shop` service depends on `book.details` and `book.reviews`.
 - Make sure that istio is installed correctly and that all pods and services of the istio-system are up and running. 
+- Remove the nginx artifacts added in setting up of the tutorial. Run `kubectl delete -f 
+nginx-ingress/namespaces/nginx-ingress.yaml -Rf nginx-ingress` from the `samples` folder.
 See [here](https://istio.io/docs/setup/kubernetes/quick-start/) on how to install istio on kubernetes.
 - Following files will be generated from building this sample.
     ``` 
