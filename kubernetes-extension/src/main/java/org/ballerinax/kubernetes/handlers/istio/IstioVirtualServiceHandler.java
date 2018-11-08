@@ -104,11 +104,6 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
             
                     if (null != gwModel) {
                         vsModel.getGateways().add(gwModel.getName());
-                    } else {
-                        throw new KubernetesPluginException("Unable to resolve a gateway for '" + vsModel + "' " +
-                                                            "virtual service. Add @kubernetes:IstioGateway annotation" +
-                                                            " to your endpoint or service, else explicitly state to " +
-                                                            "use the 'mesh' gateway.");
                     }
                 }
         
@@ -129,10 +124,6 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
             // parse and add default values for http list if tls and tcp are not set
             if (null == vsModel.getTls() && null == vsModel.getTcp()) {
                 spec.put("http", parseHttpRouteList(serviceName, vsModel.getHttp()));
-            }
-    
-            if (null == vsModel.getGateways()) {
-                vsModel.setGateways(new LinkedList<>());
             }
     
             vsYamlModel.put("spec", spec);
