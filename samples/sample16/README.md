@@ -224,7 +224,7 @@ export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
 
 ```
 
-8. Access the hello world service with curl command:
+8. Access the books by their IDs with curl commands:
 ```bash
 $> curl http://${GATEWAY_URL}/book/B1
 {"id":"B1", "details":{"author":"John Jonathan", "cost":10.0}, "reviews":"Review of book1"}
@@ -239,7 +239,7 @@ $> curl http://${GATEWAY_URL}/book/B4
 {"message":"book not found: B4"}
 ```
 
-7. Undeploy sample:
+9. Undeploy sample:
 ```bash
 kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/book.details
 kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/book.shop

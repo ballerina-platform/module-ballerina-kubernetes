@@ -46,7 +46,6 @@ endpoint http:Listener helloEP {
     port: 9090
 };
 
-
 @http:ServiceConfig {
     basePath: "/helloWorld"
 }
