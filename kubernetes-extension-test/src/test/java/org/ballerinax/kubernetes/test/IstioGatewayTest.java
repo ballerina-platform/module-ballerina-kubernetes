@@ -49,8 +49,9 @@ public class IstioGatewayTest {
     
     /**
      * Build bal file with istio gateway annotations.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
@@ -61,7 +62,7 @@ public class IstioGatewayTest {
         validateDockerfile();
         validateDockerImage();
 
-        // Validate deployment yaml
+        // Validate gateway yaml
         File gatewayFile = Paths.get(targetPath).resolve("all_fields_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Yaml yamlProcessor = new Yaml();
@@ -102,21 +103,23 @@ public class IstioGatewayTest {
         KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(dockerImage);
     }
-
+    
     /**
      * Build bal file with invalid port istio gateway annotations.
-     * @throws IOException Error when loading the generated yaml.
+     *
+     * @throws IOException          Error when loading the generated yaml.
      * @throws InterruptedException Error when compiling the ballerina file.
      */
-    @Test()
+    @Test
     public void invalidPortTest() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "invalid_port.bal"), 1);
     }
-
+    
     /**
      * Build bal file with istio gateway annotation having multiple servers.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
@@ -127,7 +130,7 @@ public class IstioGatewayTest {
         validateDockerfile();
         validateDockerImage();
 
-        // Validate deployment yaml
+        // Validate gateway yaml
         File gatewayFile = Paths.get(targetPath).resolve("multiple_servers_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Yaml yamlProcessor = new Yaml();
@@ -175,10 +178,11 @@ public class IstioGatewayTest {
     
     /**
      * Build bal file with no selector istio gateway annotations.
-     * @throws IOException Error when loading the generated yaml.
+     *
+     * @throws IOException          Error when loading the generated yaml.
      * @throws InterruptedException Error when compiling the ballerina file.
      */
-    @Test()
+    @Test
     public void noSelectorTest() throws IOException, InterruptedException, KubernetesPluginException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "no_selector.bal"), 0);
     
@@ -186,7 +190,7 @@ public class IstioGatewayTest {
         validateDockerfile();
         validateDockerImage();
     
-        // Validate deployment yaml
+        // Validate gateway yaml
         File gatewayFile = Paths.get(targetPath).resolve("no_selector_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Yaml yamlProcessor = new Yaml();
@@ -203,8 +207,9 @@ public class IstioGatewayTest {
     
     /**
      * Build bal file with istio gateway annotation having no tls httpsRedirect field.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
@@ -215,7 +220,7 @@ public class IstioGatewayTest {
         validateDockerfile();
         validateDockerImage();
 
-        // Validate deployment yaml
+        // Validate gateway yaml
         File gatewayFile = Paths.get(targetPath).resolve("no_tls_https_redirect_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Yaml yamlProcessor = new Yaml();
@@ -246,11 +251,12 @@ public class IstioGatewayTest {
         KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(dockerImage);
     }
-
+    
     /**
      * Build bal file with istio gateway annotation having mutual mode TLS.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
@@ -261,7 +267,7 @@ public class IstioGatewayTest {
         validateDockerfile();
         validateDockerImage();
 
-        // Validate deployment yaml
+        // Validate gateway yaml
         File gatewayFile = Paths.get(targetPath).resolve("tls_mutual_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Yaml yamlProcessor = new Yaml();
@@ -299,10 +305,11 @@ public class IstioGatewayTest {
         KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(dockerImage);
     }
-
+    
     /**
      * Build bal file with istio gateway annotation having invalid mutual mode TLS.
-     * @throws IOException Error when loading the generated yaml.
+     *
+     * @throws IOException          Error when loading the generated yaml.
      * @throws InterruptedException Error when compiling the ballerina file.
      */
     @Test
@@ -312,8 +319,9 @@ public class IstioGatewayTest {
     
     /**
      * Build bal file with istio gateway annotation having simple mode TLS.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
@@ -324,7 +332,7 @@ public class IstioGatewayTest {
         validateDockerfile();
         validateDockerImage();
         
-        // Validate deployment yaml
+        // Validate gateway yaml
         File gatewayFile = Paths.get(targetPath).resolve("tls_simple_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Yaml yamlProcessor = new Yaml();
@@ -363,8 +371,9 @@ public class IstioGatewayTest {
     
     /**
      * Build bal file with istio gateway annotation with no values for endpoint.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
@@ -375,7 +384,7 @@ public class IstioGatewayTest {
         validateDockerfile();
         validateDockerImage();
         
-        // Validate deployment yaml
+        // Validate gateway yaml
         File gatewayFile = Paths.get(targetPath).resolve("empty_annotation_ep_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Yaml yamlProcessor = new Yaml();
@@ -405,19 +414,20 @@ public class IstioGatewayTest {
     
     /**
      * Build bal file with istio gateway annotation with no values for service.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void emptyAnnoForSvcTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void emptyAnnotationForSvcTest() throws IOException, InterruptedException, KubernetesPluginException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "empty_annotation_svc.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
-        // Validate deployment yaml
+        // Validate gateway yaml
         File gatewayFile = Paths.get(targetPath).resolve("empty_annotation_svc_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Yaml yamlProcessor = new Yaml();
@@ -447,7 +457,8 @@ public class IstioGatewayTest {
     
     /**
      * Build bal file with istio gateway annotation having invalid simple mode TLS.
-     * @throws IOException Error when loading the generated yaml.
+     *
+     * @throws IOException          Error when loading the generated yaml.
      * @throws InterruptedException Error when compiling the ballerina file.
      */
     @Test

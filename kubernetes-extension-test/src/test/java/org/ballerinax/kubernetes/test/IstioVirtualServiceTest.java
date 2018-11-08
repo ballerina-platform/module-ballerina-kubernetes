@@ -49,8 +49,9 @@ public class IstioVirtualServiceTest {
     
     /**
      * Build bal file with istio virtual service annotation with http route.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
@@ -61,17 +62,17 @@ public class IstioVirtualServiceTest {
         validateDockerfile();
         validateDockerImage();
         
-        // Validate deployment yaml
-        File gatewayFile = Paths.get(targetPath).resolve("http_route_istio_virtual_service.yaml").toFile();
-        Assert.assertTrue(gatewayFile.exists());
+        // Validate virtual service yaml
+        File vsFile = Paths.get(targetPath).resolve("http_route_istio_virtual_service.yaml").toFile();
+        Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
-        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(gateway.get("kind"), "VirtualService", "Invalid kind.");
+        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
+        Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
         
-        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "my-gateway", "Invalid gateway name");
-        Assert.assertEquals(metadata.get("namespace"), "ballerina", "Invalid gateway name");
+        Map<String, Object> metadata = (Map<String, Object>) virtualSvc.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "my-gateway", "Invalid virtual service name");
+        Assert.assertEquals(metadata.get("namespace"), "ballerina", "Invalid virtual service namespace");
         
         Map<String, String> labels = (Map<String, String>) metadata.get("labels");
         Assert.assertEquals(labels.get("label1"), "label1", "Invalid label");
@@ -81,7 +82,7 @@ public class IstioVirtualServiceTest {
         Assert.assertEquals(annotations.get("anno1"), "anno1Val", "Invalid annotation value");
         Assert.assertEquals(annotations.get("anno2"), "anno2Val", "Invalid annotation value");
         
-        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        Map<String, Object> spec = (Map<String, Object>) virtualSvc.get("spec");
         List<String> hosts = (List<String>) spec.get("hosts");
         Assert.assertEquals(hosts.get(0), "reviews.prod.svc.cluster.local", "Invalid host value.");
 
@@ -113,8 +114,9 @@ public class IstioVirtualServiceTest {
     
     /**
      * Build bal file with istio virtual service annotation with http match request.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
@@ -125,18 +127,18 @@ public class IstioVirtualServiceTest {
         validateDockerfile();
         validateDockerImage();
         
-        // Validate deployment yaml
-        File gatewayFile = Paths.get(targetPath).resolve("http_match_request_istio_virtual_service.yaml").toFile();
-        Assert.assertTrue(gatewayFile.exists());
+        // Validate virtual service yaml
+        File vsFile = Paths.get(targetPath).resolve("http_match_request_istio_virtual_service.yaml").toFile();
+        Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
-        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(gateway.get("kind"), "VirtualService", "Invalid kind.");
+        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
+        Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
         
-        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "ratings-route", "Invalid gateway name");
+        Map<String, Object> metadata = (Map<String, Object>) virtualSvc.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "ratings-route", "Invalid virtual service name");
         
-        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        Map<String, Object> spec = (Map<String, Object>) virtualSvc.get("spec");
         List<String> hosts = (List<String>) spec.get("hosts");
         Assert.assertEquals(hosts.get(0), "ratings.prod.svc.cluster.local", "Invalid host value.");
         
@@ -161,8 +163,9 @@ public class IstioVirtualServiceTest {
     
     /**
      * Build bal file with istio virtual service annotation with destination weight.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
@@ -173,18 +176,18 @@ public class IstioVirtualServiceTest {
         validateDockerfile();
         validateDockerImage();
         
-        // Validate deployment yaml
-        File gatewayFile = Paths.get(targetPath).resolve("destination_weight_istio_virtual_service.yaml").toFile();
-        Assert.assertTrue(gatewayFile.exists());
+        // Validate virtual service yaml
+        File vsFile = Paths.get(targetPath).resolve("destination_weight_istio_virtual_service.yaml").toFile();
+        Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
-        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(gateway.get("kind"), "VirtualService", "Invalid kind.");
+        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
+        Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
         
-        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "reviews-route", "Invalid gateway name");
+        Map<String, Object> metadata = (Map<String, Object>) virtualSvc.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "reviews-route", "Invalid virtual service name");
         
-        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        Map<String, Object> spec = (Map<String, Object>) virtualSvc.get("spec");
         List<String> hosts = (List<String>) spec.get("hosts");
         Assert.assertEquals(hosts.get(0), "reviews.prod.svc.cluster.local", "Invalid host value.");
     
@@ -208,12 +211,11 @@ public class IstioVirtualServiceTest {
         KubernetesTestUtils.deleteDockerImage(dockerImage);
     }
     
-    
-    
     /**
      * Build bal file with istio virtual service annotation with destination timeout.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
@@ -224,18 +226,18 @@ public class IstioVirtualServiceTest {
         validateDockerfile();
         validateDockerImage();
         
-        // Validate deployment yaml
-        File gatewayFile = Paths.get(targetPath).resolve("destination_istio_virtual_service.yaml").toFile();
-        Assert.assertTrue(gatewayFile.exists());
+        // Validate virtual service yaml
+        File vsFile = Paths.get(targetPath).resolve("destination_istio_virtual_service.yaml").toFile();
+        Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
-        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(gateway.get("kind"), "VirtualService", "Invalid kind.");
+        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
+        Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
         
-        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "reviews-route", "Invalid gateway name");
+        Map<String, Object> metadata = (Map<String, Object>) virtualSvc.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "reviews-route", "Invalid virtual service name");
         
-        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        Map<String, Object> spec = (Map<String, Object>) virtualSvc.get("spec");
         List<String> hosts = (List<String>) spec.get("hosts");
         Assert.assertEquals(hosts.get(0), "reviews.prod.svc.cluster.local", "Invalid host value.");
         
@@ -255,8 +257,9 @@ public class IstioVirtualServiceTest {
     
     /**
      * Build bal file with istio virtual service annotations with http redirect.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
@@ -267,18 +270,18 @@ public class IstioVirtualServiceTest {
         validateDockerfile();
         validateDockerImage();
         
-        // Validate deployment yaml
-        File gatewayFile = Paths.get(targetPath).resolve("http_redirect_istio_virtual_service.yaml").toFile();
-        Assert.assertTrue(gatewayFile.exists());
+        // Validate virtual service yaml
+        File vsFile = Paths.get(targetPath).resolve("http_redirect_istio_virtual_service.yaml").toFile();
+        Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
-        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(gateway.get("kind"), "VirtualService", "Invalid kind.");
+        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
+        Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
         
-        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "ratings-route", "Invalid gateway name");
+        Map<String, Object> metadata = (Map<String, Object>) virtualSvc.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "ratings-route", "Invalid virtual service name");
         
-        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        Map<String, Object> spec = (Map<String, Object>) virtualSvc.get("spec");
         List<String> hosts = (List<String>) spec.get("hosts");
         Assert.assertEquals(hosts.get(0), "ratings.prod.svc.cluster.local", "Invalid host value.");
         
@@ -300,8 +303,9 @@ public class IstioVirtualServiceTest {
     
     /**
      * Build bal file with istio virtual service annotation with destination timeout.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
@@ -312,18 +316,18 @@ public class IstioVirtualServiceTest {
         validateDockerfile();
         validateDockerImage();
         
-        // Validate deployment yaml
-        File gatewayFile = Paths.get(targetPath).resolve("http_retry_istio_virtual_service.yaml").toFile();
-        Assert.assertTrue(gatewayFile.exists());
+        // Validate virtual service yaml
+        File vsFile = Paths.get(targetPath).resolve("http_retry_istio_virtual_service.yaml").toFile();
+        Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
-        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(gateway.get("kind"), "VirtualService", "Invalid kind.");
+        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
+        Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
         
-        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "ratings-route", "Invalid gateway name");
+        Map<String, Object> metadata = (Map<String, Object>) virtualSvc.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "ratings-route", "Invalid virtual service name");
         
-        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        Map<String, Object> spec = (Map<String, Object>) virtualSvc.get("spec");
         List<String> hosts = (List<String>) spec.get("hosts");
         Assert.assertEquals(hosts.get(0), "ratings.prod.svc.cluster.local", "Invalid host value.");
         
@@ -346,8 +350,9 @@ public class IstioVirtualServiceTest {
     
     /**
      * Build bal file with istio virtual service annotation with http fault injection.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
@@ -358,18 +363,18 @@ public class IstioVirtualServiceTest {
         validateDockerfile();
         validateDockerImage();
         
-        // Validate deployment yaml
-        File gatewayFile = Paths.get(targetPath).resolve("http_fault_injection_istio_virtual_service.yaml").toFile();
-        Assert.assertTrue(gatewayFile.exists());
+        // Validate virtual service yaml
+        File vsFile = Paths.get(targetPath).resolve("http_fault_injection_istio_virtual_service.yaml").toFile();
+        Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
-        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(gateway.get("kind"), "VirtualService", "Invalid kind.");
+        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
+        Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
         
-        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "ratings-route", "Invalid gateway name");
+        Map<String, Object> metadata = (Map<String, Object>) virtualSvc.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "ratings-route", "Invalid virtual service name");
         
-        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        Map<String, Object> spec = (Map<String, Object>) virtualSvc.get("spec");
         List<String> hosts = (List<String>) spec.get("hosts");
         Assert.assertEquals(hosts.get(0), "ratings.prod.svc.cluster.local", "Invalid host value.");
         
@@ -392,8 +397,9 @@ public class IstioVirtualServiceTest {
     
     /**
      * Build bal file with istio virtual service annotation with CORS policy.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
@@ -404,18 +410,18 @@ public class IstioVirtualServiceTest {
         validateDockerfile();
         validateDockerImage();
         
-        // Validate deployment yaml
-        File gatewayFile = Paths.get(targetPath).resolve("cors_policy_istio_virtual_service.yaml").toFile();
-        Assert.assertTrue(gatewayFile.exists());
+        // Validate virtual service yaml
+        File vsFile = Paths.get(targetPath).resolve("cors_policy_istio_virtual_service.yaml").toFile();
+        Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
-        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(gateway.get("kind"), "VirtualService", "Invalid kind.");
+        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
+        Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
         
-        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "ratings-route", "Invalid gateway name");
+        Map<String, Object> metadata = (Map<String, Object>) virtualSvc.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "ratings-route", "Invalid virtual service name");
         
-        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        Map<String, Object> spec = (Map<String, Object>) virtualSvc.get("spec");
         List<String> hosts = (List<String>) spec.get("hosts");
         Assert.assertEquals(hosts.get(0), "ratings.prod.svc.cluster.local", "Invalid host value.");
         
@@ -445,8 +451,9 @@ public class IstioVirtualServiceTest {
     
     /**
      * Build bal file with istio virtual service annotation with tls route.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
@@ -457,18 +464,18 @@ public class IstioVirtualServiceTest {
         validateDockerfile();
         validateDockerImage();
         
-        // Validate deployment yaml
-        File gatewayFile = Paths.get(targetPath).resolve("tls_route_istio_virtual_service.yaml").toFile();
-        Assert.assertTrue(gatewayFile.exists());
+        // Validate virtual service yaml
+        File vsFile = Paths.get(targetPath).resolve("tls_route_istio_virtual_service.yaml").toFile();
+        Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
-        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(gateway.get("kind"), "VirtualService", "Invalid kind.");
+        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
+        Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
         
-        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "bookinfo-sni", "Invalid gateway name");
+        Map<String, Object> metadata = (Map<String, Object>) virtualSvc.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "bookinfo-sni", "Invalid virtual service name");
         
-        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        Map<String, Object> spec = (Map<String, Object>) virtualSvc.get("spec");
         List<String> hosts = (List<String>) spec.get("hosts");
         Assert.assertEquals(hosts.get(0), "*.bookinfo.com", "Invalid host value.");
         List<String> gateways = (List<String>) spec.get("gateways");
@@ -503,8 +510,9 @@ public class IstioVirtualServiceTest {
     
     /**
      * Build bal file with istio virtual service annotation with tcp route.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
@@ -515,18 +523,18 @@ public class IstioVirtualServiceTest {
         validateDockerfile();
         validateDockerImage();
         
-        // Validate deployment yaml
-        File gatewayFile = Paths.get(targetPath).resolve("tcp_route_istio_virtual_service.yaml").toFile();
-        Assert.assertTrue(gatewayFile.exists());
+        // Validate virtual service yaml
+        File vsFile = Paths.get(targetPath).resolve("tcp_route_istio_virtual_service.yaml").toFile();
+        Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
-        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(gateway.get("kind"), "VirtualService", "Invalid kind.");
+        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
+        Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
         
-        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "bookinfo-Mongo", "Invalid gateway name");
+        Map<String, Object> metadata = (Map<String, Object>) virtualSvc.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "bookinfo-Mongo", "Invalid virtual service name");
         
-        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        Map<String, Object> spec = (Map<String, Object>) virtualSvc.get("spec");
         List<String> hosts = (List<String>) spec.get("hosts");
         Assert.assertEquals(hosts.get(0), "mongo.prod.svc.cluster.local", "Invalid host value.");
         
@@ -550,8 +558,9 @@ public class IstioVirtualServiceTest {
     
     /**
      * Build bal file with istio virtual service annotations having no fields.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
@@ -562,18 +571,18 @@ public class IstioVirtualServiceTest {
         validateDockerfile();
         validateDockerImage();
         
-        // Validate deployment yaml
-        File gatewayFile = Paths.get(targetPath).resolve("empty_annotation_istio_virtual_service.yaml").toFile();
-        Assert.assertTrue(gatewayFile.exists());
+        // Validate virtual service yaml
+        File vsFile = Paths.get(targetPath).resolve("empty_annotation_istio_virtual_service.yaml").toFile();
+        Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
-        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(gateway.get("kind"), "VirtualService", "Invalid kind.");
+        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
+        Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
+        Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
         
-        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "helloep-istio-vs", "Invalid gateway name");
+        Map<String, Object> metadata = (Map<String, Object>) virtualSvc.get("metadata");
+        Assert.assertEquals(metadata.get("name"), "helloep-istio-vs", "Invalid virtual service name");
         
-        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
+        Map<String, Object> spec = (Map<String, Object>) virtualSvc.get("spec");
         List<String> hosts = (List<String>) spec.get("hosts");
         Assert.assertEquals(hosts.get(0), "*", "Invalid host value.");
         
@@ -595,8 +604,9 @@ public class IstioVirtualServiceTest {
     
     /**
      * Build bal file with istio virtual service annotations. Check if service annotation port is used.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
@@ -607,7 +617,7 @@ public class IstioVirtualServiceTest {
         validateDockerfile();
         validateDockerImage();
         
-        // Validate deployment yaml
+        // Validate virtual service yaml
         File gatewayFile = Paths.get(targetPath).resolve("svc_port_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Yaml yamlProcessor = new Yaml();
@@ -616,7 +626,7 @@ public class IstioVirtualServiceTest {
         Assert.assertEquals(gateway.get("kind"), "VirtualService", "Invalid kind.");
         
         Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "helloep-istio-vs", "Invalid gateway name");
+        Assert.assertEquals(metadata.get("name"), "helloep-istio-vs", "Invalid virtual service name");
         
         Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
         List<String> hosts = (List<String>) spec.get("hosts");
