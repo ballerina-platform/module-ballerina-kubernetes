@@ -104,6 +104,7 @@ public type RestartPolicy "OnFailure"|"Always"|"Never";
 # + name - Name of the deployment
 # + namespace - Kubernetes namespace
 # + labels - Map of labels for deployment
+# + annotations - Map of annotations for deployment
 # + replicas - Number of replicas
 # + enableLiveness - Enable/Disable liveness probe
 # + livenessPort - Port to check the liveness
@@ -126,7 +127,8 @@ public type RestartPolicy "OnFailure"|"Always"|"Never";
 public type DeploymentConfiguration record {
     string name;
     string namespace;
-    map labels;
+    map<string> labels;
+    map<string> annotations;
     int replicas;
     boolean enableLiveness;
     int livenessPort;

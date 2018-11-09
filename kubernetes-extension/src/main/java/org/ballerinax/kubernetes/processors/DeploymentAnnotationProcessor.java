@@ -84,6 +84,9 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 case labels:
                     deploymentModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
+                case annotations:
+                    deploymentModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    break;
                 case enableLiveness:
                     deploymentModel.setEnableLiveness(Boolean.valueOf(annotationValue));
                     break;
@@ -174,6 +177,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         name,
         namespace,
         labels,
+        annotations,
         replicas,
         enableLiveness,
         livenessPort,
