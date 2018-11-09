@@ -97,21 +97,24 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
                 spec.put("hosts", vsModel.getHosts());
             }
     
-            if (vsModel.getGateways() != null) {
-                if (vsModel.getGateways().size() == 0) {
-                    IstioGatewayModel gwModel =
-                            KubernetesContext.getInstance().getDataHolder().getIstioGatewayModel(serviceName);
-            
-                    if (null != gwModel) {
-                        vsModel.getGateways().add(gwModel.getName());
-                    }
+            IstioGatewayModel gwModel =
+                    KubernetesContext.getInstance().getDataHolder().getIstioGatewayModel(serviceName);
+            if ((null == vsModel.getGateways() || vsModel.getGateways().size() == 0) && null != gwModel) {
+                if (null == vsModel.getGateways()) {
+                    vsModel.setGateways(new LinkedList<>());
                 }
-        
-                // when gateways are not set, it will apply to all side cars.
-                if (vsModel.getGateways().size() != 0) {
-                    spec.put("gateways", vsModel.getGateways());
+                
+                if (vsModel.getGateways().size() == 0) {
+                    vsModel.getGateways().add(gwModel.getName());
+                } else if (vsModel.getHosts().size() == 1 && vsModel.getHosts().contains("*")) {
+                    throw new KubernetesPluginException("Unable to resolve a gateway for '" + vsModel + "' " +
+                                                        "virtual service. Add @kubernetes:IstioGateway annotation" +
+                                                        " to your endpoint or service, else explicitly state to " +
+                                                        "use the 'mesh' gateway.");
                 }
             }
+    
+            spec.put("gateways", vsModel.getGateways());
     
             if (null != vsModel.getTls() && vsModel.getTls().size() > 0) {
                 spec.put("tls", vsModel.getTls());

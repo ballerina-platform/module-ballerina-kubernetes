@@ -1,7 +1,6 @@
 import ballerina/http;
 import ballerinax/kubernetes;
 
-@kubernetes:Deployment {}
 @kubernetes:Service {}
 @kubernetes:IstioGateway {}
 @kubernetes:IstioVirtualService {}
@@ -17,6 +16,7 @@ endpoint http:Client bookReviewEP {
     url: "http://book-review:7070"
 };
 
+@kubernetes:Deployment {}
 @http:ServiceConfig {
     basePath: "/book"
 }
