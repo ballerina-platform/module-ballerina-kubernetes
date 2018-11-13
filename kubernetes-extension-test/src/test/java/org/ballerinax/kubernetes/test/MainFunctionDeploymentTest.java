@@ -21,6 +21,7 @@ package org.ballerinax.kubernetes.test;
 import io.fabric8.docker.api.model.ImageInspect;
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.extensions.Deployment;
+import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
@@ -63,7 +64,8 @@ public class MainFunctionDeploymentTest {
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
         Assert.assertEquals(deployment.getMetadata().getLabels().size(), 2, "Invalid number of labels found.");
-        Assert.assertEquals(deployment.getMetadata().getLabels().get("app"), "main-function", "Invalid label found.");
+        Assert.assertEquals(deployment.getMetadata().getLabels().get(KubernetesConstants.KUBERNETES_SELECTOR_KEY),
+                "main-function", "Invalid label found.");
         Assert.assertEquals(deployment.getMetadata().getLabels().get("task_type"), "printer", "Invalid label found.");
         
         KubernetesUtils.deleteDirectory(targetPath);

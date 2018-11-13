@@ -30,6 +30,8 @@
             <class name="org.ballerinax.kubernetes.test.JobTest"/>
             <class name="org.ballerinax.kubernetes.test.MainFunctionDeploymentTest"/>
             <class name="org.ballerinax.kubernetes.test.ServiceTest"/>
+            <class name="org.ballerinax.kubernetes.test.IstioGatewayTest"/>
+            <class name="org.ballerinax.kubernetes.test.IstioVirtualServiceTest"/>
         </classes>
     </test>
 

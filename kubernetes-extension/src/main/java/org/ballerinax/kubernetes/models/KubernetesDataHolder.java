@@ -18,8 +18,12 @@
 
 package org.ballerinax.kubernetes.models;
 
+import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
+import org.ballerinax.kubernetes.models.istio.IstioVirtualService;
+
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,7 +41,9 @@ public class KubernetesDataHolder {
     private Set<IngressModel> ingressModelSet;
     private Set<ConfigMapModel> configMapModelSet;
     private Set<PersistentVolumeClaimModel> volumeClaimModelSet;
-    private Set<ResourceQuotaModel> resourceQuotaModelSet;
+    private Set<ResourceQuotaModel> resourceQuotaModels;
+    private Map<String, IstioGatewayModel> istioGatewayModels;
+    private Map<String, IstioVirtualService> istioVirtualServiceModels;
     private JobModel jobModel;
     private String balxFilePath;
     private String outputDir;
@@ -51,7 +57,9 @@ public class KubernetesDataHolder {
         this.volumeClaimModelSet = new HashSet<>();
         this.ingressModelSet = new HashSet<>();
         this.deploymentModel = new DeploymentModel();
-        this.resourceQuotaModelSet = new HashSet<>();
+        this.resourceQuotaModels = new HashSet<>();
+        this.istioGatewayModels = new LinkedHashMap<>();
+        this.istioVirtualServiceModels = new LinkedHashMap<>();
 //        this.namespace = "";
     }
 
@@ -104,11 +112,11 @@ public class KubernetesDataHolder {
     }
     
     public Set<ResourceQuotaModel> getResourceQuotaModels() {
-        return resourceQuotaModelSet;
+        return resourceQuotaModels;
     }
     
-    public void addResourceQuotaModels(Set<ResourceQuotaModel> resourceQuotaModels) {
-        this.resourceQuotaModelSet = resourceQuotaModels;
+    public void setResourceQuotaModels(Set<ResourceQuotaModel> resourceQuotaModels) {
+        this.resourceQuotaModels = resourceQuotaModels;
     }
     
     public Map<String, ServiceModel> getbEndpointToK8sServiceMap() {
@@ -177,5 +185,29 @@ public class KubernetesDataHolder {
 
     public void setNamespace(String namespace) {
         this.namespace = namespace;
+    }
+    
+    public Map<String, IstioGatewayModel> getIstioGatewayModels() {
+        return istioGatewayModels;
+    }
+    
+    public IstioGatewayModel getIstioGatewayModel(String serviceName) {
+        return istioGatewayModels.get(serviceName);
+    }
+    
+    public void addIstioGatewayModel(String serviceName, IstioGatewayModel istioGatewayModel) {
+        this.istioGatewayModels.put(serviceName, istioGatewayModel);
+    }
+    
+    public Map<String, IstioVirtualService> getIstioVirtualServiceModels() {
+        return istioVirtualServiceModels;
+    }
+    
+    public IstioVirtualService getIstioVirtualServiceModel(String serviceName) {
+        return istioVirtualServiceModels.get(serviceName);
+    }
+    
+    public void addIstioVirtualServiceModel(String serviceName, IstioVirtualService istioVirtualServiceModel) {
+        this.istioVirtualServiceModels.put(serviceName, istioVirtualServiceModel);
     }
 }

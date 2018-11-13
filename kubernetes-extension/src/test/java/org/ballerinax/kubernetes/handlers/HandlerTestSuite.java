@@ -38,7 +38,7 @@ import java.io.File;
                KubernetesHPAGeneratorTests.class, KubernetesServiceGeneratorTests.class,
                KubernetesIngressGeneratorTests.class, KubernetesSecretGeneratorTests.class,
                KubernetesVolumeClaimGeneratorTests.class, KubernetesJobGeneratorTests.class,
-               KubernetesResourceQuotaGeneratorTests.class})
+               KubernetesResourceQuotaGeneratorTests.class, IstioGatewayGeneratorTests.class})
 
 public class HandlerTestSuite {
 

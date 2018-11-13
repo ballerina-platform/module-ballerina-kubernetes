@@ -17,6 +17,8 @@ Annotation based kubernetes extension implementation for ballerina.
 - Kubernetes config map support.
 - Kubernetes persistent volume claim support.
 - Kubernetes resource quotas.
+- Istio gateways.
+- Istio virtual services.
 
 **Refer [samples](samples) for more info.**
 
@@ -175,7 +177,7 @@ endpoint http:Listener helloEP {
 @kubernetes:Deployment{
     enableLiveness:true
 }
-@http:serviceConfig {
+@http:ServiceConfig {
     basePath:"/helloWorld"
 }
 service<http:Service> helloWorld bind helloEP {
@@ -195,7 +197,7 @@ kubernetes
 ├── secret.yaml
 ├── config_map.yaml
 ├── volume_claim.yaml
-├── service.yaml
+├── svc.yaml
 └── docker
  └── Dockerfile
     	
