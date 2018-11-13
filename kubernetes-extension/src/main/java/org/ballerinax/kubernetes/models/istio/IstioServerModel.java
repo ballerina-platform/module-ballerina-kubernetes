@@ -23,7 +23,7 @@ import java.util.Set;
 /**
  * Istio gateway server annotation model class.
  *
- * @since 0.983.0
+ * @since 0.985.0
  */
 public class IstioServerModel {
     private IstioPortModel port;
@@ -57,7 +57,7 @@ public class IstioServerModel {
     /**
      * Istio gateway server TLS option annotation model class.
      *
-     * @since 0.983.0
+     * @since 0.985.0
      */
     public static class TLSOptions {
         private boolean httpsRedirect = false;

@@ -19,6 +19,7 @@
 package org.ballerinax.kubernetes.test;
 
 import io.fabric8.docker.api.model.ImageInspect;
+import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
@@ -40,7 +41,7 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDocker
 /**
  * Test cases for generating istio gateway artifacts.
  *
- * @since 0.983.0
+ * @since 0.985.0
  */
 public class IstioGatewayTest {
     
@@ -86,7 +87,8 @@ public class IstioGatewayTest {
 
         Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
         Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
-        Assert.assertEquals(selector.get("app"), "my-gateway-controller", "Invalid selector.");
+        Assert.assertEquals(selector.get(KubernetesConstants.KUBERNETES_SELECTOR_KEY), "my-gateway-controller",
+                "Invalid selector.");
 
         List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
         Map<String, Object> server = servers.get(0);
@@ -145,7 +147,8 @@ public class IstioGatewayTest {
 
         Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
         Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
-        Assert.assertEquals(selector.get("app"), "my-gateway-controller", "Invalid selector.");
+        Assert.assertEquals(selector.get(KubernetesConstants.KUBERNETES_SELECTOR_KEY), "my-gateway-controller",
+                "Invalid selector.");
 
         List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
         Map<String, Object> server1 = servers.get(0);
@@ -235,7 +238,8 @@ public class IstioGatewayTest {
 
         Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
         Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
-        Assert.assertEquals(selector.get("app"), "my-gateway-controller", "Invalid selector.");
+        Assert.assertEquals(selector.get(KubernetesConstants.KUBERNETES_SELECTOR_KEY), "my-gateway-controller",
+                "Invalid selector.");
 
         List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
         Map<String, Object> server = servers.get(0);
@@ -282,7 +286,8 @@ public class IstioGatewayTest {
 
         Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
         Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
-        Assert.assertEquals(selector.get("app"), "my-gateway-controller", "Invalid selector.");
+        Assert.assertEquals(selector.get(KubernetesConstants.KUBERNETES_SELECTOR_KEY), "my-gateway-controller",
+                "Invalid selector.");
 
         List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
         Map<String, Object> server1 = servers.get(0);
@@ -347,7 +352,8 @@ public class IstioGatewayTest {
         
         Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
         Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
-        Assert.assertEquals(selector.get("app"), "my-gateway-controller", "Invalid selector.");
+        Assert.assertEquals(selector.get(KubernetesConstants.KUBERNETES_SELECTOR_KEY), "my-gateway-controller",
+                "Invalid selector.");
         
         List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
         Map<String, Object> server1 = servers.get(0);

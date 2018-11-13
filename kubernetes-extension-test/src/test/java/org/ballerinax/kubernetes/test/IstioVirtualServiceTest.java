@@ -40,7 +40,7 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDocker
 /**
  * Test cases for generating istio virtual service artifacts.
  *
- * @since 0.983.0
+ * @since 0.985.0
  */
 public class IstioVirtualServiceTest {
     

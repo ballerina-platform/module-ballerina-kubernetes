@@ -27,7 +27,7 @@ import java.util.Objects;
 /**
  * Istio gateway annotation model class.
  *
- * @since 0.983.0
+ * @since 0.985.0
  */
 public class IstioGatewayModel extends KubernetesModel {
     

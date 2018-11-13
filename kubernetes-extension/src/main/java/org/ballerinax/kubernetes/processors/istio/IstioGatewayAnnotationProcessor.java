@@ -47,7 +47,7 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 /**
  * Istio gateway annotation processor.
  *
- * @since 0.983.0
+ * @since 0.985.0
  */
 public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor {
     @Override

@@ -18,6 +18,7 @@
 
 package org.ballerinax.kubernetes.handlers.istio;
 
+import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.AbstractArtifactHandler;
 import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
@@ -39,7 +40,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 /**
  * Generates istio gateway artifacts.
  *
- * @since 0.983.0
+ * @since 0.985.0
  */
 public class IstioGatewayHandler extends AbstractArtifactHandler {
     
@@ -62,7 +63,7 @@ public class IstioGatewayHandler extends AbstractArtifactHandler {
             // Validate number of selectors.
             if (null == gatewayModel.getSelector() || gatewayModel.getSelector().size() == 0) {
                 Map<String, String> selectors = new LinkedHashMap<>();
-                selectors.put("istio", "ingressgateway");
+                selectors.put(KubernetesConstants.ISTIO_GATEWAY_SELECTOR, "ingressgateway");
                 gatewayModel.setSelector(selectors);;
             }
             

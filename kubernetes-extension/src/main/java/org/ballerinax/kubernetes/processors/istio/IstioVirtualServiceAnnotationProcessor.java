@@ -52,7 +52,7 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 /**
  * Istio virtual service annotation processor.
  *
- * @since 0.983.0
+ * @since 0.985.0
  */
 public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationProcessor {
     

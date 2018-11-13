@@ -44,7 +44,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 /**
  * Generates istio virtual service artifacts.
  *
- * @since 0.983.0
+ * @since 0.985.0
  */
 public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
     

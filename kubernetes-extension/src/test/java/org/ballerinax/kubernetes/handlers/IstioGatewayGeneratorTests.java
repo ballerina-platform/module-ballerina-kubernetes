@@ -19,6 +19,7 @@
 package org.ballerinax.kubernetes.handlers;
 
 import org.apache.commons.io.FileUtils;
+import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.istio.IstioGatewayHandler;
 import org.ballerinax.kubernetes.models.KubernetesContext;
@@ -44,7 +45,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 /**
  * Unit test cases for istio gateway models.
  *
- * @since 0.983.0
+ * @since 0.985.0
  */
 public class IstioGatewayGeneratorTests {
     @Test
@@ -54,7 +55,7 @@ public class IstioGatewayGeneratorTests {
         istioGatewayModel.setNamespace("ballerina");
         
         Map<String, String> selectors = new LinkedHashMap<>();
-        selectors.put("app", "my-gatweway-controller");
+        selectors.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, "my-gatweway-controller");
         istioGatewayModel.setSelector(selectors);
         
         List<IstioServerModel> serverModels = new LinkedList<>();
@@ -93,7 +94,7 @@ public class IstioGatewayGeneratorTests {
             Map spec = (Map) gateway.get("spec");
             
             Map selector = (Map) spec.get("selector");
-            Assert.assertEquals("my-gatweway-controller", selector.get("app"));
+            Assert.assertEquals("my-gatweway-controller", selector.get(KubernetesConstants.KUBERNETES_SELECTOR_KEY));
     
             List servers = (List) spec.get("servers");
             Map server = (Map) servers.get(0);

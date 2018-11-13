@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * Istio virtual service annotation model class.
  *
- * @since 0.983.0
+ * @since 0.985.0
  */
 public class IstioVirtualService extends KubernetesModel {
     private String namespace;
