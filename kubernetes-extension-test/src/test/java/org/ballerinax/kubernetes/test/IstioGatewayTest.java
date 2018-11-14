@@ -204,7 +204,8 @@ public class IstioGatewayTest {
     
         Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
         Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
-        Assert.assertEquals(selector.get("istio"), "ingressgateway", "Invalid selector.");
+        Assert.assertEquals(selector.get(KubernetesConstants.ISTIO_GATEWAY_SELECTOR), "ingressgateway",
+                "Invalid selector.");
     
         KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(dockerImage);
@@ -405,7 +406,8 @@ public class IstioGatewayTest {
         
         Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
         Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
-        Assert.assertEquals(selector.get("istio"), "ingressgateway", "Invalid selector.");
+        Assert.assertEquals(selector.get(KubernetesConstants.ISTIO_GATEWAY_SELECTOR), "ingressgateway",
+                "Invalid selector.");
         
         List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
         Map<String, Object> server = servers.get(0);
@@ -448,7 +450,8 @@ public class IstioGatewayTest {
         
         Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
         Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
-        Assert.assertEquals(selector.get("istio"), "ingressgateway", "Invalid selector.");
+        Assert.assertEquals(selector.get(KubernetesConstants.ISTIO_GATEWAY_SELECTOR), "ingressgateway",
+                "Invalid selector.");
         
         List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
         Map<String, Object> server = servers.get(0);

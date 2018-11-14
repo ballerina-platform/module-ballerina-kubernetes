@@ -136,7 +136,8 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
         
             Yaml yamlProcessor = new Yaml(options);
             String vsYamlString = yamlProcessor.dump(vsYamlModel);
-        
+    
+            vsYamlString = "---\n" + vsYamlString;
             KubernetesUtils.writeToFile(vsYamlString, ISTIO_VIRTUAL_SERVICE_FILE_POSTFIX + YAML);
         } catch (IOException e) {
             String errorMessage = "Error while generating yaml file for istio virtual service: " + vsModel.getName();
