@@ -191,6 +191,7 @@ public class IstioGatewayHandler extends AbstractArtifactHandler {
             Yaml yamlProcessor = new Yaml(options);
             String gatewayYamlString = yamlProcessor.dump(gatewayYamlModel);
             
+            gatewayYamlString = "---\n" + gatewayYamlString;
             KubernetesUtils.writeToFile(gatewayYamlString, ISTIO_GATEWAY_FILE_POSTFIX + YAML);
         } catch (IOException e) {
             String errorMessage = "Error while generating yaml file for istio gateway: " + gatewayModel.getName();
