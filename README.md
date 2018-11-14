@@ -32,6 +32,8 @@ Annotation based kubernetes extension implementation for ballerina.
 |name|Name of the deployment|\<outputfilename\>-deployment|
 |namespace|Namespace of the deployment|null|
 |labels|Labels for deployment|"app: \<outputfilename\>"|
+|annotations|Annotations for deployment|{}|
+|podAnnotations|Pod annotations|{}|
 |replicas|Number of replicas|1|
 |dependsOn|Endpoints this deployment Depends on|null|
 |enableLiveness|Enable or disable liveness probe|false|

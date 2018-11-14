@@ -75,6 +75,36 @@ public class DeploymentTest {
     }
     
     /**
+     * Build bal file with deployment having pod annotations.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
+     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
+     */
+    @Test
+    public void podAnnotationsTest() throws IOException, InterruptedException, KubernetesPluginException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "pod_annotations.bal"), 0);
+        
+        // Check if docker image exists and correct
+        validateDockerfile();
+        validateDockerImage();
+        
+        // Validate deployment yaml
+        File deploymentYAML = Paths.get(targetPath).resolve("pod_annotations_deployment.yaml").toFile();
+        Assert.assertTrue(deploymentYAML.exists());
+        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        Assert.assertEquals(deployment.getSpec().getTemplate().getMetadata().getAnnotations().size(), 2,
+                "Invalid number of annotations found.");
+        Assert.assertEquals(deployment.getSpec().getTemplate().getMetadata().getAnnotations().get("anno1"), "anno1Val",
+                "Invalid annotation found.");
+        Assert.assertEquals(deployment.getSpec().getTemplate().getMetadata().getAnnotations().get("anno2"), "anno2Val",
+                "Invalid annotation found.");
+        
+        KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesTestUtils.deleteDockerImage(dockerImage);
+    }
+    
+    /**
      * Validate if Dockerfile is created.
      */
     public void validateDockerfile() {

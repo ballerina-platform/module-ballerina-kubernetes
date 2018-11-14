@@ -35,6 +35,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.WINDOWS_DEFAULT_DOCK
 public class DeploymentModel extends KubernetesModel {
     private Map<String, String> labels;
     private Map<String, String> annotations;
+    private Map<String, String> podAnnotations;
     private int replicas;
     private boolean enableLiveness;
     private int livenessPort;
@@ -106,6 +107,14 @@ public class DeploymentModel extends KubernetesModel {
     
     public void setAnnotations(Map<String, String> annotations) {
         this.annotations = annotations;
+    }
+    
+    public Map<String, String> getPodAnnotations() {
+        return podAnnotations;
+    }
+    
+    public void setPodAnnotations(Map<String, String> podAnnotations) {
+        this.podAnnotations = podAnnotations;
     }
     
     public int getReplicas() {

@@ -211,6 +211,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                 .withNewTemplate()
                 .withNewMetadata()
                 .addToLabels(deploymentModel.getLabels())
+                .addToAnnotations(deploymentModel.getPodAnnotations())
                 .endMetadata()
                 .withNewSpec()
                 .withContainers(container)
