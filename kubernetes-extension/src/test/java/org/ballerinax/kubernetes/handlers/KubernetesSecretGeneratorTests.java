@@ -23,8 +23,8 @@ import io.fabric8.kubernetes.api.model.Secret;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.SecretModel;
-import org.junit.Assert;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,11 +38,9 @@ import java.util.Set;
  */
 public class KubernetesSecretGeneratorTests {
 
-
     private final String secretName = "MySecret";
     private final boolean readOnly = true;
     private final String mountPath = "/user/dir";
-
 
     @Test
     public void testSecretGenerate() {

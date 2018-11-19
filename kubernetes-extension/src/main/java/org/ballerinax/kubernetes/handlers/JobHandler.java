@@ -24,9 +24,9 @@ import io.fabric8.kubernetes.api.model.JobBuilder;
 import io.fabric8.kubernetes.api.model.LocalObjectReference;
 import io.fabric8.kubernetes.api.model.LocalObjectReferenceBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
+import org.ballerinax.docker.generator.models.DockerModel;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.DockerModel;
 import org.ballerinax.kubernetes.models.JobModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
@@ -139,7 +139,7 @@ public class JobHandler extends AbstractArtifactHandler {
     private DockerModel getDockerModel(JobModel jobModel) {
         DockerModel dockerModel = new DockerModel();
         String dockerImage = jobModel.getImage();
-        String imageTag = dockerImage.substring(dockerImage.lastIndexOf(":") + 1, dockerImage.length());
+        String imageTag = dockerImage.substring(dockerImage.lastIndexOf(":") + 1);
         dockerModel.setBaseImage(jobModel.getBaseImage());
         dockerModel.setName(dockerImage);
         dockerModel.setTag(imageTag);
@@ -151,7 +151,7 @@ public class JobHandler extends AbstractArtifactHandler {
         dockerModel.setDockerHost(jobModel.getDockerHost());
         dockerModel.setDockerCertPath(jobModel.getDockerCertPath());
         dockerModel.setBuildImage(jobModel.isBuildImage());
-        dockerModel.setExternalFiles(jobModel.getExternalFiles());
+        dockerModel.setCopyFiles(jobModel.getCopyFiles());
         return dockerModel;
     }
 }

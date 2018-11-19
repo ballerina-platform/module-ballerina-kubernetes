@@ -104,7 +104,7 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
                     jobModel.setImagePullPolicy(annotationValue);
                     break;
                 case copyFiles:
-                    jobModel.setExternalFiles(getExternalFileMap(keyValue));
+                    jobModel.setCopyFiles(getExternalFileMap(keyValue));
                     break;
                 case singleYAML:
                     jobModel.setSingleYAML(Boolean.valueOf(annotationValue));

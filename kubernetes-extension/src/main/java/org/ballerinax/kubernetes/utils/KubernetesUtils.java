@@ -33,11 +33,11 @@ import io.fabric8.kubernetes.api.model.SecretKeySelectorBuilder;
 import org.apache.commons.io.FileUtils;
 import org.ballerinalang.model.tree.NodeKind;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
+import org.ballerinax.docker.generator.models.CopyFileModel;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.EnvVarValueModel;
-import org.ballerinax.kubernetes.models.ExternalFileModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
@@ -151,7 +151,6 @@ public class KubernetesUtils {
         } catch (IOException e) {
             throw new KubernetesPluginException("Error while copying file", e);
         }
-
     }
 
     /**
@@ -400,14 +399,14 @@ public class KubernetesUtils {
      * @return A set of external files
      * @throws KubernetesPluginException if an error occur while getting the paths
      */
-    public static Set<ExternalFileModel> getExternalFileMap(BLangRecordLiteral.BLangRecordKeyValue keyValue) throws
+    public static Set<CopyFileModel> getExternalFileMap(BLangRecordLiteral.BLangRecordKeyValue keyValue) throws
             KubernetesPluginException {
-        Set<ExternalFileModel> externalFiles = new HashSet<>();
+        Set<CopyFileModel> externalFiles = new HashSet<>();
         List<BLangExpression> configAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
         for (BLangExpression bLangExpression : configAnnotation) {
             List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
                     ((BLangRecordLiteral) bLangExpression).getKeyValuePairs();
-            ExternalFileModel externalFileModel = new ExternalFileModel();
+            CopyFileModel externalFileModel = new CopyFileModel();
             for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
                 String annotationValue = resolveValue(annotation.getValue().toString());
                 switch (annotation.getKey().toString()) {

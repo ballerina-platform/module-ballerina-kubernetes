@@ -36,11 +36,11 @@ import io.fabric8.kubernetes.api.model.VolumeMountBuilder;
 import io.fabric8.kubernetes.api.model.extensions.Deployment;
 import io.fabric8.kubernetes.api.model.extensions.DeploymentBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
+import org.ballerinax.docker.generator.models.DockerModel;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.ConfigMapModel;
 import org.ballerinax.kubernetes.models.DeploymentModel;
-import org.ballerinax.kubernetes.models.DockerModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
 import org.ballerinax.kubernetes.models.SecretModel;
@@ -256,7 +256,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
     private DockerModel getDockerModel(DeploymentModel deploymentModel) {
         DockerModel dockerModel = new DockerModel();
         String dockerImage = deploymentModel.getImage();
-        String imageTag = dockerImage.substring(dockerImage.lastIndexOf(":") + 1, dockerImage.length());
+        String imageTag = dockerImage.substring(dockerImage.lastIndexOf(":") + 1);
         dockerModel.setBaseImage(deploymentModel.getBaseImage());
         dockerModel.setName(dockerImage);
         dockerModel.setTag(imageTag);
@@ -270,8 +270,8 @@ public class DeploymentHandler extends AbstractArtifactHandler {
         dockerModel.setDockerHost(deploymentModel.getDockerHost());
         dockerModel.setDockerCertPath(deploymentModel.getDockerCertPath());
         dockerModel.setBuildImage(deploymentModel.isBuildImage());
-        dockerModel.setCommandArg(deploymentModel.getCommandArgs());
-        dockerModel.setExternalFiles(deploymentModel.getExternalFiles());
+        dockerModel.addCommandArg(deploymentModel.getCommandArgs());
+        dockerModel.setCopyFiles(deploymentModel.getCopyFiles());
         return dockerModel;
     }
 }

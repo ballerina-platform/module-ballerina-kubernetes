@@ -18,6 +18,7 @@
 
 package org.ballerinax.kubernetes.models;
 
+import org.ballerinax.docker.generator.models.CopyFileModel;
 import org.ballerinax.kubernetes.KubernetesConstants;
 
 import java.util.HashMap;
@@ -27,7 +28,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_BASE_IMAGE;
+import static org.ballerinax.docker.generator.DockerGenConstants.BALLERINA_BASE_IMAGE;
 import static org.ballerinax.kubernetes.KubernetesConstants.UNIX_DEFAULT_DOCKER_HOST;
 import static org.ballerinax.kubernetes.KubernetesConstants.WINDOWS_DEFAULT_DOCKER_HOST;
 
@@ -51,13 +52,13 @@ public class JobModel extends KubernetesModel {
     private boolean push;
     private String dockerCertPath;
     private Set<String> imagePullSecrets;
-    private Set<ExternalFileModel> externalFiles;
+    private Set<CopyFileModel> copyFiles;
     private boolean singleYAML;
 
     public JobModel() {
         this.labels = new HashMap<>();
         this.env = new LinkedHashMap<>();
-        this.externalFiles = new HashSet<>();
+        this.copyFiles = new HashSet<>();
         this.restartPolicy = KubernetesConstants.RestartPolicy.Never.name();
         String baseImageVersion = getClass().getPackage().getImplementationVersion();
         this.setBaseImage(BALLERINA_BASE_IMAGE + ":" + baseImageVersion);
@@ -214,12 +215,12 @@ public class JobModel extends KubernetesModel {
         this.imagePullSecrets = imagePullSecrets;
     }
 
-    public Set<ExternalFileModel> getExternalFiles() {
-        return externalFiles;
+    public Set<CopyFileModel> getCopyFiles() {
+        return copyFiles;
     }
 
-    public void setExternalFiles(Set<ExternalFileModel> externalFiles) {
-        this.externalFiles = externalFiles;
+    public void setCopyFiles(Set<CopyFileModel> copyFiles) {
+        this.copyFiles = copyFiles;
     }
 
     public boolean isSingleYAML() {

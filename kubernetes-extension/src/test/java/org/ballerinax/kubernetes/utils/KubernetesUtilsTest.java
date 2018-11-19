@@ -20,10 +20,10 @@ package org.ballerinax.kubernetes.utils;
 
 import org.apache.commons.io.FileUtils;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,10 +38,120 @@ import java.util.Map;
  * Kubernetes Utils Test Class.
  */
 public class KubernetesUtilsTest {
+    
+    private Path tempDirectory;
+    
+    @BeforeClass
+    public void setUp() throws IOException {
+        tempDirectory = Files.createTempDirectory("ballerinax-docker-plugin-");
+    }
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @Test
+    public void extractBalxNameTest() {
+        String balxFilePath = "/Users/anuruddha/workspace/ballerinax/docker/samples/sample5/hello_config_file.balx";
+        String baxlFileName = "hello_config_file";
+        Assert.assertEquals(KubernetesUtils.extractBalxName(balxFilePath), baxlFileName);
+        balxFilePath = "/Users/anuruddha/workspace/ballerinax/docker/samples/sample5/";
+        Assert.assertNull(KubernetesUtils.extractBalxName(balxFilePath));
+    }
 
+    @Test
+    public void isBlankTest() {
+        Assert.assertTrue(KubernetesUtils.isBlank(""));
+        Assert.assertTrue(KubernetesUtils.isBlank(" "));
+        Assert.assertTrue(KubernetesUtils.isBlank(null));
+        Assert.assertFalse(KubernetesUtils.isBlank("value"));
+    }
+
+    @Test
+    public void resolveValueTest() throws Exception {
+        Map<String, String> env = new HashMap<>();
+        env.put("DOCKER_USERNAME", "anuruddhal");
+        setEnv(env);
+        try {
+            Assert.assertEquals(KubernetesUtils.resolveValue("$env{DOCKER_USERNAME}"), "anuruddhal");
+        } catch (KubernetesPluginException e) {
+            Assert.fail("Unable to resolve environment variable");
+        }
+        try {
+            KubernetesUtils.resolveValue("$env{DOCKER_PASSWORD}");
+            Assert.fail("Env value should be resolved");
+        } catch (KubernetesPluginException e) {
+            Assert.assertEquals(e.getMessage(), "error resolving value: DOCKER_PASSWORD is not set in the " +
+                    "environment.");
+        }
+        Assert.assertEquals(KubernetesUtils.resolveValue("demo"), "demo");
+    }
+    
+    @Test
+    public void deleteDirectoryTest() throws IOException, KubernetesPluginException {
+        File file = tempDirectory.resolve("myfile.txt").toFile();
+        Assert.assertTrue(file.createNewFile());
+        File directory = tempDirectory.resolve("subFolder").toFile();
+        Assert.assertTrue(directory.mkdirs());
+        KubernetesUtils.deleteDirectory(file.getPath());
+        KubernetesUtils.deleteDirectory(directory.getPath());
+    }
+
+    @Test
+    public void getValidNameTest() {
+        String testString = "HELLO_WORLD.DEMO";
+        Assert.assertEquals("hello-world-demo", KubernetesUtils.getValidName(testString));
+    }
+    
+    @Test
+    public void copyFileTest() throws IOException, KubernetesPluginException {
+        File testFile = tempDirectory.resolve("copy.txt").toFile();
+        Assert.assertTrue(testFile.createNewFile());
+        Path tempDirectory = Files.createTempDirectory("copy-test-");
+        Path destinationFile = tempDirectory.resolve("copy.txt");
+        KubernetesUtils.copyFileOrDirectory(testFile.getAbsolutePath(), destinationFile.toString());
+        
+        // assert
+        Assert.assertTrue(Files.exists(destinationFile));
+        
+        // clean up
+        FileUtils.deleteQuietly(testFile);
+        FileUtils.deleteQuietly(tempDirectory.toFile());
+    }
+    
+    @Test
+    public void copyDirectoryTest() throws IOException, KubernetesPluginException {
+        File testFolder = tempDirectory.resolve("copyDir").toFile();
+        Assert.assertTrue(testFolder.mkdirs());
+        Path copy1File = testFolder.toPath().resolve("copy1.txt");
+        Path copy2File = testFolder.toPath().resolve("copy2.txt");
+        Files.createFile(copy1File);
+        Files.createFile(copy2File);
+        
+        Path destinationDir = Files.createTempDirectory("copy-test-");
+        KubernetesUtils.copyFileOrDirectory(testFolder.getAbsolutePath(), destinationDir.toString());
+        
+        // assert
+        Assert.assertTrue(Files.exists(destinationDir));
+        Assert.assertTrue(Files.exists(destinationDir.resolve("copy1.txt")));
+        Assert.assertTrue(Files.exists(destinationDir.resolve("copy2.txt")));
+        
+        // clean up
+        FileUtils.deleteQuietly(testFolder);
+        FileUtils.deleteQuietly(destinationDir.toFile());
+    }
+    
+    @Test
+    public void copyFileToDirectoryTest() throws IOException, KubernetesPluginException {
+        File testFile = tempDirectory.resolve("copy.txt").toFile();
+        Assert.assertTrue(testFile.createNewFile());
+        Path destinationDir = Files.createTempDirectory("copy-test-");
+        KubernetesUtils.copyFileOrDirectory(testFile.getAbsolutePath(), destinationDir.toString());
+    
+        // assert
+        Assert.assertTrue(Files.exists(destinationDir.resolve("copy.txt")));
+    
+        // clean up
+        FileUtils.deleteQuietly(testFile);
+        FileUtils.deleteQuietly(destinationDir.toFile());
+    }
+    
     private void setEnv(Map<String, String> newenv) throws Exception {
         try {
             Class<?> processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");
@@ -69,105 +179,9 @@ public class KubernetesUtilsTest {
             }
         }
     }
-
-    @Test
-    public void extractBalxNameTest() {
-        String balxFilePath = "/Users/anuruddha/workspace/ballerinax/docker/samples/sample5/hello_config_file.balx";
-        String baxlFileName = "hello_config_file";
-        Assert.assertEquals(KubernetesUtils.extractBalxName(balxFilePath), baxlFileName);
-        balxFilePath = "/Users/anuruddha/workspace/ballerinax/docker/samples/sample5/";
-        Assert.assertNull(KubernetesUtils.extractBalxName(balxFilePath));
-    }
-
-    @Test
-    public void isBlankTest() {
-        Assert.assertEquals(KubernetesUtils.isBlank(""), true);
-        Assert.assertEquals(KubernetesUtils.isBlank(" "), true);
-        Assert.assertEquals(KubernetesUtils.isBlank(null), true);
-        Assert.assertEquals(KubernetesUtils.isBlank("value"), false);
-    }
-
-    @Test
-    public void resolveValueTest() throws Exception {
-        Map<String, String> env = new HashMap<>();
-        env.put("DOCKER_USERNAME", "anuruddhal");
-        setEnv(env);
-        try {
-            Assert.assertEquals(KubernetesUtils.resolveValue("$env{DOCKER_USERNAME}"), "anuruddhal");
-        } catch (KubernetesPluginException e) {
-            Assert.fail("Unable to resolve environment variable");
-        }
-        try {
-            KubernetesUtils.resolveValue("$env{DOCKER_PASSWORD}");
-            Assert.fail("Env value should be resolved");
-        } catch (KubernetesPluginException e) {
-            Assert.assertEquals(e.getMessage(), "error resolving value: DOCKER_PASSWORD is not set in the " +
-                    "environment.");
-        }
-        Assert.assertEquals(KubernetesUtils.resolveValue("demo"), "demo");
-    }
-
-    @Test
-    public void deleteDirectoryTest() throws IOException, KubernetesPluginException {
-        File createdFile = folder.newFile("myfile.txt");
-        File createdFolder = folder.newFolder("subfolder");
-        KubernetesUtils.deleteDirectory(createdFile.getPath());
-        KubernetesUtils.deleteDirectory(createdFolder.getPath());
-    }
-
-    @Test
-    public void getValidNameTest() {
-        String testString = "HELLO_WORLD.DEMO";
-        Assert.assertEquals("hello-world-demo", KubernetesUtils.getValidName(testString));
-    }
     
-    @Test
-    public void copyFileTest() throws IOException, KubernetesPluginException {
-        File testFile = folder.newFile("copy.txt");
-        Path tempDirectory = Files.createTempDirectory("copy-test-");
-        Path destinationFile = tempDirectory.resolve("copy.txt");
-        KubernetesUtils.copyFileOrDirectory(testFile.getAbsolutePath(), destinationFile.toString());
-        
-        // assert
-        Assert.assertTrue(Files.exists(destinationFile));
-        
-        // clean up
-        FileUtils.deleteQuietly(testFile);
+    @AfterClass
+    public void cleanUp() {
         FileUtils.deleteQuietly(tempDirectory.toFile());
-    }
-    
-    @Test
-    public void copyDirectoryTest() throws IOException, KubernetesPluginException {
-        File testFolder = folder.newFolder("copyDir");
-        Path copy1File = testFolder.toPath().resolve("copy1.txt");
-        Path copy2File = testFolder.toPath().resolve("copy2.txt");
-        Files.createFile(copy1File);
-        Files.createFile(copy2File);
-        
-        Path destinationDir = Files.createTempDirectory("copy-test-");
-        KubernetesUtils.copyFileOrDirectory(testFolder.getAbsolutePath(), destinationDir.toString());
-        
-        // assert
-        Assert.assertTrue(Files.exists(destinationDir));
-        Assert.assertTrue(Files.exists(destinationDir.resolve("copy1.txt")));
-        Assert.assertTrue(Files.exists(destinationDir.resolve("copy2.txt")));
-        
-        // clean up
-        FileUtils.deleteQuietly(testFolder);
-        FileUtils.deleteQuietly(destinationDir.toFile());
-    }
-    
-    @Test
-    public void copyFileToDirectoryTest() throws IOException, KubernetesPluginException {
-        File testFile = folder.newFile("copy.txt");
-        Path destinationDir = Files.createTempDirectory("copy-test-");
-        KubernetesUtils.copyFileOrDirectory(testFile.getAbsolutePath(), destinationDir.toString());
-    
-        // assert
-        Assert.assertTrue(Files.exists(destinationDir.resolve("copy.txt")));
-    
-        // clean up
-        FileUtils.deleteQuietly(testFile);
-        FileUtils.deleteQuietly(destinationDir.toFile());
     }
 }

@@ -26,8 +26,8 @@ import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.EnvVarValueModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.PodAutoscalerModel;
-import org.junit.Assert;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;

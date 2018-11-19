@@ -26,8 +26,8 @@ import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.EnvVarValueModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
-import org.junit.Assert;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +44,6 @@ public class KubernetesDeploymentGeneratorTests {
     private final String imageName = "SampleImage:v1.0.0";
     private final String imagePullPolicy = "Always";
     private final int replicas = 5;
-
 
     @Test
     public void testDeploymentGeneration() {

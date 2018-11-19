@@ -26,8 +26,8 @@ import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
 import org.ballerinax.kubernetes.models.istio.IstioPortModel;
 import org.ballerinax.kubernetes.models.istio.IstioServerModel;
-import org.junit.Assert;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;

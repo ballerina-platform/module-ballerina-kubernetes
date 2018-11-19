@@ -17,19 +17,18 @@
  */
 package org.ballerinax.kubernetes.handlers;
 
+import org.ballerinax.docker.generator.models.DockerModel;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.DockerModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_BASE_IMAGE;
+import static org.ballerinax.docker.generator.DockerGenConstants.BALLERINA_BASE_IMAGE;
 
 /**
  * Helm chart generator tests.
@@ -37,7 +36,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_BASE_IMAGE
 public class HelmChartGeneratorTests {
 
     @Test
-    public void testHelmGenerate() throws IOException, KubernetesPluginException {
+    public void testHelmGenerate() throws KubernetesPluginException {
         DockerModel dockerModel = new DockerModel();
         Set<Integer> ports = new HashSet<>();
         ports.add(9090);
@@ -54,6 +53,7 @@ public class HelmChartGeneratorTests {
         KubernetesDataHolder dataHolder = context.getDataHolder();
         dataHolder.setDockerModel(dockerModel);
         new DockerHandler().createArtifacts();
+        new HelmChartHandler().createArtifacts();
         File charYaml = new File("target/kubernetes/hello/hello-deployment/Chart.yaml");
         Assert.assertTrue(charYaml.exists());
         charYaml.deleteOnExit();
