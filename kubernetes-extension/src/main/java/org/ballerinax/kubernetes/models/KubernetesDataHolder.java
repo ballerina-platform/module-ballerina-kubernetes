@@ -18,6 +18,7 @@
 
 package org.ballerinax.kubernetes.models;
 
+import org.ballerinax.docker.generator.models.DockerModel;
 import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
 import org.ballerinax.kubernetes.models.istio.IstioVirtualService;
 

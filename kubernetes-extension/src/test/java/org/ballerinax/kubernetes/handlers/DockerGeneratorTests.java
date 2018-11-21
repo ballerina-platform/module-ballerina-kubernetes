@@ -18,28 +18,26 @@
 
 package org.ballerinax.kubernetes.handlers;
 
+import org.ballerinax.docker.generator.models.DockerModel;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.DockerModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_BASE_IMAGE;
+import static org.ballerinax.docker.generator.DockerGenConstants.BALLERINA_BASE_IMAGE;
 
 /**
  * Docker generator tests.
  */
 public class DockerGeneratorTests {
 
-
     @Test
-    public void testDockerGenerate() throws IOException, KubernetesPluginException {
+    public void testDockerGenerate() throws KubernetesPluginException {
         DockerModel dockerModel = new DockerModel();
         Set<Integer> ports = new HashSet<>();
         ports.add(9090);

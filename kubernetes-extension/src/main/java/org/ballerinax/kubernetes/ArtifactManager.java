@@ -84,7 +84,6 @@ class ArtifactManager {
         printKubernetesInstructions(outputDir);
     }
 
-
     public void populateDeploymentModel() {
         DeploymentModel deploymentModel = kubernetesDataHolder.getDeploymentModel();
         kubernetesDataHolder.setDeploymentModel(deploymentModel);
@@ -110,5 +109,4 @@ class ArtifactManager {
                 " " + new File(outputDir + File.separator + model.getName()).getAbsolutePath());
         KubernetesUtils.printInstruction("");
     }
-
 }

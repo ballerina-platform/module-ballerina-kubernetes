@@ -28,15 +28,10 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>kubernetes-extension</artifactId>
     <packaging>jar</packaging>
-    <name>Ballerina Kubernetes Extension</name>
-    <url>http://ballerinalang.org</url>
+    <name>BallerinaX - Kubernetes Extension</name>
+    <url>https://ballerina.io</url>
 
     <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.ballerinalang</groupId>
             <artifactId>ballerina-lang</artifactId>
@@ -63,6 +58,15 @@
             <artifactId>ballerina-builtin</artifactId>
             <type>zip</type>
             <classifier>ballerina-binary-repo</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinax.docker</groupId>
+            <artifactId>docker-generator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -254,6 +258,7 @@
                                     <include>com.fasterxml.jackson.core:jackson-databind</include>
                                     <include>com.fasterxml.jackson.core:jackson-core</include>
                                     <include>com.fasterxml.jackson.core:jackson-annotations</include>
+                                    <include>org.ballerinax.docker:docker-generator</include>
                                 </includes>
                                 <excludes>
                                     <exclude>org.slf4j:slf4j-api</exclude>
@@ -271,7 +276,7 @@
                                     <exclude>org.ballerinalang:ballerina-mime</exclude>
                                     <exclude>org.ballerinalang:ballerina-logging</exclude>
                                     <exclude>org.ballerinalang:ballerina-http</exclude>
-                                    <exclude>junit:junit</exclude>
+                                    <exclude>org.testng:testng</exclude>
                                     <exclude>org.bsc.maven:maven-processor-plugin</exclude>
                                 </excludes>
                             </artifactSet>
@@ -324,6 +329,15 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
+                </configuration>
             </plugin>
         </plugins>
     </build>

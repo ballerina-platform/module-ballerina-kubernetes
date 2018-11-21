@@ -102,7 +102,7 @@ public class KubernetesTestUtils {
     public static int compileBallerinaFile(String sourceDirectory, String fileName) throws InterruptedException,
             IOException {
         ProcessBuilder pb = new ProcessBuilder(BALLERINA_COMMAND, BUILD, fileName);
-        log.info(COMPILING + sourceDirectory);
+        log.info(COMPILING + sourceDirectory + File.separator + fileName);
         log.debug(EXECUTING_COMMAND + pb.command());
         pb.directory(new File(sourceDirectory));
         Process process = pb.start();

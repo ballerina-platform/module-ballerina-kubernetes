@@ -136,7 +136,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                     deploymentModel.setReplicas(Integer.parseInt(annotationValue));
                     break;
                 case copyFiles:
-                    deploymentModel.setExternalFiles(getExternalFileMap(keyValue));
+                    deploymentModel.setCopyFiles(getExternalFileMap(keyValue));
                     break;
                 case singleYAML:
                     deploymentModel.setSingleYAML(Boolean.valueOf(annotationValue));

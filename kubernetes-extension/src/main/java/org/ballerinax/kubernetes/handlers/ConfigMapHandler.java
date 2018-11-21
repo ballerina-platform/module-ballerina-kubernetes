@@ -50,14 +50,12 @@ public class ConfigMapHandler extends AbstractArtifactHandler {
                 .build();
         try {
             String configMapContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(configMap);
-            KubernetesUtils.writeToFile(configMapContent, CONFIG_MAP_FILE_POSTFIX +
-                    YAML);
+            KubernetesUtils.writeToFile(configMapContent, CONFIG_MAP_FILE_POSTFIX + YAML);
         } catch (IOException e) {
             String errorMessage = "Error while parsing yaml file for config map: " + configMapModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
     }
-
 
     @Override
     public void createArtifacts() throws KubernetesPluginException {
@@ -74,7 +72,7 @@ public class ConfigMapHandler extends AbstractArtifactHandler {
                     throw new KubernetesPluginException("There can be only 1 ballerina config file");
                 }
                 DeploymentModel deploymentModel = dataHolder.getDeploymentModel();
-                deploymentModel.setCommandArgs("--config ${CONFIG_FILE} ");
+                deploymentModel.setCommandArgs("--config ${CONFIG_FILE}");
                 EnvVarValueModel envVarValueModel = new EnvVarValueModel(configMapModel.getMountPath() +
                                                                          BALLERINA_CONF_FILE_NAME);
                 deploymentModel.addEnv("CONFIG_FILE", envVarValueModel);
@@ -84,5 +82,4 @@ public class ConfigMapHandler extends AbstractArtifactHandler {
             OUT.print("\t@kubernetes:ConfigMap \t\t\t - complete " + count + "/" + configMapModels.size() + "\r");
         }
     }
-
 }

@@ -71,7 +71,6 @@ public class KubernetesConstants {
     public static final String HELM_NAME = "name";
     public static final String HELM_VERSION = "version";
     public static final String HELM_VERSION_DEFAULT = "0.1.0";
-    public static final String BALLERINA_BASE_IMAGE = "ballerina/ballerina-runtime";
     public static final String ISTIO_GATEWAY_SELECTOR = "istio";
     public static final String ISTIO_GATEWAY_POSTFIX = "-istio-gw";
     public static final String ISTIO_VIRTUAL_SERVICE_POSTFIX = "-istio-vs";

@@ -28,8 +28,8 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>kubernetes-extension-test</artifactId>
     <packaging>jar</packaging>
-    <name>Kubernetes Extension Tests</name>
-    <url>http://ballerinalang.org</url>
+    <name>BallerinaX - Kubernetes Extension Tests</name>
+    <url>https://ballerina.io</url>
 
     <dependencies>
         <dependency>
