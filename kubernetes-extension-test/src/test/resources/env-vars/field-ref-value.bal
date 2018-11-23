@@ -44,7 +44,8 @@ endpoint http:Listener pizzaEP {
                 fieldPath: "metadata.name"
             }
         }
-    }
+    },
+    singleYAML: false
 }
 
 @http:ServiceConfig {

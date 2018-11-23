@@ -22,7 +22,8 @@ import ballerinax/kubernetes;
     podAnnotations: {
         anno1: "anno1Val",
         anno2: "anno2Val"
-    }
+    },
+    singleYAML: false
 }
 @kubernetes:Ingress {
     hostname: "abc.com"

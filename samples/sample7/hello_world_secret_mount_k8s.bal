@@ -31,6 +31,9 @@ endpoint http:Listener helloWorldEP {
     ]
 }
 
+@kubernetes:Deployment {
+    singleYAML: false
+}
 @http:ServiceConfig {
     basePath: "/helloWorld"
 }

@@ -58,7 +58,8 @@ endpoint http:Listener pizzaEP {
                 key: "password"
             }
         }
-    }
+    },
+    singleYAML: false
 }
 
 @http:ServiceConfig {

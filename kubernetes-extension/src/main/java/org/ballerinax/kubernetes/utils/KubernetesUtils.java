@@ -38,6 +38,7 @@ import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.EnvVarValueModel;
+import org.ballerinax.kubernetes.models.JobModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
@@ -88,10 +89,16 @@ public class KubernetesUtils {
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
         outputFileName = dataHolder.getOutputDir() + File
                 .separator + extractBalxName(dataHolder.getBalxFilePath()) + outputFileName;
-        DeploymentModel deploymentModel = KubernetesContext.getInstance().getDataHolder().getDeploymentModel();
-        if (deploymentModel != null && deploymentModel.isSingleYAML()) {
-            outputFileName = dataHolder.getOutputDir() + File
-                    .separator + extractBalxName(dataHolder.getBalxFilePath()) + YAML;
+        DeploymentModel deploymentModel = dataHolder.getDeploymentModel();
+        JobModel jobModel = dataHolder.getJobModel();
+        // Priority given for job, then deployment.
+        if (jobModel != null && jobModel.isSingleYAML()) {
+            outputFileName =
+                    dataHolder.getOutputDir() + File.separator + extractBalxName(dataHolder.getBalxFilePath()) + YAML;
+        } else if (jobModel == null && deploymentModel != null && deploymentModel.isSingleYAML()) {
+            outputFileName =
+                    dataHolder.getOutputDir() + File.separator + extractBalxName(dataHolder.getBalxFilePath()) + YAML;
+            
         }
         File newFile = new File(outputFileName);
         // append if file exists

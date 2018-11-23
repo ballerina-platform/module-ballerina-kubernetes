@@ -33,7 +33,8 @@ endpoint http:Listener pizzaEP {
 @kubernetes:Deployment {
     name: "name-value",
     image: "pizza-shop:latest",
-    env: { "location": "SL", "city": "COLOMBO" }
+    env: { "location": "SL", "city": "COLOMBO" },
+    singleYAML: false
 }
 
 @http:ServiceConfig {

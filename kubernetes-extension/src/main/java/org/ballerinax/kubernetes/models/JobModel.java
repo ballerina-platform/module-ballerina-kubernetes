@@ -75,7 +75,7 @@ public class JobModel extends KubernetesModel {
         }
         this.activeDeadlineSeconds = 20;
         this.imagePullSecrets = new HashSet<>();
-        this.singleYAML = false;
+        this.singleYAML = true;
     }
 
 

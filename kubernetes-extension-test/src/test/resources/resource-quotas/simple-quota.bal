@@ -29,7 +29,8 @@ endpoint http:Listener pizzaEP {
 
 @kubernetes:Deployment {
     name: "simple-quota",
-    image: "pizza-shop:latest"
+    image: "pizza-shop:latest",
+    singleYAML: false
 }
 @kubernetes:ResourceQuota {
     resourceQuotas: [

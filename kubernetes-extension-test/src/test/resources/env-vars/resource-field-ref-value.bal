@@ -45,7 +45,8 @@ endpoint http:Listener pizzaEP {
                 ^"resource": "limits.cpu"
             }
         }
-    }
+    },
+    singleYAML: false
 }
 
 @http:ServiceConfig {

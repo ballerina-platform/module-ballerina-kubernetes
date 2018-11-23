@@ -18,7 +18,9 @@ endpoint http:Listener burgerEP {
 };
 
 
-@kubernetes:Deployment {}
+@kubernetes:Deployment {
+    singleYAML: false
+}
 @http:ServiceConfig {
     basePath:"/burger"
 }

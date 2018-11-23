@@ -5,38 +5,41 @@ import ballerina/io;
 
 @kubernetes:Service {}
 @kubernetes:Ingress {
-    hostname:"abc.com"
+    hostname: "abc.com"
 }
 endpoint http:Listener helloWorldEP {
-    port:9090,
-    secureSocket:{
-        keyStore:{
-            path:"${ballerina.home}/bre/security/ballerinaKeystore.p12",
-            password:"ballerina"
+    port: 9090,
+    secureSocket: {
+        keyStore: {
+            path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
+            password: "ballerina"
         },
-        trustStore:{
-            path:"${ballerina.home}/bre/security/ballerinaTruststore.p12",
-            password:"ballerina"
+        trustStore: {
+            path: "${ballerina.home}/bre/security/ballerinaTruststore.p12",
+            password: "ballerina"
         }
     }
 };
 
+@kubernetes: Deployment {
+    singleYAML: false
+}
 @kubernetes:ConfigMap {
-    ballerinaConf:"./conf/ballerina.conf",
-    configMaps:[
+    ballerinaConf: "./conf/ballerina.conf",
+    configMaps: [
         {
-            mountPath:"/home/ballerina/data",
-            data:["./conf/data.txt"]
+            mountPath: "/home/ballerina/data",
+            data: ["./conf/data.txt"]
         }
     ]
 }
 @http:ServiceConfig {
-    basePath:"/helloWorld"
+    basePath: "/helloWorld"
 }
 service<http:Service> helloWorld bind helloWorldEP {
     @http:ResourceConfig {
-        methods:["GET"],
-        path:"/config/{user}"
+        methods: ["GET"],
+        path: "/config/{user}"
     }
     getConfig(endpoint outboundEP, http:Request request, string user) {
         http:Response response = new;
@@ -47,8 +50,8 @@ service<http:Service> helloWorld bind helloWorldEP {
         _ = outboundEP->respond(response);
     }
     @http:ResourceConfig {
-        methods:["GET"],
-        path:"/data"
+        methods: ["GET"],
+        path: "/data"
     }
     getData(endpoint outboundEP, http:Request request) {
         http:Response response = new;
@@ -65,7 +68,8 @@ function getConfigValue(string instanceId, string property) returns (string) {
 
 function readFile(string filePath) returns (string) {
     io:ReadableByteChannel bchannel = io:openReadableFile(filePath);
-    io:ReadableCharacterChannel cChannel = new io:ReadableCharacterChannel(bchannel, "UTF-8");
+    io:ReadableCharacterChannel cChannel = new
+    io:ReadableCharacterChannel(bchannel, "UTF-8");
 
     var readOutput = cChannel.read(50);
     match readOutput {

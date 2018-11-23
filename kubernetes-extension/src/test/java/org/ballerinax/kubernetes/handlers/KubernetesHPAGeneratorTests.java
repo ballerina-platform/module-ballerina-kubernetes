@@ -59,6 +59,7 @@ public class KubernetesHPAGeneratorTests {
         deploymentModel.setLabels(labels);
         deploymentModel.setEnableLiveness(true);
         deploymentModel.setLivenessPort(9090);
+        deploymentModel.setSingleYAML(false);
         Map<String, EnvVarValueModel> env = new HashMap<>();
         EnvVarValueModel testEnvVar = new EnvVarValueModel("ENV");
         env.put("ENV_VAR", testEnvVar);

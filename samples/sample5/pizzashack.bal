@@ -26,7 +26,8 @@ endpoint http:Listener pizzaEPSecured {
 
 
 @kubernetes:Deployment {
-    image:"ballerina.com/pizzashack:2.1.0"
+    image:"ballerina.com/pizzashack:2.1.0",
+    singleYAML: false
 }
 @kubernetes:HPA {}
 @http:ServiceConfig {
