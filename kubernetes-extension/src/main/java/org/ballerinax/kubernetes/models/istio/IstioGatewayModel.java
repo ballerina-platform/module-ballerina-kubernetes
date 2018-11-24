@@ -30,36 +30,8 @@ import java.util.Objects;
  * @since 0.985.0
  */
 public class IstioGatewayModel extends KubernetesModel {
-    
-    private String namespace;
-    private Map<String, String> labels;
-    private Map<String, String> annotations;
     private Map<String, String> selector;
     private List<IstioServerModel> servers;
-    
-    public String getNamespace() {
-        return namespace;
-    }
-    
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
-    }
-    
-    public Map<String, String> getLabels() {
-        return labels;
-    }
-    
-    public void setLabels(Map<String, String> labels) {
-        this.labels = labels;
-    }
-    
-    public Map<String, String> getAnnotations() {
-        return annotations;
-    }
-    
-    public void setAnnotations(Map<String, String> annotations) {
-        this.annotations = annotations;
-    }
     
     public Map<String, String> getSelector() {
         return selector;
