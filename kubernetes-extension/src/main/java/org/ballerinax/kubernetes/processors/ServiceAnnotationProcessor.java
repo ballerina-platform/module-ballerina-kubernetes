@@ -50,7 +50,7 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         BLangService bService = (BLangService) serviceNode;
         if (!(bService.attachExpr instanceof BLangTypeInit)) {
             throw new KubernetesPluginException("Adding @kubernetes:Service{} annotation to a service is only " +
-                    "supported when the has an anonymous listener");
+                    "supported when it has an anonymous listener");
         }
         ServiceModel serviceModel = getServiceModelFromAnnotation(attachmentNode);
         if (isBlank(serviceModel.getName())) {
