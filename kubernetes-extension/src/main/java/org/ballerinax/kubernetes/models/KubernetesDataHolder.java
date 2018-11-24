@@ -36,8 +36,8 @@ public class KubernetesDataHolder {
     private DeploymentModel deploymentModel;
     private DockerModel dockerModel;
     private PodAutoscalerModel podAutoscalerModel;
-    private Map<String, ServiceModel> bEndpointToK8sServiceMap;
-    private Map<String, Set<SecretModel>> endPointToSecretMap;
+    private Map<String, ServiceModel> bListenerToK8sServiceMap;
+    private Map<String, Set<SecretModel>> bListenerToSecretMap;
     private Set<SecretModel> secretModelSet;
     private Set<IngressModel> ingressModelSet;
     private Set<ConfigMapModel> configMapModelSet;
@@ -51,8 +51,8 @@ public class KubernetesDataHolder {
     private String namespace;
 
     KubernetesDataHolder() {
-        this.bEndpointToK8sServiceMap = new HashMap<>();
-        this.endPointToSecretMap = new HashMap<>();
+        this.bListenerToK8sServiceMap = new HashMap<>();
+        this.bListenerToSecretMap = new HashMap<>();
         this.secretModelSet = new HashSet<>();
         this.configMapModelSet = new HashSet<>();
         this.volumeClaimModelSet = new HashSet<>();
@@ -81,11 +81,11 @@ public class KubernetesDataHolder {
     }
 
     public Map<String, Set<SecretModel>> getSecretModels() {
-        return endPointToSecretMap;
+        return bListenerToSecretMap;
     }
 
-    public void addEndpointSecret(String endpointName, Set<SecretModel> secretModel) {
-        this.endPointToSecretMap.put(endpointName, secretModel);
+    public void addListenerSecret(String listenerName, Set<SecretModel> secretModel) {
+        this.bListenerToSecretMap.put(listenerName, secretModel);
     }
 
     public Set<SecretModel> getSecretModelSet() {
@@ -120,16 +120,16 @@ public class KubernetesDataHolder {
         this.resourceQuotaModels = resourceQuotaModels;
     }
     
-    public Map<String, ServiceModel> getbEndpointToK8sServiceMap() {
-        return bEndpointToK8sServiceMap;
+    public Map<String, ServiceModel> getbListenerToK8sServiceMap() {
+        return bListenerToK8sServiceMap;
     }
 
-    public void addBEndpointToK8sServiceMap(String endpointName, ServiceModel serviceModel) {
-        this.bEndpointToK8sServiceMap.put(endpointName, serviceModel);
+    public void addBListenerToK8sServiceMap(String listenerName, ServiceModel serviceModel) {
+        this.bListenerToK8sServiceMap.put(listenerName, serviceModel);
     }
 
-    public ServiceModel getServiceModel(String endpointName) {
-        return bEndpointToK8sServiceMap.get(endpointName);
+    public ServiceModel getServiceModel(String listener) {
+        return bListenerToK8sServiceMap.get(listener);
     }
 
     public Set<IngressModel> getIngressModelSet() {

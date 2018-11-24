@@ -8,9 +8,7 @@ import ballerinax/kubernetes;
 @kubernetes:Service {
     name: "hotdrink-backend"
 }
-endpoint http:Listener hotDrinkEP {
-    port: 9090
-};
+listener http:Server hotDrinkEP = new http:Server(9090);
 
 
 endpoint jdbc:Client hotdrinkDB {
@@ -33,12 +31,12 @@ endpoint jdbc:Client hotdrinkDB {
 @http:ServiceConfig {
     basePath: "/hotDrink"
 }
-service<http:Service> HotDrinksAPI bind hotDrinkEP {
+service HotDrinksAPI on hotDrinkEP {
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/menu"
     }
-    gethotdrinkMenu(endpoint outboundEP, http:Request req) {
+    resource function gethotdrinkMenu(http:Caller outboundEP, http:Request req) {
         http:Response response = new;
 
         var selectRet = hotdrinkDB->select("SELECT * FROM hotdrink", ());

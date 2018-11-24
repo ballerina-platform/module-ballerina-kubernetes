@@ -19,16 +19,17 @@
 package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
-import org.ballerinalang.model.tree.EndpointNode;
 import org.ballerinalang.model.tree.ServiceNode;
-import org.ballerinalang.model.tree.expressions.RecordLiteralNode;
+import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.ServiceModel;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
-import org.wso2.ballerinalang.compiler.tree.BLangEndpoint;
+import org.wso2.ballerinalang.compiler.tree.BLangService;
+import org.wso2.ballerinalang.compiler.tree.BLangSimpleVariable;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangTypeInit;
 
 import java.util.List;
 
@@ -44,66 +45,60 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
 
     @Override
-    public void processAnnotation(EndpointNode endpointNode, AnnotationAttachmentNode attachmentNode) throws
-            KubernetesPluginException {
-        ServiceModel serviceModel = getServiceModelFromAnnotation(attachmentNode);
-        if (isBlank(serviceModel.getName())) {
-            serviceModel.setName(getValidName(endpointNode.getName().getValue()) + SVC_POSTFIX);
-        }
-        List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =
-                ((BLangRecordLiteral) ((BLangEndpoint) endpointNode).configurationExpr).getKeyValuePairs();
-        // If service annotation port is not empty, then endpoint port is used for the k8s svc target port while
-        // service annotation port is used for k8s port.
-        // If service annotation port is empty, then endpoint port is used for both port and target port of the k8s
-        // svc.
-        if (serviceModel.getPort() == -1) {
-            serviceModel.setPort(extractPort(endpointConfig));
-        }
-        serviceModel.setTargetPort(extractPort(endpointConfig));
-        KubernetesContext.getInstance().getDataHolder().addBEndpointToK8sServiceMap(endpointNode.getName().getValue()
-                , serviceModel);
-    }
-
-    @Override
     public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
-        RecordLiteralNode anonymousEndpoint = serviceNode.getAnonymousEndpointBind();
-        if (anonymousEndpoint == null) {
+        BLangService bService = (BLangService) serviceNode;
+        if (!(bService.attachExpr instanceof BLangTypeInit)) {
             throw new KubernetesPluginException("Adding @kubernetes:Service{} annotation to a service is only " +
-                    "supported when service is bind to an anonymous endpoint");
+                    "supported when service is bind to an anonymous listener");
         }
         ServiceModel serviceModel = getServiceModelFromAnnotation(attachmentNode);
         if (isBlank(serviceModel.getName())) {
             serviceModel.setName(getValidName(serviceNode.getName().getValue()) + SVC_POSTFIX);
         }
-        List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig =
-                ((BLangRecordLiteral) anonymousEndpoint).getKeyValuePairs();
-        // If service annotation port is not empty, then endpoint port is used for the k8s svc target port while
+
+        // If service annotation port is not empty, then listener port is used for the k8s svc target port while
         // service annotation port is used for k8s port.
-        // If service annotation port is empty, then endpoint port is used for both port and target port of the k8s
+        // If service annotation port is empty, then listener port is used for both port and target port of the k8s
         // svc.
+        BLangTypeInit bListener = (BLangTypeInit) bService.attachExpr;
         if (serviceModel.getPort() == -1) {
-            serviceModel.setPort(extractPort(endpointConfig));
+            serviceModel.setPort(extractPort(bListener));
         }
-        serviceModel.setTargetPort(extractPort(endpointConfig));
-        KubernetesContext.getInstance().getDataHolder().addBEndpointToK8sServiceMap(serviceNode.getName().getValue(),
+        serviceModel.setTargetPort(extractPort(bListener));
+        KubernetesContext.getInstance().getDataHolder().addBListenerToK8sServiceMap(serviceNode.getName().getValue(),
                 serviceModel);
     }
-
-    private int extractPort(List<BLangRecordLiteral.BLangRecordKeyValue> endpointConfig) throws
-            KubernetesPluginException {
-        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : endpointConfig) {
-            String key = keyValue.getKey().toString();
-            if ("port".equals(key)) {
-                try {
-                    return Integer.parseInt(keyValue.getValue().toString());
-                } catch (NumberFormatException e) {
-                    throw new KubernetesPluginException("Listener endpoint port must be an integer to use " +
-                            "@kubernetes annotations.");
-                }
-            }
+    
+    @Override
+    public void processAnnotation(SimpleVariableNode variableNode, AnnotationAttachmentNode attachmentNode)
+            throws KubernetesPluginException {
+        ServiceModel serviceModel = getServiceModelFromAnnotation(attachmentNode);
+        if (isBlank(serviceModel.getName())) {
+            serviceModel.setName(getValidName(variableNode.getName().getValue()) + SVC_POSTFIX);
         }
-        throw new KubernetesPluginException("Unable to extract port from endpoint");
+        
+        // If service annotation port is not empty, then listener port is used for the k8s svc target port while
+        // service annotation port is used for k8s port.
+        // If service annotation port is empty, then listener port is used for both port and target port of the k8s
+        // svc.
+        BLangTypeInit bListener = (BLangTypeInit) ((BLangSimpleVariable) variableNode).expr;
+        if (serviceModel.getPort() == -1) {
+            serviceModel.setPort(extractPort(bListener));
+        }
+        serviceModel.setTargetPort(extractPort(bListener));
+        KubernetesContext.getInstance().getDataHolder().addBListenerToK8sServiceMap(variableNode.getName().getValue()
+                , serviceModel);
+    }
+    
+    private int extractPort(BLangTypeInit bListener) throws
+            KubernetesPluginException {
+        try {
+            return Integer.parseInt(bListener.argsExpr.get(0).toString());
+        } catch (NumberFormatException e) {
+            throw new KubernetesPluginException("Unable to parse port of the service: " +
+                                            bListener.argsExpr.get(0).toString());
+        }
     }
 
     private ServiceModel getServiceModelFromAnnotation(AnnotationAttachmentNode attachmentNode) throws
@@ -126,12 +121,7 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
                     serviceModel.setServiceType(KubernetesConstants.ServiceType.valueOf(annotationValue).name());
                     break;
                 case port:
-                    try {
-                        serviceModel.setPort(Integer.parseInt(annotationValue));
-                    } catch (NumberFormatException e) {
-                        throw new KubernetesPluginException("Listener endpoint port must be an integer to use " +
-                                "@kubernetes annotations.");
-                    }
+                    serviceModel.setPort(Integer.parseInt(annotationValue));
                     break;
                 case sessionAffinity:
                     serviceModel.setSessionAffinity(annotationValue);

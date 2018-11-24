@@ -19,8 +19,8 @@
 package org.ballerinax.kubernetes.processors.istio;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
-import org.ballerinalang.model.tree.EndpointNode;
 import org.ballerinalang.model.tree.ServiceNode;
+import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
@@ -66,18 +66,18 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
     }
     
     @Override
-    public void processAnnotation(EndpointNode endpointNode, AnnotationAttachmentNode attachmentNode)
+    public void processAnnotation(SimpleVariableNode variableNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException {
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
     
         IstioGatewayModel gwModel = this.processIstioGatewayAnnotation(keyValues);
         if (isBlank(gwModel.getName())) {
-            gwModel.setName(getValidName(endpointNode.getName().getValue()) + ISTIO_GATEWAY_POSTFIX);
+            gwModel.setName(getValidName(variableNode.getName().getValue()) + ISTIO_GATEWAY_POSTFIX);
         }
     
         setDefaultValues(gwModel);
-        KubernetesContext.getInstance().getDataHolder().addIstioGatewayModel(endpointNode.getName().getValue(),
+        KubernetesContext.getInstance().getDataHolder().addIstioGatewayModel(variableNode.getName().getValue(),
                 gwModel);
     }
     

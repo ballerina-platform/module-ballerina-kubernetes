@@ -19,8 +19,8 @@
 package org.ballerinax.kubernetes.processors.istio;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
-import org.ballerinalang.model.tree.EndpointNode;
 import org.ballerinalang.model.tree.ServiceNode;
+import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
 import org.ballerinalang.model.types.TypeTags;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -74,18 +74,18 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
     }
     
     @Override
-    public void processAnnotation(EndpointNode endpointNode, AnnotationAttachmentNode attachmentNode)
+    public void processAnnotation(SimpleVariableNode variableNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException {
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
     
         IstioVirtualService vsModel = this.processIstioVSAnnotation(keyValues);
         if (isBlank(vsModel.getName())) {
-            vsModel.setName(getValidName(endpointNode.getName().getValue()) + ISTIO_VIRTUAL_SERVICE_POSTFIX);
+            vsModel.setName(getValidName(variableNode.getName().getValue()) + ISTIO_VIRTUAL_SERVICE_POSTFIX);
         }
     
         setDefaultValues(vsModel);
-        KubernetesContext.getInstance().getDataHolder().addIstioVirtualServiceModel(endpointNode.getName().getValue(),
+        KubernetesContext.getInstance().getDataHolder().addIstioVirtualServiceModel(variableNode.getName().getValue(),
                 vsModel);
     }
     

@@ -30,7 +30,7 @@ public class IngressModel extends KubernetesModel {
     private String hostname;
     private String path;
     private String ingressClass;
-    private String endpointName;
+    private String listenerName;
     private Map<String, String> annotations;
     private String serviceName;
     private int servicePort;
@@ -127,12 +127,12 @@ public class IngressModel extends KubernetesModel {
         this.labels.put(key, value);
     }
 
-    public String getEndpointName() {
-        return endpointName;
+    public String getListenerName() {
+        return listenerName;
     }
 
-    public void setEndpointName(String endpointName) {
-        this.endpointName = endpointName;
+    public void setListenerName(String listenerName) {
+        this.listenerName = listenerName;
     }
 
     public Map<String, String> getAnnotations() {

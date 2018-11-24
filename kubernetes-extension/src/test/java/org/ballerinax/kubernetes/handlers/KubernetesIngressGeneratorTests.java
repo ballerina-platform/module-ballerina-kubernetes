@@ -56,7 +56,7 @@ public class KubernetesIngressGeneratorTests {
         ingressModel.setTargetPath(targetPath);
         ingressModel.setServicePort(servicePort);
         ingressModel.setIngressClass(ingressClass);
-        ingressModel.setEndpointName(serviceName);
+        ingressModel.setListenerName(serviceName);
         ingressModel.setServiceName(serviceName);
         Map<String, String> labels = new HashMap<>();
         labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, selector);
@@ -68,7 +68,7 @@ public class KubernetesIngressGeneratorTests {
         serviceModel.setServiceType("NodePort");
         serviceModel.setSelector(selector);
         serviceModel.setLabels(labels);
-        KubernetesContext.getInstance().getDataHolder().addBEndpointToK8sServiceMap("HelloWorldService", serviceModel);
+        KubernetesContext.getInstance().getDataHolder().addBListenerToK8sServiceMap("HelloWorldService", serviceModel);
 
         try {
             new IngressHandler().createArtifacts();

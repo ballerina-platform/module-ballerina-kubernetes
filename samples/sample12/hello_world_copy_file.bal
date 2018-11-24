@@ -7,8 +7,7 @@ import ballerina/io;
 @kubernetes:Ingress {
     hostname: "abc.com"
 }
-endpoint http:Listener helloWorldEP {
-    port: 9090,
+listener http:Server helloWorldEP = new http:Server(9090, config = {
     secureSocket: {
         keyStore: {
             path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
@@ -19,7 +18,7 @@ endpoint http:Listener helloWorldEP {
             password: "ballerina"
         }
     }
-};
+});
 
 @kubernetes:Deployment {
     copyFiles: [
@@ -33,12 +32,12 @@ endpoint http:Listener helloWorldEP {
 @http:ServiceConfig {
     basePath: "/helloWorld"
 }
-service<http:Service> helloWorld bind helloWorldEP {
+service helloWorld on helloWorldEP {
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/data"
     }
-    getData(endpoint outboundEP, http:Request request) {
+    resource function getData(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         string payload = readFile("./data/data.txt");
         response.setTextPayload("Data: " + untaint payload + "\n");
