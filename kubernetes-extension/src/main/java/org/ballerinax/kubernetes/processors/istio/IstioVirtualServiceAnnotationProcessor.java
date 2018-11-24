@@ -29,7 +29,7 @@ import org.ballerinax.kubernetes.models.istio.IstioDestination;
 import org.ballerinax.kubernetes.models.istio.IstioDestinationWeight;
 import org.ballerinax.kubernetes.models.istio.IstioHttpRedirect;
 import org.ballerinax.kubernetes.models.istio.IstioHttpRoute;
-import org.ballerinax.kubernetes.models.istio.IstioVirtualService;
+import org.ballerinax.kubernetes.models.istio.IstioVirtualServiceModel;
 import org.ballerinax.kubernetes.processors.AbstractAnnotationProcessor;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
@@ -62,7 +62,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
     
-        IstioVirtualService vsModel = this.processIstioVSAnnotation(keyValues);
+        IstioVirtualServiceModel vsModel = this.processIstioVSAnnotation(keyValues);
     
         if (isBlank(vsModel.getName())) {
             vsModel.setName(getValidName(serviceNode.getName().getValue()) + ISTIO_VIRTUAL_SERVICE_POSTFIX);
@@ -79,7 +79,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
     
-        IstioVirtualService vsModel = this.processIstioVSAnnotation(keyValues);
+        IstioVirtualServiceModel vsModel = this.processIstioVSAnnotation(keyValues);
         if (isBlank(vsModel.getName())) {
             vsModel.setName(getValidName(variableNode.getName().getValue()) + ISTIO_VIRTUAL_SERVICE_POSTFIX);
         }
@@ -94,7 +94,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
      *
      * @param vsModel The virtual service model.
      */
-    private void setDefaultValues(IstioVirtualService vsModel) {
+    private void setDefaultValues(IstioVirtualServiceModel vsModel) {
         if (null == vsModel.getHosts() || vsModel.getHosts().size() == 0) {
             List<String> hosts = new LinkedList<>();
             hosts.add("*");
@@ -108,9 +108,9 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
      * @param vsFields Fields of the virtual service annotation.
      * @throws KubernetesPluginException Unable to process annotations.
      */
-    private IstioVirtualService processIstioVSAnnotation(List<BLangRecordLiteral.BLangRecordKeyValue> vsFields)
+    private IstioVirtualServiceModel processIstioVSAnnotation(List<BLangRecordLiteral.BLangRecordKeyValue> vsFields)
             throws KubernetesPluginException {
-        IstioVirtualService vsModel = new IstioVirtualService();
+        IstioVirtualServiceModel vsModel = new IstioVirtualServiceModel();
         for (BLangRecordLiteral.BLangRecordKeyValue vsField : vsFields) {
             switch (IstioVSConfig.valueOf(vsField.getKey().toString())) {
                 case name:

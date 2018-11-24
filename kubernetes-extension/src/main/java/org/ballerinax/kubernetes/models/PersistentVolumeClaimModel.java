@@ -18,7 +18,6 @@
 package org.ballerinax.kubernetes.models;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Model class to hold kubernetes Persistent Volume Claim.
@@ -28,7 +27,6 @@ public class PersistentVolumeClaimModel extends KubernetesModel {
     private boolean readOnly;
     private String accessMode;
     private String volumeClaimSize;
-    private Map<String, String> annotations;
 
     public PersistentVolumeClaimModel() {
         this.accessMode = "ReadWriteOnce";
@@ -65,13 +63,5 @@ public class PersistentVolumeClaimModel extends KubernetesModel {
 
     public void setVolumeClaimSize(String volumeClaimSize) {
         this.volumeClaimSize = volumeClaimSize;
-    }
-
-    public Map<String, String> getAnnotations() {
-        return annotations;
-    }
-
-    public void setAnnotations(Map<String, String> annotations) {
-        this.annotations = annotations;
     }
 }

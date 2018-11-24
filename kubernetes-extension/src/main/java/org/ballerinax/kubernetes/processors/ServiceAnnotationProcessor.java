@@ -114,8 +114,14 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
                 case name:
                     serviceModel.setName(getValidName(annotationValue));
                     break;
+                case namespace:
+                    serviceModel.setNamespace(annotationValue);
+                    break;
                 case labels:
                     serviceModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    break;
+                case annotations:
+                    serviceModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
                 case serviceType:
                     serviceModel.setServiceType(KubernetesConstants.ServiceType.valueOf(annotationValue).name());
@@ -138,7 +144,9 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
      */
     private enum ServiceConfiguration {
         name,
+        namespace,
         labels,
+        annotations,
         serviceType,
         port,
         sessionAffinity

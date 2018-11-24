@@ -26,7 +26,6 @@ import static org.ballerinax.kubernetes.KubernetesConstants.NGINX;
  * Kubernetes ingress annotations model class.
  */
 public class IngressModel extends KubernetesModel {
-    private Map<String, String> labels;
     private String hostname;
     private String path;
     private String ingressClass;
@@ -43,15 +42,7 @@ public class IngressModel extends KubernetesModel {
         this.ingressClass = NGINX;
         this.labels = new HashMap<>();
     }
-
-    public Map<String, String> getLabels() {
-        return labels;
-    }
-
-    public void setLabels(Map<String, String> labels) {
-        this.labels = labels;
-    }
-
+    
     public String getHostname() {
         return hostname;
     }

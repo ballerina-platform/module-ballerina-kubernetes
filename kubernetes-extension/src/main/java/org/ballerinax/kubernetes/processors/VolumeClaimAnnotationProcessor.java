@@ -65,6 +65,15 @@ public class VolumeClaimAnnotationProcessor extends AbstractAnnotationProcessor 
                         case name:
                             claimModel.setName(getValidName(annotationValue));
                             break;
+                        case namespace:
+                            claimModel.setNamespace(annotationValue);
+                            break;
+                        case labels:
+                            claimModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                            break;
+                        case annotations:
+                            claimModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                            break;
                         case mountPath:
                             claimModel.setMountPath(annotationValue);
                             break;
@@ -76,10 +85,6 @@ public class VolumeClaimAnnotationProcessor extends AbstractAnnotationProcessor 
                             break;
                         case readOnly:
                             claimModel.setReadOnly(Boolean.parseBoolean(annotationValue));
-                            break;
-                        case annotations:
-                            claimModel.setAnnotations(getMap(((BLangRecordLiteral) annotation.getValue())
-                                    .keyValuePairs));
                             break;
                         default:
                             break;
@@ -96,10 +101,12 @@ public class VolumeClaimAnnotationProcessor extends AbstractAnnotationProcessor 
      */
     private enum VolumeClaimConfig {
         name,
+        namespace,
+        labels,
+        annotations,
         mountPath,
         readOnly,
         accessMode,
         volumeClaimSize,
-        annotations
     }
 }

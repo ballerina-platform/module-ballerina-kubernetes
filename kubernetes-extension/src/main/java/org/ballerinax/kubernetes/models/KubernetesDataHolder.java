@@ -20,7 +20,7 @@ package org.ballerinax.kubernetes.models;
 
 import org.ballerinax.docker.generator.models.DockerModel;
 import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
-import org.ballerinax.kubernetes.models.istio.IstioVirtualService;
+import org.ballerinax.kubernetes.models.istio.IstioVirtualServiceModel;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,7 +44,7 @@ public class KubernetesDataHolder {
     private Set<PersistentVolumeClaimModel> volumeClaimModelSet;
     private Set<ResourceQuotaModel> resourceQuotaModels;
     private Map<String, IstioGatewayModel> istioGatewayModels;
-    private Map<String, IstioVirtualService> istioVirtualServiceModels;
+    private Map<String, IstioVirtualServiceModel> istioVirtualServiceModels;
     private JobModel jobModel;
     private String balxFilePath;
     private String outputDir;
@@ -200,15 +200,15 @@ public class KubernetesDataHolder {
         this.istioGatewayModels.put(serviceName, istioGatewayModel);
     }
     
-    public Map<String, IstioVirtualService> getIstioVirtualServiceModels() {
+    public Map<String, IstioVirtualServiceModel> getIstioVirtualServiceModels() {
         return istioVirtualServiceModels;
     }
     
-    public IstioVirtualService getIstioVirtualServiceModel(String serviceName) {
+    public IstioVirtualServiceModel getIstioVirtualServiceModel(String serviceName) {
         return istioVirtualServiceModels.get(serviceName);
     }
     
-    public void addIstioVirtualServiceModel(String serviceName, IstioVirtualService istioVirtualServiceModel) {
+    public void addIstioVirtualServiceModel(String serviceName, IstioVirtualServiceModel istioVirtualServiceModel) {
         this.istioVirtualServiceModels.put(serviceName, istioVirtualServiceModel);
     }
 }
