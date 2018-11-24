@@ -27,7 +27,7 @@ import org.ballerinax.kubernetes.models.istio.IstioDestinationWeight;
 import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
 import org.ballerinax.kubernetes.models.istio.IstioHttpRedirect;
 import org.ballerinax.kubernetes.models.istio.IstioHttpRoute;
-import org.ballerinax.kubernetes.models.istio.IstioVirtualService;
+import org.ballerinax.kubernetes.models.istio.IstioVirtualServiceModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -50,14 +50,14 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
     
     @Override
     public void createArtifacts() throws KubernetesPluginException {
-        Map<String, IstioVirtualService> istioVSModels = dataHolder.getIstioVirtualServiceModels();
+        Map<String, IstioVirtualServiceModel> istioVSModels = dataHolder.getIstioVirtualServiceModels();
         int size = istioVSModels.size();
         if (size > 0) {
             OUT.println();
         }
     
         int count = 0;
-        for (Map.Entry<String, IstioVirtualService> vsModel : istioVSModels.entrySet()) {
+        for (Map.Entry<String, IstioVirtualServiceModel> vsModel : istioVSModels.entrySet()) {
             count++;
             generate(vsModel.getKey(), vsModel.getValue());
             OUT.print("\t@kubernetes:IstioVirtualService \t - complete " + count + "/" + istioVSModels.size() + "\r");
@@ -71,7 +71,7 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
      * @param vsModel     The virtual service model.
      * @throws KubernetesPluginException Error when writing artifact files.
      */
-    private void generate(String serviceName, IstioVirtualService vsModel) throws KubernetesPluginException {
+    private void generate(String serviceName, IstioVirtualServiceModel vsModel) throws KubernetesPluginException {
         try {
             Map<String, Object> vsYamlModel = new LinkedHashMap<>();
             vsYamlModel.put("apiVersion", "networking.istio.io/v1alpha3");

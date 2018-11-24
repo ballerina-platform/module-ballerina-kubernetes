@@ -61,6 +61,9 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
                 case labels:
                     jobModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
+                case annotations:
+                    jobModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    break;
                 case restartPolicy:
                     jobModel.setRestartPolicy(KubernetesConstants.RestartPolicy.valueOf(annotationValue).name());
                     break;
@@ -135,6 +138,7 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
         name,
         namespace,
         labels,
+        annotations,
         restartPolicy,
         backoffLimit,
         activeDeadlineSeconds,

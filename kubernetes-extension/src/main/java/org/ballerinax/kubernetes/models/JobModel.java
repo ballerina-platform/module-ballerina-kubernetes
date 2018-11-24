@@ -36,7 +36,6 @@ import static org.ballerinax.kubernetes.KubernetesConstants.WINDOWS_DEFAULT_DOCK
  * Job model class.
  */
 public class JobModel extends KubernetesModel {
-    private Map<String, String> labels;
     private String restartPolicy;
     private int backoffLimit;
     private int activeDeadlineSeconds;
@@ -76,15 +75,6 @@ public class JobModel extends KubernetesModel {
         this.activeDeadlineSeconds = 20;
         this.imagePullSecrets = new HashSet<>();
         this.singleYAML = true;
-    }
-
-
-    public Map<String, String> getLabels() {
-        return labels;
-    }
-
-    public void setLabels(Map<String, String> labels) {
-        this.labels = labels;
     }
 
     public void addLabel(String key, String value) {

@@ -186,6 +186,9 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
                 case name:
                     ingressModel.setName(getValidName(annotationValue));
                     break;
+                case namespace:
+                    ingressModel.setNamespace(getValidName(annotationValue));
+                    break;
                 case labels:
                     ingressModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
@@ -268,6 +271,7 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
      */
     private enum IngressConfiguration {
         name,
+        namespace,
         labels,
         annotations,
         hostname,
