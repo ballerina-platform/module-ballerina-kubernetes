@@ -54,14 +54,14 @@ public class EnvVarTest {
      */
     @Test
     public void nameValueTest() throws IOException, InterruptedException, KubernetesPluginException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "name-value.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "name_value.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = Paths.get(targetPath).resolve("name-value_deployment.yaml").toFile();
+        File deploymentYAML = Paths.get(targetPath).resolve("name_value_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
         List<EnvVar> envVars = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
@@ -83,14 +83,14 @@ public class EnvVarTest {
      */
     @Test
     public void fieldRefTest() throws IOException, InterruptedException, KubernetesPluginException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "field-ref-value.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "field_ref_value.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = Paths.get(targetPath).resolve("field-ref-value_deployment.yaml").toFile();
+        File deploymentYAML = Paths.get(targetPath).resolve("field_ref_value_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
         List<EnvVar> envVars = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
@@ -116,14 +116,14 @@ public class EnvVarTest {
      */
     @Test
     public void secretKeyRefTest() throws IOException, InterruptedException, KubernetesPluginException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "secret-key-ref.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "secret_key_ref.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = Paths.get(targetPath).resolve("secret-key-ref_deployment.yaml").toFile();
+        File deploymentYAML = Paths.get(targetPath).resolve("secret_key_ref_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
         List<EnvVar> envVars = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
@@ -153,14 +153,14 @@ public class EnvVarTest {
      */
     @Test
     public void resourceFieldRefTest() throws IOException, InterruptedException, KubernetesPluginException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "resource-field-ref-value.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "resource_field_ref_value.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = Paths.get(targetPath).resolve("resource-field-ref-value_deployment.yaml").toFile();
+        File deploymentYAML = Paths.get(targetPath).resolve("resource_field_ref_value_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
         List<EnvVar> envVars = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
@@ -188,14 +188,14 @@ public class EnvVarTest {
      */
     @Test
     public void configMapKeyRefTest() throws IOException, InterruptedException, KubernetesPluginException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "config-map-key-ref.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "config_map_key_ref.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = Paths.get(targetPath).resolve("config-map-key-ref_deployment.yaml").toFile();
+        File deploymentYAML = Paths.get(targetPath).resolve("config_map_key_ref_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
         List<EnvVar> envVars = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();

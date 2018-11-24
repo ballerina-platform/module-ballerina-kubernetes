@@ -7,8 +7,7 @@ import ballerina/io;
 @kubernetes:Ingress {
     hostname: "abc.com"
 }
-endpoint http:Listener helloWorldEP {
-    port: 9090,
+listener http:Server helloWorldEP = new http:Server(9090, config = {
     secureSocket: {
         keyStore: {
             path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
@@ -19,7 +18,7 @@ endpoint http:Listener helloWorldEP {
             password: "ballerina"
         }
     }
-};
+});
 
 @kubernetes: Deployment {
     singleYAML: false
@@ -36,12 +35,12 @@ endpoint http:Listener helloWorldEP {
 @http:ServiceConfig {
     basePath: "/helloWorld"
 }
-service<http:Service> helloWorld bind helloWorldEP {
+service helloWorld on helloWorldEP {
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/config/{user}"
     }
-    getConfig(endpoint outboundEP, http:Request request, string user) {
+    resource function getConfig(http:Caller outboundEP, http:Request request, string user) {
         http:Response response = new;
         string userId = getConfigValue(user, "userid");
         string groups = getConfigValue(user, "groups");
@@ -53,7 +52,7 @@ service<http:Service> helloWorld bind helloWorldEP {
         methods: ["GET"],
         path: "/data"
     }
-    getData(endpoint outboundEP, http:Request request) {
+    resource function getData(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         string payload = readFile("./data/data.txt");
         response.setTextPayload("Data: " + untaint payload + "\n");
@@ -68,8 +67,7 @@ function getConfigValue(string instanceId, string property) returns (string) {
 
 function readFile(string filePath) returns (string) {
     io:ReadableByteChannel bchannel = io:openReadableFile(filePath);
-    io:ReadableCharacterChannel cChannel = new
-    io:ReadableCharacterChannel(bchannel, "UTF-8");
+    io:ReadableCharacterChannel cChannel = new io:ReadableCharacterChannel(bchannel, "UTF-8");
 
     var readOutput = cChannel.read(50);
     match readOutput {

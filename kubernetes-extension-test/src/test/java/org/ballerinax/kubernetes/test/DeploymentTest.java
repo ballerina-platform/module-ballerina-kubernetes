@@ -53,14 +53,14 @@ public class DeploymentTest {
      */
     @Test
     public void annotationsTest() throws IOException, InterruptedException, KubernetesPluginException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "dep-annotations.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "dep_annotations.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = Paths.get(targetPath).resolve("dep-annotations_deployment.yaml").toFile();
+        File deploymentYAML = Paths.get(targetPath).resolve("dep_annotations_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
         Assert.assertEquals(deployment.getMetadata().getAnnotations().size(), 2,

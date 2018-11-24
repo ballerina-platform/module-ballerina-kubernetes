@@ -52,14 +52,14 @@ public class ServiceTest {
     private final String targetPath = Paths.get(balDirectory).resolve(KUBERNETES).toString();
     private final String dockerImage = "pizza-shop:latest";
     
-    private final String selectorApp = "different-svc-ports";
+    private final String selectorApp = "different_svc_ports";
     private Service service;
     private Ingress ingress;
     
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "different-svc-ports.bal"), 0);
-        File yamlFile = new File(targetPath + File.separator + "different-svc-ports.yaml");
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "different_svc_ports.bal"), 0);
+        File yamlFile = new File(targetPath + File.separator + "different_svc_ports.yaml");
         Assert.assertTrue(yamlFile.exists());
         KubernetesClient client = new DefaultKubernetesClient();
         List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();

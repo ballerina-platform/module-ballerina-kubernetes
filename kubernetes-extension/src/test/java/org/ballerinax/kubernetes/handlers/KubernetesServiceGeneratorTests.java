@@ -54,7 +54,7 @@ public class KubernetesServiceGeneratorTests {
         Map<String, String> labels = new HashMap<>();
         labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, selector);
         serviceModel.setLabels(labels);
-        KubernetesContext.getInstance().getDataHolder().addBEndpointToK8sServiceMap("HelloWorldService", serviceModel);
+        KubernetesContext.getInstance().getDataHolder().addBListenerToK8sServiceMap("HelloWorldService", serviceModel);
         try {
             new ServiceHandler().createArtifacts();
             File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_svc.yaml");

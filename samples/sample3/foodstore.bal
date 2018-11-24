@@ -10,9 +10,7 @@ import ballerinax/kubernetes;
 @kubernetes:Service {
     sessionAffinity: "ClientIP"
 }
-endpoint http:Listener pizzaEP {
-    port: 9099
-};
+listener http:Server pizzaEP = new http:Server(9099);
 
 @kubernetes:Deployment {
     name: "foodstore",
@@ -26,18 +24,17 @@ endpoint http:Listener pizzaEP {
 @http:ServiceConfig {
     basePath: "/pizza"
 }
-service<http:Service> PizzaAPI bind pizzaEP {
+service PizzaAPI on pizzaEP {
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/menu"
     }
-    getPizzaMenu(endpoint outboundEP, http:Request req) {
+    resource function getPizzaMenu(http:Caller outboundEP, http:Request req) {
         http:Response response = new;
         response.setTextPayload("Pizza menu \n");
         _ = outboundEP->respond(response);
     }
 }
-
 
 
 @kubernetes:Ingress {
@@ -46,18 +43,17 @@ service<http:Service> PizzaAPI bind pizzaEP {
     targetPath: "/burger"
 }
 @kubernetes:Service {}
-endpoint http:Listener burgerEP {
-    port: 9096
-};
+listener http:Server burgerEP = new http:Server(9096);
+
 @http:ServiceConfig {
     basePath: "/burger"
 }
-service<http:Service> BurgerAPI bind burgerEP {
+service BurgerAPI on burgerEP {
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/menu"
     }
-    getBurgerMenu(endpoint outboundEP, http:Request req) {
+    resource function getBurgerMenu(http:Caller outboundEP, http:Request req) {
         http:Response response = new;
         response.setTextPayload("Burger menu \n");
         _ = outboundEP->respond(response);

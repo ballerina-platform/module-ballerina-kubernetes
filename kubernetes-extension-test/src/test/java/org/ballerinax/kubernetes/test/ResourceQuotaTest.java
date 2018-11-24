@@ -52,14 +52,14 @@ public class ResourceQuotaTest {
      */
     @Test
     public void simpleQuotaTest() throws IOException, InterruptedException, KubernetesPluginException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "simple-quota.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "simple_quota.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
     
         // Validate deployment yaml
-        File deploymentYAML = Paths.get(targetPath).resolve("simple-quota_resource_quota.yaml").toFile();
+        File deploymentYAML = Paths.get(targetPath).resolve("simple_quota_resource_quota.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         ResourceQuota resourceQuota = KubernetesHelper.loadYaml(deploymentYAML);
         Assert.assertEquals(resourceQuota.getMetadata().getName(), "compute-resources");
@@ -93,14 +93,14 @@ public class ResourceQuotaTest {
      */
     @Test
     public void quotaWithScopeTest() throws IOException, InterruptedException, KubernetesPluginException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "quota-with-scope.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "quota_with_scope.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = Paths.get(targetPath).resolve("quota-with-scope_resource_quota.yaml").toFile();
+        File deploymentYAML = Paths.get(targetPath).resolve("quota_with_scope_resource_quota.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         ResourceQuota resourceQuota = KubernetesHelper.loadYaml(deploymentYAML);
         Assert.assertEquals(resourceQuota.getMetadata().getName(), "compute-resources");
@@ -131,14 +131,14 @@ public class ResourceQuotaTest {
      */
     @Test
     public void multipleQuotaTest() throws IOException, InterruptedException, KubernetesPluginException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "multiple-quotas.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "multiple_quotas.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = Paths.get(targetPath).resolve("multiple-quotas_resource_quota.yaml").toFile();
+        File deploymentYAML = Paths.get(targetPath).resolve("multiple_quotas_resource_quota.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         ResourceQuota resourceQuota = KubernetesHelper.loadYaml(deploymentYAML);
     

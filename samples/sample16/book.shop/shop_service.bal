@@ -4,9 +4,7 @@ import ballerinax/kubernetes;
 @kubernetes:Service {}
 @kubernetes:IstioGateway {}
 @kubernetes:IstioVirtualService {}
-endpoint http:Listener bookShopEP {
-    port: 9080
-};
+listener http:Server bookShopEP = new http:Server(9080);
 
 endpoint http:Client bookDetailsEP {
     url: "http://book-detail:8080"
@@ -20,12 +18,12 @@ endpoint http:Client bookReviewEP {
 @http:ServiceConfig {
     basePath: "/book"
 }
-service<http:Service> shopService bind bookShopEP {
+service shopService on bookShopEP {
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/{id}"
     }
-    getBook (endpoint caller, http:Request request, string id) {
+    resource function getBook (http:Caller caller, http:Request request, string id) {
         var detailCall = bookDetailsEP->get(string `/detail/{{untaint id}}`);
         match detailCall {
             http:Response detailResponse => {

@@ -7,19 +7,17 @@ import ballerinax/kubernetes;
 @kubernetes:Service {
     name: "book-detail"
 }
-endpoint http:Listener bookDetailEP {
-    port: 8080
-};
+listener http:Server bookDetailEP = new http:Server(8080);
 
 @http:ServiceConfig {
     basePath: "/detail"
 }
-service<http:Service> detailService bind bookDetailEP {
+service detailService on bookDetailEP {
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/{id}"
     }
-    getDetail (endpoint caller, http:Request request, string id) {
+    resource function getDetail(http:Caller caller, http:Request request, string id) {
         table<Detail> tbDetails = table {
             { id, author, cost },
             [ { "B1", "John Jonathan", 10.00 },
