@@ -108,9 +108,9 @@ public type ConfigMapKeyRef record {
     !...
 };
 
-const string IMAGE_PULL_POLICY_IF_NOT_PRESENT = "IfNotPresent";
-const string IMAGE_PULL_POLICY_ALWAYS = "Always";
-const string IMAGE_PULL_POLICY_NEVER = "Never";
+public const string IMAGE_PULL_POLICY_IF_NOT_PRESENT = "IfNotPresent";
+public const string IMAGE_PULL_POLICY_ALWAYS = "Always";
+public const string IMAGE_PULL_POLICY_NEVER = "Never";
 
 # Image pull policy type field for kubernetes deployment and jobs.
 public type ImagePullPolicy "IfNotPresent"|"Always"|"Never";
@@ -165,15 +165,15 @@ public type DeploymentConfiguration record {
 # @kubernetes:Deployment annotation to configure deplyoment yaml.
 public annotation<service, function, listener> Deployment DeploymentConfiguration;
 
-const string SESSION_AFFINITY_NONE = "None";
-const string SESSION_AFFINITY_CLIENT_IP = "ClientIP";
+public const string SESSION_AFFINITY_NONE = "None";
+public const string SESSION_AFFINITY_CLIENT_IP = "ClientIP";
 
 # Session affinity field for kubernetes services.
 public type SessionAffinity "None"|"ClientIP";
 
-const string SERVICE_TYPE_NORD_PORT = "NodePort";
-const string SERVICE_TYPE_CLUSTER_IP = "ClusterIP";
-const string SERVICE_TYPE_LOAD_BALANCER = "LoadBalancer";
+public const string SERVICE_TYPE_NORD_PORT = "NodePort";
+public const string SERVICE_TYPE_CLUSTER_IP = "ClusterIP";
+public const string SERVICE_TYPE_LOAD_BALANCER = "LoadBalancer";
 
 # Service type field for kubernetes services.
 public type ServiceType "NodePort"|"ClusterIP"|"LoadBalancer";
@@ -336,7 +336,7 @@ public type ResourceQuotas record {
 # @kubernetes:ResourcesQuotas annotation to configure Resource Quotas.
 public annotation<service, function, listener> ResourceQuota ResourceQuotas;
 
-const string RESTART_POLICY_NEVER = "Never";
+public const string RESTART_POLICY_NEVER = "Never";
 
 # Restart policy type field for kubernetes jobs.
 public type RestartPolicy "OnFailure"|"Always"|"Never";
