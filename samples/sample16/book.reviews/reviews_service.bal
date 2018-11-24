@@ -7,7 +7,7 @@ import ballerinax/kubernetes;
 @kubernetes:Service {
     name: "book-review"
 }
-endpoint http:Listener bookReviewEP {
+listener http:Listener bookReviewEP = new http:Server()
     port: 7070
 };
 

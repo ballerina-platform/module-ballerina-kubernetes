@@ -18,9 +18,9 @@
 package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
-import org.ballerinalang.model.tree.EndpointNode;
 import org.ballerinalang.model.tree.FunctionNode;
 import org.ballerinalang.model.tree.ServiceNode;
+import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 
 /**
@@ -33,13 +33,13 @@ public abstract class AbstractAnnotationProcessor implements AnnotationProcessor
             KubernetesPluginException {
         throw new UnsupportedOperationException();
     }
-
+    
     @Override
-    public void processAnnotation(EndpointNode endpointNode, AnnotationAttachmentNode attachmentNode) throws
+    public void processAnnotation(SimpleVariableNode variableNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         throw new UnsupportedOperationException();
     }
-
+    
     @Override
     public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {

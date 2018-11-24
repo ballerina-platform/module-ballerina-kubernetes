@@ -26,38 +26,23 @@ import ballerinax/kubernetes;
 @kubernetes:Service {
     sessionAffinity: "ClientIP"
 }
-endpoint http:Listener pizzaEP {
-    port: 9099
-};
+listener http:Server pizzaEP = new http:Server(9099);
 
 @kubernetes:Deployment {
-    name: "secret-key-ref",
+    name: "name-value",
     image: "pizza-shop:latest",
-    env: {
-        "SECRET_USERNAME": {
-            secretKeyRef: {
-                key: "username",
-                name: "test-secret"
-            }
-        },
-        "SECRET_PASSWORD": {
-            secretKeyRef: {
-                name: "test-secret",
-                key: "password"
-            }
-        }
-    }
+    env: { "location": "SL", "city": "COLOMBO" }
 }
 
 @http:ServiceConfig {
     basePath: "/pizza"
 }
-service<http:Service> PizzaAPI bind pizzaEP {
+service PizzaAPI on pizzaEP {
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/menu"
     }
-    getPizzaMenu(endpoint outboundEP, http:Request req) {
+    resource function getPizzaMenu(http:Caller outboundEP, http:Request req) {
         http:Response response = new;
         response.setTextPayload("Pizza menu \n");
         _ = outboundEP->respond(response);

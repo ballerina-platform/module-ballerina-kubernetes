@@ -17,40 +17,46 @@
 import ballerina/http;
 import ballerinax/kubernetes;
 
-@kubernetes:IstioGateway {
-    name: "my-gateway",
-    namespace: "ballerina",
-    servers: [
+@kubernetes:Ingress {
+    hostname: "pizza.com",
+    path: "/pizzastore",
+    targetPath: "/"
+}
+@kubernetes:Service {}
+listener http:Server pizzaEP = new http:Server(9099);
+
+@kubernetes:Deployment {
+    name: "simple-quota",
+    image: "pizza-shop:latest"
+}
+@kubernetes:ResourceQuota {
+    resourceQuotas: [
         {
-            port: {
-                number: 80,
-                name: "http",
-                protocol: "HTTP"
+            name: "compute-resources",
+            labels: {
+                priority: "high"
             },
-            hosts: [
-                "uk.bookinfo.com",
-                "eu.bookinfo.com"
-            ],
-            tls: {
-                httpsRedirect: true
+            hard: {
+                "pods": "4",
+                "requests.cpu": "1",
+                "requests.memory": "1Gi",
+                "limits.cpu": "2",
+                "limits.memory": "2Gi"
             }
         }
     ]
 }
-@kubernetes:Deployment {
-    name: "no_selector",
-    image: "pizza-shop:latest"
-}
-@kubernetes:Service {name: "hello"}
-listener http:Server helloEP = new http:Server(9090);
-
 @http:ServiceConfig {
-    basePath: "/helloWorld"
+    basePath: "/pizza"
 }
-service helloWorld on helloEP {
-    resource function sayHello(http:Caller outboundEP, http:Request request) {
+service PizzaAPI on pizzaEP {
+    @http:ResourceConfig {
+        methods: ["GET"],
+        path: "/menu"
+    }
+    resource function getPizzaMenu(http:Caller outboundEP, http:Request req) {
         http:Response response = new;
-        response.setTextPayload("Hello, World from service helloWorld ! \n");
+        response.setTextPayload("Pizza menu \n");
         _ = outboundEP->respond(response);
     }
 }
