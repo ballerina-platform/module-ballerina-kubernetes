@@ -24,7 +24,7 @@ import ballerinax/kubernetes;
     targetPath: "/"
 }
 @kubernetes:Service {
-    sessionAffinity: "ClientIP"
+    sessionAffinity: kubernetes:SESSION_AFFINITY_CLIENT_IP
 }
 listener http:Server pizzaEP = new http:Server(9099);
 
