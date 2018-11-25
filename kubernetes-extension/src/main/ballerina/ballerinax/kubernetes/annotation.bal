@@ -336,6 +336,8 @@ public type ResourceQuotas record {
 # @kubernetes:ResourcesQuotas annotation to configure Resource Quotas.
 public annotation<service, function, listener> ResourceQuota ResourceQuotas;
 
+public const string RESTART_POLICY_ON_FAILURE = "OnFailure";
+public const string RESTART_POLICY_ALWAYS = "Always";
 public const string RESTART_POLICY_NEVER = "Never";
 
 # Restart policy type field for kubernetes jobs.
