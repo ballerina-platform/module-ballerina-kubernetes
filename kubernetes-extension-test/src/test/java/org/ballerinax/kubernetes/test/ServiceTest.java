@@ -125,6 +125,16 @@ public class ServiceTest {
         Assert.assertEquals("9090/tcp", imageInspect.getContainerConfig().getExposedPorts().keySet().toArray()[0]);
     }
     
+    /**
+     * <pre>@kubernetes:Service</pre> annotation cannot be attached to a non anonymous endpoint of a service.
+     * @throws IOException Error when loading the generated yaml.
+     * @throws InterruptedException Error when compiling the ballerina file.
+     */
+    @Test
+    public void serviceAnnotationOnNonAnonymousEndpointTest() throws IOException, InterruptedException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "invalid_svc_annotation.bal"), 1);
+    }
+    
     @AfterClass
     public void cleanUp() throws KubernetesPluginException {
         KubernetesUtils.deleteDirectory(targetPath);
