@@ -73,7 +73,7 @@ import ballerinax/kubernetes;
     image: "pizza-shop:latest"
 }
 @kubernetes:Service {name: "hello"}
-listener http:Server helloEP = new http:Server(9090);
+listener http:Listener helloEP = new(9090);
 
 @http:ServiceConfig {
     basePath: "/helloWorld"

@@ -24,7 +24,7 @@ import ballerinax/kubernetes;
 @kubernetes:Ingress {
     hostname: "abc.com"
 }
-listener http:Server helloEP = new http:Server(9090);
+listener http:Listener helloEP = new(9090);
 
 @kubernetes:Service { name: "hello" }
 @http:ServiceConfig {

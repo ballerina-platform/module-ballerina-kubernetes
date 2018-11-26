@@ -10,7 +10,7 @@ import ballerinax/kubernetes;
 @kubernetes:Service {
     sessionAffinity: "ClientIP"
 }
-listener http:Server pizzaEP = new http:Server(9099);
+listener http:Listener pizzaEP = new(9099);
 
 @kubernetes:Deployment {
     name: "foodstore",
@@ -42,7 +42,7 @@ service PizzaAPI on pizzaEP {
     targetPath: "/burger"
 }
 @kubernetes:Service {}
-listener http:Server burgerEP = new http:Server(9096);
+listener http:Listener burgerEP = new(9096);
 
 @http:ServiceConfig {
     basePath: "/burger"

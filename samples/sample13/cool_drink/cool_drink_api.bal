@@ -8,7 +8,7 @@ import ballerinax/kubernetes;
 @kubernetes:Service {
     name: "cooldrink-backend"
 }
-listener http:Server coolDrinkEP = new http:Server(9090);
+listener http:Listener coolDrinkEP = new(9090);
 
 endpoint jdbc:Client coolDrinkDB {
     url: "jdbc:mysql://cooldrink-mysql.mysql:3306/cooldrinkdb",
