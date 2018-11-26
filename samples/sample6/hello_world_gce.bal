@@ -5,7 +5,7 @@ import ballerinax/kubernetes;
     hostname: "abc.com"
 }
 @kubernetes:Service { serviceType: "NodePort" }
-listener http:Server gceHelloWorldDEP = new http:Server(9090);
+listener http:Listener gceHelloWorldDEP = new(9090);
 
 @kubernetes:Deployment {
     enableLiveness: true,

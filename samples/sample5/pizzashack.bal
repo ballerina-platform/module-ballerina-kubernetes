@@ -5,13 +5,13 @@ import ballerinax/kubernetes;
     hostname: "internal.pizzashack.com"
 }
 @kubernetes:Service {}
-listener http:Server pizzaEP = new http:Server(9090);
+listener http:Listener pizzaEP = new(9090);
 
 @kubernetes:Service {}
 @kubernetes:Ingress {
     hostname: "pizzashack.com"
 }
-listener http:Server pizzaEPSecured = new http:Server(9095, config = {
+listener http:Listener pizzaEPSecured = new(9095, config = {
     secureSocket: {
         keyStore: {
             path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",

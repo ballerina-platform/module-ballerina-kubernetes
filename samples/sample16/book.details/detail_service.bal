@@ -7,7 +7,7 @@ import ballerinax/kubernetes;
 @kubernetes:Service {
     name: "book-detail"
 }
-listener http:Server bookDetailEP = new http:Server(8080);
+listener http:Listener bookDetailEP = new(8080);
 
 @http:ServiceConfig {
     basePath: "/detail"

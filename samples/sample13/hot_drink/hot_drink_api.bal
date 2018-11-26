@@ -8,7 +8,7 @@ import ballerinax/kubernetes;
 @kubernetes:Service {
     name: "hotdrink-backend"
 }
-listener http:Server hotDrinkEP = new http:Server(9090);
+listener http:Listener hotDrinkEP = new(9090);
 
 
 endpoint jdbc:Client hotdrinkDB {
