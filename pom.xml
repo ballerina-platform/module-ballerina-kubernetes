@@ -240,5 +240,6 @@
     <modules>
         <module>kubernetes-extension</module>
         <module>kubernetes-extension-test</module>
+        <module>kubernetes-extension-examples</module>
     </modules>
 </project>
