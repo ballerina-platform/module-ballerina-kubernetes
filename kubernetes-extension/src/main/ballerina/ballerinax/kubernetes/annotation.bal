@@ -21,6 +21,7 @@
 public type FileConfig record {
     string source;
     string target;
+    !...
 };
 
 # Value for a field.
@@ -150,6 +151,7 @@ public type DeploymentConfiguration record {
     boolean singleYAML;
     string[] dependsOn;
     string[] imagePullSecrets;
+    !...
 };
 
 # @kubernetes:Deployment annotation to configure deplyoment yaml.
@@ -201,6 +203,7 @@ public type IngressConfiguration record {
     string targetPath;
     string ingressClass;
     boolean enableTLS;
+    !...
 };
 
 # @kubernetes:Ingress annotation to configure ingress yaml.
@@ -219,6 +222,7 @@ public type PodAutoscalerConfig record {
     int minReplicas;
     int maxReplicas;
     int cpuPercentage;
+    !...
 };
 
 # @kubernetes:HPA annotation to configure horizontal pod autoscaler yaml.
@@ -235,6 +239,7 @@ public type Secret record {
     string mountPath;
     boolean readOnly;
     string[] data;
+    !...
 };
 
 #Secret volume mount configurations for kubernetes.
@@ -242,6 +247,7 @@ public type Secret record {
 # + secrets - Array of [Secret](kubernetes.html#Secret)
 public type SecretMount record {
     Secret[] secrets;
+    !...
 };
 
 # @kubernetes:Secret annotation to configure secrets.
@@ -258,6 +264,7 @@ public type ConfigMap record {
     string mountPath;
     boolean readOnly;
     string[] data;
+    !...
 };
 
 # Secret volume mount configurations for kubernetes.
@@ -267,6 +274,7 @@ public type ConfigMap record {
 public type ConfigMapMount record {
     string ballerinaConf;
     ConfigMap[] configMaps;
+    !...
 };
 
 # @kubernetes:ConfigMap annotation to configure config maps.
@@ -287,6 +295,7 @@ public type PersistentVolumeClaimConfig record {
     string volumeClaimSize;
     map annotations;
     boolean readOnly;
+    !...
 };
 
 # Persistent Volume Claims configurations for kubernetes.
@@ -294,6 +303,7 @@ public type PersistentVolumeClaimConfig record {
 # + volumeClaims - Array of [PersistentVolumeClaimConfig](kubernetes.html#PersistentVolumeClaimConfig)
 public type PersistentVolumeClaims record {
     PersistentVolumeClaimConfig[] volumeClaims;
+    !...
 };
 
 # @kubernetes:PersistentVolumeClaim annotation to configure Persistent Volume Claims.
@@ -367,7 +377,8 @@ public type JobConfig record {
     string dockerCertPath;
     FileConfig[] copyFiles;
     string[] imagePullSecrets;
-    boolean singleYAML;
+    boolean singleYAML = true;
+    !...
 };
 
 # @kubernetes:Job annotation to configure kubernetes jobs.

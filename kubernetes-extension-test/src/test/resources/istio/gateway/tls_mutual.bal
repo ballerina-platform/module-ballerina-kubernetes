@@ -43,7 +43,8 @@ import ballerinax/kubernetes;
 }
 @kubernetes:Deployment {
     name: "tls_mutual",
-    image: "pizza-shop:latest"
+    image: "pizza-shop:latest",
+    singleYAML: false
 }
 @kubernetes:Service {name: "hello"}
 endpoint http:Listener helloEP {

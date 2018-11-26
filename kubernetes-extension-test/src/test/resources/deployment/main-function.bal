@@ -20,7 +20,8 @@ import ballerinax/kubernetes;
 @kubernetes:Deployment {
     labels: {
         "task_type": "printer"
-    }
+    },
+    singleYAML: false
 }
 public function main(string... args) {
     io:println("hello world");

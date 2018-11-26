@@ -27,7 +27,8 @@ endpoint http:Listener helloWorldEP {
             target: "/home/ballerina/data/data.txt",
             source: "./data/data.txt"
         }
-    ]
+    ],
+    singleYAML: false
 }
 @http:ServiceConfig {
     basePath: "/helloWorld"
@@ -48,7 +49,8 @@ service<http:Service> helloWorld bind helloWorldEP {
 
 function readFile(string filePath) returns (string) {
     io:ReadableByteChannel bchannel = io:openReadableFile(filePath);
-    io:ReadableCharacterChannel cChannel = new io:ReadableCharacterChannel(bchannel, "UTF-8");
+    io:ReadableCharacterChannel cChannel = new
+    io:ReadableCharacterChannel(bchannel, "UTF-8");
 
     var readOutput = cChannel.read(50);
     match readOutput {

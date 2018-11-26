@@ -63,6 +63,7 @@ public class KubernetesResourceQuotaGeneratorTests {
             new ResourceQuotaHandler().createArtifacts();
             File yamlFile = new File("target" + File.separator + "kubernetes" + File.separator +
                                      "hello" + RESOURCE_QUOTA_FILE_POSTFIX + YAML);
+            Assert.assertTrue(yamlFile.exists(), "Generated file not found.");
             ResourceQuota resourceQuota = KubernetesHelper.loadYaml(yamlFile);
             
             // metadata

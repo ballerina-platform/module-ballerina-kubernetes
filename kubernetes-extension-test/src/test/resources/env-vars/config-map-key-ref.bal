@@ -46,7 +46,8 @@ endpoint http:Listener pizzaEP {
                 key: "log_level"
             }
         }
-    }
+    },
+    singleYAML: false
 }
 
 @http:ServiceConfig {

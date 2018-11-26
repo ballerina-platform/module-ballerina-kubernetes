@@ -52,7 +52,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |password|Password for the docker registry|null|
 |baseImage|Base image to create the docker image|ballerina/ballerina-runtime:latest|
 |imagePullSecrets|Image pull secrets value|null|
-|singleYAML|Generate a single yaml file for all k8s resources|false|
+|singleYAML|Generate a single yaml file for all k8s resources|true|
 
 ### @kubernetes:Service{}
 - Supported with ballerina endpoints.

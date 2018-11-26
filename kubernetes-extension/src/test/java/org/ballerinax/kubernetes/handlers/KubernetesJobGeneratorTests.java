@@ -53,6 +53,7 @@ public class KubernetesJobGeneratorTests {
         jobModel.setLabels(labels);
         jobModel.setImage(imageName);
         jobModel.setImagePullPolicy(imagePullPolicy);
+        jobModel.setSingleYAML(false);
         Map<String, EnvVarValueModel> env = new HashMap<>();
         EnvVarValueModel testEnvVar = new EnvVarValueModel("ENV");
         env.put("ENV_VAR", testEnvVar);

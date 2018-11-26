@@ -91,7 +91,7 @@ public class DeploymentModel extends KubernetesModel {
         this.volumeClaimModels = new HashSet<>();
         this.copyFiles = new HashSet<>();
         this.imagePullSecrets = new HashSet<>();
-        this.singleYAML = false;
+        this.singleYAML = true;
         this.commandArgs = "";
     }
 

@@ -19,7 +19,8 @@ import ballerinax/kubernetes;
 
 @kubernetes:Deployment {
     name: "empty_annotation",
-    image: "pizza-shop:latest"
+    image: "pizza-shop:latest",
+    singleYAML: false
 }
 @kubernetes:Service {name: "hello"}
 @kubernetes:IstioGateway {}
