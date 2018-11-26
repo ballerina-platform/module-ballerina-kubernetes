@@ -92,6 +92,7 @@ public class DeploymentModel extends KubernetesModel {
         this.copyFiles = new HashSet<>();
         this.imagePullSecrets = new HashSet<>();
         this.singleYAML = false;
+        this.commandArgs = "";
     }
 
     public Map<String, String> getLabels() {
