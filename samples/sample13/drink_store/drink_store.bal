@@ -10,7 +10,7 @@ import ballerina/math;
 @kubernetes:Ingress {
     hostname: "drinkstore.com"
 }
-listener http:Server drinkStoreEP = new http:Server(9091, config = {
+listener http:Listener drinkStoreEP = new(9091, config = {
     secureSocket: {
         keyStore: {
             path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",

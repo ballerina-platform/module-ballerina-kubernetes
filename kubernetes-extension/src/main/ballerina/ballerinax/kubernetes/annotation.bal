@@ -197,8 +197,6 @@ public annotation<listener, service> Service ServiceConfiguration;
 # Kubernetes ingress configuration.
 #
 # + listenerName - Name of the listener ingress attached
-# + labels - Label map for ingress
-# + annotations - Map of additional annotations
 # + hostname - Host name of the ingress
 # + path - Resource path
 # + targetPath - Target path for url rewrite
@@ -289,7 +287,6 @@ public annotation<service> ConfigMap ConfigMapMount;
 # + mountPath - Mount Path
 # + accessMode - Access mode
 # + volumeClaimSize - Size of the volume claim
-# + annotations - Map of annotation values
 # + readOnly - Is mount read only
 public type PersistentVolumeClaimConfig record {
     *Metadata;

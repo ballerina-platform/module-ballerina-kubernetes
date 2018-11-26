@@ -172,7 +172,7 @@ import ballerinax/kubernetes;
     hostname:"abc.com"
 }
 @kubernetes:Service{name:"hello"}
-listener http:Server helloEP = new http:Server(9090);
+listener http:Listener helloEP = new(9090);
 
 @kubernetes:Deployment{
     enableLiveness:true
