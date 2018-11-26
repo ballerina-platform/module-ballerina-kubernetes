@@ -10,15 +10,14 @@ import ballerina/math;
 @kubernetes:Ingress {
     hostname: "drinkstore.com"
 }
-endpoint http:Listener drinkStoreEP {
-    port: 9091,
+listener http:Server drinkStoreEP = new http:Server(9091, config = {
     secureSocket: {
         keyStore: {
             path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
             password: "ballerina"
         }
     }
-};
+});
 
 endpoint http:Client hotDrinkBackend {
     url: "http://hotdrink-backend:9090"
@@ -41,12 +40,12 @@ endpoint http:Client weatherEP {
     basePath: "/store"
 }
 @kubernetes:HPA {}
-service<http:Service> DrinkStoreAPI bind drinkStoreEP {
+service DrinkStoreAPI on drinkStoreEP {
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/hotDrink"
     }
-    getHotDrinkMenu(endpoint outboundEP, http:Request req) {
+    resource function getHotDrinkMenu(http:Caller outboundEP, http:Request req) {
         var response = hotDrinkBackend->get("/hotDrink/menu");
         match response {
             http:Response resp => {
@@ -73,7 +72,7 @@ service<http:Service> DrinkStoreAPI bind drinkStoreEP {
         methods: ["GET"],
         path: "/coolDrink"
     }
-    getCoolDrinkMenu(endpoint outboundEP, http:Request req) {
+    resource function getCoolDrinkMenu(http:Caller outboundEP, http:Request req) {
         var response = coolDrinkBackend->get("/coolDrink/menu");
         match response {
             http:Response resp => {
@@ -100,7 +99,7 @@ service<http:Service> DrinkStoreAPI bind drinkStoreEP {
         methods: ["GET"],
         path: "/getTempreature"
     }
-    getTempreature(endpoint outboundEP, http:Request req) {
+    resource function getTempreature(http:Caller outboundEP, http:Request req) {
         http:Response response = new;
         float celciusValue = roundFloat(getTempreatureInCelcius(),2);
         if(celciusValue>15){

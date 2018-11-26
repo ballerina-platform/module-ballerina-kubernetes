@@ -17,13 +17,18 @@
  */
 package org.ballerinax.kubernetes.models;
 
+import java.util.Map;
+
 /**
  * Kubernetes Model class.
  */
 public abstract class KubernetesModel {
-    private String name;
     private String version;
-
+    protected String name;
+    protected String namespace;
+    protected Map<String, String> labels;
+    protected Map<String, String> annotations;
+    
     public String getName() {
         return name;
     }
@@ -38,5 +43,29 @@ public abstract class KubernetesModel {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+    
+    public String getNamespace() {
+        return namespace;
+    }
+    
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+    
+    public Map<String, String> getLabels() {
+        return labels;
+    }
+    
+    public void setLabels(Map<String, String> labels) {
+        this.labels = labels;
+    }
+    
+    public Map<String, String> getAnnotations() {
+        return annotations;
+    }
+    
+    public void setAnnotations(Map<String, String> annotations) {
+        this.annotations = annotations;
     }
 }

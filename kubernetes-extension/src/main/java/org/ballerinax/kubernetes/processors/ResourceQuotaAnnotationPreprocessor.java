@@ -19,9 +19,9 @@
 package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
-import org.ballerinalang.model.tree.EndpointNode;
 import org.ballerinalang.model.tree.FunctionNode;
 import org.ballerinalang.model.tree.ServiceNode;
+import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.ResourceQuotaModel;
@@ -45,19 +45,19 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 public class ResourceQuotaAnnotationPreprocessor extends AbstractAnnotationProcessor {
     
     @Override
-    public void processAnnotation(EndpointNode endpointNode, AnnotationAttachmentNode attachmentNode)
+    public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode)
+            throws KubernetesPluginException {
+        processResourceQuotaAnnotation((BLangAnnotationAttachment) attachmentNode);
+    }
+    
+    @Override
+    public void processAnnotation(SimpleVariableNode variableNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException {
         processResourceQuotaAnnotation((BLangAnnotationAttachment) attachmentNode);
     }
     
     @Override
     public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode)
-            throws KubernetesPluginException {
-        processResourceQuotaAnnotation((BLangAnnotationAttachment) attachmentNode);
-    }
-    
-    @Override
-    public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException {
         processResourceQuotaAnnotation((BLangAnnotationAttachment) attachmentNode);
     }
@@ -80,9 +80,17 @@ public class ResourceQuotaAnnotationPreprocessor extends AbstractAnnotationProce
                         case name:
                             resourceQuotaModel.setName(getValidName(resolveValue(annotation.getValue().toString())));
                             break;
+                        case namespace:
+                            resourceQuotaModel.setNamespace(getValidName(resolveValue(annotation.getValue()
+                                    .toString())));
+                            break;
                         case labels:
                             BLangRecordLiteral labelValues = (BLangRecordLiteral) annotation.getValue();
                             resourceQuotaModel.setLabels(getMap(labelValues.getKeyValuePairs()));
+                            break;
+                        case annotations:
+                            BLangRecordLiteral annoValues = (BLangRecordLiteral) annotation.getValue();
+                            resourceQuotaModel.setAnnotations(getMap(annoValues.getKeyValuePairs()));
                             break;
                         case hard:
                             BLangRecordLiteral hardValueRecord = (BLangRecordLiteral) annotation.getValue();
@@ -106,7 +114,9 @@ public class ResourceQuotaAnnotationPreprocessor extends AbstractAnnotationProce
      */
     private enum ResourceQuotaConfig {
         name,
+        namespace,
         labels,
+        annotations,
         hard,
         scopes
     }

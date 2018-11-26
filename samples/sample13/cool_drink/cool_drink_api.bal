@@ -8,9 +8,7 @@ import ballerinax/kubernetes;
 @kubernetes:Service {
     name: "cooldrink-backend"
 }
-endpoint http:Listener coolDrinkEP {
-    port: 9090
-};
+listener http:Server coolDrinkEP = new http:Server(9090);
 
 endpoint jdbc:Client coolDrinkDB {
     url: "jdbc:mysql://cooldrink-mysql.mysql:3306/cooldrinkdb",
@@ -33,12 +31,12 @@ endpoint jdbc:Client coolDrinkDB {
 @http:ServiceConfig {
     basePath: "/coolDrink"
 }
-service<http:Service> cooldrinkAPI bind coolDrinkEP {
+service cooldrinkAPI on coolDrinkEP {
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/menu"
     }
-    getcooldrinkMenu(endpoint outboundEP, http:Request req) {
+    resource function getcooldrinkMenu(http:Caller outboundEP, http:Request req) {
         http:Response response = new;
 
         var selectRet = coolDrinkDB->select("SELECT * FROM cooldrink", ());

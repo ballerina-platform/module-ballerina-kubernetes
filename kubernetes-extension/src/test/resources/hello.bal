@@ -2,30 +2,29 @@ import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:Deployment {
-    enableLiveness:true
+    enableLiveness: true
 }
 @kubernetes:Ingress {
-    hostname:"abc.com"
+    hostname: "abc.com"
 }
 @kubernetes:Service {
-    name:"hello",
-    serviceType:"NodePort"
+    name: "hello",
+    serviceType: "NodePort"
 }
-endpoint http:Listener helloEP {
-    port:9090,
-    secureSocket:{
-        keyStore:{
-            path:"${ballerina.home}/bre/security/ballerinaKeystore.p12",
-            password:"ballerina"
+listener http:Server helloEP = new http:Server(9090, config = {
+    secureSocket: {
+        keyStore: {
+            path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
+            password: "ballerina"
         }
-    }};
-
+    }
+});
 
 @http:ServiceConfig {
-    basePath:"/helloWorld"
+    basePath: "/helloWorld"
 }
-service<http:Service> helloWorld bind helloEP {
-    sayHello(endpoint outboundEP, http:Request request) {
+service helloWorld on helloEP {
+    resource function sayHello(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         response.setTextPayload("Hello, World from service helloWorld ! \n");
         _ = outboundEP->respond(response);

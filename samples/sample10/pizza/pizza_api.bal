@@ -2,31 +2,29 @@ import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:Ingress {
-    hostname:"pizza.com",
-    path:"/pizzastore",
-    targetPath:"/"
+    hostname: "pizza.com",
+    path: "/pizzastore",
+    targetPath: "/"
 }
 @kubernetes:Service {}
-endpoint http:Listener pizzaEP {
-    port:9099
-};
+listener http:Server pizzaEP = new http:Server(9099);
 
 @kubernetes:Deployment {
-    name:"foodstore",
-    replicas:3,
-    env:{"location":"SL", "city":"COLOMBO"},
-    enableLiveness:true,
-    livenessPort:9099
+    name: "foodstore",
+    replicas: 3,
+    env: { "location": "SL", "city": "COLOMBO" },
+    enableLiveness: true,
+    livenessPort: 9099
 }
 @http:ServiceConfig {
-    basePath:"/pizza"
+    basePath: "/pizza"
 }
-service<http:Service> PizzaAPI bind pizzaEP {
+service PizzaAPI on pizzaEP {
     @http:ResourceConfig {
-        methods:["GET"],
-        path:"/menu"
+        methods: ["GET"],
+        path: "/menu"
     }
-    getPizzaMenu(endpoint outboundEP, http:Request req) {
+    resource function getPizzaMenu(http:Caller outboundEP, http:Request req) {
         http:Response response = new;
         response.setTextPayload("Pizza menu \n");
         _ = outboundEP->respond(response);

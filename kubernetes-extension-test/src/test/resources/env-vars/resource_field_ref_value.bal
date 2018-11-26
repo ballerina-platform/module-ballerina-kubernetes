@@ -26,24 +26,21 @@ import ballerinax/kubernetes;
 @kubernetes:Service {
     sessionAffinity: "ClientIP"
 }
-endpoint http:Listener pizzaEP {
-    port: 9099
-};
+listener http:Server pizzaEP = new http:Server(9099);
 
 @kubernetes:Deployment {
-    name: "config-map-key-ref",
+    name: "resource-field-ref-value",
     image: "pizza-shop:latest",
     env: {
-        "SPECIAL_LEVEL_KEY": {
-            configMapKeyRef: {
-                key: "special.how",
-                name: "special-config"
+        "MY_CPU_REQUEST": {
+            resourceFieldRef: {
+                containerName: "client",
+                ^"resource": "requests.cpu"
             }
         },
-        "LOG_LEVEL": {
-            configMapKeyRef: {
-                name: "env-config",
-                key: "log_level"
+        "MY_CPU_LIMIT": {
+            resourceFieldRef: {
+                ^"resource": "limits.cpu"
             }
         }
     }
@@ -52,12 +49,12 @@ endpoint http:Listener pizzaEP {
 @http:ServiceConfig {
     basePath: "/pizza"
 }
-service<http:Service> PizzaAPI bind pizzaEP {
+service PizzaAPI on pizzaEP {
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/menu"
     }
-    getPizzaMenu(endpoint outboundEP, http:Request req) {
+    resource function getPizzaMenu(http:Caller outboundEP, http:Request req) {
         http:Response response = new;
         response.setTextPayload("Pizza menu \n");
         _ = outboundEP->respond(response);

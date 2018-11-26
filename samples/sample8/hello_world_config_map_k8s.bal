@@ -5,40 +5,39 @@ import ballerina/io;
 
 @kubernetes:Service {}
 @kubernetes:Ingress {
-    hostname:"abc.com"
+    hostname: "abc.com"
 }
-endpoint http:Listener helloWorldEP {
-    port:9090,
+listener http:Server helloWorldEP = new http:Server(9090, config = {
     secureSocket:{
         keyStore:{
-            path:"${ballerina.home}/bre/security/ballerinaKeystore.p12",
+            path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
             password:"ballerina"
         },
         trustStore:{
-            path:"${ballerina.home}/bre/security/ballerinaTruststore.p12",
-            password:"ballerina"
+            path: "${ballerina.home}/bre/security/ballerinaTruststore.p12",
+            password: "ballerina"
         }
     }
-};
+});
 
 @kubernetes:ConfigMap {
-    ballerinaConf:"./conf/ballerina.conf",
+    ballerinaConf: "./conf/ballerina.conf",
     configMaps:[
         {
-            mountPath:"/home/ballerina/data",
-            data:["./conf/data.txt"]
+            mountPath: "/home/ballerina/data",
+            data: ["./conf/data.txt"]
         }
     ]
 }
 @http:ServiceConfig {
-    basePath:"/helloWorld"
+    basePath: "/helloWorld"
 }
-service<http:Service> helloWorld bind helloWorldEP {
+service helloWorld on helloWorldEP {
     @http:ResourceConfig {
-        methods:["GET"],
-        path:"/config/{user}"
+        methods: ["GET"],
+        path: "/config/{user}"
     }
-    getConfig(endpoint outboundEP, http:Request request, string user) {
+    resource function getConfig(http:Caller outboundEP, http:Request request, string user) {
         http:Response response = new;
         string userId = getConfigValue(user, "userid");
         string groups = getConfigValue(user, "groups");
@@ -47,10 +46,10 @@ service<http:Service> helloWorld bind helloWorldEP {
         _ = outboundEP->respond(response);
     }
     @http:ResourceConfig {
-        methods:["GET"],
-        path:"/data"
+        methods: ["GET"],
+        path: "/data"
     }
-    getData(endpoint outboundEP, http:Request request) {
+    resource function getData(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         string payload = readFile("./data/data.txt");
         response.setTextPayload("Data: " + untaint payload + "\n");

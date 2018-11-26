@@ -26,8 +26,8 @@ import ballerinax/kubernetes;
 @http:ServiceConfig {
     basePath: "/helloWorld"
 }
-service<http:Service> helloWorld bind { port:9090 } {
-    sayHello(endpoint outboundEP, http:Request request) {
+service helloWorld on new http:Server(9090) {
+    resource function sayHello(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         response.setTextPayload("Hello, World from service helloWorld ! \n");
         _ = outboundEP->respond(response);

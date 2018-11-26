@@ -23,12 +23,10 @@ import ballerinax/kubernetes;
     targetPath: "/"
 }
 @kubernetes:Service {}
-endpoint http:Listener pizzaEP {
-    port: 9099
-};
+listener http:Server pizzaEP = new http:Server(9099);
 
 @kubernetes:Deployment {
-    name: "multple-quotas",
+    name: "quota-with-scope",
     image: "pizza-shop:latest"
 }
 @kubernetes:ResourceQuota {
@@ -41,25 +39,20 @@ endpoint http:Listener pizzaEP {
                 "requests.memory": "1Gi",
                 "limits.cpu": "2",
                 "limits.memory": "2Gi"
-            }
-        },
-        {
-            name: "minimum-resources",
-            hard: {
-                "pods": "1"
-            }
+            },
+            scopes: ["BestEffort"]
         }
     ]
 }
 @http:ServiceConfig {
     basePath: "/pizza"
 }
-service<http:Service> PizzaAPI bind pizzaEP {
+service PizzaAPI on pizzaEP {
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/menu"
     }
-    getPizzaMenu(endpoint outboundEP, http:Request req) {
+    resource function getPizzaMenu(http:Caller outboundEP, http:Request req) {
         http:Response response = new;
         response.setTextPayload("Pizza menu \n");
         _ = outboundEP->respond(response);

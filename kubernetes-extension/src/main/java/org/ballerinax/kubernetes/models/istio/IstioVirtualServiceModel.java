@@ -21,46 +21,18 @@ package org.ballerinax.kubernetes.models.istio;
 import org.ballerinax.kubernetes.models.KubernetesModel;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Istio virtual service annotation model class.
  *
  * @since 0.985.0
  */
-public class IstioVirtualService extends KubernetesModel {
-    private String namespace;
-    private Map<String, String> labels;
-    private Map<String, String> annotations;
+public class IstioVirtualServiceModel extends KubernetesModel {
     private List<String> hosts;
     private List<String> gateways;
     private List<IstioHttpRoute> http;
     private List<Object> tls;
     private List<Object> tcp;
-    
-    public String getNamespace() {
-        return namespace;
-    }
-    
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
-    }
-    
-    public Map<String, String> getLabels() {
-        return labels;
-    }
-    
-    public void setLabels(Map<String, String> labels) {
-        this.labels = labels;
-    }
-    
-    public Map<String, String> getAnnotations() {
-        return annotations;
-    }
-    
-    public void setAnnotations(Map<String, String> annotations) {
-        this.annotations = annotations;
-    }
     
     public List<String> getHosts() {
         return hosts;
