@@ -11,7 +11,7 @@ import ballerinax/kubernetes;
     name: "hello",
     serviceType: "NodePort"
 }
-listener http:Server helloEP = new http:Server(9090, config = {
+listener http:Listener helloEP = new(9090, config = {
     secureSocket: {
         keyStore: {
             path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",

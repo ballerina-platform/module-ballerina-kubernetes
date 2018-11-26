@@ -4,7 +4,7 @@ import ballerinax/kubernetes;
 @kubernetes:Service {}
 @kubernetes:IstioGateway {}
 @kubernetes:IstioVirtualService {}
-listener http:Server bookShopEP = new http:Server(9080);
+listener http:Listener bookShopEP = new(9080);
 
 endpoint http:Client bookDetailsEP {
     url: "http://book-detail:8080"

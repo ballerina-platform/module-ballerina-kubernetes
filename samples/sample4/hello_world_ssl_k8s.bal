@@ -5,7 +5,7 @@ import ballerinax/kubernetes;
 @kubernetes:Ingress {
     hostname:"abc.com"
 }
-listener http:Server helloWorldSecuredEP = new http:Server(9090, config = {
+listener http:Listener helloWorldSecuredEP = new(9090, config = {
     secureSocket: {
         keyStore: {
             path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",

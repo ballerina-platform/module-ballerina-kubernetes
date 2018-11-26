@@ -23,7 +23,7 @@ import ballerinax/kubernetes;
     targetPath: "/"
 }
 @kubernetes:Service {}
-listener http:Server pizzaEP = new http:Server(9099);
+listener http:Listener pizzaEP = new(9099);
 
 @kubernetes:Deployment {
     name: "multple-quotas",
