@@ -1,10 +1,10 @@
 import ballerina/http;
 import ballerinax/kubernetes;
 
+@kubernetes:Service { serviceType: "NodePort" }
 @kubernetes:Deployment {
     singleYAML: false
 }
-@kubernetes:Service { serviceType: "NodePort" }
 @http:ServiceConfig {
     basePath: "/helloWorld"
 }

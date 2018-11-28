@@ -70,10 +70,9 @@ function readFile(string filePath) returns (string) {
     io:ReadableCharacterChannel cChannel = new io:ReadableCharacterChannel(bchannel, "UTF-8");
 
     var readOutput = cChannel.read(50);
-    match readOutput {
-        string text => {
-            return text;
-        }
-        error ioError => return "Error: Unable to read file";
+    if (readOutput is string) {
+        return readOutput;
+    } else {
+        return "Error: Unable to read file";
     }
 }
