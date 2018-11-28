@@ -1,9 +1,9 @@
 import ballerina/http;
 import ballerinax/kubernetes;
 
-@kubernetes:Service {serviceType:"NodePort"}
+@kubernetes:Service { serviceType: "NodePort" }
 @http:ServiceConfig {
-    basePath:"/helloWorld"
+    basePath: "/helloWorld"
 }
 service helloWorld on new http:Listener(9090) {
     resource function sayHello(http:Caller outboundEP, http:Request request) {
