@@ -59,9 +59,11 @@ service helloWorld on helloWorldEP {
         string userId = getConfigValue(user, "userid");
         string groups = getConfigValue(user, "groups");
         string payload = "{userId: " + userId + ", groups: " + groups + "} \n";
-        outboundEP->respond(payload) but {
-            error err => log:printError(err.message, err = err)
-        };
+        var responseResult = outboundEP->respond(payload);
+        if (responseResult is error) {
+            error err = responseResult;
+            log:printError("Error sending response", err = err);
+        }
     }
 }
 
