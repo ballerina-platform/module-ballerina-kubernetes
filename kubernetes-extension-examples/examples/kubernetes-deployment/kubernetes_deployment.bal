@@ -13,8 +13,7 @@ import ballerinax/kubernetes;
     //Hostname of the service is `abc.com`.
     hostname: "abc.com"
 }
-endpoint http:Listener helloWorldEP {
-    port: 9090,
+listener http:Listener helloWorldEP = new(9090, config = {
     //Ballerina automatically creates Kubernetes secrets for the keystore and truststore when `@kubernetes:Service`
     //annotation is added to the endpoint.
     secureSocket: {
@@ -27,7 +26,7 @@ endpoint http:Listener helloWorldEP {
             password: "ballerina"
         }
     }
-};
+});
 
 //Add `@kubernetes:ConfigMap` annotation to a Ballerna service to mount configs to the container.
 @kubernetes:ConfigMap {
@@ -51,12 +50,12 @@ endpoint http:Listener helloWorldEP {
 @http:ServiceConfig {
     basePath: "/helloWorld"
 }
-service<http:Service> helloWorld bind helloWorldEP {
+service helloWorld on helloWorldEP {
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/config/{user}"
     }
-    getConfig(endpoint outboundEP, http:Request request, string user) {
+    resource function getConfig(http:Caller outboundEP, http:Request request, string user) {
         string userId = getConfigValue(user, "userid");
         string groups = getConfigValue(user, "groups");
         string payload = "{userId: " + userId + ", groups: " + groups + "} \n";
