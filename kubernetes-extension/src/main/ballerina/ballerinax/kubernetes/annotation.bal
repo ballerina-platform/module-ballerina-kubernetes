@@ -275,7 +275,7 @@ public type ConfigMap record {
 # + configMaps - Array of [ConfigMap](kubernetes.html#ConfigMap)
 public type ConfigMapMount record {
     string ballerinaConf;
-    ConfigMap[] configMaps;
+    ConfigMap[] configMaps?;
     !...
 };
 

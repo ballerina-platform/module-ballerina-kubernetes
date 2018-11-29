@@ -25,6 +25,7 @@ import io.fabric8.kubernetes.api.model.extensions.Deployment;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
+import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -171,7 +172,7 @@ public class Sample16Test implements SampleTest {
 
     @AfterClass
     public void cleanUp() throws KubernetesPluginException {
-//        KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(bookReviewsDockerImage);
         KubernetesTestUtils.deleteDockerImage(bookDetailsDockerImage);
         KubernetesTestUtils.deleteDockerImage(bookShopDockerImage);
