@@ -25,6 +25,7 @@ import org.ballerinalang.model.elements.Flag;
 import org.ballerinalang.model.elements.PackageID;
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.FunctionNode;
+import org.ballerinalang.model.tree.PackageNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinalang.util.diagnostic.Diagnostic;
@@ -62,8 +63,9 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     }
     
     @Override
-    public void process(BLangPackage packageNode) {
-        KubernetesContext.getInstance().addDataHolder(packageNode.packageID);
+    public void process(PackageNode packageNode) {
+        BLangPackage bPackage = (BLangPackage) packageNode;
+        KubernetesContext.getInstance().addDataHolder(bPackage.packageID);
     }
     
     @Override

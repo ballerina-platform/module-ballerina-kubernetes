@@ -1,4 +1,3 @@
-import ballerina/config;
 import ballerina/http;
 import ballerinax/kubernetes;
 import ballerina/io;
