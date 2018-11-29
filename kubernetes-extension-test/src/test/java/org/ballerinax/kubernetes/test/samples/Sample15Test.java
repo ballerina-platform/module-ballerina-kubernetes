@@ -20,9 +20,7 @@ package org.ballerinax.kubernetes.test.samples;
 
 import io.fabric8.docker.api.model.ImageInspect;
 import io.fabric8.kubernetes.api.KubernetesHelper;
-import io.fabric8.kubernetes.api.model.Container;
-import io.fabric8.kubernetes.api.model.extensions.Deployment;
-import org.ballerinax.kubernetes.KubernetesConstants;
+import io.fabric8.kubernetes.api.model.ResourceQuota;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
@@ -38,51 +36,54 @@ import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDockerImage;
 
-public class Sample12Test implements SampleTest {
 
-    private final String sourceDirPath = SAMPLE_DIR + File.separator + "sample12";
+public class Sample15Test implements SampleTest {
+    
+    private final String sourceDirPath = SAMPLE_DIR + File.separator + "sample15";
     private final String targetPath = sourceDirPath + File.separator + KUBERNETES;
-    private final String dockerImage = "hello_world_copy_file:latest";
-
+    private final String dockerImage = "hello_world_k8s_rq:latest";
+    
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(sourceDirPath, "hello_world_copy_file.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(sourceDirPath, "hello_world_k8s_rq.bal"), 0);
     }
-
+    
     @Test
     public void validateDockerfile() {
         File dockerFile = new File(targetPath + File.separator + DOCKER + File.separator + "Dockerfile");
         Assert.assertTrue(dockerFile.exists());
     }
-
+    
     @Test
     public void validateDockerImage() {
         ImageInspect imageInspect = getDockerImage(dockerImage);
         Assert.assertEquals(1, imageInspect.getContainerConfig().getExposedPorts().size());
         Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9090/tcp"));
     }
-
+    
     @Test
-    public void validateDeployment() throws IOException {
-        File deploymentYAML = new File(targetPath + File.separator + "hello_world_copy_file_deployment.yaml");
-        Assert.assertTrue(deploymentYAML.exists());
-        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
-        // Assert Deployment
-        Assert.assertEquals("hello-world-copy-file-deployment", deployment.getMetadata().getName());
-        Assert.assertEquals(1, deployment.getSpec().getReplicas().intValue());
-        Assert.assertEquals(1, deployment.getSpec().getTemplate().getSpec().getVolumes().size());
-        Assert.assertEquals("hello_world_copy_file", deployment.getMetadata().getLabels().get(KubernetesConstants
-                .KUBERNETES_SELECTOR_KEY));
-        Assert.assertEquals(1, deployment.getSpec().getTemplate().getSpec().getContainers().size());
-
-        // Assert Containers
-        Container container = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);
-        Assert.assertEquals(1, container.getVolumeMounts().size());
-        Assert.assertEquals(dockerImage, container.getImage());
-        Assert.assertEquals(KubernetesConstants.ImagePullPolicy.IfNotPresent.name(), container.getImagePullPolicy());
-        Assert.assertEquals(1, container.getPorts().size());
+    public void validateResourceQuota() throws IOException {
+        File resourceQuotaYAML = new File(targetPath + File.separator + "hello_world_k8s_rq_resource_quota.yaml");
+        Assert.assertTrue(resourceQuotaYAML.exists());
+        ResourceQuota resourceQuota = KubernetesHelper.loadYaml(resourceQuotaYAML);
+        // Assert Resource quota
+        Assert.assertEquals("pod-limit", resourceQuota.getMetadata().getName());
+        Assert.assertEquals(resourceQuota.getMetadata().getLabels().size(), 0, "Invalid number of labels.");
+    
+        Assert.assertEquals(resourceQuota.getSpec().getHard().size(), 5, "Invalid number of hard limits.");
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("pods").getAmount(), "2", "Invalid number of pods.");
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.cpu").getAmount(), "1",
+                "Invalid number of cpu requests.");
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.memory").getAmount(), "1Gi",
+                "Invalid number of memory requests.");
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.cpu").getAmount(), "2",
+                "Invalid number of cpu limits");
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.memory").getAmount(), "2Gi",
+                "Invalid number of memory limits.");
+    
+        Assert.assertEquals(resourceQuota.getSpec().getScopes().size(), 0, "Unexpected number of scopes.");
     }
-
+    
     @AfterClass
     public void cleanUp() throws KubernetesPluginException {
         KubernetesUtils.deleteDirectory(targetPath);

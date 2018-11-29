@@ -6,15 +6,13 @@ import ballerinax/kubernetes;
 @kubernetes:IstioVirtualService {}
 listener http:Listener bookShopEP = new(9080);
 
-endpoint http:Client bookDetailsEP {
-    url: "http://book-detail:8080"
-};
+http:Client bookDetailsEP = new("http://book-detail:8080");
 
-endpoint http:Client bookReviewEP {
-    url: "http://book-review:7070"
-};
+http:Client bookReviewEP = new("http://book-review:7070");
 
-@kubernetes:Deployment {}
+@kubernetes:Deployment {
+    singleYAML: false
+}
 @http:ServiceConfig {
     basePath: "/book"
 }
@@ -25,44 +23,54 @@ service shopService on bookShopEP {
     }
     resource function getBook (http:Caller caller, http:Request request, string id) {
         var detailCall = bookDetailsEP->get(string `/detail/{{untaint id}}`);
-        match detailCall {
-            http:Response detailResponse => {
-                if (detailResponse.statusCode != 404) {
-                    json details = check detailResponse.getJsonPayload();
+        if (detailCall is http:Response) {
+            if (detailCall.statusCode != 404) {
+                var details = detailCall.getJsonPayload();
+                if (details is json) {
                     var reviewCall = bookReviewEP->get(string `/review/{{untaint id}}`);
-                    match reviewCall {
-                        http:Response reviewResponse => {
-                            string reviews = check reviewResponse.getTextPayload();
+                    if (reviewCall is http:Response) {
+                        var reviews = reviewCall.getTextPayload();
+                        if (reviews is string) {
                             json bookInfo = {
-                                id: id,
+                            id: id,
                                 details: details,
                                 reviews: reviews
                             };
                             http:Response bookResponse = new;
                             bookResponse.setJsonPayload(untaint bookInfo, contentType = "application/json");
                             _ = caller -> respond(bookResponse);
-                        }
-                        error => {
+                        } else {
                             http:Response errResponse = new;
-                            json serverErr = { message: "book reviews service is not accessible" };
+                            json serverErr = { message: "unexpected response from review service" };
                             errResponse.setJsonPayload(serverErr, contentType = "application/json");
+                            errResponse.statusCode = 404;
                             _ = caller -> respond(errResponse);
                         }
+                    } else {
+                        http:Response errResponse = new;
+                        json serverErr = { message: "book reviews service is not accessible" };
+                        errResponse.setJsonPayload(serverErr, contentType = "application/json");
+                        _ = caller -> respond(errResponse);
                     }
                 } else {
                     http:Response errResponse = new;
-                    json serverErr = { message: string `book not found: {{untaint id}}` };
+                    json serverErr = { message: "unexpected response from detail service" };
                     errResponse.setJsonPayload(serverErr, contentType = "application/json");
                     errResponse.statusCode = 404;
                     _ = caller -> respond(errResponse);
                 }
-            }
-            error => {
+            } else {
                 http:Response errResponse = new;
-                json serverErr = { message: "book details service is not accessible" };
+                json serverErr = { message: string `book not found: {{untaint id}}` };
                 errResponse.setJsonPayload(serverErr, contentType = "application/json");
+                errResponse.statusCode = 404;
                 _ = caller -> respond(errResponse);
             }
+        } else {
+            http:Response errResponse = new;
+            json serverErr = { message: "book details service is not accessible" };
+            errResponse.setJsonPayload(serverErr, contentType = "application/json");
+            _ = caller -> respond(errResponse);
         }
     }
 }

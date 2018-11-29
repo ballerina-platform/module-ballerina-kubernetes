@@ -4,12 +4,13 @@ import ballerinax/kubernetes;
 @kubernetes:Deployment {
     enableLiveness: true,
     namespace: "ballerina",
-    replicas: 2
+    replicas: 2,
+    singleYAML: false
 }
 @kubernetes:Ingress {
     hostname: "abc.com"
 }
-@kubernetes:Service {name: "hello"}
+@kubernetes:Service { name: "hello" }
 listener http:Listener helloEP = new(9090);
 
 @kubernetes:ResourceQuota {
