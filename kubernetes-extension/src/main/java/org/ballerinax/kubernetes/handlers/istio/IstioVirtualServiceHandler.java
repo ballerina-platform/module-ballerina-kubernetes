@@ -18,6 +18,8 @@
 
 package org.ballerinax.kubernetes.handlers.istio;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.AbstractArtifactHandler;
 import org.ballerinax.kubernetes.models.KubernetesContext;
@@ -30,7 +32,6 @@ import org.ballerinax.kubernetes.models.istio.IstioHttpRoute;
 import org.ballerinax.kubernetes.models.istio.IstioVirtualServiceModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -133,11 +134,10 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
         
             DumperOptions options = new DumperOptions();
             options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        
-            Yaml yamlProcessor = new Yaml(options);
-            String vsYamlString = yamlProcessor.dump(vsYamlModel);
     
-            vsYamlString = "---\n" + vsYamlString;
+            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+            String vsYamlString = mapper.writeValueAsString(vsYamlModel);
+            
             KubernetesUtils.writeToFile(vsYamlString, ISTIO_VIRTUAL_SERVICE_FILE_POSTFIX + YAML);
         } catch (IOException e) {
             String errorMessage = "Error while generating yaml file for istio virtual service: " + vsModel.getName();
