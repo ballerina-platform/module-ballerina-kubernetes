@@ -19,16 +19,16 @@ service detailService on bookDetailEP {
     }
     resource function getDetail(http:Caller caller, http:Request request, string id) {
         table<Detail> tbDetails = table {
-            { id, author, cost },
-            [ { "B1", "John Jonathan", 10.00 },
+                { id, author, cost },
+            [
+                { "B1", "John Jonathan", 10.00 },
                 { "B2", "Anne Anakin", 15.00 },
                 { "B3", "Greg George", 20.00 }
             ]
         };
 
-        Detail? bookDetail;
-        while (tbDetails.hasNext()) {
-            Detail detail = check <Detail>tbDetails.getNext();
+        Detail? bookDetail = ();
+        foreach detail in tbDetails {
             if (detail.id == id) {
                 bookDetail = detail;
                 break;
@@ -36,21 +36,18 @@ service detailService on bookDetailEP {
         }
 
         http:Response detailResponse = new;
-        match bookDetail {
-            Detail detail => {
-                json responseJson = {
-                    author: bookDetail.author,
-                    cost: bookDetail.cost
-                };
-                detailResponse.setJsonPayload(responseJson, contentType = "application/json");
-            }
-            () => {
-                json notFoundJson = {
-                    message: "book not found: " + untaint id
-                };
-                detailResponse.setJsonPayload(notFoundJson, contentType = "application/json");
-                detailResponse.statusCode = 404;
-            }
+        if (bookDetail is Detail) {
+            json responseJson = {
+                author: bookDetail.author,
+                cost: bookDetail.cost
+            };
+            detailResponse.setJsonPayload(responseJson, contentType = "application/json");
+        } else {
+            json notFoundJson = {
+                message: "book not found: " + untaint id
+            };
+            detailResponse.setJsonPayload(notFoundJson, contentType = "application/json");
+            detailResponse.statusCode = 404;
         }
         _ = caller -> respond(detailResponse);
     }
