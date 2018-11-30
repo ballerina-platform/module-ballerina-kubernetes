@@ -223,9 +223,9 @@ public annotation<service, listener> Ingress IngressConfiguration;
 # + cpuPercentage - CPU percentage to start scaling
 public type PodAutoscalerConfig record {
     *Metadata;
-    int minReplicas;
-    int maxReplicas;
-    int cpuPercentage;
+    int minReplicas?;
+    int maxReplicas?;
+    int cpuPercentage?;
     !...
 };
 

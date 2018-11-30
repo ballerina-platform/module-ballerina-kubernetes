@@ -27,7 +27,7 @@
     <version>0.983.1-SNAPSHOT</version>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>kubernetes-extension-parent</artifactId>
-    <name>BallerinaX - Kubernetes Extension Parent</name>
+    <name>Ballerinax - Kubernetes Extension Parent</name>
     <packaging>pom</packaging>
     <url>https://ballerina.io/</url>
 
