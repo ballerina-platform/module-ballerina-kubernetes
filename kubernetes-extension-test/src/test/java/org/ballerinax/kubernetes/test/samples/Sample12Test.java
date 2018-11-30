@@ -19,10 +19,6 @@
 package org.ballerinax.kubernetes.test.samples;
 
 import io.fabric8.docker.api.model.ImageInspect;
-import io.fabric8.kubernetes.api.KubernetesHelper;
-import io.fabric8.kubernetes.api.model.Container;
-import io.fabric8.kubernetes.api.model.extensions.Deployment;
-import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
@@ -41,51 +37,55 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDocker
 public class Sample12Test implements SampleTest {
 
     private final String sourceDirPath = SAMPLE_DIR + File.separator + "sample12";
-    private final String targetPath = sourceDirPath + File.separator + KUBERNETES;
-    private final String dockerImage = "hello_world_copy_file:latest";
+    private final String targetPath = sourceDirPath + File.separator + "target" + File.separator + KUBERNETES;
+    private final String coolDrinkPkgTargetPath = targetPath + File.separator + "cool_drink";
+    private final String drinkStorePkgTargetPath = targetPath + File.separator + "drink_store";
+    private final String hotDrinkPkgTargetPath = targetPath + File.separator + "hot_drink";
+    private final String coolDrinkDockerImage = "cool_drink:latest";
+    private final String drinkStoreDockerImage = "drink_store:latest";
+    private final String hotDrinkDockerImage = "hot_drink:latest";
 
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(sourceDirPath, "hello_world_copy_file.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaProject((SAMPLE_DIR + File.separator + "sample12")), 0);
     }
 
     @Test
     public void validateDockerfile() {
-        File dockerFile = new File(targetPath + File.separator + DOCKER + File.separator + "Dockerfile");
-        Assert.assertTrue(dockerFile.exists());
+        Assert.assertTrue(new File(coolDrinkPkgTargetPath + File.separator + DOCKER + File.separator + "Dockerfile")
+                .exists());
+        Assert.assertTrue(new File(drinkStorePkgTargetPath + File.separator + DOCKER + File.separator + "Dockerfile")
+                .exists());
+        Assert.assertTrue(new File(hotDrinkPkgTargetPath + File.separator + DOCKER + File.separator + "Dockerfile")
+                .exists());
     }
 
     @Test
-    public void validateDockerImage() {
-        ImageInspect imageInspect = getDockerImage(dockerImage);
-        Assert.assertEquals(1, imageInspect.getContainerConfig().getExposedPorts().size());
+    public void validateDockerImageCoolDrink() {
+        ImageInspect imageInspect = getDockerImage(coolDrinkDockerImage);
+        Assert.assertEquals(imageInspect.getContainerConfig().getExposedPorts().size(), 1);
         Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9090/tcp"));
     }
 
     @Test
-    public void validateDeployment() throws IOException {
-        File deploymentYAML = new File(targetPath + File.separator + "hello_world_copy_file_deployment.yaml");
-        Assert.assertTrue(deploymentYAML.exists());
-        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
-        // Assert Deployment
-        Assert.assertEquals("hello-world-copy-file-deployment", deployment.getMetadata().getName());
-        Assert.assertEquals(1, deployment.getSpec().getReplicas().intValue());
-        Assert.assertEquals(1, deployment.getSpec().getTemplate().getSpec().getVolumes().size());
-        Assert.assertEquals("hello_world_copy_file", deployment.getMetadata().getLabels().get(KubernetesConstants
-                .KUBERNETES_SELECTOR_KEY));
-        Assert.assertEquals(1, deployment.getSpec().getTemplate().getSpec().getContainers().size());
-
-        // Assert Containers
-        Container container = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);
-        Assert.assertEquals(1, container.getVolumeMounts().size());
-        Assert.assertEquals(dockerImage, container.getImage());
-        Assert.assertEquals(KubernetesConstants.ImagePullPolicy.IfNotPresent.name(), container.getImagePullPolicy());
-        Assert.assertEquals(1, container.getPorts().size());
+    public void validateDockerImageDrinkStore() {
+        ImageInspect imageInspect = getDockerImage(drinkStoreDockerImage);
+        Assert.assertEquals(imageInspect.getContainerConfig().getExposedPorts().size(), 1);
+        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9091/tcp"));
+    }
+    
+    @Test
+    public void validateDockerImageHotDrink() {
+        ImageInspect imageInspect = getDockerImage(hotDrinkDockerImage);
+        Assert.assertEquals(imageInspect.getContainerConfig().getExposedPorts().size(), 1);
+        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9090/tcp"));
     }
 
     @AfterClass
     public void cleanUp() throws KubernetesPluginException {
         KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesTestUtils.deleteDockerImage(drinkStoreDockerImage);
+        KubernetesTestUtils.deleteDockerImage(coolDrinkDockerImage);
+        KubernetesTestUtils.deleteDockerImage(hotDrinkDockerImage);
     }
 }
