@@ -1,147 +1,148 @@
-## Sample5: Ballerina service with http and https endpoint
+## Sample6: Kubernetes Hello World in Google Cloud Environment
 
-- This sample deploy ballerina program with http and https urls.
-- The ingress is configured so that two APIs can be accessed as following.
-    http://internal.pizzashack.com/customer
-    https://pizzashack.com/customer
-- Following artifacts will be generated from this sample.
+- This sample runs  ballerina hello world service in GCE kubernetes cluster with enableLiveness probe and  hostname
+ mapping for ingress. 
+- This sample will build the docker image and push it to docker-hub. 
+- Kubernetes cluster will pull the image from docker registry.
+- Following files will be generated from this sample.
     ``` 
     $> docker image
-    ballerina.com/pizzashack:2.1.0 
+    hemikak/gce-sample:1.0
     
     $> tree
     ├── README.md
-    ├── kubernetes
-    │   ├── docker
-    │   │   └── Dockerfile
-    │   ├── pizzashack-deployment
-    │   │   ├── Chart.yaml
-    │   │   └── templates
-    │   │       ├── pizzashack_deployment.yaml
-    │   │       ├── pizzashack_hpa.yaml
-    │   │       ├── pizzashack_ingress.yaml
-    │   │       ├── pizzashack_secret.yaml
-    │   │       └── pizzashack_svc.yaml
-    │   ├── pizzashack_deployment.yaml
-    │   ├── pizzashack_hpa.yaml
-    │   ├── pizzashack_ingress.yaml
-    │   ├── pizzashack_secret.yaml
-    │   └── pizzashack_svc.yaml
-    ├── pizzashack.bal
-    └── pizzashack.balx
+    ├── hello_world_gce.bal
+    ├── hello_world_gce.balx
+    └── kubernetes
+        ├── docker
+        │   └── Dockerfile
+        ├── hello-world-gce-deployment
+        │   ├── Chart.yaml
+        │   └── templates
+        │       ├── hello_world_gce_deployment.yaml
+        │       ├── hello_world_gce_hpa.yaml
+        │       ├── hello_world_gce_ingress.yaml
+        │       └── hello_world_gce_svc.yaml
+        ├── hello_world_gce_deployment.yaml
+        ├── hello_world_gce_hpa.yaml
+        ├── hello_world_gce_ingress.yaml
+        └── hello_world_gce_svc.yaml
     ```
 ### How to run:
 
-1. Compile the  pizzashack.bal file. Command to run kubernetes artifacts will be printed on success:
+1. Configure [kubernetes cluster and ingress controller](https://cloud.google.com/community/tutorials/nginx-ingress-gke) in google cloud.
+
+2. Export docker registry username and password as envrionment variable.
 ```bash
-$> ballerina build pizzashack.bal
+export DOCKER_USERNAME=<username>
+export DOCKER_PASSWORD=<password>
+```
+
+3. Compile the  hello_world_gce.bal file. Command to run kubernetes artifacts will be printed on success:
+```bash
+$> ballerina build hello_world_gce.bal
 Compiling source
-    pizzashack.bal
+    hello_world_gce.bal
 Generating executable
-    pizzashack.balx
-	@kubernetes:Service 			 - complete 2/2
-	@kubernetes:Ingress 			 - complete 2/2
-	@kubernetes:Secret 			 - complete 1/1
+    hello_world_gce.balx
+	@kubernetes:Service 			 - complete 1/1
+	@kubernetes:Ingress 			 - complete 1/1
 	@kubernetes:Deployment 			 - complete 1/1
 	@kubernetes:HPA 			 - complete 1/1
 	@kubernetes:Docker 			 - complete 3/3
 	@kubernetes:Helm 			 - complete 1/1
 
 	Run the following command to deploy the Kubernetes artifacts:
-	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample5/kubernetes/
+	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample6/kubernetes/
 
 	Run the following command to install the application using Helm:
-	helm install --name pizzashack-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample5/kubernetes/pizzashack-deployment
-
+	helm install --name hello-world-gce-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample6/kubernetes/hello-world-gce-deployment
 ```
 
-2. pizzashack.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
+4. hello_world_gce.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
 .
 ├── README.md
-├── kubernetes
-│   ├── docker
-│   │   └── Dockerfile
-│   ├── pizzashack-deployment
-│   │   ├── Chart.yaml
-│   │   └── templates
-│   │       ├── pizzashack_deployment.yaml
-│   │       ├── pizzashack_hpa.yaml
-│   │       ├── pizzashack_ingress.yaml
-│   │       ├── pizzashack_secret.yaml
-│   │       └── pizzashack_svc.yaml
-│   ├── pizzashack_deployment.yaml
-│   ├── pizzashack_hpa.yaml
-│   ├── pizzashack_ingress.yaml
-│   ├── pizzashack_secret.yaml
-│   └── pizzashack_svc.yaml
-├── pizzashack.bal
-└── pizzashack.balx
+├── hello_world_gce.bal
+├── hello_world_gce.balx
+└── kubernetes
+    ├── docker
+    │   └── Dockerfile
+    ├── hello-world-gce-deployment
+    │   ├── Chart.yaml
+    │   └── templates
+    │       ├── hello_world_gce_deployment.yaml
+    │       ├── hello_world_gce_hpa.yaml
+    │       ├── hello_world_gce_ingress.yaml
+    │       └── hello_world_gce_svc.yaml
+    ├── hello_world_gce_deployment.yaml
+    ├── hello_world_gce_hpa.yaml
+    ├── hello_world_gce_ingress.yaml
+    └── hello_world_gce_svc.yaml
 ```
 
-3. Verify the docker image is created:
+5. Verify the docker image is created:
 ```bash
 $> docker images
 REPOSITORY                   TAG                 IMAGE ID            CREATED             SIZE
-ballerina.com/pizzashack     2.1.0              df83ae43f69b        2 minutes ago        102MB
+hemikak/gce-sample        1.0                 88cabd203149        4 minutes ago       102MB
 
 ```
 
-4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
+6. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample5/kubernetes/
-deployment.extensions "pizzashack-deployment" created
-horizontalpodautoscaler.autoscaling "pizzashack-hpa" created
-ingress.extensions "pizzaep-ingress" created
-ingress.extensions "pizzaepsecured-ingress" created
-secret "pizzaepsecured-keystore" created
-service "pizzaepsecured-svc" created
-service "pizzaep-svc" created
-
+$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample6/kubernetes/
+deployment "hello_world_gce-deployment" created
+horizontalpodautoscaler "helloworld" created
+ingress "helloworld" created
+service "helloworld" created
 ```
 
-5. Verify kubernetes deployment,service and ingress is running:
+7. Verify kubernetes deployment,service and ingress is running:
 ```bash
 $> kubectl get pods
-NAME                                    READY     STATUS    RESTARTS   AGE
-pizzashack-deployment-d6747b8b9-64n7d   1/1       Running   0          39m
+NAME                                         READY     STATUS    RESTARTS   AGE
+hello_world_gce-deployment-8477c9c446-h4dnr   1/1       Running   0          8s
 
 
 $> kubectl get svc
-NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
-pizzaep-svc          ClusterIP   10.108.63.96    <none>        9090/TCP   59s
-pizzaepsecured-svc   ClusterIP   10.101.253.24   <none>        9095/TCP   59s
-
+NAME         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
+helloworld   NodePort    10.11.255.30   <none>        9090:30949/TCP   2m
 
 
 $> kubectl get ingress
-NAME                     HOSTS                     ADDRESS   PORTS     AGE
-pizzaep-ingress          internal.pizzashack.com             80        1m
-pizzaepsecured-ingress   pizzashack.com                      80, 443   1m
+NAME         HOSTS     ADDRESS          PORTS     AGE
+helloworld   abc.com   35.188.183.218   80, 443   1m
+
+$> kubectl get hpa
+NAME         REFERENCE                               TARGETS    MINPODS   MAXPODS   REPLICAS   AGE
+helloworld   Deployment/hello_world_gce-deployment   1% / 50%   1         2         1          2m
 ```
 
-6. Access the hello world service with curl command:
+8. Access the hello world service with curl command:
 
 - **Using ingress**
 
-Add /etc/hosts entry to match hostname. 
-_(127.0.0.1 is only applicable to docker for mac users. Other users should map the hostname with correct ip address 
-from `kubectl get ingress` command.)_
+Add /etc/hosts entry to match hostname.
+_(35.188.183.218 is the external ip address from `kubectl get ingress` command.)_
  ```
- 127.0.0.1 internal.pizzashack.com
- 127.0.0.1 pizzashack.com
+ 35.188.183.218 abc.com
  ```
 Use curl command with hostname to access the service.
 ```bash
-$> curl http://internal.pizzashack.com/customer
-Get Customer resource !!!!
-
-$> curl https://pizzashack.com/customer -k
-Get Customer resource !!!!
+$> curl http://abc.com/helloWorld/sayHello
+Hello, World from service helloWorld !
 ```
 
-7. Undeploy sample:
+9. Undeploy sample:
 ```bash
-$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample5/kubernetes/
+$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample6/kubernetes/
+```
+## Troubleshooting
+- Run following commands to deploy ingress backend and controller
+```bash
+$> helm init
+$> kubectl create clusterrolebinding permissive-binding --clusterrole=cluster-admin --user=admin --user=kubelet --group=system:serviceaccounts;
+$> helm install --name nginx-ingress stable/nginx-ingress --set rbac.create=true
 ```

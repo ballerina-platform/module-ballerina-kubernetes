@@ -223,9 +223,9 @@ public annotation<service, listener> Ingress IngressConfiguration;
 # + cpuPercentage - CPU percentage to start scaling
 public type PodAutoscalerConfig record {
     *Metadata;
-    int minReplicas;
-    int maxReplicas;
-    int cpuPercentage;
+    int minReplicas?;
+    int maxReplicas?;
+    int cpuPercentage?;
     !...
 };
 
@@ -275,7 +275,7 @@ public type ConfigMap record {
 # + configMaps - Array of [ConfigMap](kubernetes.html#ConfigMap)
 public type ConfigMapMount record {
     string ballerinaConf;
-    ConfigMap[] configMaps;
+    ConfigMap[] configMaps?;
     !...
 };
 

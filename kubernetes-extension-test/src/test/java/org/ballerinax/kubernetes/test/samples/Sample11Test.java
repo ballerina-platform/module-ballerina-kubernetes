@@ -21,7 +21,7 @@ package org.ballerinax.kubernetes.test.samples;
 import io.fabric8.docker.api.model.ImageInspect;
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Container;
-import io.fabric8.kubernetes.api.model.Job;
+import io.fabric8.kubernetes.api.model.extensions.Deployment;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
@@ -42,11 +42,11 @@ public class Sample11Test implements SampleTest {
 
     private final String sourceDirPath = SAMPLE_DIR + File.separator + "sample11";
     private final String targetPath = sourceDirPath + File.separator + KUBERNETES;
-    private final String dockerImage = "hello_world_job:latest";
+    private final String dockerImage = "hello_world_copy_file:latest";
 
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(sourceDirPath, "hello_world_job.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(sourceDirPath, "hello_world_copy_file.bal"), 0);
     }
 
     @Test
@@ -58,20 +58,29 @@ public class Sample11Test implements SampleTest {
     @Test
     public void validateDockerImage() {
         ImageInspect imageInspect = getDockerImage(dockerImage);
-        Assert.assertNotNull(imageInspect.getContainerConfig());
+        Assert.assertEquals(1, imageInspect.getContainerConfig().getExposedPorts().size());
+        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9090/tcp"));
     }
 
     @Test
-    public void validateJob() throws IOException {
-        File jobYAML = new File(targetPath + File.separator + "hello_world_job_job.yaml");
-        Job job = KubernetesHelper.loadYaml(jobYAML);
-        Assert.assertEquals("hello-world-job-job", job.getMetadata().getName());
-        Assert.assertEquals(1, job.getSpec().getTemplate().getSpec().getContainers().size());
-        Container container = job.getSpec().getTemplate().getSpec().getContainers().get(0);
+    public void validateDeployment() throws IOException {
+        File deploymentYAML = new File(targetPath + File.separator + "hello_world_copy_file_deployment.yaml");
+        Assert.assertTrue(deploymentYAML.exists());
+        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        // Assert Deployment
+        Assert.assertEquals("hello-world-copy-file-deployment", deployment.getMetadata().getName());
+        Assert.assertEquals(1, deployment.getSpec().getReplicas().intValue());
+        Assert.assertEquals(1, deployment.getSpec().getTemplate().getSpec().getVolumes().size());
+        Assert.assertEquals("hello_world_copy_file", deployment.getMetadata().getLabels().get(KubernetesConstants
+                .KUBERNETES_SELECTOR_KEY));
+        Assert.assertEquals(1, deployment.getSpec().getTemplate().getSpec().getContainers().size());
+
+        // Assert Containers
+        Container container = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);
+        Assert.assertEquals(1, container.getVolumeMounts().size());
         Assert.assertEquals(dockerImage, container.getImage());
         Assert.assertEquals(KubernetesConstants.ImagePullPolicy.IfNotPresent.name(), container.getImagePullPolicy());
-        Assert.assertEquals(KubernetesConstants.RestartPolicy.Never.name(), job.getSpec().getTemplate().getSpec()
-                .getRestartPolicy());
+        Assert.assertEquals(1, container.getPorts().size());
     }
 
     @AfterClass
