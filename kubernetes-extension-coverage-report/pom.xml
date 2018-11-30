@@ -28,7 +28,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>kubernetes-extension-coverage-report</artifactId>
-    <name>BallerinaX - Kubernetes Extension Test Coverage</name>
+    <name>Ballerinax - Kubernetes Extension Test Coverage</name>
     <packaging>pom</packaging>
     <url>https://ballerina.io</url>
 
