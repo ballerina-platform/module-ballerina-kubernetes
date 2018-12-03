@@ -30,6 +30,7 @@ import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.BLangService;
 import org.wso2.ballerinalang.compiler.tree.BLangSimpleVariable;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangNamedArgsExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangTypeInit;
@@ -236,9 +237,11 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
     public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         BLangService bService = (BLangService) serviceNode;
-        if (bService.attachExpr instanceof BLangTypeInit) {
-            throw new KubernetesPluginException("Adding @kubernetes:Ingress{} annotation to a service is only " +
-                    "supported when service is bind to an anonymous listener");
+        for (BLangExpression attachedExpr : bService.getAttachedExprs()) {
+            if (attachedExpr instanceof BLangTypeInit) {
+                throw new KubernetesPluginException("Adding @kubernetes:Ingress{} annotation to a service is only " +
+                                                    "supported when service is bind to an anonymous listener");
+            }
         }
         IngressModel ingressModel = getIngressModelFromAnnotation(attachmentNode);
 
@@ -252,13 +255,18 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
         }
         ingressModel.setListenerName(listenerName);
     
-        BLangTypeInit bListener = (BLangTypeInit) bService.attachExpr;
-        if (bListener.argsExpr.size() == 2) {
-            if (bListener.argsExpr.get(1) instanceof BLangRecordLiteral) {
-                BLangRecordLiteral bConfigRecordLiteral = (BLangRecordLiteral) bListener.argsExpr.get(1);
-                List<BLangRecordLiteral.BLangRecordKeyValue> listenerConfig =
-                        bConfigRecordLiteral.getKeyValuePairs();
-                processListener(listenerName, listenerConfig);
+        // Add http config
+        for (BLangExpression attachedExpr : bService.getAttachedExprs()) {
+            if (attachedExpr instanceof BLangTypeInit) {
+                BLangTypeInit bListener = (BLangTypeInit) attachedExpr;
+                if (bListener.argsExpr.size() == 2) {
+                    if (bListener.argsExpr.get(1) instanceof BLangRecordLiteral) {
+                        BLangRecordLiteral bConfigRecordLiteral = (BLangRecordLiteral) bListener.argsExpr.get(1);
+                        List<BLangRecordLiteral.BLangRecordKeyValue> listenerConfig =
+                                bConfigRecordLiteral.getKeyValuePairs();
+                        processListener(listenerName, listenerConfig);
+                    }
+                }
             }
         }
         

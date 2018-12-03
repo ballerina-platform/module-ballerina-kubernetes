@@ -28,7 +28,9 @@ import org.ballerinax.kubernetes.models.ServiceModel;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.BLangService;
 import org.wso2.ballerinalang.compiler.tree.BLangSimpleVariable;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangTypeInit;
 
 import java.util.List;
@@ -48,9 +50,13 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
     public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         BLangService bService = (BLangService) serviceNode;
-        if (!(bService.attachExpr instanceof BLangTypeInit)) {
-            throw new KubernetesPluginException("Adding @kubernetes:Service{} annotation to a service is only " +
-                    "supported when the has an anonymous listener");
+        for (BLangExpression attachedExpr : bService.getAttachedExprs()) {
+            // If not anonymous endpoint throw error.
+            if (attachedExpr instanceof BLangSimpleVarRef) {
+                throw new KubernetesPluginException("Adding @kubernetes:Service{} annotation to a service is only " +
+                                                    "supported when the has an anonymous listener");
+            }
+            
         }
         ServiceModel serviceModel = getServiceModelFromAnnotation(attachmentNode);
         if (isBlank(serviceModel.getName())) {
@@ -61,7 +67,7 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         // service annotation port is used for k8s port.
         // If service annotation port is empty, then listener port is used for both port and target port of the k8s
         // svc.
-        BLangTypeInit bListener = (BLangTypeInit) bService.attachExpr;
+        BLangTypeInit bListener = (BLangTypeInit) bService.getAttachedExprs().get(0);
         if (serviceModel.getPort() == -1) {
             serviceModel.setPort(extractPort(bListener));
         }

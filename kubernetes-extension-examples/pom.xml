@@ -29,7 +29,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>kubernetes-extension-examples</artifactId>
-    <name>BallerinaX - Kubernetes Extension Examples</name>
+    <name>Ballerinax - Kubernetes Extension Examples</name>
     <packaging>pom</packaging>
     <url>https://ballerina.io</url>
 
