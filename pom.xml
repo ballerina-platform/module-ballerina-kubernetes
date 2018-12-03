@@ -119,7 +119,7 @@
             <dependency>
                 <groupId>org.ballerinax.docker</groupId>
                 <artifactId>docker-generator</artifactId>
-                <version>${ballerina.lang.version}</version>
+                <version>${docker.generator.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.testng</groupId>
@@ -223,6 +223,7 @@
 
     <properties>
         <ballerina.lang.version>0.983.1-SNAPSHOT</ballerina.lang.version>
+        <docker.generator.version>0.983.1-SNAPSHOT</docker.generator.version>
         <mvn.processor.plugin.version>2.2.4</mvn.processor.plugin.version>
         <mvn.shade.plugin.version>3.1.1</mvn.shade.plugin.version>
         <fabric8.kubernetes.client.version>3.1.10</fabric8.kubernetes.client.version>
