@@ -21,10 +21,8 @@ package org.ballerinax.kubernetes.test.samples;
 import io.fabric8.docker.api.model.ImageInspect;
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Container;
-import io.fabric8.kubernetes.api.model.Secret;
-import io.fabric8.kubernetes.api.model.Service;
+import io.fabric8.kubernetes.api.model.PersistentVolumeClaim;
 import io.fabric8.kubernetes.api.model.extensions.Deployment;
-import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
@@ -44,174 +42,65 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDocker
 public class Sample9Test implements SampleTest {
 
     private final String sourceDirPath = SAMPLE_DIR + File.separator + "sample9";
-    private final String targetPath = sourceDirPath + File.separator + "target" + File.separator + KUBERNETES;
-    private final String burgerPkgTargetPath = targetPath + File.separator + "burger";
-    private final String pizzaPkgTargetPath = targetPath + File.separator + "pizza";
-    private final String burgerDockerImage = "burger:latest";
-    private final String pizzaDockerImage = "pizza:latest";
-    private final String pizzaSelector = "pizza";
-    private final String burgerSelector = "burger";
-
+    private final String targetPath = sourceDirPath + File.separator + KUBERNETES;
+    private final String dockerImage = "hello_world_persistence_volume_k8s:latest";
 
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaProject(sourceDirPath), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(sourceDirPath,
+                "hello_world_persistence_volume_k8s.bal")
+                , 0);
     }
 
-    @Test
-    public void validateHelmChartYaml() {
-        Assert.assertTrue(new File(burgerPkgTargetPath + File.separator + 
-                "burger-deployment" + File.separator + "Chart.yaml").exists());
-    }
-    
-    @Test
-    public void validateHelmChartTemplates() {
-        File templateDir = new File(burgerPkgTargetPath + File.separator +
-                "burger-deployment" + File.separator + "templates");
-        Assert.assertTrue(templateDir.isDirectory());
-        Assert.assertTrue(templateDir.list().length > 0);
-    }
-    
     @Test
     public void validateDockerfile() {
-        Assert.assertTrue(new File(burgerPkgTargetPath + File.separator + DOCKER + File.separator + "Dockerfile")
-                .exists());
-        Assert.assertTrue(new File(pizzaPkgTargetPath + File.separator + DOCKER + File.separator + "Dockerfile")
-                .exists());
+        File dockerFile = new File(targetPath + File.separator + DOCKER + File.separator + "Dockerfile");
+        Assert.assertTrue(dockerFile.exists());
     }
 
     @Test
-    public void validateDockerImageBurger() {
-        ImageInspect imageInspect = getDockerImage(burgerDockerImage);
-        Assert.assertEquals(1, imageInspect.getContainerConfig().getExposedPorts().size());
-        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9096/tcp"));
-    }
-
-    @Test
-    public void validateDockerImagePizza() {
-        ImageInspect imageInspect = getDockerImage(pizzaDockerImage);
-        Assert.assertEquals(1, imageInspect.getContainerConfig().getExposedPorts().size());
-        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9099/tcp"));
-    }
-
-    @Test
-    public void validateBurgerDeployment() throws IOException {
-        File deploymentYAML = new File(burgerPkgTargetPath + File.separator + "burger_deployment.yaml");
+    public void validateDeployment() throws IOException {
+        File deploymentYAML = new File(targetPath + File.separator + "hello_world_persistence_volume_k8s_deployment" +
+                ".yaml");
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
         // Assert Deployment
-        Assert.assertEquals("burger-deployment", deployment.getMetadata().getName());
+        Assert.assertEquals("hello-world-persistence-volume-k8s-deployment", deployment.getMetadata().getName());
         Assert.assertEquals(1, deployment.getSpec().getReplicas().intValue());
-        Assert.assertEquals(1, deployment.getSpec().getTemplate().getSpec().getVolumes().size());
-        Assert.assertEquals(burgerSelector, deployment.getMetadata().getLabels().get(KubernetesConstants
-                .KUBERNETES_SELECTOR_KEY));
+        Assert.assertEquals(2, deployment.getSpec().getTemplate().getSpec().getVolumes().size());
+        Assert.assertEquals("hello_world_persistence_volume_k8s", deployment.getMetadata().getLabels().get
+                (KubernetesConstants.KUBERNETES_SELECTOR_KEY));
         Assert.assertEquals(1, deployment.getSpec().getTemplate().getSpec().getContainers().size());
 
         // Assert Containers
         Container container = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);
-        Assert.assertEquals(1, container.getVolumeMounts().size());
-        Assert.assertEquals(burgerDockerImage, container.getImage());
+        Assert.assertEquals(2, container.getVolumeMounts().size());
+        Assert.assertEquals(dockerImage, container.getImage());
         Assert.assertEquals(KubernetesConstants.ImagePullPolicy.IfNotPresent.name(), container.getImagePullPolicy());
         Assert.assertEquals(1, container.getPorts().size());
     }
 
     @Test
-    public void validatePizzaDeployment() throws IOException {
-        File deploymentYAML = new File(pizzaPkgTargetPath + File.separator + "pizza_deployment.yaml");
+    public void validateVolumeClaim() throws IOException {
+        File deploymentYAML = new File(targetPath + File.separator + "hello_world_persistence_volume_k8s_volume_claim" +
+                ".yaml");
         Assert.assertTrue(deploymentYAML.exists());
-        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        PersistentVolumeClaim volumeClaim = KubernetesHelper.loadYaml(deploymentYAML);
         // Assert Deployment
-        Assert.assertEquals("foodstore", deployment.getMetadata().getName());
-        Assert.assertEquals(3, deployment.getSpec().getReplicas().intValue());
-        Assert.assertEquals(0, deployment.getSpec().getTemplate().getSpec().getVolumes().size());
-        Assert.assertEquals(pizzaSelector, deployment.getMetadata().getLabels().get(KubernetesConstants
-                .KUBERNETES_SELECTOR_KEY));
-        Assert.assertEquals(1, deployment.getSpec().getTemplate().getSpec().getContainers().size());
-
-        // Assert Containers
-        Container container = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);
-        Assert.assertEquals(0, container.getVolumeMounts().size());
-        Assert.assertEquals(pizzaDockerImage, container.getImage());
-        Assert.assertEquals(KubernetesConstants.ImagePullPolicy.IfNotPresent.name(), container.getImagePullPolicy());
-        Assert.assertEquals(1, container.getPorts().size());
-        Assert.assertEquals(2, container.getEnv().size());
+        Assert.assertEquals("local-pv-2", volumeClaim.getMetadata().getName());
+        Assert.assertEquals(1, volumeClaim.getSpec().getAccessModes().size());
     }
 
     @Test
-    public void validatePizzaSVC() throws IOException {
-        File serviceYAML = new File(pizzaPkgTargetPath + File.separator + "pizza_svc.yaml");
-        Assert.assertTrue(serviceYAML.exists());
-        Service service = KubernetesHelper.loadYaml(serviceYAML);
-        Assert.assertEquals("pizzaep-svc", service.getMetadata().getName());
-        Assert.assertEquals(pizzaSelector, service.getMetadata().getLabels().get(KubernetesConstants
-                .KUBERNETES_SELECTOR_KEY));
-        Assert.assertEquals(KubernetesConstants.ServiceType.ClusterIP.name(), service.getSpec().getType());
-        Assert.assertEquals(1, service.getSpec().getPorts().size());
-        Assert.assertEquals(9099, service.getSpec().getPorts().get(0).getPort().intValue());
-    }
-
-    @Test
-    public void validateBurgerSVC() throws IOException {
-        File serviceYAML = new File(burgerPkgTargetPath + File.separator + "burger_svc.yaml");
-        Assert.assertTrue(serviceYAML.exists());
-        Service service = KubernetesHelper.loadYaml(serviceYAML);
-        Assert.assertEquals("burgerep-svc", service.getMetadata().getName());
-        Assert.assertEquals(burgerSelector, service.getMetadata().getLabels().get(KubernetesConstants
-                .KUBERNETES_SELECTOR_KEY));
-        Assert.assertEquals(KubernetesConstants.ServiceType.ClusterIP.name(), service.getSpec().getType());
-        Assert.assertEquals(1, service.getSpec().getPorts().size());
-        Assert.assertEquals(9096, service.getSpec().getPorts().get(0).getPort().intValue());
-    }
-
-    @Test
-    public void validatePizzaIngress() throws IOException {
-        File ingressYAML = new File(pizzaPkgTargetPath + File.separator + "pizza_ingress.yaml");
-        Assert.assertNotNull(ingressYAML);
-        Ingress ingress = KubernetesHelper.loadYaml(ingressYAML);
-        Assert.assertEquals("pizzaep-ingress", ingress.getMetadata().getName());
-        Assert.assertEquals(pizzaSelector, ingress.getMetadata().getLabels().get(KubernetesConstants
-                .KUBERNETES_SELECTOR_KEY));
-        Assert.assertEquals("pizza.com", ingress.getSpec().getRules().get(0).getHost());
-        Assert.assertEquals("/pizzastore", ingress.getSpec().getRules().get(0).getHttp().getPaths().get(0).getPath());
-        Assert.assertTrue(ingress.getMetadata().getAnnotations().containsKey("nginx.ingress.kubernetes" +
-                ".io/ssl-passthrough"));
-        Assert.assertFalse(Boolean.valueOf(ingress.getMetadata().getAnnotations().get("nginx.ingress.kubernetes" +
-                ".io/ssl-passthrough")));
-        Assert.assertEquals(0, ingress.getSpec().getTls().size());
-    }
-
-    @Test
-    public void validateBurgerIngress() throws IOException {
-        File ingressYAML = new File(burgerPkgTargetPath + File.separator + "burger_ingress.yaml");
-        Assert.assertNotNull(ingressYAML);
-        Ingress ingress = KubernetesHelper.loadYaml(ingressYAML);
-        Assert.assertEquals("burgerep-ingress", ingress.getMetadata().getName());
-        Assert.assertEquals(burgerSelector, ingress.getMetadata().getLabels().get(KubernetesConstants
-                .KUBERNETES_SELECTOR_KEY));
-        Assert.assertEquals("burger.com", ingress.getSpec().getRules().get(0).getHost());
-        Assert.assertEquals("/", ingress.getSpec().getRules().get(0).getHttp().getPaths().get(0).getPath());
-        Assert.assertTrue(ingress.getMetadata().getAnnotations().containsKey("nginx.ingress.kubernetes" +
-                ".io/ssl-passthrough"));
-        Assert.assertTrue(Boolean.valueOf(ingress.getMetadata().getAnnotations().get("nginx.ingress.kubernetes" +
-                ".io/ssl-passthrough")));
-        Assert.assertEquals(1, ingress.getSpec().getTls().size());
-        Assert.assertEquals(1, ingress.getSpec().getTls().get(0).getHosts().size());
-        Assert.assertEquals("burger.com", ingress.getSpec().getTls().get(0).getHosts().get(0));
-    }
-
-    @Test
-    public void validateBurgerSecret() throws IOException {
-        File secretYAML = new File(burgerPkgTargetPath + File.separator + "burger_secret.yaml");
-        Assert.assertTrue(secretYAML.exists());
-        Secret secret = KubernetesHelper.loadYaml(secretYAML);
-        Assert.assertEquals("burgerep-keystore", secret.getMetadata().getName());
-        Assert.assertEquals(1, secret.getData().size());
+    public void validateDockerImage() {
+        ImageInspect imageInspect = getDockerImage(dockerImage);
+        Assert.assertEquals(1, imageInspect.getContainerConfig().getExposedPorts().size());
+        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9090/tcp"));
     }
 
     @AfterClass
     public void cleanUp() throws KubernetesPluginException {
         KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(pizzaDockerImage);
-        KubernetesTestUtils.deleteDockerImage(burgerDockerImage);
+        KubernetesTestUtils.deleteDockerImage(dockerImage);
     }
 }

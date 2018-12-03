@@ -24,16 +24,17 @@
             <class name="org.ballerinax.kubernetes.test.samples.Sample2Test"/>
             <class name="org.ballerinax.kubernetes.test.samples.Sample3Test"/>
             <class name="org.ballerinax.kubernetes.test.samples.Sample4Test"/>
-            <class name="org.ballerinax.kubernetes.test.samples.Sample6Test"/>
+            <class name="org.ballerinax.kubernetes.test.samples.Sample5Test"/>
             <class name="org.ballerinax.kubernetes.test.samples.Sample7Test"/>
             <class name="org.ballerinax.kubernetes.test.samples.Sample8Test"/>
             <class name="org.ballerinax.kubernetes.test.samples.Sample9Test"/>
             <class name="org.ballerinax.kubernetes.test.samples.Sample10Test"/>
             <class name="org.ballerinax.kubernetes.test.samples.Sample11Test"/>
-            <class name="org.ballerinax.kubernetes.test.samples.Sample13Test"/>
-            <!--<class name="org.ballerinax.kubernetes.test.samples.Sample12Test"/>--> <!--Need jdbc connector-->
+            <class name="org.ballerinax.kubernetes.test.samples.Sample12Test"/>
+            <!--<class name="org.ballerinax.kubernetes.test.samples.Sample13Test"/> Need jdbc connector-->
             <class name="org.ballerinax.kubernetes.test.samples.Sample14Test"/>
             <class name="org.ballerinax.kubernetes.test.samples.Sample15Test"/>
+            <class name="org.ballerinax.kubernetes.test.samples.Sample16Test"/>
         </classes>
     </test>
 

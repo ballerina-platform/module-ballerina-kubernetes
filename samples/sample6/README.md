@@ -1,151 +1,148 @@
-## Sample7: Mount secret volumes to deployment 
+## Sample6: Kubernetes Hello World in Google Cloud Environment
 
-- This sample runs simple ballerina hello world service with secret volume mounts.
-- K8S secret are intended to hold sensitive information, such as passwords, OAuth tokens, and ssh keys.
-- Putting this information in a secret is safer and more flexible than putting it verbatim in a pod definition or in a
-  docker image.
-- @kubernetes:Secret{} annotation will create k8s secrets. See [hello_world_secret_mount_k8s.bal](./hello_world_secret_mount_k8s.bal)  
+- This sample runs  ballerina hello world service in GCE kubernetes cluster with enableLiveness probe and  hostname
+ mapping for ingress. 
+- This sample will build the docker image and push it to docker-hub. 
+- Kubernetes cluster will pull the image from docker registry.
 - Following files will be generated from this sample.
     ``` 
     $> docker image
-    hello_world_secret_mount_k8s:latest
+    hemikak/gce-sample:1.0
     
     $> tree
     ├── README.md
-    ├── hello_world_secret_mount_k8s.bal
-    ├── hello_world_secret_mount_k8s.balx
-    ├── kubernetes
-    │   ├── docker
-    │   │   └── Dockerfile
-    │   ├── hello-world-secret-mount-k8s-deployment
-    │   │   ├── Chart.yaml
-    │   │   └── templates
-    │   │       ├── hello_world_secret_mount_k8s_deployment.yaml
-    │   │       ├── hello_world_secret_mount_k8s_ingress.yaml
-    │   │       ├── hello_world_secret_mount_k8s_secret.yaml
-    │   │       └── hello_world_secret_mount_k8s_svc.yaml
-    │   ├── hello_world_secret_mount_k8s_deployment.yaml
-    │   ├── hello_world_secret_mount_k8s_ingress.yaml
-    │   ├── hello_world_secret_mount_k8s_secret.yaml
-    │   └── hello_world_secret_mount_k8s_svc.yaml
-    └── secrets
-        ├── MySecret1.txt
-        ├── MySecret2.txt
-        └── MySecret3.txt
-
+    ├── hello_world_gce.bal
+    ├── hello_world_gce.balx
+    └── kubernetes
+        ├── docker
+        │   └── Dockerfile
+        ├── hello-world-gce-deployment
+        │   ├── Chart.yaml
+        │   └── templates
+        │       ├── hello_world_gce_deployment.yaml
+        │       ├── hello_world_gce_hpa.yaml
+        │       ├── hello_world_gce_ingress.yaml
+        │       └── hello_world_gce_svc.yaml
+        ├── hello_world_gce_deployment.yaml
+        ├── hello_world_gce_hpa.yaml
+        ├── hello_world_gce_ingress.yaml
+        └── hello_world_gce_svc.yaml
     ```
 ### How to run:
 
-1. Compile the  hello_world_secret_mount_k8s.bal file. Command to run kubernetes artifacts will be printed on success:
+1. Configure [kubernetes cluster and ingress controller](https://cloud.google.com/community/tutorials/nginx-ingress-gke) in google cloud.
+
+2. Export docker registry username and password as envrionment variable.
 ```bash
-$> ballerina build hello_world_secret_mount_k8s.bal
+export DOCKER_USERNAME=<username>
+export DOCKER_PASSWORD=<password>
+```
+
+3. Compile the  hello_world_gce.bal file. Command to run kubernetes artifacts will be printed on success:
+```bash
+$> ballerina build hello_world_gce.bal
 Compiling source
-    hello_world_secret_mount_k8s.bal
+    hello_world_gce.bal
 Generating executable
-    hello_world_secret_mount_k8s.balx
+    hello_world_gce.balx
 	@kubernetes:Service 			 - complete 1/1
 	@kubernetes:Ingress 			 - complete 1/1
-	@kubernetes:Secret 			 - complete 3/3
 	@kubernetes:Deployment 			 - complete 1/1
+	@kubernetes:HPA 			 - complete 1/1
 	@kubernetes:Docker 			 - complete 3/3
 	@kubernetes:Helm 			 - complete 1/1
 
 	Run the following command to deploy the Kubernetes artifacts:
-	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample7/kubernetes/
+	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample6/kubernetes/
 
 	Run the following command to install the application using Helm:
-	helm install --name hello-world-secret-mount-k8s-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample7/kubernetes/hello-world-secret-mount-k8s-deployment
+	helm install --name hello-world-gce-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample6/kubernetes/hello-world-gce-deployment
 ```
 
-2. hello_world_secret_mount_k8s.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
+4. hello_world_gce.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
 .
 ├── README.md
-├── hello_world_secret_mount_k8s.bal
-├── hello_world_secret_mount_k8s.balx
-├── kubernetes
-│   ├── docker
-│   │   └── Dockerfile
-│   ├── hello-world-secret-mount-k8s-deployment
-│   │   ├── Chart.yaml
-│   │   └── templates
-│   │       ├── hello_world_secret_mount_k8s_deployment.yaml
-│   │       ├── hello_world_secret_mount_k8s_ingress.yaml
-│   │       ├── hello_world_secret_mount_k8s_secret.yaml
-│   │       └── hello_world_secret_mount_k8s_svc.yaml
-│   ├── hello_world_secret_mount_k8s_deployment.yaml
-│   ├── hello_world_secret_mount_k8s_ingress.yaml
-│   ├── hello_world_secret_mount_k8s_secret.yaml
-│   └── hello_world_secret_mount_k8s_svc.yaml
-└── secrets
-    ├── MySecret1.txt
-    ├── MySecret2.txt
-    └── MySecret3.txt
-
+├── hello_world_gce.bal
+├── hello_world_gce.balx
+└── kubernetes
+    ├── docker
+    │   └── Dockerfile
+    ├── hello-world-gce-deployment
+    │   ├── Chart.yaml
+    │   └── templates
+    │       ├── hello_world_gce_deployment.yaml
+    │       ├── hello_world_gce_hpa.yaml
+    │       ├── hello_world_gce_ingress.yaml
+    │       └── hello_world_gce_svc.yaml
+    ├── hello_world_gce_deployment.yaml
+    ├── hello_world_gce_hpa.yaml
+    ├── hello_world_gce_ingress.yaml
+    └── hello_world_gce_svc.yaml
 ```
 
-3. Verify the docker image is created:
+5. Verify the docker image is created:
 ```bash
 $> docker images
-REPOSITORY                      TAG                 IMAGE ID            CREATED             SIZE
-hello_world_secret_mount_k8s   latest              53559c0cd4f4        55 seconds ago      194MB
+REPOSITORY                   TAG                 IMAGE ID            CREATED             SIZE
+hemikak/gce-sample        1.0                 88cabd203149        4 minutes ago       102MB
 
 ```
 
-4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
+6. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample7/kubernetes/
-deployment.extensions "hello-world-secret-mount-k8s-deployment" created
-ingress.extensions "helloworldep-ingress" created
-secret "helloworldep-secure-socket" configured
-secret "private" created
-secret "public" created
-service "helloworldep-svc" created
+$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample6/kubernetes/
+deployment "hello_world_gce-deployment" created
+horizontalpodautoscaler "helloworld" created
+ingress "helloworld" created
+service "helloworld" created
 ```
 
-5. Verify kubernetes deployment,service,secrets and ingress is deployed:
+7. Verify kubernetes deployment,service and ingress is running:
 ```bash
 $> kubectl get pods
-NAME                                                       READY     STATUS    RESTARTS   AGE
-hello-world-secret-mount-k8s-deployment-7fb6b6f7f8-blwm2   1/1       Running   0          34s
+NAME                                         READY     STATUS    RESTARTS   AGE
+hello_world_gce-deployment-8477c9c446-h4dnr   1/1       Running   0          8s
+
 
 $> kubectl get svc
-NAME               TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
-helloworldep-svc   ClusterIP    10.105.238.19   <none>        9090/TCP         47s
+NAME         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
+helloworld   NodePort    10.11.255.30   <none>        9090:30949/TCP   2m
+
 
 $> kubectl get ingress
-NAME                 HOSTS     ADDRESS   PORTS     AGE
-helloworld-ingress   abc.com             80, 443   1m
+NAME         HOSTS     ADDRESS          PORTS     AGE
+helloworld   abc.com   35.188.183.218   80, 443   1m
 
-$> kubectl get secrets
-NAME                    TYPE                                 DATA      AGE
-private                 Opaque                                1         1m
-public                  Opaque                                2         1m
-helloworldep-keystore   Opaque                                1         1m
-
+$> kubectl get hpa
+NAME         REFERENCE                               TARGETS    MINPODS   MAXPODS   REPLICAS   AGE
+helloworld   Deployment/hello_world_gce-deployment   1% / 50%   1         2         1          2m
 ```
 
-6. Access the hello world service with curl command:
+8. Access the hello world service with curl command:
 
-- **Using ingress:**
-Add /etc/hosts entry to match hostname. 
-_(127.0.0.1 is only applicable to docker for mac users. Other users should map the hostname with correct ip address 
-from `kubectl get ingress` command.)_
+- **Using ingress**
 
+Add /etc/hosts entry to match hostname.
+_(35.188.183.218 is the external ip address from `kubectl get ingress` command.)_
+ ```
+ 35.188.183.218 abc.com
+ ```
+Use curl command with hostname to access the service.
 ```bash
-$> curl https://abc.com/helloWorld/secret1 -k
-Secret1 resource: Secret1
-
-$> curl https://abc.com/helloWorld/secret2 -k
-Secret2 resource: Secret2
-
-$> curl https://abc.com/helloWorld/secret3 -k
-Secret3 resource: Secret3
+$> curl http://abc.com/helloWorld/sayHello
+Hello, World from service helloWorld !
 ```
 
-7. Undeploy sample:
+9. Undeploy sample:
 ```bash
-$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample7/kubernetes/
-
+$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample6/kubernetes/
+```
+## Troubleshooting
+- Run following commands to deploy ingress backend and controller
+```bash
+$> helm init
+$> kubectl create clusterrolebinding permissive-binding --clusterrole=cluster-admin --user=admin --user=kubelet --group=system:serviceaccounts;
+$> helm install --name nginx-ingress stable/nginx-ingress --set rbac.create=true
 ```

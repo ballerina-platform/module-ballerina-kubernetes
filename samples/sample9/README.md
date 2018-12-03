@@ -1,156 +1,137 @@
-## Sample10: Ballerina module with kubernetes annotations
+## Sample9: Mount PersistentVolumeClaim to deployment 
 
-- This sample runs [foodstore](../sample3) as a module.   
+- This sample runs simple ballerina hello world service with persistence volume claim mounts.
+- @kubernetes:PersistentVolumeClaim{} annotation will create k8s persistent volume claim mounts. See 
+[hello_world_persistence_volume_k8s.bal](./hello_world_persistence_volume_k8s.bal)  
 - Following files will be generated from this sample.
     ``` 
     $> docker image
-    pizza:latest 
-    burger:latest  
+    hello_world_persistence_volume_k8s:latest
     
-    $> tree target
-    target
-    ├── Ballerina.lock
-    ├── burger.balx
+    $> tree
+    ├── README.md
+    ├── hello_world_persistence_volume_k8s.bal
+    ├── hello_world_persistence_volume_k8s.balx
     ├── kubernetes
-    │   ├── burger
-    │   │   ├── burger-deployment
-    │   │   │   ├── Chart.yaml
-    │   │   │   └── templates
-    │   │   │       ├── burger_deployment.yaml
-    │   │   │       ├── burger_ingress.yaml
-    │   │   │       ├── burger_secret.yaml
-    │   │   │       └── burger_svc.yaml
-    │   │   ├── burger_deployment.yaml
-    │   │   ├── burger_ingress.yaml
-    │   │   ├── burger_secret.yaml
-    │   │   ├── burger_svc.yaml
-    │   │   └── docker
-    │   │       └── Dockerfile
-    │   └── pizza
-    │       ├── docker
-    │       │   └── Dockerfile
-    │       ├── foodstore
-    │       │   ├── Chart.yaml
-    │       │   └── templates
-    │       │       ├── pizza_deployment.yaml
-    │       │       ├── pizza_ingress.yaml
-    │       │       └── pizza_svc.yaml
-    │       ├── pizza_deployment.yaml
-    │       ├── pizza_ingress.yaml
-    │       └── pizza_svc.yaml
-    └── pizza.balx
+    │   ├── docker
+    │   │   └── Dockerfile
+    │   ├── hello-world-persistence-volume-k8s-deployment
+    │   │   ├── Chart.yaml
+    │   │   └── templates
+    │   │       ├── hello_world_persistence_volume_k8s_deployment.yaml
+    │   │       ├── hello_world_persistence_volume_k8s_ingress.yaml
+    │   │       ├── hello_world_persistence_volume_k8s_secret.yaml
+    │   │       ├── hello_world_persistence_volume_k8s_svc.yaml
+    │   │       └── hello_world_persistence_volume_k8s_volume_claim.yaml
+    │   ├── hello_world_persistence_volume_k8s_deployment.yaml
+    │   ├── hello_world_persistence_volume_k8s_ingress.yaml
+    │   ├── hello_world_persistence_volume_k8s_secret.yaml
+    │   ├── hello_world_persistence_volume_k8s_svc.yaml
+    │   └── hello_world_persistence_volume_k8s_volume_claim.yaml
+    └── volumes
+        └── persistent-volume.yaml
   
     ```
 ### How to run:
 
-1. Initialize ballerina project.
+1. Compile the  hello_world_persistence_volume_k8s.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
-sample10$> ballerina init
-Ballerina project initialized
+$> ballerina build hello_world_persistence_volume_k8s.bal
+Compiling source
+    hello_world_persistence_volume_k8s.bal
+Generating executable
+    hello_world_persistence_volume_k8s.balx
+	@kubernetes:Service 			 - complete 1/1
+	@kubernetes:Ingress 			 - complete 1/1
+	@kubernetes:Secret 			 - complete 1/1
+	@kubernetes:VolumeClaim 		 - complete 1/1
+	@kubernetes:Deployment 			 - complete 1/1
+	@kubernetes:Docker 			 - complete 3/3
+	@kubernetes:Helm 			 - complete 1/1
+
+	Run the following command to deploy the Kubernetes artifacts:
+	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample9/kubernetes/
+
+	Run the following command to install the application using Helm:
+	helm install --name hello-world-persistence-volume-k8s-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample9/kubernetes/hello-world-persistence-volume-k8s-deployment
 ```
 
-1. Compile the food_api_pkg file. Command to run kubernetes artifacts will be printed on success:
+2. hello_world_persistence_volume_k8s.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
-sample10$> ballerina build 
-@kubernetes:Service 			 - complete 1/1
-@kubernetes:Ingress 			 - complete 1/1
-@kubernetes:Secret 			 - complete 1/1
-@kubernetes:Deployment 			 - complete 1/1
-@kubernetes:Docker 			 - complete 3/3
-@kubernetes:Helm 			 - complete 1/1
-
-Run following command to deploy kubernetes artifacts: 
-kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample10/target/kubernetes/burger
-
-@kubernetes:Service 			 - complete 1/1
-@kubernetes:Ingress 			 - complete 1/1
-@kubernetes:Deployment 			 - complete 1/1
-@kubernetes:Docker 			 - complete 3/3
-@kubernetes:Helm 			 - complete 1/1 
-
-Run following command to deploy kubernetes artifacts: 
-kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample10/target/kubernetes/pizza
-```
-
-2. food_api_pkg.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
-```bash
-$> tree target
-target
-├── Ballerina.lock
-├── burger.balx
+$> tree
+.
+├── README.md
+├── hello_world_persistence_volume_k8s.bal
+├── hello_world_persistence_volume_k8s.balx
 ├── kubernetes
-│   ├── burger
-│   │   ├── burger-deployment
-│   │   │   ├── Chart.yaml
-│   │   │   └── templates
-│   │   │       ├── burger_deployment.yaml
-│   │   │       ├── burger_ingress.yaml
-│   │   │       ├── burger_secret.yaml
-│   │   │       └── burger_svc.yaml
-│   │   ├── burger_deployment.yaml
-│   │   ├── burger_ingress.yaml
-│   │   ├── burger_secret.yaml
-│   │   ├── burger_svc.yaml
-│   │   └── docker
-│   │       └── Dockerfile
-│   └── pizza
-│       ├── docker
-│       │   └── Dockerfile
-│       ├── foodstore
-│       │   ├── Chart.yaml
-│       │   └── templates
-│       │       ├── pizza_deployment.yaml
-│       │       ├── pizza_ingress.yaml
-│       │       └── pizza_svc.yaml
-│       ├── pizza_deployment.yaml
-│       ├── pizza_ingress.yaml
-│       └── pizza_svc.yaml
-└── pizza.balx
-  
+│   ├── docker
+│   │   └── Dockerfile
+│   ├── hello-world-persistence-volume-k8s-deployment
+│   │   ├── Chart.yaml
+│   │   └── templates
+│   │       ├── hello_world_persistence_volume_k8s_deployment.yaml
+│   │       ├── hello_world_persistence_volume_k8s_ingress.yaml
+│   │       ├── hello_world_persistence_volume_k8s_secret.yaml
+│   │       ├── hello_world_persistence_volume_k8s_svc.yaml
+│   │       └── hello_world_persistence_volume_k8s_volume_claim.yaml
+│   ├── hello_world_persistence_volume_k8s_deployment.yaml
+│   ├── hello_world_persistence_volume_k8s_ingress.yaml
+│   ├── hello_world_persistence_volume_k8s_secret.yaml
+│   ├── hello_world_persistence_volume_k8s_svc.yaml
+│   └── hello_world_persistence_volume_k8s_volume_claim.yaml
+└── volumes
+    └── persistent-volume.yaml
 
 ```
 
 3. Verify the docker image is created:
 ```bash
 $> docker images
-REPOSITORY       TAG                 IMAGE ID            CREATED             SIZE
-pizza            latest              7eb49de027a7        12 minutes ago      135MB
-burger           latest              7b8bec8eedc6        13 minutes ago      135MB
+REPOSITORY                              TAG                 IMAGE ID            CREATED             SIZE
+hello_world_persistence_volume_k8s     latest              53559c0cd4f4        55 seconds ago      194MB
 ```
 
-5. Run kubectl command to deploy artifacts (Use the command printed on screen in step 2):
-```bash
-$ kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample10/target/kubernetes/burger
-deployment.extensions "burger-deployment" created
-ingress.extensions "burgerep-ingress" created
-secret "burgerep-keystore" created
-service "burgerep-svc" created
+4. Create sample kubernetes volume using following command.
+ ```bash
+$> kubectl create -f ./volumes/persistent-volume.yaml
+persistentvolume "local-pv-2" created
+```
 
-$ kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample10/target/kubernetes/pizza/
-deployment.extensions "foodstore" created
-ingress.extensions "pizzaep-ingress" created
-service "pizzaep-svc" created
+5. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
+```bash
+$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample9/kubernetes/
+deployment.extensions "hello-world-persistence-volume-k8s-deployment" created
+ingress.extensions "helloworldep-ingress" created
+secret "helloworldep-keystore" created
+service "helloworldep-svc" created
+persistentvolumeclaim "local-pv-2" created
 ```
 
 6. Verify kubernetes deployment,service,secrets and ingress is deployed:
 ```bash
 $> kubectl get pods
-NAME                                 READY     STATUS    RESTARTS   AGE
-burger-deployment-85448f5797-8wktg   1/1       Running   0          36s
-foodstore-7bc59c848b-7lk5d           1/1       Running   0          11s
-foodstore-7bc59c848b-8nczc           1/1       Running   0          11s
-
+NAME                                                             READY     STATUS    RESTARTS   AGE
+hello-world-persistence-volume-k8s-deployment-6ff8d6b94b-fqwmw   1/1       Running   0          1m
 
 $> kubectl get svc
-NAME           TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
-burgerep-svc   ClusterIP   10.107.127.86   <none>        9096/TCP   45s
-pizzaep-svc    ClusterIP   10.96.214.133   <none>        9099/TCP   45s
+NAME               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+helloworldep-svc   ClusterIP   10.102.241.188   <none>        9090/TCP   2m
 
 $> kubectl get ingress
-NAME               HOSTS        ADDRESS   PORTS     AGE
-burgerep-ingress   burger.com             80, 443   1m
-pizzaep-ingress    pizza.com              80        43s
+NAME                 HOSTS     ADDRESS   PORTS     AGE
+helloworld-ingress   abc.com             80, 443   2m
 
+$> kubectl get secrets
+NAME                    TYPE                                 DATA      AGE
+helloworldep-keystore   Opaque                                1         1m
+
+$> kubectl get pv
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM                STORAGECLASS   REASON    AGE
+local-pv-2                                 2Gi        RWO            Delete           Available                                                 3h
+
+$> kubectl get pvc
+NAME         STATUS    VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+local-pv-2   Bound     pvc-d26dd46d-2c46-11e8-b313-025000000001   1Gi        RWO            hostpath       3m
 ```
 
 7. Access the hello world service with curl command:
@@ -161,16 +142,12 @@ _(127.0.0.1 is only applicable to docker for mac users. Other users should map t
 from `kubectl get ingress` command.)_
 
 ```bash
-$> curl http://pizza.com/pizzastore/pizza/menu
-Pizza menu
-
-$> curl https://burger.com/menu -k
-Burger menu
+$> curl https://abc.com/helloWorld/sayHello -k
+Hello World
 ```
 
 8. Undeploy sample:
 ```bash
-$> kubectl delete -f target/kubernetes/pizza
-$> kubectl delete -f target/kubernetes/burger
+$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample9/kubernetes/
 
 ```

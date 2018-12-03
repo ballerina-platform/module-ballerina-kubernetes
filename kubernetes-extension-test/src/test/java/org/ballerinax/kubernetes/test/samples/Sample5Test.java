@@ -20,7 +20,8 @@ package org.ballerinax.kubernetes.test.samples;
 
 import io.fabric8.docker.api.model.ImageInspect;
 import io.fabric8.kubernetes.api.KubernetesHelper;
-import io.fabric8.kubernetes.api.model.ResourceQuota;
+import io.fabric8.kubernetes.api.model.HorizontalPodAutoscaler;
+import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
@@ -36,16 +37,15 @@ import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDockerImage;
 
-
-public class Sample15Test implements SampleTest {
+public class Sample5Test implements SampleTest {
     
-    private final String sourceDirPath = SAMPLE_DIR + File.separator + "sample15";
+    private final String sourceDirPath = SAMPLE_DIR + File.separator + "sample5";
     private final String targetPath = sourceDirPath + File.separator + KUBERNETES;
-    private final String dockerImage = "hello_world_k8s_rq:latest";
+    private final String dockerImage = "ballerina.com/pizzashack:2.1.0";
     
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(sourceDirPath, "hello_world_k8s_rq.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(sourceDirPath, "pizzashack.bal"), 0);
     }
     
     @Test
@@ -57,31 +57,23 @@ public class Sample15Test implements SampleTest {
     @Test
     public void validateDockerImage() {
         ImageInspect imageInspect = getDockerImage(dockerImage);
-        Assert.assertEquals(1, imageInspect.getContainerConfig().getExposedPorts().size());
+        Assert.assertEquals(2, imageInspect.getContainerConfig().getExposedPorts().size());
         Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9090/tcp"));
+        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9095/tcp"));
     }
     
     @Test
-    public void validateResourceQuota() throws IOException {
-        File resourceQuotaYAML = new File(targetPath + File.separator + "hello_world_k8s_rq_resource_quota.yaml");
-        Assert.assertTrue(resourceQuotaYAML.exists());
-        ResourceQuota resourceQuota = KubernetesHelper.loadYaml(resourceQuotaYAML);
-        // Assert Resource quota
-        Assert.assertEquals("pod-limit", resourceQuota.getMetadata().getName());
-        Assert.assertEquals(resourceQuota.getMetadata().getLabels().size(), 0, "Invalid number of labels.");
-    
-        Assert.assertEquals(resourceQuota.getSpec().getHard().size(), 5, "Invalid number of hard limits.");
-        Assert.assertEquals(resourceQuota.getSpec().getHard().get("pods").getAmount(), "2", "Invalid number of pods.");
-        Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.cpu").getAmount(), "1",
-                "Invalid number of cpu requests.");
-        Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.memory").getAmount(), "1Gi",
-                "Invalid number of memory requests.");
-        Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.cpu").getAmount(), "2",
-                "Invalid number of cpu limits");
-        Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.memory").getAmount(), "2Gi",
-                "Invalid number of memory limits.");
-    
-        Assert.assertEquals(resourceQuota.getSpec().getScopes().size(), 0, "Unexpected number of scopes.");
+    public void validatePodAutoscaler() throws IOException {
+        File hpaYAML = new File(targetPath + File.separator + "pizzashack_hpa.yaml");
+        Assert.assertTrue(hpaYAML.exists());
+        HorizontalPodAutoscaler podAutoscaler = KubernetesHelper.loadYaml(hpaYAML);
+        Assert.assertEquals("pizzashack-hpa", podAutoscaler.getMetadata().getName());
+        Assert.assertEquals("pizzashack", podAutoscaler.getMetadata().getLabels().get(KubernetesConstants
+                .KUBERNETES_SELECTOR_KEY));
+        Assert.assertEquals(2, podAutoscaler.getSpec().getMaxReplicas().intValue());
+        Assert.assertEquals(1, podAutoscaler.getSpec().getMinReplicas().intValue());
+        Assert.assertEquals(50, podAutoscaler.getSpec().getTargetCPUUtilizationPercentage().intValue());
+        Assert.assertEquals("pizzashack-deployment", podAutoscaler.getSpec().getScaleTargetRef().getName());
     }
     
     @AfterClass
