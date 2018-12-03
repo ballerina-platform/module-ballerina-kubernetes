@@ -144,4 +144,5 @@ Get Customer resource !!!!
 7. Undeploy sample:
 ```bash
 $> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample5/kubernetes/
+$> docker rmi ballerina.com/pizzashack:2.1.0
 ```

@@ -84,4 +84,6 @@ hello world
 ```bash
 $> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample11/kubernetes/
 job "hello-world-job-job" deleted
+$> docker rmi hello_world_job
+
 ```

@@ -27,13 +27,13 @@
     ```
 ### How to run:
 
-1. Compile the hello_world_k8s_resource-quota.bal file. Command to run kubernetes artifacts will be printed on success:
+1. Compile the hello_world_k8s_rq.bal file. Command to run kubernetes artifacts will be printed on success:
 ```bash
-$> ballerina build hello_world_k8s.bal
+$> ballerina build hello_world_k8s_rq.bal
 Compiling source
-    hello_world_k8s.bal
+    hello_world_k8s_rq.bal
 Generating executable
-    hello_world_k8s.balx
+    hello_world_k8s_rq.balx
 	@kubernetes:Service 			 - complete 1/1
 	@kubernetes:Ingress 			 - complete 1/1
 	@kubernetes:ResourceQuota 		 - complete 1/1
@@ -45,52 +45,52 @@ Generating executable
 	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample15/kubernetes/
 
 	Run the following command to install the application using Helm:
-	helm install --name hello-world-k8s-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample15/kubernetes/hello-world-k8s-deployment
+	helm install --name hello-world-k8s-rq-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample15/kubernetes/hello-world-k8s-rq-deployment
 ```
 
-2. hello_world_k8s.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
+2. hello_world_k8s_rq.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
 ├── README.md
-├── hello_world_k8s.bal
-├── hello_world_k8s.balx
+├── hello_world_k8s_rq.bal
+├── hello_world_k8s_rq.balx
 └── kubernetes
     ├── docker
     │   └── Dockerfile
-    ├── hello-world-k8s-deployment
+    ├── hello-world-k8s-rq-deployment
     │   ├── Chart.yaml
     │   └── templates
-    │       ├── hello_world_k8s_deployment.yaml
-    │       ├── hello_world_k8s_ingress.yaml
-    │       ├── hello_world_k8s_resource_quota.yaml
-    │       └── hello_world_k8s_svc.yaml
-    ├── hello_world_k8s_deployment.yaml
-    ├── hello_world_k8s_ingress.yaml
-    ├── hello_world_k8s_resource_quota.yaml
-    └── hello_world_k8s_svc.yaml
+    │       ├── hello_world_k8s_rq_deployment.yaml
+    │       ├── hello_world_k8s_rq_ingress.yaml
+    │       ├── hello_world_k8s_rq_resource_quota.yaml
+    │       └── hello_world_k8s_rq_svc.yaml
+    ├── hello_world_k8s_rq_deployment.yaml
+    ├── hello_world_k8s_rq_ingress.yaml
+    ├── hello_world_k8s_rq_resource_quota.yaml
+    └── hello_world_k8s_rq_svc.yaml
 ```
 
 3. Verify the docker image is created:
 ```bash
 $> docker images
-REPOSITORY                          TAG         IMAGE ID            CREATED             SIZE
-hello_world_k8s                     latest      d88fa54de116        32 seconds ago      128MB
+REPOSITORY                                                       TAG                               IMAGE ID            CREATED              SIZE
+hello_world_k8s_rq                                               latest                            6cb9c74b1d2c        About a minute ago   125MB
 
 ```
 
 4. Create a namespace as `ballerina` in Kubernetes.
 ```bash
 $> kubectl create namespace ballerina
-namespace "ballerina" created
+namespace/ballerina created
 ```
 
 5. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample15/kubernetes/ --namespace=ballerina
-deployment.extensions "hello-world-k8s-deployment" created
-ingress.extensions "helloep-ingress" created
-resourcequota "pod-limit" created
-service "hello" created
+$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample15/kubernetes/ -n ballerina
+deployment.extensions/hello-world-k8s-rq-deployment created
+ingress.extensions/helloep-ingress created
+resourcequota/pod-limit created
+service/hello created
 ```
 
 6. Verify kubernetes deployment is running:
@@ -142,24 +142,28 @@ status:
 
 8. Increase the replication of the deployment to 5.
 ```bash
-$> kubectl scale --replicas=5 deployment/hello-world-k8s-deployment -n ballerina
-deployment.extensions "hello-world-k8s-deployment" scaled
+$> kubectl scale --replicas=5 deployment/hello-world-k8s-rq-deployment -n ballerina
+deployment.extensions/hello-world-k8s-rq-deployment scaled
 
 ```
 
 9. Verify if the number of pods limit has been applied by the resource quota.
 ```bash
-$> kubectl get deployment hello-world-k8s-deployment --namespace=ballerina
-NAME                         DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-hello-world-k8s-deployment   5         2         2            2           8m
+$> kubectl get deployment hello-world-k8s-rq-deployment -n ballerina
+NAME                            DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+hello-world-k8s-rq-deployment   5         2         2            2           7m
 
 ```
 
 9. Undeploy sample:
 ```bash
-$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample15/kubernetes/ --namespace=ballerina
+$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample15/kubernetes/ -n ballerina
 deployment.extensions "hello-world-k8s-deployment" deleted
 ingress.extensions "helloep-ingress" deleted
 resourcequota "pod-limit" deleted
 service "hello" deleted
+
+$> kubectl delete namespace ballerina
+$> docker rmi hello_world_k8s_rq 
+
 ```

@@ -138,7 +138,10 @@ Hello, World from service helloWorld !
 9. Undeploy sample:
 ```bash
 $> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample6/kubernetes/
+$> docker rmi hemikak/gce-sample:1.0
+
 ```
+
 ## Troubleshooting
 - Run following commands to deploy ingress backend and controller
 ```bash

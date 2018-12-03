@@ -108,4 +108,5 @@ $> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/
 deployment "hello-world-k8s-deployment" deleted
 service "helloworldep" deleted
 
+$> docker rmi hello_world_k8s
 ```

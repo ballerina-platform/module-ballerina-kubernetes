@@ -11,8 +11,8 @@ and @kubernetes:IstioVirtualService annotations.
     information of a book and responses back to the client collectively.
 - `book.shop` service depends on `book.details` and `book.reviews`.
 - Make sure that istio is installed correctly and that all pods and services of the istio-system are up and running. 
-- Remove the nginx artifacts added in setting up of the tutorial. Run `kubectl delete -f 
-nginx-ingress/namespaces/nginx-ingress.yaml -Rf nginx-ingress` from the `samples` folder.
+- Remove the nginx artifacts added in setting up of the tutorial. Run `kubectl delete -f nginx-ingress/namespaces/nginx-ingress.yaml -Rf nginx-ingress` 
+from the `samples` folder.
 See [here](https://istio.io/docs/setup/kubernetes/quick-start/) on how to install istio on kubernetes.
 - Following files will be generated from building this sample.
     ``` 
@@ -244,8 +244,9 @@ $> curl http://${GATEWAY_URL}/book/B4
 
 9. Undeploy sample:
 ```bash
-kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/book.details
-kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/book.shop
-kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/book.reviews
+$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/book.details
+$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/book.shop
+$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/book.reviews
+$> docker rmi book.reviews book.shop book.details
 
 ```

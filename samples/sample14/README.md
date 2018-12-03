@@ -118,4 +118,8 @@ $> kubectl delete -f ./kubernetes/
 service "hello" deleted
 ingress.extensions "helloep-ingress" deleted
 deployment.extensions "hello-world-k8s-namespace-deployment" deleted
+$> kubectl delete namespace ballerina
+namespace "ballerina" deleted
+$> docker rmi hello_world_k8s_namespace
+
 ```

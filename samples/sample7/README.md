@@ -147,5 +147,6 @@ Secret3 resource: Secret3
 7. Undeploy sample:
 ```bash
 $> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample7/kubernetes/
+$> docker rmi hello_world_secret_mount_k8s
 
 ```
