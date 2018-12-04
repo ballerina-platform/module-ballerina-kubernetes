@@ -21,37 +21,57 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
+        <artifactId>kubernetes-extension-parent</artifactId>
         <groupId>org.ballerinax.kubernetes</groupId>
         <version>0.983.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-        <artifactId>kubernetes-extension-parent</artifactId>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>kubernetes-extension-examples</artifactId>
-    <name>Ballerinax - Kubernetes Extension Examples</name>
+    <artifactId>kubernetes-extension-coverage-report</artifactId>
+    <name>Ballerinax - Kubernetes Extension Test Coverage</name>
     <packaging>pom</packaging>
     <url>https://ballerina.io</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.ballerinax.kubernetes</groupId>
+            <artifactId>kubernetes-extension</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinax.kubernetes</groupId>
+            <artifactId>kubernetes-extension-test</artifactId>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                </configuration>
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <id>report-aggregate</id>
+                        <phase>verify</phase>
                         <goals>
-                            <goal>single</goal>
+                            <goal>report-aggregate</goal>
                         </goals>
                         <configuration>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <descriptors>
-                                <descriptor>src/main/assembly/bin.xml</descriptor>
-                            </descriptors>
+                            <dataFileIncludes>
+                                <dataFileInclude>**/coverage-reports/jacoco.exec</dataFileInclude>
+                            </dataFileIncludes>
+                            <outputDirectory>${project.build.directory}/coverage-reports/site</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
         </plugins>
     </build>

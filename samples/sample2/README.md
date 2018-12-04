@@ -109,4 +109,5 @@ Hello, World from service helloWorld !
 7. Undeploy sample:
 ```bash
 $> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample2/kubernetes/
+$> docker rmi hello_world_k8s_config
 ```

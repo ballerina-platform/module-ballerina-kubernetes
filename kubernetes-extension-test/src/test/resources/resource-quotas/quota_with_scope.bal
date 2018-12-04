@@ -17,44 +17,45 @@
 import ballerina/http;
 import ballerinax/kubernetes;
 
-@kubernetes:IstioGateway {
-    name: "my-gateway",
-    selector: {
-        app: "my-gateway-controller"
-    },
-    servers: [
-        {
-            port: {
-                number: 443,
-                name: "https",
-                protocol: "HTTPS"
-            },
-            hosts: [
-                "httpbin.example.com"
-            ],
-            tls: {
-                mode: "SIMPLE",
-                serverCertificate: "/etc/istio/ingressgateway-certs/tls.crt",
-                privateKey: "/etc/istio/ingressgateway-certs/tls.key"
-            }
-        }
-    ]
+@kubernetes:Ingress {
+    hostname: "pizza.com",
+    path: "/pizzastore",
+    targetPath: "/"
 }
+@kubernetes:Service {}
+listener http:Listener pizzaEP = new(9099);
+
 @kubernetes:Deployment {
-    name: "tls_simple",
+    name: "quota-with-scope",
     image: "pizza-shop:latest",
     singleYAML: false
 }
-@kubernetes:Service {name: "hello"}
-listener http:Listener helloEP = new(9090);
-
-@http:ServiceConfig {
-    basePath: "/helloWorld"
+@kubernetes:ResourceQuota {
+    resourceQuotas: [
+        {
+            name: "compute-resources",
+            hard: {
+                "pods": "4",
+                "requests.cpu": "1",
+                "requests.memory": "1Gi",
+                "limits.cpu": "2",
+                "limits.memory": "2Gi"
+            },
+            scopes: ["BestEffort"]
+        }
+    ]
 }
-service helloWorld on helloEP {
-    resource function sayHello(http:Caller outboundEP, http:Request request) {
+@http:ServiceConfig {
+    basePath: "/pizza"
+}
+service PizzaAPI on pizzaEP {
+    @http:ResourceConfig {
+        methods: ["GET"],
+        path: "/menu"
+    }
+    resource function getPizzaMenu(http:Caller outboundEP, http:Request req) {
         http:Response response = new;
-        response.setTextPayload("Hello, World from service helloWorld ! \n");
+        response.setTextPayload("Pizza menu \n");
         _ = outboundEP->respond(response);
     }
 }

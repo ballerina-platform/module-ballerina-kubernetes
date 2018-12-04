@@ -17,48 +17,30 @@
 import ballerina/http;
 import ballerinax/kubernetes;
 
-
-@kubernetes:Ingress {
-    hostname: "pizza.com",
-    path: "/pizzastore",
-    targetPath: "/"
-}
-@kubernetes:Service {
-    sessionAffinity: "ClientIP"
-}
-endpoint http:Listener pizzaEP {
-    port: 9099
-};
-
 @kubernetes:Deployment {
-    name: "field-ref-value",
     image: "pizza-shop:latest",
-    env: {
-        "MY_NODE_NAME": {
-            fieldRef: {
-                fieldPath: "spec.nodeName"
-            }
-        },
-        "MY_POD_NAME": {
-            fieldRef: {
-                fieldPath: "metadata.name"
-            }
-        }
+    annotations: {
+        anno1: "anno1Val",
+        anno2: "anno2Val"
     },
     singleYAML: false
 }
+@kubernetes:Ingress {
+    hostname: "abc.com"
+}
+@kubernetes:Service {
+    name: "hello",
+    port: 8080
+}
+listener http:Listener helloEP = new(9090);
 
 @http:ServiceConfig {
-    basePath: "/pizza"
+    basePath: "/helloWorld"
 }
-service<http:Service> PizzaAPI bind pizzaEP {
-    @http:ResourceConfig {
-        methods: ["GET"],
-        path: "/menu"
-    }
-    getPizzaMenu(endpoint outboundEP, http:Request req) {
+service helloWorld on helloEP {
+    resource function sayHello(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
-        response.setTextPayload("Pizza menu \n");
+        response.setTextPayload("Hello, World from service helloWorld ! \n");
         _ = outboundEP->respond(response);
     }
 }

@@ -14,6 +14,20 @@
 // specific language governing permissions and limitations
 // under the License.
 
+# Metadata for artifacts
+#
+# + name - Name of the resource
+# + namespace - Kubernetes namespace to be used
+# + labels - Map of labels for the resource
+# + annotations - Map of annotations for resource
+public type Metadata record {
+    string name?;
+    string namespace?;
+    map<string> labels?;
+    map<string> annotations?;
+    !...
+};
+
 # External file type for docker.
 #
 # + source - source path of the file (in your machine)
@@ -47,7 +61,7 @@ public type SecretKeyValue record {
 # + containerName - Name of the container.
 # + resource - Resource field
 public type ResourceFieldValue record {
-    string containerName;
+    string containerName?;
     string ^"resource";
     !...
 };
@@ -94,18 +108,15 @@ public type ConfigMapKeyRef record {
     !...
 };
 
+public const string IMAGE_PULL_POLICY_IF_NOT_PRESENT = "IfNotPresent";
+public const string IMAGE_PULL_POLICY_ALWAYS = "Always";
+public const string IMAGE_PULL_POLICY_NEVER = "Never";
+
 # Image pull policy type field for kubernetes deployment and jobs.
 public type ImagePullPolicy "IfNotPresent"|"Always"|"Never";
 
-# Restart policy type field for kubernetes jobs.
-public type RestartPolicy "OnFailure"|"Always"|"Never";
-
 # Kubernetes deployment configuration.
 #
-# + name - Name of the deployment
-# + namespace - Kubernetes namespace
-# + labels - Map of labels for deployment
-# + annotations - Map of annotations for deployment
 # + podAnnotations - Map of annotations for pods
 # + replicas - Number of replicas
 # + enableLiveness - Enable/Disable liveness probe
@@ -127,101 +138,94 @@ public type RestartPolicy "OnFailure"|"Always"|"Never";
 # + dependsOn - Services this deployment depends on
 # + imagePullSecrets - Image pull secrets
 public type DeploymentConfiguration record {
-    string name;
-    string namespace;
-    map<string> labels;
-    map<string> annotations;
-    map<string> podAnnotations;
-    int replicas;
-    boolean enableLiveness;
-    int livenessPort;
-    int initialDelaySeconds;
-    int periodSeconds;
-    ImagePullPolicy? imagePullPolicy;
-    string image;
-    map<string|FieldRef|SecretKeyRef|ResourceFieldRef|ConfigMapKeyRef> env;
-    boolean buildImage;
-    string dockerHost;
-    string username;
-    string password;
-    string baseImage;
-    boolean push;
-    string dockerCertPath;
-    FileConfig[] copyFiles;
-    boolean singleYAML;
-    string[] dependsOn;
-    string[] imagePullSecrets;
+    *Metadata;
+    map<string> podAnnotations?;
+    int replicas?;
+    boolean enableLiveness?;
+    int livenessPort?;
+    int initialDelaySeconds?;
+    int periodSeconds?;
+    ImagePullPolicy imagePullPolicy = IMAGE_PULL_POLICY_IF_NOT_PRESENT;
+    string image?;
+    map<string|FieldRef|SecretKeyRef|ResourceFieldRef|ConfigMapKeyRef> env?;
+    boolean buildImage?;
+    string dockerHost?;
+    string username?;
+    string password?;
+    string baseImage?;
+    boolean push?;
+    string dockerCertPath?;
+    FileConfig[] copyFiles?;
+    boolean singleYAML = true;
+    string[] dependsOn?;
+    string[] imagePullSecrets?;
     !...
 };
 
 # @kubernetes:Deployment annotation to configure deplyoment yaml.
-public annotation<service, function, endpoint> Deployment DeploymentConfiguration;
+public annotation<service, function, listener> Deployment DeploymentConfiguration;
+
+public const string SESSION_AFFINITY_NONE = "None";
+public const string SESSION_AFFINITY_CLIENT_IP = "ClientIP";
 
 # Session affinity field for kubernetes services.
 public type SessionAffinity "None"|"ClientIP";
+
+public const string SERVICE_TYPE_NORD_PORT = "NodePort";
+public const string SERVICE_TYPE_CLUSTER_IP = "ClusterIP";
+public const string SERVICE_TYPE_LOAD_BALANCER = "LoadBalancer";
 
 # Service type field for kubernetes services.
 public type ServiceType "NodePort"|"ClusterIP"|"LoadBalancer";
 
 # Kubernetes service configuration.
 #
-# + name - Name of the service
-# + labels - Map of labels for deployment
 # + port - Service port
 # + sessionAffinity - Session affinity for pods
 # + serviceType - Service type of the service
 public type ServiceConfiguration record {
-    string name;
-    map<string>? labels;
-    int? port;
-    SessionAffinity? sessionAffinity;
-    ServiceType? serviceType;
+    *Metadata;
+    int port?;
+    SessionAffinity sessionAffinity = SESSION_AFFINITY_NONE;
+    ServiceType serviceType = SERVICE_TYPE_CLUSTER_IP;
     !...
 };
 
 # @kubernetes:Service annotation to configure service yaml.
-public annotation<endpoint, service> Service ServiceConfiguration;
+public annotation<listener, service> Service ServiceConfiguration;
 
 # Kubernetes ingress configuration.
 #
-# + name - Name of the ingress
-# + endpointName - Name of the endpoint ingress attached
-# + labels - Label map for ingress
-# + annotations - Map of additional annotations
+# + listenerName - Name of the listener ingress attached
 # + hostname - Host name of the ingress
 # + path - Resource path
 # + targetPath - Target path for url rewrite
 # + ingressClass - Ingress class
 # + enableTLS - Enable/Disable ingress TLS
 public type IngressConfiguration record {
-    string name;
-    string endpointName;
-    map labels;
-    map annotations;
+    *Metadata;
+    string listenerName?;
     string hostname;
-    string path;
-    string targetPath;
-    string ingressClass;
-    boolean enableTLS;
+    string path?;
+    string targetPath?;
+    string ingressClass?;
+    boolean enableTLS?;
     !...
 };
 
 # @kubernetes:Ingress annotation to configure ingress yaml.
-public annotation<service, endpoint> Ingress IngressConfiguration;
+public annotation<service, listener> Ingress IngressConfiguration;
 
 # Kubernetes Horizontal Pod Autoscaler configuration
 #
-# + name - Name of the Autoscaler
-# + labels - Labels for Autoscaler
 # + minReplicas - Minimum number of replicas
 # + maxReplicas - Maximum number of replicas
 # + cpuPercentage - CPU percentage to start scaling
 public type PodAutoscalerConfig record {
-    string name;
-    map labels;
-    int minReplicas;
-    int maxReplicas;
-    int cpuPercentage;
+    *Metadata;
+    int minReplicas?;
+    int maxReplicas?;
+    int cpuPercentage?;
     !...
 };
 
@@ -230,14 +234,13 @@ public annotation<service> HPA PodAutoscalerConfig;
 
 # Kubernetes secret volume mount.
 #
-# + name - Name of the volume mount
 # + mountPath - Mount path
 # + readOnly - Is mount read only
 # + data - Paths to data files as an array
 public type Secret record {
-    string name;
+    *Metadata;
     string mountPath;
-    boolean readOnly;
+    boolean readOnly = true;
     string[] data;
     !...
 };
@@ -255,14 +258,13 @@ public annotation<service> Secret SecretMount;
 
 # Kubernetes Config Map volume mount.
 #
-# + name - Name of the volume mount
 # + mountPath - Mount path
 # + readOnly - Is mount read only
 # + data - Paths to data files
 public type ConfigMap record {
-    string name;
+    *Metadata;
     string mountPath;
-    boolean readOnly;
+    boolean readOnly = true;
     string[] data;
     !...
 };
@@ -273,7 +275,7 @@ public type ConfigMap record {
 # + configMaps - Array of [ConfigMap](kubernetes.html#ConfigMap)
 public type ConfigMapMount record {
     string ballerinaConf;
-    ConfigMap[] configMaps;
+    ConfigMap[] configMaps?;
     !...
 };
 
@@ -282,18 +284,15 @@ public annotation<service> ConfigMap ConfigMapMount;
 
 # Kubernetes Persistent Volume Claim.
 #
-# + name - Name of the volume claim
 # + mountPath - Mount Path
 # + accessMode - Access mode
 # + volumeClaimSize - Size of the volume claim
-# + annotations - Map of annotation values
 # + readOnly - Is mount read only
 public type PersistentVolumeClaimConfig record {
-    string name;
+    *Metadata;
     string mountPath;
     string accessMode;
     string volumeClaimSize;
-    map annotations;
     boolean readOnly;
     !...
 };
@@ -314,13 +313,10 @@ public type ResourceQuotaScope "Terminating"|"NotTerminating"|"BestEffort"|"NotB
 
 # Kubernetes Resource Quota
 #
-# + name - Name of the resource quota
-# + labels - Labels for resource quota
 # + hard - Quotas for the resources
 # + scopes - Scopes of the quota
 public type ResourceQuotaConfig record {
-    string name;
-    map<string>? labels;
+    *Metadata;
     map<string> hard;
     ResourceQuotaScope[] scopes = [];
     !...
@@ -335,12 +331,17 @@ public type ResourceQuotas record {
 };
 
 # @kubernetes:ResourcesQuotas annotation to configure Resource Quotas.
-public annotation<service, function, endpoint> ResourceQuota ResourceQuotas;
+public annotation<service, function, listener> ResourceQuota ResourceQuotas;
+
+public const string RESTART_POLICY_ON_FAILURE = "OnFailure";
+public const string RESTART_POLICY_ALWAYS = "Always";
+public const string RESTART_POLICY_NEVER = "Never";
+
+# Restart policy type field for kubernetes jobs.
+public type RestartPolicy "OnFailure"|"Always"|"Never";
 
 # Kubernetes job configuration.
 #
-# + name - Name of the job
-# + labels - Labels for job
 # + restartPolicy - Restart policy
 # + backoffLimit - Backoff limit
 # + activeDeadlineSeconds - Active deadline seconds
@@ -359,24 +360,23 @@ public annotation<service, function, endpoint> ResourceQuota ResourceQuotas;
 # + imagePullSecrets - Image pull secrets
 # + singleYAML - Generate a single yaml file with all kubernetes artifacts (services,deployment,ingress,)
 public type JobConfig record {
-    string name;
-    map labels;
-    RestartPolicy? restartPolicy;
-    string backoffLimit;
-    string activeDeadlineSeconds;
-    string schedule;
-    map<string|FieldRef|SecretKeyRef|ResourceFieldRef|ConfigMapKeyRef> env;
-    ImagePullPolicy? imagePullPolicy;
-    string image;
-    boolean buildImage;
-    string dockerHost;
-    string username;
-    string password;
-    string baseImage;
-    boolean push;
-    string dockerCertPath;
-    FileConfig[] copyFiles;
-    string[] imagePullSecrets;
+    *Metadata;
+    RestartPolicy restartPolicy = RESTART_POLICY_NEVER;
+    string backoffLimit?;
+    string activeDeadlineSeconds?;
+    string schedule?;
+    map<string|FieldRef|SecretKeyRef|ResourceFieldRef|ConfigMapKeyRef> env?;
+    ImagePullPolicy imagePullPolicy = IMAGE_PULL_POLICY_IF_NOT_PRESENT;
+    string image?;
+    boolean buildImage = true;
+    string dockerHost?;
+    string username?;
+    string password?;
+    string baseImage?;
+    boolean push = false;
+    string dockerCertPath?;
+    FileConfig[] copyFiles?;
+    string[] imagePullSecrets?;
     boolean singleYAML = true;
     !...
 };
@@ -411,12 +411,12 @@ public type IstioTLSOptionMode "PASSTHROUGH"|"SIMPLE"|"MUTUAL";
 # + caCertificates - REQUIRED if mode is MUTUAL. The path to a file containing certificate authority certificates to use in verifying a presented client side certificate.
 # + subjectAltNames - A list of alternate names to verify the subject identity in the certificate presented by the client.
 public type IstioTLSOptionConfig record {
-    boolean httpsRedirect;
-    IstioTLSOptionMode? mode;
-    string? serverCertificate;
-    string? privateKey;
-    string? caCertificates;
-    string[]? subjectAltNames;
+    boolean httpsRedirect = false;
+    IstioTLSOptionMode mode?;
+    string serverCertificate?;
+    string privateKey?;
+    string caCertificates?;
+    string[] subjectAltNames?;
     !...
 };
 
@@ -428,30 +428,23 @@ public type IstioTLSOptionConfig record {
 public type IstioServerConfig record {
     IstioPortConfig port;
     string[] hosts;
-    IstioTLSOptionConfig? tls;
+    IstioTLSOptionConfig tls?;
     !...
 };
 
 # Istio gateway annotation configuration.
 #
-# + name - The name of the gateway.
-# + namespace - Namespace to which the gateway should be deployed,
-# + labels - Labels for the gateway.
-# + annotations - Annotations of the gateway.
 # + selector - Specific set of pods/VMs on which this gateway configuration should be applied.
 # + servers - List of servers to pass.
 public type IstioGatewayConfig record {
-    string name;
-    string? namespace;
-    map<string>? labels;
-    map<string>? annotations;
-    map<string> selector;
-    IstioServerConfig[] servers;
+    *Metadata;
+    map<string> selector?;
+    IstioServerConfig[] servers?;
     !...
 };
 
 # @kubernetes:IstioGateway annotation to generate istio gateways.
-public annotation<service, endpoint> IstioGateway IstioGatewayConfig;
+public annotation<service, listener> IstioGateway IstioGatewayConfig;
 
 # Configuration for a string match.
 #
@@ -459,9 +452,9 @@ public annotation<service, endpoint> IstioGateway IstioGatewayConfig;
 # + prefix - Prefix to match string.
 # + regex - Regex to match string.
 public type StringMatch record {
-    string? exact;
-    string? prefix;
-    string? regex;
+    string exact?;
+    string prefix?;
+    string regex?;
     !...
 };
 
@@ -476,14 +469,14 @@ public type StringMatch record {
 # + sourceLabels - One or more labels that constrain the applicability of a rule to workloads with the given labels.
 # + gateways - Names of gateways the rules should be applied to.
 public type HTTPMatchRequestConfig record {
-    StringMatch? uri;
-    StringMatch? scheme;
-    StringMatch? method;
-    StringMatch? authority;
-    map<StringMatch>? headers;
-    int? port;
-    map<string>? sourceLabels;
-    string[]? gateways;
+    StringMatch uri?;
+    StringMatch scheme?;
+    StringMatch method?;
+    StringMatch authority?;
+    map<StringMatch> headers?;
+    int port?;
+    map<string> sourceLabels?;
+    string[] gateways?;
     !...
 };
 
@@ -502,8 +495,8 @@ public type PortSelectorConfig record {
 # + port - The port on the host that is being addressed.
 public type DestinationConfig record {
     string host;
-    string subset;
-    PortSelectorConfig? port;
+    string subset?;
+    PortSelectorConfig port?;
     !...
 };
 
@@ -513,7 +506,7 @@ public type DestinationConfig record {
 # + weight - Weight for the destination.
 public type DestinationWeightConfig record {
     DestinationConfig destination;
-    int weight;
+    int weight?;
     !...
 };
 
@@ -522,8 +515,8 @@ public type DestinationWeightConfig record {
 # + uri - Rewrite the path portion of the URI with this value.
 # + authority - Rewrite authority header.
 public type HTTPRedirectRewriteConfig record {
-    string? uri;
-    string? authority;
+    string uri?;
+    string authority?;
     !...
 };
 
@@ -547,7 +540,6 @@ public type HTTPFaultInjectionDelayConfig record {
     !...
 };
 
-
 # Configuration to abort request prematurely.
 #
 # + percent - Percentage of requests to abort.
@@ -563,8 +555,8 @@ public type HTTPFaultInjectionAbortConfig record {
 # + delay - Delay before forwarding.
 # + abort - Abort http request.
 public type HTTPFaultInjectionConfig record {
-    HTTPFaultInjectionDelayConfig? delay;
-    HTTPFaultInjectionAbortConfig? ^"abort";
+    HTTPFaultInjectionDelayConfig delay?;
+    HTTPFaultInjectionAbortConfig ^"abort"?;
     !...
 };
 
@@ -577,12 +569,12 @@ public type HTTPFaultInjectionConfig record {
 # + maxAge - Specifies how long the the results of a preflight request can be cached.
 # + allowCredentials - Indicates whether the caller is allowed to send the actual request (not the preflight) using credentials.
 public type CorsPolicyConfig record {
-    string[]? allowOrigin;
-    string[]? allowMethods;
-    string[]? allowHeaders;
-    string[]? exposeHeaders;
-    string? maxAge;
-    boolean? allowCredentials;
+    string[] allowOrigin?;
+    string[] allowMethods?;
+    string[] allowHeaders?;
+    string[] exposeHeaders?;
+    string maxAge?;
+    boolean allowCredentials?;
     !...
 };
 
@@ -599,16 +591,16 @@ public type CorsPolicyConfig record {
 # + corsPolicy - CORS policies.
 # + appendHeaders - Additional header to add before forwarding/directing.
 public type HTTPRouteConfig record {
-    HTTPMatchRequestConfig[] ^"match";
-    DestinationWeightConfig[] route;
-    HTTPRedirectRewriteConfig redirect;
-    HTTPRedirectRewriteConfig rewrite;
-    string? ^"timeout";
-    HTTPRetryConfig? ^"retries";
-    HTTPFaultInjectionConfig? fault;
-    DestinationConfig? mirror;
-    CorsPolicyConfig? corsPolicy;
-    map<string>? appendHeaders;
+    HTTPMatchRequestConfig[] ^"match"?;
+    DestinationWeightConfig[] route?;
+    HTTPRedirectRewriteConfig redirect?;
+    HTTPRedirectRewriteConfig rewrite?;
+    string ^"timeout"?;
+    HTTPRetryConfig ^"retries"?;
+    HTTPFaultInjectionConfig fault?;
+    DestinationConfig mirror?;
+    CorsPolicyConfig corsPolicy?;
+    map<string> appendHeaders?;
     !...
 };
 
@@ -621,10 +613,10 @@ public type HTTPRouteConfig record {
 # + gateways - Names of gateways the rules should be applied to.
 public type TLSMatchAttributesConfig record {
     string[] sniHosts;
-    string[]? destinationSubnets;
-    int? port;
-    map<string>? sourceLabels;
-    string[] gateways;
+    string[] destinationSubnets?;
+    int port?;
+    map<string> sourceLabels?;
+    string[] gateways?;
     !...
 };
 
@@ -645,10 +637,10 @@ public type TLSRouteConfig record {
 # + sourceLabels - One or more labels that constrain the applicability of a rule to workloads with the given labels.
 # + gateways - Names of gateways the rules should be applied to.
 public type L4MatchAttributesConfig record {
-    string[]? destinationSubnets;
-    int? port;
-    map<string>? sourceLabels;
-    string[] gateways;
+    string[] destinationSubnets?;
+    int port?;
+    map<string> sourceLabels?;
+    string[] gateways?;
     !...
 };
 
@@ -664,27 +656,20 @@ public type TCPRouteConfig record {
 
 # Virtual service configuration for @kubernetes:IstioVirtualService annotation.
 #
-# + name - The name of the virtual service.
-# + namespace - Name to which should get deployed.
-# + labels - Labels for the virtual service.
-# + annotations - Annotations for the virtual service.
 # + hosts - Destination which traffic should be sent.
 # + gateways - Names of the gateways which the service should listen to.
 # + http - Route rules for HTTP traffic.
 # + tls - Route rules for TLS and HTTPS traffic.
 # + tcp - Route rules for TCP traffic.
 public type IstioVirtualServiceConfig record {
-    string name;
-    string? namespace;
-    map<string>? labels;
-    map<string>? annotations;
-    string[] hosts;
-    string[]? gateways;
-    HTTPRouteConfig[] http;
-    TLSRouteConfig[] tls;
-    TCPRouteConfig[] tcp;
+    *Metadata;
+    string[] hosts?;
+    string[] gateways?;
+    HTTPRouteConfig[] http?;
+    TLSRouteConfig[] tls?;
+    TCPRouteConfig[] tcp?;
     !...
 };
 
 # @kubernetes:IstioVirtualService annotation to generate istio virtual service.
-public annotation<service, endpoint> IstioVirtualService IstioVirtualServiceConfig;
+public annotation<service, listener> IstioVirtualService IstioVirtualServiceConfig;

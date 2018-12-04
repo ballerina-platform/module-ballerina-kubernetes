@@ -132,7 +132,7 @@ public class IngressHandler extends AbstractArtifactHandler {
         int count = 0;
         Map<String, Set<SecretModel>> secretModelsMap = dataHolder.getSecretModels();
         for (IngressModel ingressModel : ingressModels) {
-            ServiceModel serviceModel = dataHolder.getServiceModel(ingressModel.getEndpointName());
+            ServiceModel serviceModel = dataHolder.getServiceModel(ingressModel.getListenerName());
             if (serviceModel == null) {
                 throw new KubernetesPluginException("@kubernetes:Ingress annotation should be followed by " +
                         "@kubernetes:Service annotation.");
@@ -142,8 +142,8 @@ public class IngressHandler extends AbstractArtifactHandler {
             String balxFileName = KubernetesUtils.extractBalxName(dataHolder.getBalxFilePath());
             ingressModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
             ingressModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
-            if (secretModelsMap.get(ingressModel.getEndpointName()) != null && secretModelsMap.get(ingressModel
-                    .getEndpointName()).size() != 0) {
+            if (secretModelsMap.get(ingressModel.getListenerName()) != null && secretModelsMap.get(ingressModel
+                    .getListenerName()).size() != 0) {
                 ingressModel.setEnableTLS(true);
             }
             generate(ingressModel);

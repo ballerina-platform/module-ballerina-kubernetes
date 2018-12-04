@@ -49,30 +49,50 @@ sample10$> ballerina init
 Ballerina project initialized
 ```
 
-1. Compile the food_api_pkg file. Command to run kubernetes artifacts will be printed on success:
+2. Compile the project. Command to run kubernetes artifacts will be printed on success:
 ```bash
 sample10$> ballerina build 
-@kubernetes:Service 			 - complete 1/1
-@kubernetes:Ingress 			 - complete 1/1
-@kubernetes:Secret 			 - complete 1/1
-@kubernetes:Deployment 			 - complete 1/1
-@kubernetes:Docker 			 - complete 3/3
-@kubernetes:Helm 			 - complete 1/1
+Compiling source
+    john/burger:0.0.1
+    john/pizza:0.0.1
 
-Run following command to deploy kubernetes artifacts: 
-kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample10/target/kubernetes/burger
+Running tests
+    john/burger:0.0.1
+	No tests found
 
-@kubernetes:Service 			 - complete 1/1
-@kubernetes:Ingress 			 - complete 1/1
-@kubernetes:Deployment 			 - complete 1/1
-@kubernetes:Docker 			 - complete 3/3
-@kubernetes:Helm 			 - complete 1/1 
+    john/pizza:0.0.1
+	No tests found
 
-Run following command to deploy kubernetes artifacts: 
-kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample10/target/kubernetes/pizza
+Generating executables
+    ./target/burger.balx
+	@kubernetes:Service 			 - complete 1/1
+	@kubernetes:Ingress 			 - complete 1/1
+	@kubernetes:Secret 			 - complete 1/1
+	@kubernetes:Deployment 			 - complete 1/1
+	@kubernetes:Docker 			 - complete 3/3
+	@kubernetes:Helm 			 - complete 1/1
+
+	Run the following command to deploy the Kubernetes artifacts:
+	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample10/target/kubernetes/burger
+
+	Run the following command to install the application using Helm:
+	helm install --name burger-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample10/target/kubernetes/burger/burger-deployment
+
+    ./target/pizza.balx
+	@kubernetes:Service 			 - complete 1/1
+	@kubernetes:Ingress 			 - complete 1/1
+	@kubernetes:Deployment 			 - complete 1/1
+	@kubernetes:Docker 			 - complete 3/3
+	@kubernetes:Helm 			 - complete 1/1
+
+	Run the following command to deploy the Kubernetes artifacts:
+	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample10/target/kubernetes/pizza
+
+	Run the following command to install the application using Helm:
+	helm install --name foodstore /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample10/target/kubernetes/pizza/foodstore
 ```
 
-2. food_api_pkg.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
+3. food_api_pkg.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree target
 target
@@ -110,29 +130,29 @@ target
 
 ```
 
-3. Verify the docker image is created:
+4. Verify the docker image is created:
 ```bash
 $> docker images
-REPOSITORY       TAG                 IMAGE ID            CREATED             SIZE
-pizza            latest              7eb49de027a7        12 minutes ago      135MB
-burger           latest              7b8bec8eedc6        13 minutes ago      135MB
+REPOSITORY                                                       TAG                               IMAGE ID            CREATED             SIZE
+pizza                                                            latest                            983a34711d0d        34 seconds ago      125MB
+burger                                                           latest                            3b740094c254        35 seconds ago      125MB
 ```
 
 5. Run kubectl command to deploy artifacts (Use the command printed on screen in step 2):
 ```bash
-$ kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample10/target/kubernetes/burger
-deployment.extensions "burger-deployment" created
-ingress.extensions "burgerep-ingress" created
-secret "burgerep-keystore" created
-service "burgerep-svc" created
+$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample10/target/kubernetes/burger
+deployment.extensions/burger-deployment created
+ingress.extensions/burgerep-ingress created
+secret/burgerep-keystore created
+service/burgerep-svc created
 
-$ kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample10/target/kubernetes/pizza/
-deployment.extensions "foodstore" created
-ingress.extensions "pizzaep-ingress" created
-service "pizzaep-svc" created
+$ kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample10/target/kubernetes/pizza/
+deployment.extensions/foodstore created
+ingress.extensions/pizzaep-ingress created
+service/pizzaep-svc created
 ```
 
-6. Verify kubernetes deployment,service,secrets and ingress is deployed:
+6. Verify kubernetes deployment, service, secrets and ingress is deployed:
 ```bash
 $> kubectl get pods
 NAME                                 READY     STATUS    RESTARTS   AGE
@@ -172,5 +192,6 @@ Burger menu
 ```bash
 $> kubectl delete -f target/kubernetes/pizza
 $> kubectl delete -f target/kubernetes/burger
+$> docker rmi pizza burger
 
 ```

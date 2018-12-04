@@ -26,11 +26,10 @@ import static org.ballerinax.kubernetes.KubernetesConstants.NGINX;
  * Kubernetes ingress annotations model class.
  */
 public class IngressModel extends KubernetesModel {
-    private Map<String, String> labels;
     private String hostname;
     private String path;
     private String ingressClass;
-    private String endpointName;
+    private String listenerName;
     private Map<String, String> annotations;
     private String serviceName;
     private int servicePort;
@@ -43,15 +42,7 @@ public class IngressModel extends KubernetesModel {
         this.ingressClass = NGINX;
         this.labels = new HashMap<>();
     }
-
-    public Map<String, String> getLabels() {
-        return labels;
-    }
-
-    public void setLabels(Map<String, String> labels) {
-        this.labels = labels;
-    }
-
+    
     public String getHostname() {
         return hostname;
     }
@@ -127,12 +118,12 @@ public class IngressModel extends KubernetesModel {
         this.labels.put(key, value);
     }
 
-    public String getEndpointName() {
-        return endpointName;
+    public String getListenerName() {
+        return listenerName;
     }
 
-    public void setEndpointName(String endpointName) {
-        this.endpointName = endpointName;
+    public void setListenerName(String listenerName) {
+        this.listenerName = listenerName;
     }
 
     public Map<String, String> getAnnotations() {

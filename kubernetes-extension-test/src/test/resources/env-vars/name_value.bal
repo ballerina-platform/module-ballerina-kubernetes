@@ -17,45 +17,33 @@
 import ballerina/http;
 import ballerinax/kubernetes;
 
+
 @kubernetes:Ingress {
     hostname: "pizza.com",
     path: "/pizzastore",
     targetPath: "/"
 }
-@kubernetes:Service {}
-endpoint http:Listener pizzaEP {
-    port: 9099
-};
+@kubernetes:Service {
+    sessionAffinity: kubernetes:SESSION_AFFINITY_CLIENT_IP
+}
+listener http:Listener pizzaEP = new(9099);
 
 @kubernetes:Deployment {
-    name: "quota-with-scope",
+    name: "name-value",
     image: "pizza-shop:latest",
+    env: { "location": "SL", "city": "COLOMBO" },
     singleYAML: false
 }
-@kubernetes:ResourceQuota {
-    resourceQuotas: [
-        {
-            name: "compute-resources",
-            hard: {
-                "pods": "4",
-                "requests.cpu": "1",
-                "requests.memory": "1Gi",
-                "limits.cpu": "2",
-                "limits.memory": "2Gi"
-            },
-            scopes: ["BestEffort"]
-        }
-    ]
-}
+
 @http:ServiceConfig {
     basePath: "/pizza"
 }
-service<http:Service> PizzaAPI bind pizzaEP {
+service PizzaAPI on pizzaEP {
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/menu"
     }
-    getPizzaMenu(endpoint outboundEP, http:Request req) {
+    resource function getPizzaMenu(http:Caller outboundEP, http:Request req) {
         http:Response response = new;
         response.setTextPayload("Pizza menu \n");
         _ = outboundEP->respond(response);

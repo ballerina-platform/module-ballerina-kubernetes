@@ -88,6 +88,4 @@ public class Sample12Test implements SampleTest {
         KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(dockerImage);
     }
-
-
 }

@@ -26,9 +26,7 @@ import ballerinax/kubernetes;
 @kubernetes:Service {
     sessionAffinity: "ClientIP"
 }
-endpoint http:Listener pizzaEP {
-    port: 9099
-};
+listener http:Listener pizzaEP = new(9099);
 
 @kubernetes:Deployment {
     name: "invalid",
@@ -46,12 +44,12 @@ endpoint http:Listener pizzaEP {
 @http:ServiceConfig {
     basePath: "/pizza"
 }
-service<http:Service> PizzaAPI bind pizzaEP {
+service PizzaAPI on pizzaEP {
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/menu"
     }
-    getPizzaMenu(endpoint outboundEP, http:Request req) {
+    resource function getPizzaMenu(http:Caller outboundEP, http:Request req) {
         http:Response response = new;
         response.setTextPayload("Pizza menu \n");
         _ = outboundEP->respond(response);

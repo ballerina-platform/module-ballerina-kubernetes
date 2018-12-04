@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.SECRET_POSTFIX;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
@@ -68,6 +69,15 @@ public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
                     switch (secretMountConfig) {
                         case name:
                             secretModel.setName(getValidName(annotationValue));
+                            break;
+                        case namespace:
+                            secretModel.setNamespace(annotationValue);
+                            break;
+                        case labels:
+                            secretModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                            break;
+                        case annotations:
+                            secretModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                             break;
                         case mountPath:
                             secretModel.setMountPath(annotationValue);
@@ -108,6 +118,9 @@ public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
      */
     private enum SecretMountConfig {
         name,
+        namespace,
+        labels,
+        annotations,
         mountPath,
         readOnly,
         data

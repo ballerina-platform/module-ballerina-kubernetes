@@ -58,4 +58,4 @@ nginx-ingress   nginx-5667df56c8-8d8ct                       1/1       Running  
 1. [Sample13: Ballerina modules with dependencies](sample13/) 
 1. [Sample14: Deploy Ballerina service in a namespace](sample14/)
 1. [Sample15: Resource quotas for namespaces](sample15/) 
-1. [Sample16: Istio Gateway and Virtual Service generation](sample16/)  (Does not need setting up nginx)
+1. [Sample16: Istio Gateway and Virtual Service generation](sample16/)  (Remove nginx setting up)

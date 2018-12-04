@@ -28,7 +28,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>kubernetes-extension-test</artifactId>
     <packaging>jar</packaging>
-    <name>BallerinaX - Kubernetes Extension Tests</name>
+    <name>Ballerinax - Kubernetes Extension Tests</name>
     <url>https://ballerina.io</url>
 
     <dependencies>
@@ -155,6 +155,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <argLine>${jacoco.agent.argLine}</argLine>
                     <systemPropertyVariables>
                         <ballerina.pack>
                             ${project.build.directory}/extracted-distributions/ballerina-zip/ballerina-${ballerina.lang.version}/bin
@@ -162,11 +163,16 @@
                         <sample.dir>
                             ${project.build.directory}/../../samples
                         </sample.dir>
+                        <jacoco.agent.argLine>${jacoco.agent.argLine}</jacoco.agent.argLine>
                     </systemPropertyVariables>
                     <suiteXmlFiles>
                         <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
                     </suiteXmlFiles>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

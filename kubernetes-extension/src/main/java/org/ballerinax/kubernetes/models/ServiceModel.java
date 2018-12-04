@@ -20,14 +20,11 @@ package org.ballerinax.kubernetes.models;
 import org.ballerinax.kubernetes.KubernetesConstants;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Kubernetes service annotations model class.
  */
 public class ServiceModel extends KubernetesModel {
-    
-    private Map<String, String> labels;
     private String serviceType;
     private int port;
     private int targetPort;
@@ -40,15 +37,7 @@ public class ServiceModel extends KubernetesModel {
         port = -1;
         targetPort = -1;
     }
-
-    public Map<String, String> getLabels() {
-        return labels;
-    }
-
-    public void setLabels(Map<String, String> labels) {
-        this.labels = labels;
-    }
-
+    
     public void addLabel(String key, String value) {
         this.labels.put(key, value);
     }

@@ -19,9 +19,9 @@
 package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
-import org.ballerinalang.model.tree.EndpointNode;
 import org.ballerinalang.model.tree.FunctionNode;
 import org.ballerinalang.model.tree.ServiceNode;
+import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 
 /**
@@ -31,28 +31,28 @@ public interface AnnotationProcessor {
     /**
      * Process annotations and create model object.
      *
-     * @param serviceNode    Ballerina Service node
+     * @param serviceNode    Ballerina service node.
      * @param attachmentNode annotation attachment node.
      * @throws KubernetesPluginException if an error occurs while processing annotation.
      */
     void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException;
-
+    
     /**
      * Process annotations and create model object.
      *
-     * @param endpointNode   Ballerina endpoint node
-     * @param attachmentNode annotation attachment node.
+     * @param variableNode Ballerina listener variable.
+     * @param annotations  annotation attachment node.
      * @throws KubernetesPluginException if an error occurs while processing annotation.
      */
-    void processAnnotation(EndpointNode endpointNode, AnnotationAttachmentNode attachmentNode)
+    void processAnnotation(SimpleVariableNode variableNode, AnnotationAttachmentNode annotations)
             throws KubernetesPluginException;
 
 
     /**
      * Process annotations and create model object.
      *
-     * @param functionNode   Ballerina function node
+     * @param functionNode   Ballerina function node.
      * @param attachmentNode annotation attachment node.
      * @throws KubernetesPluginException if an error occurs while processing annotation.
      */

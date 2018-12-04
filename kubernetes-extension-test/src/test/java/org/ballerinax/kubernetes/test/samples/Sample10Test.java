@@ -55,8 +55,7 @@ public class Sample10Test implements SampleTest {
 
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaProject(
-                (SAMPLE_DIR + File.separator + "sample10")), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaProject(sourceDirPath), 0);
     }
 
     @Test

@@ -17,50 +17,26 @@
 import ballerina/http;
 import ballerinax/kubernetes;
 
-
+@kubernetes:Deployment {
+    image: "pizza-shop:latest",
+    singleYAML: true
+}
 @kubernetes:Ingress {
-    hostname: "pizza.com",
-    path: "/pizzastore",
-    targetPath: "/"
+    hostname: "abc.com"
 }
 @kubernetes:Service {
-    sessionAffinity: "ClientIP"
+    name: "hello",
+    port: 8080
 }
-endpoint http:Listener pizzaEP {
-    port: 9099
-};
-
-@kubernetes:Deployment {
-    name: "secret-key-ref",
-    image: "pizza-shop:latest",
-    env: {
-        "SECRET_USERNAME": {
-            secretKeyRef: {
-                key: "username",
-                name: "test-secret"
-            }
-        },
-        "SECRET_PASSWORD": {
-            secretKeyRef: {
-                name: "test-secret",
-                key: "password"
-            }
-        }
-    },
-    singleYAML: false
-}
+listener http:Listener helloEP = new(9090);
 
 @http:ServiceConfig {
-    basePath: "/pizza"
+    basePath: "/helloWorld"
 }
-service<http:Service> PizzaAPI bind pizzaEP {
-    @http:ResourceConfig {
-        methods: ["GET"],
-        path: "/menu"
-    }
-    getPizzaMenu(endpoint outboundEP, http:Request req) {
+service helloWorld on helloEP {
+    resource function sayHello(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
-        response.setTextPayload("Pizza menu \n");
+        response.setTextPayload("Hello, World from service helloWorld ! \n");
         _ = outboundEP->respond(response);
     }
 }

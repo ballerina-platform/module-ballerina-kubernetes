@@ -34,8 +34,6 @@ import static org.ballerinax.kubernetes.KubernetesConstants.WINDOWS_DEFAULT_DOCK
  * Kubernetes deployment annotations model class.
  */
 public class DeploymentModel extends KubernetesModel {
-    private Map<String, String> labels;
-    private Map<String, String> annotations;
     private Map<String, String> podAnnotations;
     private int replicas;
     private boolean enableLiveness;
@@ -93,22 +91,6 @@ public class DeploymentModel extends KubernetesModel {
         this.imagePullSecrets = new HashSet<>();
         this.singleYAML = true;
         this.commandArgs = "";
-    }
-
-    public Map<String, String> getLabels() {
-        return labels;
-    }
-
-    public void setLabels(Map<String, String> labels) {
-        this.labels = labels;
-    }
-    
-    public Map<String, String> getAnnotations() {
-        return annotations;
-    }
-    
-    public void setAnnotations(Map<String, String> annotations) {
-        this.annotations = annotations;
     }
     
     public Map<String, String> getPodAnnotations() {

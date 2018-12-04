@@ -47,7 +47,7 @@ public class DockerHandler extends AbstractArtifactHandler {
             dockerArtifactHandler.createArtifacts(OUT, "\t@kubernetes:Docker \t\t\t", dataHolder
                     .getBalxFilePath(), dockerOutputDir);
         } catch (DockerGenException e) {
-            throw new KubernetesPluginException("Unable to create/build/push docker image/container.", e);
+            throw new KubernetesPluginException("Unable to create/build/push docker image.", e);
         }
     }
 }

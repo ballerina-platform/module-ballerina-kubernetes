@@ -8,18 +8,15 @@ import ballerinax/kubernetes;
 @kubernetes:Service {
     name: "hotdrink-backend"
 }
-endpoint http:Listener hotDrinkEP {
-    port: 9090
-};
+listener http:Listener hotDrinkEP = new(9090);
 
-
-endpoint jdbc:Client hotdrinkDB {
+ jdbc:Client hotdrinkDB = new({
     url: "jdbc:mysql://hotdrink-mysql.mysql:3306/hotdrinkdb",
     username: config:getAsString("db.username"),
     password: config:getAsString("db.password"),
     poolOptions: { maximumPoolSize: 5 },
     dbOptions: { useSSL: false }
-};
+});
 
 
 @kubernetes:ConfigMap {
@@ -27,38 +24,44 @@ endpoint jdbc:Client hotdrinkDB {
 }
 @kubernetes:Deployment {
     singleYAML: true,
-    copyFiles: [{ target: "/ballerina/runtime/bre/lib",
-        source: "./resource/lib/mysql-connector-java-8.0.11.jar" }]
+    copyFiles: [{ 
+        target: "/ballerina/runtime/bre/lib",
+        source: "./resource/lib/mysql-connector-java-8.0.11.jar"
+    }]
 }
 @http:ServiceConfig {
     basePath: "/hotDrink"
 }
-service<http:Service> HotDrinksAPI bind hotDrinkEP {
+service HotDrinksAPI on hotDrinkEP {
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/menu"
     }
-    gethotdrinkMenu(endpoint outboundEP, http:Request req) {
+    resource function gethotdrinkMenu(http:Caller outboundEP, http:Request req) {
         http:Response response = new;
 
-        var selectRet = hotdrinkDB->select("SELECT * FROM hotdrink", ());
-        table dt;
-        match selectRet {
-            table tableReturned => dt = tableReturned;
-            error e => io:println("Retrieving data from hotdrink table failed: "
-                    + e.message);
-        }
-
-        var jsonConversionRet = <json>dt;
-        match jsonConversionRet {
-            json jsonRes => {
-                response.setJsonPayload(untaint jsonRes);
-            }
-            error e => {
-                io:println("Error in table to json conversion");
+        var selectRet = hotdrinkDB->select("SELECT * FROM hotdrink", HotDrink);
+        if (selectRet is table<HotDrink>) {
+            var jsonConversionRet = json.create(selectRet);
+            if (jsonConversionRet is json) {
+                response.setJsonPayload(untaint jsonConversionRet);
+            } else if (jsonConversionRet is error) {
+                log:printError("Error in table to json conversion", err = jsonConversionRet);
                 response.setTextPayload("Error in table to json conversion");
             }
+        } else if (selectRet is error) {
+            log:printError("Retrieving data from hotdrink table failed", err = selectRet);
+            response.setTextPayload("Error in reading results");
         }
+
         _ = outboundEP->respond(response);
     }
 }
+
+type HotDrink record {
+    int id;
+    string name;
+    string description;
+    float price;
+    !...
+};

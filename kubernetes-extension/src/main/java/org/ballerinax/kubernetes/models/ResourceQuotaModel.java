@@ -28,7 +28,6 @@ import java.util.Set;
  * Kubernetes Resource Quota annotations model class.
  */
 public class ResourceQuotaModel extends KubernetesModel {
-    private Map<String, String> labels;
     private Map<String, String> hard;
     private Set<String> scopes;
     
@@ -36,14 +35,6 @@ public class ResourceQuotaModel extends KubernetesModel {
         labels = new LinkedHashMap<>();
         hard = new LinkedHashMap<>();
         scopes = new LinkedHashSet<>();
-    }
-    
-    public Map<String, String> getLabels() {
-        return labels;
-    }
-    
-    public void setLabels(Map<String, String> labels) {
-        this.labels = labels;
     }
     
     public Map<String, String> getHard() {

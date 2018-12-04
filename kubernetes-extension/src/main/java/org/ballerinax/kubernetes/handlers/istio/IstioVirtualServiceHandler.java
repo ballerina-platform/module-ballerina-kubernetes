@@ -18,6 +18,8 @@
 
 package org.ballerinax.kubernetes.handlers.istio;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.AbstractArtifactHandler;
 import org.ballerinax.kubernetes.models.KubernetesContext;
@@ -27,10 +29,9 @@ import org.ballerinax.kubernetes.models.istio.IstioDestinationWeight;
 import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
 import org.ballerinax.kubernetes.models.istio.IstioHttpRedirect;
 import org.ballerinax.kubernetes.models.istio.IstioHttpRoute;
-import org.ballerinax.kubernetes.models.istio.IstioVirtualService;
+import org.ballerinax.kubernetes.models.istio.IstioVirtualServiceModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -50,14 +51,14 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
     
     @Override
     public void createArtifacts() throws KubernetesPluginException {
-        Map<String, IstioVirtualService> istioVSModels = dataHolder.getIstioVirtualServiceModels();
+        Map<String, IstioVirtualServiceModel> istioVSModels = dataHolder.getIstioVirtualServiceModels();
         int size = istioVSModels.size();
         if (size > 0) {
             OUT.println();
         }
     
         int count = 0;
-        for (Map.Entry<String, IstioVirtualService> vsModel : istioVSModels.entrySet()) {
+        for (Map.Entry<String, IstioVirtualServiceModel> vsModel : istioVSModels.entrySet()) {
             count++;
             generate(vsModel.getKey(), vsModel.getValue());
             OUT.print("\t@kubernetes:IstioVirtualService \t - complete " + count + "/" + istioVSModels.size() + "\r");
@@ -71,7 +72,7 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
      * @param vsModel     The virtual service model.
      * @throws KubernetesPluginException Error when writing artifact files.
      */
-    private void generate(String serviceName, IstioVirtualService vsModel) throws KubernetesPluginException {
+    private void generate(String serviceName, IstioVirtualServiceModel vsModel) throws KubernetesPluginException {
         try {
             Map<String, Object> vsYamlModel = new LinkedHashMap<>();
             vsYamlModel.put("apiVersion", "networking.istio.io/v1alpha3");
@@ -109,7 +110,7 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
                 } else if (vsModel.getHosts().size() == 1 && vsModel.getHosts().contains("*")) {
                     throw new KubernetesPluginException("Unable to resolve a gateway for '" + vsModel + "' " +
                                                         "virtual service. Add @kubernetes:IstioGateway annotation" +
-                                                        " to your endpoint or service, else explicitly state to " +
+                                                        " to your listener or service, else explicitly state to " +
                                                         "use the 'mesh' gateway.");
                 }
             }
@@ -133,11 +134,10 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
         
             DumperOptions options = new DumperOptions();
             options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        
-            Yaml yamlProcessor = new Yaml(options);
-            String vsYamlString = yamlProcessor.dump(vsYamlModel);
     
-            vsYamlString = "---\n" + vsYamlString;
+            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+            String vsYamlString = mapper.writeValueAsString(vsYamlModel);
+            
             KubernetesUtils.writeToFile(vsYamlString, ISTIO_VIRTUAL_SERVICE_FILE_POSTFIX + YAML);
         } catch (IOException e) {
             String errorMessage = "Error while generating yaml file for istio virtual service: " + vsModel.getName();
