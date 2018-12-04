@@ -28,7 +28,7 @@ service detailService on bookDetailEP {
         };
 
         Detail? bookDetail = ();
-        foreach detail in tbDetails {
+        foreach Detail detail in tbDetails {
             if (detail.id == id) {
                 bookDetail = detail;
                 break;

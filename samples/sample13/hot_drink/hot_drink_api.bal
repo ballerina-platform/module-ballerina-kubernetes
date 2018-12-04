@@ -42,7 +42,7 @@ service HotDrinksAPI on hotDrinkEP {
 
         var selectRet = hotdrinkDB->select("SELECT * FROM hotdrink", HotDrink);
         if (selectRet is table<HotDrink>) {
-            var jsonConversionRet = json.create(selectRet);
+            var jsonConversionRet = json.convert(selectRet);
             if (jsonConversionRet is json) {
                 response.setJsonPayload(untaint jsonConversionRet);
             } else if (jsonConversionRet is error) {
