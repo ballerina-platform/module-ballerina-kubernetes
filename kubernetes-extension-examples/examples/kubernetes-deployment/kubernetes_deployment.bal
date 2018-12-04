@@ -3,19 +3,18 @@ import ballerina/http;
 import ballerina/log;
 import ballerinax/kubernetes;
 
-//Add @kubernetes:Service to a listner endpoint to expose the endpoint as Kubernetes Service.
+//Add `@kubernetes:Service` to a listner endpoint to expose the endpoint as Kubernetes Service.
 @kubernetes:Service {
     //Service type is `NodePort`.
     serviceType: "NodePort"
 }
-//Add @kubernetes:Ingress to a listner endpoint to expose the endpoint as Kubernetes Ingress.
+//Add `@kubernetes:Ingress` to a listner endpoint to expose the endpoint as Kubernetes Ingress.
 @kubernetes:Ingress {
     //Hostname of the service is `abc.com`.
     hostname: "abc.com"
 }
-endpoint http:Listener helloWorldEP {
-    port: 9090,
-    //Ballerina will automatically create Kubernetes secrets for the keystore and trustore when @kubernetes:Service
+listener http:Listener helloWorldEP = new(9090, config = {
+    //Ballerina automatically creates Kubernetes secrets for the keystore and truststore when `@kubernetes:Service`
     //annotation is added to the endpoint.
     secureSocket: {
         keyStore: {
@@ -27,19 +26,19 @@ endpoint http:Listener helloWorldEP {
             password: "ballerina"
         }
     }
-};
+});
 
-//Add @kubernetes:ConfigMap annotation to a Ballerna service to mount configs to the container.
+//Add `@kubernetes:ConfigMap` annotation to a Ballerna service to mount configs to the container.
 @kubernetes:ConfigMap {
     //Path to the ballerina.conf file.
-    //If providing releative path, then the path should be releative to where `ballerina build` command executed.
+    //If a releative path is provided, the path should be releative to where the `ballerina build` command is executed.
     ballerinaConf: "./ballerina.conf"
 }
-//Add @kubernetes:Deployment annotation to a Ballerna service generate Kuberenetes Deployment for a Ballerina module.
+//Add `@kubernetes:Deployment` annotation to a Ballerna service to generate Kuberenetes Deployment for a Ballerina module.
 @kubernetes:Deployment {
     //Enable Kubernetes liveness probe to this service.
     enableLiveness: true,
-    //Generate a single yaml file.
+    //Generate a single .yaml file.
     singleYAML: true,
     //Genrate Docker image with name `kubernetes:v1.0`.
     image: "kubernetes:v.1.0"
@@ -51,18 +50,20 @@ endpoint http:Listener helloWorldEP {
 @http:ServiceConfig {
     basePath: "/helloWorld"
 }
-service<http:Service> helloWorld bind helloWorldEP {
+service helloWorld on helloWorldEP {
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/config/{user}"
     }
-    getConfig(endpoint outboundEP, http:Request request, string user) {
+    resource function getConfig(http:Caller outboundEP, http:Request request, string user) {
         string userId = getConfigValue(user, "userid");
         string groups = getConfigValue(user, "groups");
         string payload = "{userId: " + userId + ", groups: " + groups + "} \n";
-        outboundEP->respond(payload) but {
-            error err => log:printError(err.message, err = err)
-        };
+        var responseResult = outboundEP->respond(payload);
+        if (responseResult is error) {
+            error err = responseResult;
+            log:printError("Error sending response", err = err);
+        }
     }
 }
 
