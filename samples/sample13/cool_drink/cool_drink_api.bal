@@ -42,7 +42,7 @@ service cooldrinkAPI on coolDrinkEP {
 
         var selectRet = coolDrinkDB->select("SELECT * FROM cooldrink", CoolDrink);
         if (selectRet is table<CoolDrink>) {
-            var jsonConversionRet = json.create(selectRet);
+            var jsonConversionRet = json.convert(selectRet);
             if (jsonConversionRet is json) {
                 response.setJsonPayload(untaint jsonConversionRet);
             } else if (jsonConversionRet is error) {

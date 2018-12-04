@@ -96,7 +96,7 @@ service DrinkStoreAPI on drinkStoreEP {
 function getCoolDrinkPrice(json payload) returns (json){
     json[] items = <json[]>payload;
     float celciusValue = getTempreatureInCelcius();
-    foreach item in items {
+    foreach json item in items {
         float|error result = <float>item.price;
         if (result is float) {
             float priceVariation = roundFloat(result * (celciusValue / 100), 2);
@@ -120,7 +120,7 @@ function getCoolDrinkPrice(json payload) returns (json){
 function getHotDrinkPrice(json payload) returns (json){
     json[] items = <json[]>payload;
     float celciusValue = getTempreatureInCelcius();
-    foreach item in items {
+    foreach json item in items {
         float|error result = <float>item.price;
         if (result is float) {
             float priceVariation = roundFloat(result * (celciusValue / 100), 2);
