@@ -1,9 +1,6 @@
 import ballerina/http;
 import ballerinax/kubernetes;
 
-@kubernetes:Deployment {
-    singleYAML: true
-}
 @kubernetes:Service {
     name: "book-detail"
 }

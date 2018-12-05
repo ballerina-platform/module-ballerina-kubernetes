@@ -10,9 +10,7 @@ http:Client bookDetailsEP = new("http://book-detail:8080");
 
 http:Client bookReviewEP = new("http://book-review:7070");
 
-@kubernetes:Deployment {
-    singleYAML: false
-}
+@kubernetes:Deployment {}
 @http:ServiceConfig {
     basePath: "/book"
 }

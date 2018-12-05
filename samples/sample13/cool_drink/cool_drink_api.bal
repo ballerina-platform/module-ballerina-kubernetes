@@ -23,7 +23,6 @@ jdbc:Client coolDrinkDB = new({
 @kubernetes:Deployment {
     replicas: 2,
     enableLiveness: true,
-    singleYAML: true,
     copyFiles: [{
         target: "/ballerina/runtime/bre/lib",
         source: "./resource/lib/mysql-connector-java-8.0.11.jar"

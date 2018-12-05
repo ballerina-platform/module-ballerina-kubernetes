@@ -38,8 +38,6 @@ listener http:Listener helloWorldEP = new(9090, config = {
 @kubernetes:Deployment {
     //Enable Kubernetes liveness probe to this service.
     enableLiveness: true,
-    //Generate a single .yaml file.
-    singleYAML: true,
     //Genrate Docker image with name `kubernetes:v1.0`.
     image: "kubernetes:v.1.0"
     //Uncomment and change the following values accordingly if you are using minikube.

@@ -1,0 +1,106 @@
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  annotations: {}
+  finalizers: []
+  labels:
+    app: "hello"
+  name: "hello"
+  ownerReferences: []
+spec:
+  externalIPs: []
+  loadBalancerSourceRanges: []
+  ports:
+  - port: 9090
+    protocol: "TCP"
+    targetPort: 9090
+  selector:
+    app: "hello"
+  type: "NodePort"
+---
+apiVersion: "extensions/v1beta1"
+kind: "Ingress"
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    kubernetes.io/ingress.class: "nginx"
+  finalizers: []
+  labels:
+    app: "hello"
+  name: "helloep-ingress"
+  ownerReferences: []
+spec:
+  rules:
+  - host: "abc.com"
+    http:
+      paths:
+      - backend:
+          serviceName: "hello"
+          servicePort: 9090
+        path: "/"
+  tls:
+  - hosts:
+    - "abc.com"
+---
+apiVersion: "v1"
+kind: "Secret"
+metadata:
+  annotations: {}
+  finalizers: []
+  labels: {}
+  name: "helloep-keystore"
+  ownerReferences: []
+data:
+  ballerinaKeystore.p12: "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"
+stringData: {}
+---
+apiVersion: "extensions/v1beta1"
+kind: "Deployment"
+metadata:
+  annotations: {}
+  finalizers: []
+  labels:
+    app: "hello"
+  name: "hello-deployment"
+  ownerReferences: []
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations: {}
+      finalizers: []
+      labels:
+        app: "hello"
+      ownerReferences: []
+    spec:
+      containers:
+      - args: []
+        command: []
+        env: []
+        envFrom: []
+        image: "hello:latest"
+        imagePullPolicy: "IfNotPresent"
+        livenessProbe:
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          tcpSocket:
+            port: 9090
+        name: "hello-deployment"
+        ports:
+        - containerPort: 9090
+          protocol: "TCP"
+        volumeMounts:
+        - mountPath: "/ballerina/runtime/bre/security"
+          name: "helloep-keystore-volume"
+          readOnly: true
+      hostAliases: []
+      imagePullSecrets: []
+      initContainers: []
+      nodeSelector: {}
+      tolerations: []
+      volumes:
+      - name: "helloep-keystore-volume"
+        secret:
+          items: []
+          secretName: "helloep-keystore"
