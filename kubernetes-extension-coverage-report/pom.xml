@@ -21,7 +21,7 @@
     <parent>
         <artifactId>kubernetes-extension-parent</artifactId>
         <groupId>org.ballerinax.kubernetes</groupId>
-        <version>0.990.0</version>
+        <version>0.990.1-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
