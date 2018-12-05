@@ -17,21 +17,25 @@ Annotation based kubernetes extension implementation for ballerina.
 - Kubernetes config map support.
 - Kubernetes persistent volume claim support.
 - Kubernetes resource quotas.
+- Istio gateways.
+- Istio virtual services.
 
 **Refer [samples](samples) for more info.**
 
 ## Supported Annotations:
 
 ### @kubernetes:Deployment{}
-- Supported with ballerina services or endpoints.
+- Supported with ballerina services or listeners.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
 |name|Name of the deployment|\<outputfilename\>-deployment|
 |namespace|Namespace of the deployment|null|
 |labels|Labels for deployment|"app: \<outputfilename\>"|
+|annotations|Annotations for deployment|{}|
+|podAnnotations|Pod annotations|{}|
 |replicas|Number of replicas|1|
-|dependsOn|Endpoints this deployment Depends on|null|
+|dependsOn|Listeners this deployment Depends on|null|
 |enableLiveness|Enable or disable liveness probe|false|
 |initialDelaySeconds|Initial delay in seconds before performing the first probe|10s|
 |periodSeconds|Liveness probe interval|5s|
@@ -48,10 +52,10 @@ Annotation based kubernetes extension implementation for ballerina.
 |password|Password for the docker registry|null|
 |baseImage|Base image to create the docker image|ballerina/ballerina-runtime:latest|
 |imagePullSecrets|Image pull secrets value|null|
-|singleYAML|Generate a single yaml file for all k8s resources|false|
+|singleYAML|Generate a single yaml file for all k8s resources|true|
 
 ### @kubernetes:Service{}
-- Supported with ballerina endpoints.
+- Supported with ballerina listeners.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
@@ -61,7 +65,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |port|Service port|Port of the ballerina service|
 
 ### @kubernetes:Ingress{}
-- Supported with ballerina endpoints.
+- Supported with ballerina listeners.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
@@ -142,7 +146,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |baseImage|Base image to create the docker image|ballerina/ballerina-runtime:latest|
 
 ### @kubernetes:ResourceQuota{}
-- Support with ballerina services, endpoints and functions.
+- Support with ballerina services, listeners and functions.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
@@ -168,18 +172,16 @@ import ballerinax/kubernetes;
     hostname:"abc.com"
 }
 @kubernetes:Service{name:"hello"}
-endpoint http:Listener helloEP {
-    port:9090
-};
+listener http:Listener helloEP = new(9090);
 
 @kubernetes:Deployment{
     enableLiveness:true
 }
-@http:serviceConfig {
+@http:ServiceConfig {
     basePath:"/helloWorld"
 }
-service<http:Service> helloWorld bind helloEP {
-    sayHello (endpoint outboundEP, http:Request request) {
+service helloWorld on helloEP {
+    resource functino sayHello (http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         response.setTextPayload("Hello, World from service helloWorld ! ");
         _ = outboundEP -> respond(response);
@@ -195,7 +197,7 @@ kubernetes
 ├── secret.yaml
 ├── config_map.yaml
 ├── volume_claim.yaml
-├── service.yaml
+├── svc.yaml
 └── docker
  └── Dockerfile
     	

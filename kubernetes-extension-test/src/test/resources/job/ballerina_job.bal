@@ -28,7 +28,8 @@ import ballerinax/kubernetes;
             target: "/home/ballerina/data/data.txt",
             source: "./data/data.txt"
         }
-    ]
+    ],
+    singleYAML: false
 }
 public function main(string... args) {
     io:println("hello world");

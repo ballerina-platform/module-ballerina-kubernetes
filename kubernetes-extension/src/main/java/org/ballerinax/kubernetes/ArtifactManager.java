@@ -30,6 +30,8 @@ import org.ballerinax.kubernetes.handlers.PersistentVolumeClaimHandler;
 import org.ballerinax.kubernetes.handlers.ResourceQuotaHandler;
 import org.ballerinax.kubernetes.handlers.SecretHandler;
 import org.ballerinax.kubernetes.handlers.ServiceHandler;
+import org.ballerinax.kubernetes.handlers.istio.IstioGatewayHandler;
+import org.ballerinax.kubernetes.handlers.istio.IstioVirtualServiceHandler;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
@@ -77,9 +79,10 @@ class ArtifactManager {
         new HPAHandler().createArtifacts();
         new DockerHandler().createArtifacts();
         new HelmChartHandler().createArtifacts();
+        new IstioGatewayHandler().createArtifacts();
+        new IstioVirtualServiceHandler().createArtifacts();
         printKubernetesInstructions(outputDir);
     }
-
 
     public void populateDeploymentModel() {
         DeploymentModel deploymentModel = kubernetesDataHolder.getDeploymentModel();
@@ -106,5 +109,4 @@ class ArtifactManager {
                 " " + new File(outputDir + File.separator + model.getName()).getAbsolutePath());
         KubernetesUtils.printInstruction("");
     }
-
 }

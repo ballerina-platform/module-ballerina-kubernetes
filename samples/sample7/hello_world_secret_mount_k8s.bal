@@ -6,8 +6,7 @@ import ballerina/io;
 @kubernetes:Ingress {
     hostname: "abc.com"
 }
-endpoint http:Listener helloWorldEP {
-    port: 9090,
+listener http:Listener helloWorldEP = new(9090, config = {
     secureSocket: {
         keyStore: {
             path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
@@ -18,28 +17,35 @@ endpoint http:Listener helloWorldEP {
             password: "ballerina"
         }
     }
-};
+});
 
 @kubernetes:Secret {
     secrets: [
-        { name: "private", mountPath: "/home/ballerina/private",
+        {
+            name: "private",
+            mountPath: "/home/ballerina/private",
             data: ["./secrets/MySecret1.txt"]
         },
-        { name: "public", mountPath: "/home/ballerina/public",
+        {
+            name: "public",
+            mountPath: "/home/ballerina/public",
             data: ["./secrets/MySecret2.txt", "./secrets/MySecret3.txt"]
         }
     ]
 }
 
+@kubernetes:Deployment {
+    singleYAML: false
+}
 @http:ServiceConfig {
     basePath: "/helloWorld"
 }
-service<http:Service> helloWorld bind helloWorldEP {
+service helloWorld on helloWorldEP {
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/secret1"
     }
-    getSecret1(endpoint outboundEP, http:Request request) {
+    resource function getSecret1(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         string payload = readFile("./private/MySecret1.txt");
         response.setTextPayload("Secret1 resource: " + untaint payload + "\n");
@@ -50,7 +56,7 @@ service<http:Service> helloWorld bind helloWorldEP {
         methods: ["GET"],
         path: "/secret2"
     }
-    getSecret2(endpoint outboundEP, http:Request request) {
+    resource function getSecret2(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         string payload = readFile("./public/MySecret2.txt");
         response.setTextPayload("Secret2 resource: " + untaint payload + "\n");
@@ -61,7 +67,7 @@ service<http:Service> helloWorld bind helloWorldEP {
         methods: ["GET"],
         path: "/secret3"
     }
-    getSecret3(endpoint outboundEP, http:Request request) {
+    resource function getSecret3(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         string payload = readFile("./public/MySecret3.txt");
         response.setTextPayload("Secret3 resource: " + untaint payload + "\n");
@@ -74,11 +80,10 @@ function readFile(string filePath) returns (string) {
     io:ReadableCharacterChannel cChannel = new io:ReadableCharacterChannel(bchannel, "UTF-8");
 
     var readOutput = cChannel.read(50);
-    match readOutput {
-        string text => {
-            return text;
-        }
-        error ioError => return "Error: Unable to read file";
+    if (readOutput is string) {
+        return readOutput;
+    } else {
+        return "Error: Unable to read file";
     }
 }
 

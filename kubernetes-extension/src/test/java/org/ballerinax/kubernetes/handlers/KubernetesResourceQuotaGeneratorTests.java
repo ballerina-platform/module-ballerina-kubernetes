@@ -23,8 +23,8 @@ import io.fabric8.kubernetes.api.model.ResourceQuota;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.ResourceQuotaModel;
-import org.junit.Assert;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,11 +58,12 @@ public class KubernetesResourceQuotaGeneratorTests {
     
         Set<ResourceQuotaModel> resourceQuotaModels = new LinkedHashSet<>();
         resourceQuotaModels.add(resourceQuotaModel);
-        KubernetesContext.getInstance().getDataHolder().addResourceQuotaModels(resourceQuotaModels);
+        KubernetesContext.getInstance().getDataHolder().setResourceQuotaModels(resourceQuotaModels);
         try {
             new ResourceQuotaHandler().createArtifacts();
             File yamlFile = new File("target" + File.separator + "kubernetes" + File.separator +
                                      "hello" + RESOURCE_QUOTA_FILE_POSTFIX + YAML);
+            Assert.assertTrue(yamlFile.exists(), "Generated file not found.");
             ResourceQuota resourceQuota = KubernetesHelper.loadYaml(yamlFile);
             
             // metadata

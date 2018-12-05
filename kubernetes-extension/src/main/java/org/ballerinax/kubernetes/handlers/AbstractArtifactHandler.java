@@ -28,7 +28,7 @@ public abstract class AbstractArtifactHandler implements ArtifactHandler {
 
     protected KubernetesDataHolder dataHolder;
 
-    AbstractArtifactHandler() {
+    public AbstractArtifactHandler() {
         dataHolder = KubernetesContext.getInstance().getDataHolder();
     }
 }

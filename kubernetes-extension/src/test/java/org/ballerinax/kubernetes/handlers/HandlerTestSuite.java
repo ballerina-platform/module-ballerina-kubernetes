@@ -22,27 +22,16 @@ import org.ballerinalang.model.elements.PackageID;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
 import org.wso2.ballerinalang.compiler.util.Name;
 import org.wso2.ballerinalang.compiler.util.Names;
 
 import java.io.File;
 
-@RunWith(Suite.class)
-@SuiteClasses({DockerGeneratorTests.class, KubernetesSecretGeneratorTests.class,
-               KubernetesConfigMapGeneratorTests.class, KubernetesDeploymentGeneratorTests.class,
-               KubernetesHPAGeneratorTests.class, KubernetesServiceGeneratorTests.class,
-               KubernetesIngressGeneratorTests.class, KubernetesSecretGeneratorTests.class,
-               KubernetesVolumeClaimGeneratorTests.class, KubernetesJobGeneratorTests.class,
-               KubernetesResourceQuotaGeneratorTests.class})
-
 public class HandlerTestSuite {
 
-    @BeforeClass
+    @BeforeSuite
     public static void setUp() {
         KubernetesContext context = KubernetesContext.getInstance();
         context.addDataHolder(new PackageID(Names.ANON_ORG, new Name("my_pkg"), Names.DEFAULT_VERSION));
@@ -55,7 +44,7 @@ public class HandlerTestSuite {
         dataHolder.setBalxFilePath(resourcesDirectory.getAbsolutePath() + File.separator + "hello.balx");
     }
 
-    @AfterClass
+    @AfterSuite
     public static void tearDown() {
     }
 

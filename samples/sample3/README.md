@@ -135,4 +135,5 @@ Burger menu
 7. Undeploy sample:
 ```bash
 $> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample3/kubernetes/
+$> docker rmi foodstore
 ```

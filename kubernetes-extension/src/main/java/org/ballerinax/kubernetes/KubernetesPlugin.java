@@ -18,14 +18,16 @@
 
 package org.ballerinax.kubernetes;
 
+import org.ballerinalang.compiler.BLangCompilerException;
 import org.ballerinalang.compiler.plugins.AbstractCompilerPlugin;
 import org.ballerinalang.compiler.plugins.SupportedAnnotationPackages;
+import org.ballerinalang.model.elements.Flag;
 import org.ballerinalang.model.elements.PackageID;
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
-import org.ballerinalang.model.tree.EndpointNode;
 import org.ballerinalang.model.tree.FunctionNode;
 import org.ballerinalang.model.tree.PackageNode;
 import org.ballerinalang.model.tree.ServiceNode;
+import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinalang.util.diagnostic.Diagnostic;
 import org.ballerinalang.util.diagnostic.DiagnosticLog;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -34,9 +36,7 @@ import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.processors.AnnotationProcessorFactory;
 import org.ballerinax.kubernetes.utils.DependencyValidator;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
-import org.wso2.ballerinalang.compiler.tree.BLangEndpoint;
 import org.wso2.ballerinalang.compiler.tree.BLangPackage;
-import org.wso2.ballerinalang.compiler.tree.BLangTestablePackage;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -47,7 +47,6 @@ import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
 
 /**
  * Compiler plugin to generate kubernetes artifacts.
@@ -62,16 +61,13 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     public void init(DiagnosticLog diagnosticLog) {
         this.dlog = diagnosticLog;
     }
-
+    
     @Override
     public void process(PackageNode packageNode) {
-        if (packageNode instanceof BLangTestablePackage) {
-            return;
-        }
-    
-        KubernetesContext.getInstance().addDataHolder(((BLangPackage) packageNode).packageID);
+        BLangPackage bPackage = (BLangPackage) packageNode;
+        KubernetesContext.getInstance().addDataHolder(bPackage.packageID);
     }
-
+    
     @Override
     public void process(ServiceNode serviceNode, List<AnnotationAttachmentNode> annotations) {
         for (AnnotationAttachmentNode attachmentNode : annotations) {
@@ -87,19 +83,19 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
 
 
     @Override
-    public void process(EndpointNode endpointNode, List<AnnotationAttachmentNode> annotations) {
-        if (!(((BLangEndpoint) endpointNode).symbol).registrable) {
-            dlog.logDiagnostic(Diagnostic.Kind.ERROR, endpointNode.getPosition(), "@kubernetes annotations are only " +
-                    "supported with Listener endpoints.");
+    public void process(SimpleVariableNode variableNode, List<AnnotationAttachmentNode> annotations) {
+        if (!variableNode.getFlags().contains(Flag.LISTENER)) {
+            dlog.logDiagnostic(Diagnostic.Kind.ERROR, variableNode.getPosition(), "@kubernetes annotations are only " +
+                    "supported with listeners.");
             return;
         }
         for (AnnotationAttachmentNode attachmentNode : annotations) {
             String annotationKey = attachmentNode.getAnnotationName().getValue();
             try {
                 AnnotationProcessorFactory.getAnnotationProcessorInstance(annotationKey).processAnnotation
-                        (endpointNode, attachmentNode);
+                        (variableNode, attachmentNode);
             } catch (KubernetesPluginException e) {
-                dlog.logDiagnostic(Diagnostic.Kind.ERROR, endpointNode.getPosition(), e.getMessage());
+                dlog.logDiagnostic(Diagnostic.Kind.ERROR, variableNode.getPosition(), e.getMessage());
             }
         }
 
@@ -141,11 +137,14 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                 validateDeploymentDependencies();
                 artifactManager.createArtifacts();
             } catch (KubernetesPluginException e) {
-                printError("package [" + packageID + "] " + e.getMessage());
+                BLangCompilerException wrapperEx = new BLangCompilerException("package [" + packageID + "] " +
+                                                                                 e.getMessage(), e);
                 try {
                     KubernetesUtils.deleteDirectory(targetPath);
                 } catch (KubernetesPluginException ignored) {
+                    // ignore
                 }
+                throw wrapperEx;
             }
         }
     }
@@ -164,15 +163,15 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
             }
             dependencies.add(currentDeployment);
             Set<String> dependsOn = dataHolder.getDeploymentModel().getDependsOn();
-            for (String endpointName : dependsOn) {
-                String dependentDeployment = context.getDeploymentNameFromEndpoint(endpointName);
+            for (String listenerName : dependsOn) {
+                String dependentDeployment = context.getDeploymentNameFromListener(listenerName);
                 if (dependentDeployment == null) {
                     return;
                 }
                 if (!dependentDeployment.equals(currentDeployment)) {
                     dependencies.add(dependentDeployment);
                 } else {
-                    // Endpoint is in the same package.
+                    // Listener is in the same package.
                     throw new KubernetesPluginException("@kubernetes:Deployment{} contains cyclic dependencies");
                 }
             }

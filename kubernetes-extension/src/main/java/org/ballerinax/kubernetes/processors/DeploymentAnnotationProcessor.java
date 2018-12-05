@@ -18,9 +18,9 @@
 package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
-import org.ballerinalang.model.tree.EndpointNode;
 import org.ballerinalang.model.tree.FunctionNode;
 import org.ballerinalang.model.tree.ServiceNode;
+import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
@@ -53,10 +53,10 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
             KubernetesPluginException {
         processDeployment(attachmentNode);
     }
-
+    
     @Override
-    public void processAnnotation(EndpointNode endpointNode, AnnotationAttachmentNode attachmentNode)
-            throws KubernetesPluginException {
+    public void processAnnotation(SimpleVariableNode variableNode, AnnotationAttachmentNode attachmentNode) throws
+            KubernetesPluginException {
         processDeployment(attachmentNode);
     }
     
@@ -83,6 +83,12 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                     break;
                 case labels:
                     deploymentModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    break;
+                case annotations:
+                    deploymentModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    break;
+                case podAnnotations:
+                    deploymentModel.setPodAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
                 case enableLiveness:
                     deploymentModel.setEnableLiveness(Boolean.valueOf(annotationValue));
@@ -130,7 +136,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                     deploymentModel.setReplicas(Integer.parseInt(annotationValue));
                     break;
                 case copyFiles:
-                    deploymentModel.setExternalFiles(getExternalFileMap(keyValue));
+                    deploymentModel.setCopyFiles(getExternalFileMap(keyValue));
                     break;
                 case singleYAML:
                     deploymentModel.setSingleYAML(Boolean.valueOf(annotationValue));
@@ -174,6 +180,8 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         name,
         namespace,
         labels,
+        annotations,
+        podAnnotations,
         replicas,
         enableLiveness,
         livenessPort,

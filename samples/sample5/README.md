@@ -12,21 +12,21 @@
     $> tree
     ├── README.md
     ├── kubernetes
-    │   ├── docker
-    │   │   └── Dockerfile
-    │   ├── pizzashack-deployment
-    │   │   ├── Chart.yaml
-    │   │   └── templates
-    │   │       ├── pizzashack_deployment.yaml
-    │   │       ├── pizzashack_hpa.yaml
-    │   │       ├── pizzashack_ingress.yaml
-    │   │       ├── pizzashack_secret.yaml
-    │   │       └── pizzashack_svc.yaml
-    │   ├── pizzashack_deployment.yaml
-    │   ├── pizzashack_hpa.yaml
-    │   ├── pizzashack_ingress.yaml
-    │   ├── pizzashack_secret.yaml
-    │   └── pizzashack_svc.yaml
+    │   ├── docker
+    │   │   └── Dockerfile
+    │   ├── pizzashack-deployment
+    │   │   ├── Chart.yaml
+    │   │   └── templates
+    │   │       ├── pizzashack_deployment.yaml
+    │   │       ├── pizzashack_hpa.yaml
+    │   │       ├── pizzashack_ingress.yaml
+    │   │       ├── pizzashack_secret.yaml
+    │   │       └── pizzashack_svc.yaml
+    │   ├── pizzashack_deployment.yaml
+    │   ├── pizzashack_hpa.yaml
+    │   ├── pizzashack_ingress.yaml
+    │   ├── pizzashack_secret.yaml
+    │   └── pizzashack_svc.yaml
     ├── pizzashack.bal
     └── pizzashack.balx
     ```
@@ -61,21 +61,21 @@ $> tree
 .
 ├── README.md
 ├── kubernetes
-│   ├── docker
-│   │   └── Dockerfile
-│   ├── pizzashack-deployment
-│   │   ├── Chart.yaml
-│   │   └── templates
-│   │       ├── pizzashack_deployment.yaml
-│   │       ├── pizzashack_hpa.yaml
-│   │       ├── pizzashack_ingress.yaml
-│   │       ├── pizzashack_secret.yaml
-│   │       └── pizzashack_svc.yaml
-│   ├── pizzashack_deployment.yaml
-│   ├── pizzashack_hpa.yaml
-│   ├── pizzashack_ingress.yaml
-│   ├── pizzashack_secret.yaml
-│   └── pizzashack_svc.yaml
+│   ├── docker
+│   │   └── Dockerfile
+│   ├── pizzashack-deployment
+│   │   ├── Chart.yaml
+│   │   └── templates
+│   │       ├── pizzashack_deployment.yaml
+│   │       ├── pizzashack_hpa.yaml
+│   │       ├── pizzashack_ingress.yaml
+│   │       ├── pizzashack_secret.yaml
+│   │       └── pizzashack_svc.yaml
+│   ├── pizzashack_deployment.yaml
+│   ├── pizzashack_hpa.yaml
+│   ├── pizzashack_ingress.yaml
+│   ├── pizzashack_secret.yaml
+│   └── pizzashack_svc.yaml
 ├── pizzashack.bal
 └── pizzashack.balx
 ```
@@ -144,4 +144,5 @@ Get Customer resource !!!!
 7. Undeploy sample:
 ```bash
 $> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample5/kubernetes/
+$> docker rmi ballerina.com/pizzashack:2.1.0
 ```

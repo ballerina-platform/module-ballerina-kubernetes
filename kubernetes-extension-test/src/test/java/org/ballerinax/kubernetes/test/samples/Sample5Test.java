@@ -38,22 +38,22 @@ import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDockerImage;
 
 public class Sample5Test implements SampleTest {
-
+    
     private final String sourceDirPath = SAMPLE_DIR + File.separator + "sample5";
     private final String targetPath = sourceDirPath + File.separator + KUBERNETES;
     private final String dockerImage = "ballerina.com/pizzashack:2.1.0";
-
+    
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(sourceDirPath, "pizzashack.bal"), 0);
     }
-
+    
     @Test
     public void validateDockerfile() {
         File dockerFile = new File(targetPath + File.separator + DOCKER + File.separator + "Dockerfile");
         Assert.assertTrue(dockerFile.exists());
     }
-
+    
     @Test
     public void validateDockerImage() {
         ImageInspect imageInspect = getDockerImage(dockerImage);
@@ -61,7 +61,7 @@ public class Sample5Test implements SampleTest {
         Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9090/tcp"));
         Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9095/tcp"));
     }
-
+    
     @Test
     public void validatePodAutoscaler() throws IOException {
         File hpaYAML = new File(targetPath + File.separator + "pizzashack_hpa.yaml");
@@ -75,7 +75,7 @@ public class Sample5Test implements SampleTest {
         Assert.assertEquals(50, podAutoscaler.getSpec().getTargetCPUUtilizationPercentage().intValue());
         Assert.assertEquals("pizzashack-deployment", podAutoscaler.getSpec().getScaleTargetRef().getName());
     }
-
+    
     @AfterClass
     public void cleanUp() throws KubernetesPluginException {
         KubernetesUtils.deleteDirectory(targetPath);

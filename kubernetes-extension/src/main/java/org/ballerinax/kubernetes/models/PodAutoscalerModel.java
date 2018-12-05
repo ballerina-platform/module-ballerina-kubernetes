@@ -19,13 +19,11 @@
 package org.ballerinax.kubernetes.models;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Kubernetes Pod Autoscaler annotations model class.
  */
 public class PodAutoscalerModel extends KubernetesModel {
-    private Map<String, String> labels;
     private int minReplicas;
     private int maxReplicas;
     private int cpuPercentage;
@@ -66,14 +64,6 @@ public class PodAutoscalerModel extends KubernetesModel {
 
     public void setDeployment(String deployment) {
         this.deployment = deployment;
-    }
-
-    public Map<String, String> getLabels() {
-        return labels;
-    }
-
-    public void setLabels(Map<String, String> labels) {
-        this.labels = labels;
     }
 
     public void addLabel(String key, String value) {

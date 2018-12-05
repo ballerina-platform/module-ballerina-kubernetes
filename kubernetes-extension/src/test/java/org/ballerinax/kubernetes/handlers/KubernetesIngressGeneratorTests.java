@@ -25,8 +25,8 @@ import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.IngressModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.ServiceModel;
-import org.junit.Assert;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +37,6 @@ import java.util.Map;
  * Test kubernetes ingress generation.
  */
 public class KubernetesIngressGeneratorTests {
-
 
     private final String ingressName = "MyIngress";
     private final String hostname = "abc.com";
@@ -57,7 +56,7 @@ public class KubernetesIngressGeneratorTests {
         ingressModel.setTargetPath(targetPath);
         ingressModel.setServicePort(servicePort);
         ingressModel.setIngressClass(ingressClass);
-        ingressModel.setEndpointName(serviceName);
+        ingressModel.setListenerName(serviceName);
         ingressModel.setServiceName(serviceName);
         Map<String, String> labels = new HashMap<>();
         labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, selector);
@@ -69,7 +68,7 @@ public class KubernetesIngressGeneratorTests {
         serviceModel.setServiceType("NodePort");
         serviceModel.setSelector(selector);
         serviceModel.setLabels(labels);
-        KubernetesContext.getInstance().getDataHolder().addBEndpointToK8sServiceMap("HelloWorldService", serviceModel);
+        KubernetesContext.getInstance().getDataHolder().addBListenerToK8sServiceMap("HelloWorldService", serviceModel);
 
         try {
             new IngressHandler().createArtifacts();

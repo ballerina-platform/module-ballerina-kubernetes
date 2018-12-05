@@ -33,11 +33,12 @@ import io.fabric8.kubernetes.api.model.SecretKeySelectorBuilder;
 import org.apache.commons.io.FileUtils;
 import org.ballerinalang.model.tree.NodeKind;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
+import org.ballerinax.docker.generator.models.CopyFileModel;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.EnvVarValueModel;
-import org.ballerinax.kubernetes.models.ExternalFileModel;
+import org.ballerinax.kubernetes.models.JobModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
@@ -88,10 +89,16 @@ public class KubernetesUtils {
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
         outputFileName = dataHolder.getOutputDir() + File
                 .separator + extractBalxName(dataHolder.getBalxFilePath()) + outputFileName;
-        DeploymentModel deploymentModel = KubernetesContext.getInstance().getDataHolder().getDeploymentModel();
-        if (deploymentModel != null && deploymentModel.isSingleYAML()) {
-            outputFileName = dataHolder.getOutputDir() + File
-                    .separator + extractBalxName(dataHolder.getBalxFilePath()) + YAML;
+        DeploymentModel deploymentModel = dataHolder.getDeploymentModel();
+        JobModel jobModel = dataHolder.getJobModel();
+        // Priority given for job, then deployment.
+        if (jobModel != null && jobModel.isSingleYAML()) {
+            outputFileName =
+                    dataHolder.getOutputDir() + File.separator + extractBalxName(dataHolder.getBalxFilePath()) + YAML;
+        } else if (jobModel == null && deploymentModel != null && deploymentModel.isSingleYAML()) {
+            outputFileName =
+                    dataHolder.getOutputDir() + File.separator + extractBalxName(dataHolder.getBalxFilePath()) + YAML;
+            
         }
         File newFile = new File(outputFileName);
         // append if file exists
@@ -151,7 +158,6 @@ public class KubernetesUtils {
         } catch (IOException e) {
             throw new KubernetesPluginException("Error while copying file", e);
         }
-
     }
 
     /**
@@ -400,14 +406,14 @@ public class KubernetesUtils {
      * @return A set of external files
      * @throws KubernetesPluginException if an error occur while getting the paths
      */
-    public static Set<ExternalFileModel> getExternalFileMap(BLangRecordLiteral.BLangRecordKeyValue keyValue) throws
+    public static Set<CopyFileModel> getExternalFileMap(BLangRecordLiteral.BLangRecordKeyValue keyValue) throws
             KubernetesPluginException {
-        Set<ExternalFileModel> externalFiles = new HashSet<>();
+        Set<CopyFileModel> externalFiles = new HashSet<>();
         List<BLangExpression> configAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
         for (BLangExpression bLangExpression : configAnnotation) {
             List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
                     ((BLangRecordLiteral) bLangExpression).getKeyValuePairs();
-            ExternalFileModel externalFileModel = new ExternalFileModel();
+            CopyFileModel externalFileModel = new CopyFileModel();
             for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
                 String annotationValue = resolveValue(annotation.getValue().toString());
                 switch (annotation.getKey().toString()) {

@@ -24,8 +24,8 @@ import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.ServiceModel;
-import org.junit.Assert;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,7 +54,7 @@ public class KubernetesServiceGeneratorTests {
         Map<String, String> labels = new HashMap<>();
         labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, selector);
         serviceModel.setLabels(labels);
-        KubernetesContext.getInstance().getDataHolder().addBEndpointToK8sServiceMap("HelloWorldService", serviceModel);
+        KubernetesContext.getInstance().getDataHolder().addBListenerToK8sServiceMap("HelloWorldService", serviceModel);
         try {
             new ServiceHandler().createArtifacts();
             File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_svc.yaml");

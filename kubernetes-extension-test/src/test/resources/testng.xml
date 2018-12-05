@@ -18,18 +18,36 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="Ballerina-Kubernetes-Test-Suite">
-
     <test name="ballerina-kubernetes-sample-tests" parallel="false">
-        <packages>
-            <package name="org.ballerinax.kubernetes.test.samples"/>
-        </packages>
+        <classes>
+            <class name="org.ballerinax.kubernetes.test.samples.Sample1Test"/>
+            <class name="org.ballerinax.kubernetes.test.samples.Sample2Test"/>
+            <class name="org.ballerinax.kubernetes.test.samples.Sample3Test"/>
+            <class name="org.ballerinax.kubernetes.test.samples.Sample4Test"/>
+            <class name="org.ballerinax.kubernetes.test.samples.Sample5Test"/>
+            <class name="org.ballerinax.kubernetes.test.samples.Sample7Test"/>
+            <class name="org.ballerinax.kubernetes.test.samples.Sample8Test"/>
+            <class name="org.ballerinax.kubernetes.test.samples.Sample9Test"/>
+            <class name="org.ballerinax.kubernetes.test.samples.Sample10Test"/>
+            <class name="org.ballerinax.kubernetes.test.samples.Sample11Test"/>
+            <class name="org.ballerinax.kubernetes.test.samples.Sample12Test"/>
+            <!--<class name="org.ballerinax.kubernetes.test.samples.Sample13Test"/> Need jdbc connector-->
+            <class name="org.ballerinax.kubernetes.test.samples.Sample14Test"/>
+            <class name="org.ballerinax.kubernetes.test.samples.Sample15Test"/>
+            <class name="org.ballerinax.kubernetes.test.samples.Sample16Test"/>
+        </classes>
+    </test>
 
+    <test name="ballerina-kubernetes-tests" parallel="false">
         <classes>
             <class name="org.ballerinax.kubernetes.test.EnvVarTest"/>
             <class name="org.ballerinax.kubernetes.test.ResourceQuotaTest"/>
             <class name="org.ballerinax.kubernetes.test.JobTest"/>
             <class name="org.ballerinax.kubernetes.test.MainFunctionDeploymentTest"/>
             <class name="org.ballerinax.kubernetes.test.ServiceTest"/>
+            <class name="org.ballerinax.kubernetes.test.DeploymentTest"/>
+            <class name="org.ballerinax.kubernetes.test.IstioGatewayTest"/>
+            <class name="org.ballerinax.kubernetes.test.IstioVirtualServiceTest"/>
         </classes>
     </test>
 

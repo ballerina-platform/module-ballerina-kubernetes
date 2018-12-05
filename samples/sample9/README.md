@@ -149,5 +149,7 @@ Hello World
 8. Undeploy sample:
 ```bash
 $> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample9/kubernetes/
+$> kubectl delete -f ./volumes/persistent-volume.yaml
+$> docker rmi hello_world_persistence_volume_k8s
 
 ```

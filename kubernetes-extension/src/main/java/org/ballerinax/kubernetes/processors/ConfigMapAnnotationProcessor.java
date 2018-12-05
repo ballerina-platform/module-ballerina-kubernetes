@@ -44,6 +44,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_CONF_MOUNT
 import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_HOME;
 import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_RUNTIME;
 import static org.ballerinax.kubernetes.KubernetesConstants.CONFIG_MAP_POSTFIX;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
@@ -75,6 +76,17 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
                             switch (volumeMountConfig) {
                                 case name:
                                     configMapModel.setName(getValidName(annotationValue));
+                                    break;
+                                case namespace:
+                                    configMapModel.setNamespace(getValidName(annotationValue));
+                                    break;
+                                case labels:
+                                    configMapModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr)
+                                            .keyValuePairs));
+                                    break;
+                                case annotations:
+                                    configMapModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr)
+                                            .keyValuePairs));
                                     break;
                                 case mountPath:
                                     // validate mount path is not set to ballerina home or ballerina runtime
@@ -163,6 +175,9 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
      */
     private enum ConfigMapMountConfig {
         name,
+        namespace,
+        labels,
+        annotations,
         mountPath,
         readOnly,
         data

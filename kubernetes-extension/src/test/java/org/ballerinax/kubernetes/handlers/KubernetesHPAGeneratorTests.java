@@ -26,8 +26,8 @@ import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.EnvVarValueModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.PodAutoscalerModel;
-import org.junit.Assert;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,6 +59,7 @@ public class KubernetesHPAGeneratorTests {
         deploymentModel.setLabels(labels);
         deploymentModel.setEnableLiveness(true);
         deploymentModel.setLivenessPort(9090);
+        deploymentModel.setSingleYAML(false);
         Map<String, EnvVarValueModel> env = new HashMap<>();
         EnvVarValueModel testEnvVar = new EnvVarValueModel("ENV");
         env.put("ENV_VAR", testEnvVar);

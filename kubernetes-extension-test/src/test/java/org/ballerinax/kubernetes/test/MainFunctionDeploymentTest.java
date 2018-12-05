@@ -21,6 +21,7 @@ package org.ballerinax.kubernetes.test;
 import io.fabric8.docker.api.model.ImageInspect;
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.extensions.Deployment;
+import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
@@ -42,7 +43,7 @@ public class MainFunctionDeploymentTest {
     private final String balDirectory = Paths.get("src").resolve("test").resolve("resources").resolve("deployment")
             .toAbsolutePath().toString();
     private final String targetPath = Paths.get(balDirectory).resolve(KUBERNETES).toString();
-    private final String dockerImage = "main-function:latest";
+    private final String dockerImage = "main_function:latest";
     
     /**
      * Build bal file with deployment attached to a main function.
@@ -52,18 +53,19 @@ public class MainFunctionDeploymentTest {
      */
     @Test
     public void mainFuncDeploymentTest() throws IOException, InterruptedException, KubernetesPluginException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "main-function.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "main_function.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = Paths.get(targetPath).resolve("main-function_deployment.yaml").toFile();
+        File deploymentYAML = Paths.get(targetPath).resolve("main_function_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
         Assert.assertEquals(deployment.getMetadata().getLabels().size(), 2, "Invalid number of labels found.");
-        Assert.assertEquals(deployment.getMetadata().getLabels().get("app"), "main-function", "Invalid label found.");
+        Assert.assertEquals(deployment.getMetadata().getLabels().get(KubernetesConstants.KUBERNETES_SELECTOR_KEY),
+                "main_function", "Invalid label found.");
         Assert.assertEquals(deployment.getMetadata().getLabels().get("task_type"), "printer", "Invalid label found.");
         
         KubernetesUtils.deleteDirectory(targetPath);

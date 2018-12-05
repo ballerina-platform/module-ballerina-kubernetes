@@ -51,8 +51,14 @@ public class HPAAnnotationProcessor extends AbstractAnnotationProcessor {
                 case name:
                     podAutoscalerModel.setName(getValidName(annotationValue));
                     break;
+                case namespace:
+                    podAutoscalerModel.setNamespace(annotationValue);
+                    break;
                 case labels:
                     podAutoscalerModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    break;
+                case annotations:
+                    podAutoscalerModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
                 case cpuPercentage:
                     podAutoscalerModel.setCpuPercentage(Integer.parseInt(annotationValue));
@@ -75,7 +81,9 @@ public class HPAAnnotationProcessor extends AbstractAnnotationProcessor {
      */
     private enum PodAutoscalerConfiguration {
         name,
+        namespace,
         labels,
+        annotations,
         minReplicas,
         maxReplicas,
         cpuPercentage

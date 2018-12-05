@@ -121,11 +121,11 @@ Use curl command with hostname to access the service.
 ```bash
 $> curl https://abc.com/helloWorld/sayHello -k
 Hello, World from secured service !
-
+```
 
 7. Undeploy sample:
 ```bash
 $> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample4/kubernetes/
-
+$> docker rmi hello_world_ssl_k8s
 
 ```

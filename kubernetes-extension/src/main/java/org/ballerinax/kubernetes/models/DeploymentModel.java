@@ -17,6 +17,7 @@
  */
 package org.ballerinax.kubernetes.models;
 
+import org.ballerinax.docker.generator.models.CopyFileModel;
 import org.ballerinax.kubernetes.KubernetesConstants;
 
 import java.util.HashSet;
@@ -25,7 +26,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_BASE_IMAGE;
+import static org.ballerinax.docker.generator.DockerGenConstants.BALLERINA_BASE_IMAGE;
 import static org.ballerinax.kubernetes.KubernetesConstants.UNIX_DEFAULT_DOCKER_HOST;
 import static org.ballerinax.kubernetes.KubernetesConstants.WINDOWS_DEFAULT_DOCKER_HOST;
 
@@ -33,7 +34,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.WINDOWS_DEFAULT_DOCK
  * Kubernetes deployment annotations model class.
  */
 public class DeploymentModel extends KubernetesModel {
-    private Map<String, String> labels;
+    private Map<String, String> podAnnotations;
     private int replicas;
     private boolean enableLiveness;
     private int livenessPort;
@@ -54,7 +55,7 @@ public class DeploymentModel extends KubernetesModel {
     private Set<SecretModel> secretModels;
     private Set<ConfigMapModel> configMapModels;
     private Set<PersistentVolumeClaimModel> volumeClaimModels;
-    private Set<ExternalFileModel> externalFiles;
+    private Set<CopyFileModel> copyFiles;
     private Set<String> dependsOn;
     private Set<String> imagePullSecrets;
     private String commandArgs;
@@ -86,19 +87,20 @@ public class DeploymentModel extends KubernetesModel {
         this.secretModels = new HashSet<>();
         this.configMapModels = new HashSet<>();
         this.volumeClaimModels = new HashSet<>();
-        this.externalFiles = new HashSet<>();
+        this.copyFiles = new HashSet<>();
         this.imagePullSecrets = new HashSet<>();
-        this.singleYAML = false;
+        this.singleYAML = true;
+        this.commandArgs = "";
     }
-
-    public Map<String, String> getLabels() {
-        return labels;
+    
+    public Map<String, String> getPodAnnotations() {
+        return podAnnotations;
     }
-
-    public void setLabels(Map<String, String> labels) {
-        this.labels = labels;
+    
+    public void setPodAnnotations(Map<String, String> podAnnotations) {
+        this.podAnnotations = podAnnotations;
     }
-
+    
     public int getReplicas() {
         return replicas;
     }
@@ -298,12 +300,12 @@ public class DeploymentModel extends KubernetesModel {
         this.commandArgs = commandArg;
     }
 
-    public Set<ExternalFileModel> getExternalFiles() {
-        return externalFiles;
+    public Set<CopyFileModel> getCopyFiles() {
+        return copyFiles;
     }
 
-    public void setExternalFiles(Set<ExternalFileModel> externalFiles) {
-        this.externalFiles = externalFiles;
+    public void setCopyFiles(Set<CopyFileModel> copyFiles) {
+        this.copyFiles = copyFiles;
     }
 
     public boolean isSingleYAML() {

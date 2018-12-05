@@ -18,8 +18,13 @@
 
 package org.ballerinax.kubernetes.models;
 
+import org.ballerinax.docker.generator.models.DockerModel;
+import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
+import org.ballerinax.kubernetes.models.istio.IstioVirtualServiceModel;
+
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,27 +36,31 @@ public class KubernetesDataHolder {
     private DeploymentModel deploymentModel;
     private DockerModel dockerModel;
     private PodAutoscalerModel podAutoscalerModel;
-    private Map<String, ServiceModel> bEndpointToK8sServiceMap;
-    private Map<String, Set<SecretModel>> endPointToSecretMap;
+    private Map<String, ServiceModel> bListenerToK8sServiceMap;
+    private Map<String, Set<SecretModel>> bListenerToSecretMap;
     private Set<SecretModel> secretModelSet;
     private Set<IngressModel> ingressModelSet;
     private Set<ConfigMapModel> configMapModelSet;
     private Set<PersistentVolumeClaimModel> volumeClaimModelSet;
-    private Set<ResourceQuotaModel> resourceQuotaModelSet;
+    private Set<ResourceQuotaModel> resourceQuotaModels;
+    private Map<String, IstioGatewayModel> istioGatewayModels;
+    private Map<String, IstioVirtualServiceModel> istioVirtualServiceModels;
     private JobModel jobModel;
     private String balxFilePath;
     private String outputDir;
     private String namespace;
 
     KubernetesDataHolder() {
-        this.bEndpointToK8sServiceMap = new HashMap<>();
-        this.endPointToSecretMap = new HashMap<>();
+        this.bListenerToK8sServiceMap = new HashMap<>();
+        this.bListenerToSecretMap = new HashMap<>();
         this.secretModelSet = new HashSet<>();
         this.configMapModelSet = new HashSet<>();
         this.volumeClaimModelSet = new HashSet<>();
         this.ingressModelSet = new HashSet<>();
         this.deploymentModel = new DeploymentModel();
-        this.resourceQuotaModelSet = new HashSet<>();
+        this.resourceQuotaModels = new HashSet<>();
+        this.istioGatewayModels = new LinkedHashMap<>();
+        this.istioVirtualServiceModels = new LinkedHashMap<>();
 //        this.namespace = "";
     }
 
@@ -72,11 +81,11 @@ public class KubernetesDataHolder {
     }
 
     public Map<String, Set<SecretModel>> getSecretModels() {
-        return endPointToSecretMap;
+        return bListenerToSecretMap;
     }
 
-    public void addEndpointSecret(String endpointName, Set<SecretModel> secretModel) {
-        this.endPointToSecretMap.put(endpointName, secretModel);
+    public void addListenerSecret(String listenerName, Set<SecretModel> secretModel) {
+        this.bListenerToSecretMap.put(listenerName, secretModel);
     }
 
     public Set<SecretModel> getSecretModelSet() {
@@ -104,23 +113,23 @@ public class KubernetesDataHolder {
     }
     
     public Set<ResourceQuotaModel> getResourceQuotaModels() {
-        return resourceQuotaModelSet;
+        return resourceQuotaModels;
     }
     
-    public void addResourceQuotaModels(Set<ResourceQuotaModel> resourceQuotaModels) {
-        this.resourceQuotaModelSet = resourceQuotaModels;
+    public void setResourceQuotaModels(Set<ResourceQuotaModel> resourceQuotaModels) {
+        this.resourceQuotaModels = resourceQuotaModels;
     }
     
-    public Map<String, ServiceModel> getbEndpointToK8sServiceMap() {
-        return bEndpointToK8sServiceMap;
+    public Map<String, ServiceModel> getbListenerToK8sServiceMap() {
+        return bListenerToK8sServiceMap;
     }
 
-    public void addBEndpointToK8sServiceMap(String endpointName, ServiceModel serviceModel) {
-        this.bEndpointToK8sServiceMap.put(endpointName, serviceModel);
+    public void addBListenerToK8sServiceMap(String listenerName, ServiceModel serviceModel) {
+        this.bListenerToK8sServiceMap.put(listenerName, serviceModel);
     }
 
-    public ServiceModel getServiceModel(String endpointName) {
-        return bEndpointToK8sServiceMap.get(endpointName);
+    public ServiceModel getServiceModel(String listener) {
+        return bListenerToK8sServiceMap.get(listener);
     }
 
     public Set<IngressModel> getIngressModelSet() {
@@ -177,5 +186,29 @@ public class KubernetesDataHolder {
 
     public void setNamespace(String namespace) {
         this.namespace = namespace;
+    }
+    
+    public Map<String, IstioGatewayModel> getIstioGatewayModels() {
+        return istioGatewayModels;
+    }
+    
+    public IstioGatewayModel getIstioGatewayModel(String serviceName) {
+        return istioGatewayModels.get(serviceName);
+    }
+    
+    public void addIstioGatewayModel(String serviceName, IstioGatewayModel istioGatewayModel) {
+        this.istioGatewayModels.put(serviceName, istioGatewayModel);
+    }
+    
+    public Map<String, IstioVirtualServiceModel> getIstioVirtualServiceModels() {
+        return istioVirtualServiceModels;
+    }
+    
+    public IstioVirtualServiceModel getIstioVirtualServiceModel(String serviceName) {
+        return istioVirtualServiceModels.get(serviceName);
+    }
+    
+    public void addIstioVirtualServiceModel(String serviceName, IstioVirtualServiceModel istioVirtualServiceModel) {
+        this.istioVirtualServiceModels.put(serviceName, istioVirtualServiceModel);
     }
 }

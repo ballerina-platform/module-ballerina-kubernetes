@@ -46,6 +46,8 @@ public class KubernetesConstants {
     public static final String CONFIG_MAP_FILE_POSTFIX = "_config_map";
     public static final String VOLUME_CLAIM_FILE_POSTFIX = "_volume_claim";
     public static final String RESOURCE_QUOTA_FILE_POSTFIX = "_resource_quota";
+    public static final String ISTIO_GATEWAY_FILE_POSTFIX = "_istio_gateway";
+    public static final String ISTIO_VIRTUAL_SERVICE_FILE_POSTFIX = "_istio_virtual_service";
     public static final String HPA_FILE_POSTFIX = "_hpa";
     public static final String YAML = ".yaml";
     public static final String DOCKER_LATEST_TAG = ":latest";
@@ -53,7 +55,7 @@ public class KubernetesConstants {
     public static final String BALLERINA_RUNTIME = "/ballerina/runtime";
     public static final String BALLERINA_CONF_MOUNT_PATH = "/home/ballerina/conf/";
     public static final String BALLERINA_CONF_FILE_NAME = "ballerina.conf";
-    public static final String ENDPOINT_PATH_VARIABLE = "path";
+    public static final String LISTENER_PATH_VARIABLE = "path";
     public static final String UNIX_DEFAULT_DOCKER_HOST = "unix:///var/run/docker.sock";
     public static final String WINDOWS_DEFAULT_DOCKER_HOST = "tcp://localhost:2375";
     public static final String DOCKER_HOST = "DOCKER_HOST";
@@ -69,7 +71,9 @@ public class KubernetesConstants {
     public static final String HELM_NAME = "name";
     public static final String HELM_VERSION = "version";
     public static final String HELM_VERSION_DEFAULT = "0.1.0";
-    public static final String BALLERINA_BASE_IMAGE = "ballerina/ballerina-runtime";
+    public static final String ISTIO_GATEWAY_SELECTOR = "istio";
+    public static final String ISTIO_GATEWAY_POSTFIX = "-istio-gw";
+    public static final String ISTIO_VIRTUAL_SERVICE_POSTFIX = "-istio-vs";
 
     /**
      * Restart policy enum.

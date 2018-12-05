@@ -61,6 +61,9 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
                 case labels:
                     jobModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
+                case annotations:
+                    jobModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    break;
                 case restartPolicy:
                     jobModel.setRestartPolicy(KubernetesConstants.RestartPolicy.valueOf(annotationValue).name());
                     break;
@@ -104,7 +107,7 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
                     jobModel.setImagePullPolicy(annotationValue);
                     break;
                 case copyFiles:
-                    jobModel.setExternalFiles(getExternalFileMap(keyValue));
+                    jobModel.setCopyFiles(getExternalFileMap(keyValue));
                     break;
                 case singleYAML:
                     jobModel.setSingleYAML(Boolean.valueOf(annotationValue));
@@ -135,6 +138,7 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
         name,
         namespace,
         labels,
+        annotations,
         restartPolicy,
         backoffLimit,
         activeDeadlineSeconds,

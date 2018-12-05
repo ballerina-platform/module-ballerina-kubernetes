@@ -132,5 +132,6 @@ Data: Lorem ipsum dolor sit amet.
 7. Undeploy sample:
 ```bash
 $> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample12/kubernetes/
+$> docker rmi hello_world_copy_file
 
 ```
