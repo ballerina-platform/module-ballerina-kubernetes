@@ -18,8 +18,7 @@ import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:Deployment {
-    image: "pizza-shop:latest",
-    singleYAML: true
+    image: "pizza-shop:latest"
 }
 @kubernetes:Ingress {
     hostname: "abc.com"

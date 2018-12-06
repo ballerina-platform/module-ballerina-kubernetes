@@ -90,7 +90,7 @@ public class Sample16Test implements SampleTest {
         Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9080/tcp"));
     }
 
-    @Test
+    @Test(enabled = false)
     public void validateShopDeployment() throws IOException {
         File deploymentYAML = new File(bookShopPkgTargetPath + File.separator + "book.shop_deployment.yaml");
         Assert.assertTrue(deploymentYAML.exists(), "Cannot find deployment yaml");
@@ -111,7 +111,7 @@ public class Sample16Test implements SampleTest {
         Assert.assertEquals(container.getPorts().get(0).getContainerPort().intValue(), 9080, "Invalid container port");
     }
 
-    @Test
+    @Test(enabled = false)
     public void validateShopGateway() {
         File gatewayYAML = new File(bookShopPkgTargetPath + File.separator + "book.shop_istio_gateway.yaml");
         Assert.assertTrue(gatewayYAML.exists(), "Cannot find istio gateway");
@@ -141,7 +141,7 @@ public class Sample16Test implements SampleTest {
         Assert.assertTrue(hosts.contains("*"), "* host not included");
     }
     
-    @Test
+    @Test(enabled = false)
     public void validateShopVirtualService() {
         File vsFile = new File(bookShopPkgTargetPath + File.separator + "book.shop_istio_virtual_service.yaml");
         Assert.assertTrue(vsFile.exists(), "Cannot find istio virtual service");

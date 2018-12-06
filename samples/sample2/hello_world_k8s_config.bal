@@ -2,8 +2,7 @@ import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:Deployment {
-    enableLiveness: true,
-    singleYAML: true
+    enableLiveness: true
 }
 @kubernetes:Ingress {
     hostname: "abc.com"

@@ -23,7 +23,6 @@ listener http:Listener hotDrinkEP = new(9090);
     ballerinaConf: "./hot_drink/ballerina.conf"
 }
 @kubernetes:Deployment {
-    singleYAML: true,
     copyFiles: [{ 
         target: "/ballerina/runtime/bre/lib",
         source: "./resource/lib/mysql-connector-java-8.0.11.jar"

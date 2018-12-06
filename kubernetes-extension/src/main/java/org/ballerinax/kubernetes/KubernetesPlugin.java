@@ -18,7 +18,6 @@
 
 package org.ballerinax.kubernetes;
 
-import org.ballerinalang.compiler.BLangCompilerException;
 import org.ballerinalang.compiler.plugins.AbstractCompilerPlugin;
 import org.ballerinalang.compiler.plugins.SupportedAnnotationPackages;
 import org.ballerinalang.model.elements.Flag;
@@ -36,6 +35,8 @@ import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.processors.AnnotationProcessorFactory;
 import org.ballerinax.kubernetes.utils.DependencyValidator;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.ballerinalang.compiler.tree.BLangPackage;
 
 import java.io.File;
@@ -47,6 +48,7 @@ import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
 
 /**
  * Compiler plugin to generate kubernetes artifacts.
@@ -55,6 +57,7 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
         value = "ballerinax/kubernetes:0.0.0"
 )
 public class KubernetesPlugin extends AbstractCompilerPlugin {
+    private static final Logger pluginLog = LoggerFactory.getLogger(KubernetesPlugin.class);
     private DiagnosticLog dlog;
 
     @Override
@@ -137,14 +140,14 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                 validateDeploymentDependencies();
                 artifactManager.createArtifacts();
             } catch (KubernetesPluginException e) {
-                BLangCompilerException wrapperEx = new BLangCompilerException("package [" + packageID + "] " +
-                                                                                 e.getMessage(), e);
+                String errorMessage = "package [" + packageID + "] " + e.getMessage();
+                printError(errorMessage);
+                pluginLog.error(errorMessage, e);
                 try {
                     KubernetesUtils.deleteDirectory(targetPath);
                 } catch (KubernetesPluginException ignored) {
-                    // ignore
+                    //ignored
                 }
-                throw wrapperEx;
             }
         }
     }

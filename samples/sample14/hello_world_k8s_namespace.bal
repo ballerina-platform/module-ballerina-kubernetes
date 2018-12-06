@@ -3,7 +3,6 @@ import ballerinax/kubernetes;
 
 @kubernetes:Deployment {
     enableLiveness: true,
-    singleYAML: true,
     namespace: "ballerina"
 }
 @kubernetes:Ingress {
