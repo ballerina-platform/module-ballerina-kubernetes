@@ -27,8 +27,7 @@ http:Client weatherEP = new("http://api.openweathermap.org");
 
 @kubernetes:Deployment {
     enableLiveness: true,
-    dependsOn: ["cool_drink:coolDrinkEP", "hot_drink:hotDrinkEP"],
-    singleYAML: true
+    dependsOn: ["cool_drink:coolDrinkEP", "hot_drink:hotDrinkEP"]
 }
 @http:ServiceConfig {
     basePath: "/store"
