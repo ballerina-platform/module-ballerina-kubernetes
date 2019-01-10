@@ -8,7 +8,7 @@ groups="esb"
 
 
 #Build the ballerina program
-$ bb kubernetes_deployment.bal
+$ ballerina build kubernetes_deployment.bal
 Compiling source
     kubernetes_deployment.bal
 
