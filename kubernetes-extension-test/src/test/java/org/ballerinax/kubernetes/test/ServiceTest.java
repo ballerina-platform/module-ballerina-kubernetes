@@ -122,7 +122,7 @@ public class ServiceTest {
     public void validateDockerImage() throws DockerTestException, InterruptedException {
         List<String> ports = getExposedPorts(this.dockerImage);
         Assert.assertEquals(ports.size(), 1);
-        Assert.assertEquals(ports.get(0), "9099/tcp");
+        Assert.assertEquals(ports.get(0), "9090/tcp");
     }
     
     /**

@@ -67,9 +67,9 @@ public class Sample3Test implements SampleTest {
     @Test
     public void validateDockerImage() throws DockerTestException, InterruptedException {
         List<String> ports = getExposedPorts(this.dockerImage);
-        Assert.assertEquals(ports.size(), 1);
-        Assert.assertEquals(ports.get(0), "9099/tcp");
-        Assert.assertEquals(ports.get(1), "9096/tcp");
+        Assert.assertEquals(ports.size(), 2);
+        Assert.assertEquals(ports.get(0), "9096/tcp");
+        Assert.assertEquals(ports.get(1), "9099/tcp");
     }
 
     @Test
