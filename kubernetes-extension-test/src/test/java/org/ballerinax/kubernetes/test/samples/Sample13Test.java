@@ -18,8 +18,8 @@
 
 package org.ballerinax.kubernetes.test.samples;
 
-import io.fabric8.docker.api.model.ImageInspect;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.testng.Assert;
@@ -29,10 +29,11 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
-import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDockerImage;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 
 public class Sample13Test implements SampleTest {
 
@@ -61,28 +62,28 @@ public class Sample13Test implements SampleTest {
     }
 
     @Test
-    public void validateDockerImageCoolDrink() {
-        ImageInspect imageInspect = getDockerImage(coolDrinkDockerImage);
-        Assert.assertEquals(imageInspect.getContainerConfig().getExposedPorts().size(), 1);
-        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9090/tcp"));
+    public void validateDockerImageCoolDrink() throws DockerTestException, InterruptedException {
+        List<String> ports = getExposedPorts(coolDrinkDockerImage);
+        Assert.assertEquals(ports.size(), 1);
+        Assert.assertEquals(ports.get(0), "9090/tcp");
     }
 
     @Test
-    public void validateDockerImageDrinkStore() {
-        ImageInspect imageInspect = getDockerImage(drinkStoreDockerImage);
-        Assert.assertEquals(imageInspect.getContainerConfig().getExposedPorts().size(), 1);
-        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9091/tcp"));
+    public void validateDockerImageDrinkStore() throws DockerTestException, InterruptedException {
+        List<String> ports = getExposedPorts(drinkStoreDockerImage);
+        Assert.assertEquals(ports.size(), 1);
+        Assert.assertEquals(ports.get(0), "9091/tcp");
     }
     
     @Test
-    public void validateDockerImageHotDrink() {
-        ImageInspect imageInspect = getDockerImage(hotDrinkDockerImage);
-        Assert.assertEquals(imageInspect.getContainerConfig().getExposedPorts().size(), 1);
-        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9090/tcp"));
+    public void validateDockerImageHotDrink() throws DockerTestException, InterruptedException {
+        List<String> ports = getExposedPorts(hotDrinkDockerImage);
+        Assert.assertEquals(ports.size(), 1);
+        Assert.assertEquals(ports.get(0), "9090/tcp");
     }
 
     @AfterClass
-    public void cleanUp() throws KubernetesPluginException {
+    public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
         KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(drinkStoreDockerImage);
         KubernetesTestUtils.deleteDockerImage(coolDrinkDockerImage);

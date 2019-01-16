@@ -18,12 +18,13 @@
 
 package org.ballerinax.kubernetes.test;
 
-import io.fabric8.docker.api.model.ImageInspect;
+import com.spotify.docker.client.messages.ImageInfo;
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.Job;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.testng.Assert;
@@ -44,14 +45,13 @@ public class JobTest {
     private final String targetPath = sourceDirPath + File.separator + KUBERNETES;
     private final String dockerImage = "my-ballerina-job:1.0";
 
-
     @Test
-    public void testKubernetesJobGeneration() throws IOException, InterruptedException {
+    public void testKubernetesJobGeneration() throws IOException, InterruptedException, DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(sourceDirPath, "ballerina_job.bal"), 0);
         File dockerFile = new File(targetPath + File.separator + DOCKER + File.separator + "Dockerfile");
         Assert.assertTrue(dockerFile.exists());
-        ImageInspect imageInspect = getDockerImage(dockerImage);
-        Assert.assertNotNull(imageInspect.getContainerConfig());
+        ImageInfo imageInspect = getDockerImage(dockerImage);
+        Assert.assertNotNull(imageInspect.config());
         File jobYAML = new File(targetPath + File.separator + "ballerina_job_job.yaml");
         Job job = KubernetesHelper.loadYaml(jobYAML);
         Assert.assertEquals("ballerina-job-job", job.getMetadata().getName());
@@ -63,9 +63,8 @@ public class JobTest {
                 .getRestartPolicy());
     }
 
-
     @AfterClass
-    public void cleanUp() throws KubernetesPluginException {
+    public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
         KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(dockerImage);
     }

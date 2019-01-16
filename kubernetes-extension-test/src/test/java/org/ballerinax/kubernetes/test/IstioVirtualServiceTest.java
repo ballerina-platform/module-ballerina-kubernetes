@@ -18,8 +18,8 @@
 
 package org.ballerinax.kubernetes.test;
 
-import io.fabric8.docker.api.model.ImageInspect;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.testng.Assert;
@@ -35,7 +35,7 @@ import java.util.Map;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
-import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDockerImage;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 
 /**
  * Test cases for generating istio virtual service artifacts.
@@ -57,7 +57,8 @@ public class IstioVirtualServiceTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void httpRouteTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void httpRouteTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "http_route.bal"), 0);
         
         // Check if docker image exists and correct
@@ -122,7 +123,8 @@ public class IstioVirtualServiceTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void httpMatchRequestTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void httpMatchRequestTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "http_match_request.bal"), 0);
         
         // Check if docker image exists and correct
@@ -171,7 +173,8 @@ public class IstioVirtualServiceTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void destinationWeightTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void destinationWeightTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "destination_weight.bal"), 0);
         
         // Check if docker image exists and correct
@@ -221,7 +224,8 @@ public class IstioVirtualServiceTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void destinationTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void destinationTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "destination.bal"), 0);
         
         // Check if docker image exists and correct
@@ -265,7 +269,8 @@ public class IstioVirtualServiceTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void httpRedirectTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void httpRedirectTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "http_redirect.bal"), 0);
         
         // Check if docker image exists and correct
@@ -311,7 +316,8 @@ public class IstioVirtualServiceTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void httpRetryTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void httpRetryTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "http_retry.bal"), 0);
         
         // Check if docker image exists and correct
@@ -358,7 +364,8 @@ public class IstioVirtualServiceTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void httpFaultInjectionTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void httpFaultInjectionTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "http_fault_injection.bal"), 0);
         
         // Check if docker image exists and correct
@@ -405,7 +412,8 @@ public class IstioVirtualServiceTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void corsPolicyTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void corsPolicyTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "cors_policy.bal"), 0);
         
         // Check if docker image exists and correct
@@ -458,7 +466,8 @@ public class IstioVirtualServiceTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void tlsRouteTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void tlsRouteTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tls_route.bal"), 0);
         
         // Check if docker image exists and correct
@@ -517,7 +526,8 @@ public class IstioVirtualServiceTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void tcpRouteTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void tcpRouteTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tcp_route.bal"), 0);
         
         // Check if docker image exists and correct
@@ -565,7 +575,8 @@ public class IstioVirtualServiceTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void emptyAnnotationTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void emptyAnnotationTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "empty_annotation.bal"), 0);
         
         // Check if docker image exists and correct
@@ -611,7 +622,8 @@ public class IstioVirtualServiceTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void useServiceAnnotationPortTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void useServiceAnnotationPortTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "svc_port.bal"), 0);
         
         // Check if docker image exists and correct
@@ -660,9 +672,9 @@ public class IstioVirtualServiceTest {
     /**
      * Validate contents of the Dockerfile.
      */
-    public void validateDockerImage() {
-        ImageInspect imageInspect = getDockerImage(dockerImage);
-        Assert.assertEquals(1, imageInspect.getContainerConfig().getExposedPorts().size());
-        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9090/tcp"));
+    public void validateDockerImage() throws DockerTestException, InterruptedException {
+        List<String> ports = getExposedPorts(this.dockerImage);
+        Assert.assertEquals(ports.size(), 1);
+        Assert.assertEquals(ports.get(0), "9099/tcp");
     }
 }

@@ -18,11 +18,11 @@
 
 package org.ballerinax.kubernetes.test;
 
-import io.fabric8.docker.api.model.ImageInspect;
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.extensions.Deployment;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.testng.Assert;
@@ -35,7 +35,7 @@ import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
-import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDockerImage;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 
 /**
  * Test setting environment variables for deployments.
@@ -53,7 +53,8 @@ public class EnvVarTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void nameValueTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void nameValueTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "name_value.bal"), 0);
         
         // Check if docker image exists and correct
@@ -82,7 +83,8 @@ public class EnvVarTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void fieldRefTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void fieldRefTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "field_ref_value.bal"), 0);
         
         // Check if docker image exists and correct
@@ -115,7 +117,8 @@ public class EnvVarTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void secretKeyRefTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void secretKeyRefTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "secret_key_ref.bal"), 0);
         
         // Check if docker image exists and correct
@@ -152,7 +155,8 @@ public class EnvVarTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void resourceFieldRefTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void resourceFieldRefTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "resource_field_ref_value.bal"), 0);
         
         // Check if docker image exists and correct
@@ -187,7 +191,8 @@ public class EnvVarTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void configMapKeyRefTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void configMapKeyRefTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "config_map_key_ref.bal"), 0);
         
         // Check if docker image exists and correct
@@ -224,7 +229,8 @@ public class EnvVarTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void combinedTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void combinedTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "combination.bal"), 0);
         
         // Check if docker image exists and correct
@@ -290,9 +296,9 @@ public class EnvVarTest {
     /**
      * Validate contents of the Dockerfile.
      */
-    public void validateDockerImage() {
-        ImageInspect imageInspect = getDockerImage(dockerImage);
-        Assert.assertEquals(1, imageInspect.getContainerConfig().getExposedPorts().size());
-        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9099/tcp"));
+    public void validateDockerImage() throws DockerTestException, InterruptedException {
+        List<String> ports = getExposedPorts(this.dockerImage);
+        Assert.assertEquals(ports.size(), 1);
+        Assert.assertEquals(ports.get(0), "9099/tcp");
     }
 }

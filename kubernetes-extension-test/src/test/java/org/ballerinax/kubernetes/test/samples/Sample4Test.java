@@ -18,7 +18,6 @@
 
 package org.ballerinax.kubernetes.test.samples;
 
-import io.fabric8.docker.api.model.ImageInspect;
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.Secret;
@@ -26,6 +25,7 @@ import io.fabric8.kubernetes.api.model.extensions.Deployment;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.testng.Assert;
@@ -35,10 +35,11 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
-import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDockerImage;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 
 public class Sample4Test implements SampleTest {
 
@@ -59,10 +60,10 @@ public class Sample4Test implements SampleTest {
     }
 
     @Test
-    public void validateDockerImage() {
-        ImageInspect imageInspect = getDockerImage(dockerImage);
-        Assert.assertEquals(1, imageInspect.getContainerConfig().getExposedPorts().size());
-        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9090/tcp"));
+    public void validateDockerImage() throws DockerTestException, InterruptedException {
+        List<String> ports = getExposedPorts(this.dockerImage);
+        Assert.assertEquals(ports.size(), 1);
+        Assert.assertEquals(ports.get(0), "9090/tcp");
     }
 
     @Test
@@ -84,7 +85,7 @@ public class Sample4Test implements SampleTest {
         Assert.assertEquals(1, container.getVolumeMounts().size());
         Assert.assertEquals("/ballerina/runtime/bre/security", container.getVolumeMounts().get(0).getMountPath());
         Assert.assertEquals("helloworldsecuredep-keystore-volume", container.getVolumeMounts().get(0).getName());
-        Assert.assertEquals(true, container.getVolumeMounts().get(0).getReadOnly().booleanValue());
+        Assert.assertTrue(container.getVolumeMounts().get(0).getReadOnly().booleanValue());
         Assert.assertEquals(dockerImage, container.getImage());
         Assert.assertEquals(KubernetesConstants.ImagePullPolicy.IfNotPresent.name(), container.getImagePullPolicy());
         Assert.assertEquals(1, container.getPorts().size());
@@ -119,7 +120,7 @@ public class Sample4Test implements SampleTest {
     }
 
     @AfterClass
-    public void cleanUp() throws KubernetesPluginException {
+    public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
         KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(dockerImage);
     }

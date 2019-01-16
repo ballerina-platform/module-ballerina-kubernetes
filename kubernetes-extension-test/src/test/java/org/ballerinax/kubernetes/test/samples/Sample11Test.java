@@ -18,12 +18,13 @@
 
 package org.ballerinax.kubernetes.test.samples;
 
-import io.fabric8.docker.api.model.ImageInspect;
+import com.spotify.docker.client.messages.ImageInfo;
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.Job;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.testng.Assert;
@@ -56,9 +57,9 @@ public class Sample11Test implements SampleTest {
     }
 
     @Test
-    public void validateDockerImage() {
-        ImageInspect imageInspect = getDockerImage(dockerImage);
-        Assert.assertNotNull(imageInspect.getContainerConfig());
+    public void validateDockerImage() throws DockerTestException, InterruptedException {
+        ImageInfo imageInspect = getDockerImage(dockerImage);
+        Assert.assertNotNull(imageInspect.config());
     }
 
     @Test
@@ -75,7 +76,7 @@ public class Sample11Test implements SampleTest {
     }
 
     @AfterClass
-    public void cleanUp() throws KubernetesPluginException {
+    public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
         KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(dockerImage);
     }

@@ -17,7 +17,6 @@
  */
 package org.ballerinax.kubernetes.test.samples;
 
-import io.fabric8.docker.api.model.ImageInspect;
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.HasMetadata;
@@ -28,6 +27,7 @@ import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.testng.Assert;
@@ -42,7 +42,7 @@ import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
-import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDockerImage;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 
 public class Sample3Test implements SampleTest {
 
@@ -65,11 +65,11 @@ public class Sample3Test implements SampleTest {
     }
 
     @Test
-    public void validateDockerImage() {
-        ImageInspect imageInspect = getDockerImage(dockerImage);
-        Assert.assertEquals(2, imageInspect.getContainerConfig().getExposedPorts().size());
-        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9099/tcp"));
-        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9096/tcp"));
+    public void validateDockerImage() throws DockerTestException, InterruptedException {
+        List<String> ports = getExposedPorts(this.dockerImage);
+        Assert.assertEquals(ports.size(), 1);
+        Assert.assertEquals(ports.get(0), "9099/tcp");
+        Assert.assertEquals(ports.get(1), "9096/tcp");
     }
 
     @Test
@@ -189,7 +189,7 @@ public class Sample3Test implements SampleTest {
     }
 
     @AfterClass
-    public void cleanUp() throws KubernetesPluginException {
+    public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
         KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(dockerImage);
     }

@@ -50,7 +50,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.fabric8</groupId>
+            <groupId>com.spotify</groupId>
             <artifactId>docker-client</artifactId>
         </dependency>
         <dependency>
@@ -244,6 +244,7 @@
                                     <include>commons-io.wso2:commons-io</include>
                                     <include>commons-codec:commons-codec</include>
                                     <include>javax.validation:validation-api</include>
+                                    <include>javax.ws.rs:javax.ws.rs-api</include>
                                     <include>com.squareup.okhttp3:okhttp</include>
                                     <include>com.squareup.okhttp3:logging-interceptor</include>
                                     <include>com.squareup.okio:okio</include>
