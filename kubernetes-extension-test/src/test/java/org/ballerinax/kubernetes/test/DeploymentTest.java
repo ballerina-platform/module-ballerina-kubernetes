@@ -18,10 +18,11 @@
 
 package org.ballerinax.kubernetes.test;
 
-import io.fabric8.docker.api.model.ImageInspect;
+import com.spotify.docker.client.messages.ImageInfo;
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.extensions.Deployment;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.testng.Assert;
@@ -52,7 +53,8 @@ public class DeploymentTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void annotationsTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void annotationsTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "dep_annotations.bal"), 0);
         
         // Check if docker image exists and correct
@@ -82,7 +84,8 @@ public class DeploymentTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void podAnnotationsTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void podAnnotationsTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "pod_annotations.bal"), 0);
         
         // Check if docker image exists and correct
@@ -115,8 +118,8 @@ public class DeploymentTest {
     /**
      * Validate contents of the Dockerfile.
      */
-    public void validateDockerImage() {
-        ImageInspect imageInspect = getDockerImage(dockerImage);
+    public void validateDockerImage() throws DockerTestException, InterruptedException {
+        ImageInfo imageInspect = getDockerImage(dockerImage);
         Assert.assertNotEquals(imageInspect, null, "Image not found");
     }
 }

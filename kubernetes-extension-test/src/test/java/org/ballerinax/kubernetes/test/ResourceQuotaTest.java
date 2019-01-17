@@ -18,10 +18,10 @@
 
 package org.ballerinax.kubernetes.test;
 
-import io.fabric8.docker.api.model.ImageInspect;
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.ResourceQuota;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.testng.Assert;
@@ -30,10 +30,11 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
-import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDockerImage;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 
 /**
  * Test creating resource quotas.
@@ -51,7 +52,8 @@ public class ResourceQuotaTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void simpleQuotaTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void simpleQuotaTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "simple_quota.bal"), 0);
         
         // Check if docker image exists and correct
@@ -92,7 +94,8 @@ public class ResourceQuotaTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void quotaWithScopeTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void quotaWithScopeTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "quota_with_scope.bal"), 0);
         
         // Check if docker image exists and correct
@@ -130,7 +133,8 @@ public class ResourceQuotaTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void multipleQuotaTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void multipleQuotaTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "multiple_quotas.bal"), 0);
         
         // Check if docker image exists and correct
@@ -184,9 +188,9 @@ public class ResourceQuotaTest {
     /**
      * Validate contents of the Dockerfile.
      */
-    public void validateDockerImage() {
-        ImageInspect imageInspect = getDockerImage(dockerImage);
-        Assert.assertEquals(1, imageInspect.getContainerConfig().getExposedPorts().size());
-        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9099/tcp"));
+    public void validateDockerImage() throws DockerTestException, InterruptedException {
+        List<String> ports = getExposedPorts(this.dockerImage);
+        Assert.assertEquals(ports.size(), 1);
+        Assert.assertEquals(ports.get(0), "9099/tcp");
     }
 }

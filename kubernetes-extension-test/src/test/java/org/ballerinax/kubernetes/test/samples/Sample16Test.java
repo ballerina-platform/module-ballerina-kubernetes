@@ -18,12 +18,12 @@
 
 package org.ballerinax.kubernetes.test.samples;
 
-import io.fabric8.docker.api.model.ImageInspect;
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.extensions.Deployment;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.testng.Assert;
@@ -40,7 +40,7 @@ import java.util.Map;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
-import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDockerImage;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 
 public class Sample16Test implements SampleTest {
 
@@ -70,24 +70,24 @@ public class Sample16Test implements SampleTest {
     }
 
     @Test
-    public void validateDockerImageBookDetails() {
-        ImageInspect imageInspect = getDockerImage(bookDetailsDockerImage);
-        Assert.assertEquals(imageInspect.getContainerConfig().getExposedPorts().size(), 1);
-        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("8080/tcp"));
+    public void validateDockerImageBookDetails() throws DockerTestException, InterruptedException {
+        List<String> ports = getExposedPorts(bookDetailsDockerImage);
+        Assert.assertEquals(ports.size(), 1);
+        Assert.assertEquals(ports.get(0), "8080/tcp");
     }
 
     @Test
-    public void validateDockerImageBookReviews() {
-        ImageInspect imageInspect = getDockerImage(bookReviewsDockerImage);
-        Assert.assertEquals(imageInspect.getContainerConfig().getExposedPorts().size(), 1);
-        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("7070/tcp"));
+    public void validateDockerImageBookReviews() throws DockerTestException, InterruptedException {
+        List<String> ports = getExposedPorts(bookReviewsDockerImage);
+        Assert.assertEquals(ports.size(), 1);
+        Assert.assertEquals(ports.get(0), "7070/tcp");
     }
     
     @Test
-    public void validateDockerImageBookShop() {
-        ImageInspect imageInspect = getDockerImage(bookShopDockerImage);
-        Assert.assertEquals(imageInspect.getContainerConfig().getExposedPorts().size(), 1);
-        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9080/tcp"));
+    public void validateDockerImageBookShop() throws DockerTestException, InterruptedException {
+        List<String> ports = getExposedPorts(bookShopDockerImage);
+        Assert.assertEquals(ports.size(), 1);
+        Assert.assertEquals(ports.get(0), "9080/tcp");
     }
 
     @Test(enabled = false)
@@ -171,7 +171,7 @@ public class Sample16Test implements SampleTest {
     }
 
     @AfterClass
-    public void cleanUp() throws KubernetesPluginException {
+    public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
         KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(bookReviewsDockerImage);
         KubernetesTestUtils.deleteDockerImage(bookDetailsDockerImage);
