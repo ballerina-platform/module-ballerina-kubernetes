@@ -273,10 +273,13 @@ public class KubernetesUtils {
      * @param keyValues key value paris.
      * @return Map of key values.
      */
-    public static Map<String, String> getMap(List<BLangRecordLiteral.BLangRecordKeyValue> keyValues) {
+    public static Map<String, String> getMap(List<BLangRecordLiteral.BLangRecordKeyValue> keyValues)
+            throws KubernetesPluginException {
         Map<String, String> map = new LinkedHashMap<>();
         if (keyValues != null) {
-            keyValues.forEach(keyValue -> map.put(keyValue.getKey().toString(), keyValue.getValue().toString()));
+            for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
+                map.put(keyValue.getKey().toString(), resolveValue(keyValue.getValue().toString()));
+            }
         }
         return map;
     }
@@ -287,10 +290,10 @@ public class KubernetesUtils {
      * @param bArrayLiteral Array literal.
      * @return Convert string.
      */
-    public static Set<String> getArray(BLangArrayLiteral bArrayLiteral) {
+    public static Set<String> getArray(BLangArrayLiteral bArrayLiteral) throws KubernetesPluginException {
         Set<String> scopeSet = new LinkedHashSet<>();
         for (ExpressionNode bLangExpression : bArrayLiteral.getExpressions()) {
-            scopeSet.add(bLangExpression.toString());
+            scopeSet.add(resolveValue(bLangExpression.toString()));
         }
         return scopeSet;
     }
