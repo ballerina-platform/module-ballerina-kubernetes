@@ -18,6 +18,7 @@
 
 package org.ballerinax.kubernetes.test.utils;
 
+import com.mchange.io.FileUtils;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerException;
@@ -32,6 +33,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -146,6 +150,12 @@ public class KubernetesTestUtils {
         log.info(EXIT_CODE + exitCode);
         logOutput(process.getInputStream());
         logOutput(process.getErrorStream());
+    
+        // log ballerina-internal.log content
+        Path ballerinaInternalLog = Paths.get(sourceDirectory, "ballerina-internal.log");
+        if (exitCode == 1 && Files.exists(ballerinaInternalLog)) {
+            log.info(FileUtils.getContentsAsString(ballerinaInternalLog.toFile()));
+        }
         return exitCode;
     }
 
