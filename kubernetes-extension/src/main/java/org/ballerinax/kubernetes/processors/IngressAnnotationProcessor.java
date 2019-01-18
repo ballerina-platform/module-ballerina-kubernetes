@@ -182,13 +182,12 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
             IngressConfiguration ingressConfiguration =
                     IngressConfiguration.valueOf(keyValue.getKey().toString());
-            String annotationValue = resolveValue(keyValue.getValue().toString());
             switch (ingressConfiguration) {
                 case name:
-                    ingressModel.setName(getValidName(annotationValue));
+                    ingressModel.setName(getValidName(resolveValue(keyValue.getValue().toString())));
                     break;
                 case namespace:
-                    ingressModel.setNamespace(getValidName(annotationValue));
+                    ingressModel.setNamespace(getValidName(resolveValue(keyValue.getValue().toString())));
                     break;
                 case labels:
                     ingressModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
@@ -198,19 +197,19 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
                             .keyValuePairs));
                     break;
                 case hostname:
-                    ingressModel.setHostname(annotationValue);
+                    ingressModel.setHostname(resolveValue(keyValue.getValue().toString()));
                     break;
                 case path:
-                    ingressModel.setPath(annotationValue);
+                    ingressModel.setPath(resolveValue(keyValue.getValue().toString()));
                     break;
                 case targetPath:
-                    ingressModel.setTargetPath(annotationValue);
+                    ingressModel.setTargetPath(resolveValue(keyValue.getValue().toString()));
                     break;
                 case ingressClass:
-                    ingressModel.setIngressClass(annotationValue);
+                    ingressModel.setIngressClass(resolveValue(keyValue.getValue().toString()));
                     break;
                 case enableTLS:
-                    ingressModel.setEnableTLS(Boolean.parseBoolean(annotationValue));
+                    ingressModel.setEnableTLS(Boolean.parseBoolean(resolveValue(keyValue.getValue().toString())));
                     break;
                 default:
                     break;

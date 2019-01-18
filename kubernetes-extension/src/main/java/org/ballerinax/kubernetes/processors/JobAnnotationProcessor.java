@@ -50,13 +50,13 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
             JobConfiguration jobConfiguration =
                     JobConfiguration.valueOf(keyValue.getKey().toString());
-            String annotationValue = resolveValue(keyValue.getValue().toString());
             switch (jobConfiguration) {
                 case name:
-                    jobModel.setName(getValidName(annotationValue));
+                    jobModel.setName(getValidName(resolveValue(keyValue.getValue().toString())));
                     break;
                 case namespace:
-                    KubernetesContext.getInstance().getDataHolder().setNamespace(annotationValue);
+                    KubernetesContext.getInstance().getDataHolder().setNamespace(resolveValue(
+                            keyValue.getValue().toString()));
                     break;
                 case labels:
                     jobModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
@@ -65,52 +65,53 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
                     jobModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
                 case restartPolicy:
-                    jobModel.setRestartPolicy(KubernetesConstants.RestartPolicy.valueOf(annotationValue).name());
+                    jobModel.setRestartPolicy(KubernetesConstants.RestartPolicy.valueOf(resolveValue(
+                            keyValue.getValue().toString())).name());
                     break;
                 case backoffLimit:
-                    jobModel.setBackoffLimit(Integer.parseInt(annotationValue));
+                    jobModel.setBackoffLimit(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
                     break;
                 case activeDeadlineSeconds:
-                    jobModel.setActiveDeadlineSeconds(Integer.parseInt(annotationValue));
+                    jobModel.setActiveDeadlineSeconds(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
                     break;
                 case schedule:
-                    jobModel.setSchedule(annotationValue);
+                    jobModel.setSchedule(resolveValue(keyValue.getValue().toString()));
                     break;
                 case username:
-                    jobModel.setUsername(annotationValue);
+                    jobModel.setUsername(resolveValue(keyValue.getValue().toString()));
                     break;
                 case env:
                     jobModel.setEnv(getEnvVarMap(keyValue.getValue()));
                     break;
                 case password:
-                    jobModel.setPassword(annotationValue);
+                    jobModel.setPassword(resolveValue(keyValue.getValue().toString()));
                     break;
                 case baseImage:
-                    jobModel.setBaseImage(annotationValue);
+                    jobModel.setBaseImage(resolveValue(keyValue.getValue().toString()));
                     break;
                 case push:
-                    jobModel.setPush(Boolean.valueOf(annotationValue));
+                    jobModel.setPush(Boolean.valueOf(resolveValue(keyValue.getValue().toString())));
                     break;
                 case buildImage:
-                    jobModel.setBuildImage(Boolean.valueOf(annotationValue));
+                    jobModel.setBuildImage(Boolean.valueOf(resolveValue(keyValue.getValue().toString())));
                     break;
                 case image:
-                    jobModel.setImage(annotationValue);
+                    jobModel.setImage(resolveValue(keyValue.getValue().toString()));
                     break;
                 case dockerHost:
-                    jobModel.setDockerHost(annotationValue);
+                    jobModel.setDockerHost(resolveValue(keyValue.getValue().toString()));
                     break;
                 case dockerCertPath:
-                    jobModel.setDockerCertPath(annotationValue);
+                    jobModel.setDockerCertPath(resolveValue(keyValue.getValue().toString()));
                     break;
                 case imagePullPolicy:
-                    jobModel.setImagePullPolicy(annotationValue);
+                    jobModel.setImagePullPolicy(resolveValue(keyValue.getValue().toString()));
                     break;
                 case copyFiles:
                     jobModel.setCopyFiles(getExternalFileMap(keyValue));
                     break;
                 case singleYAML:
-                    jobModel.setSingleYAML(Boolean.valueOf(annotationValue));
+                    jobModel.setSingleYAML(Boolean.valueOf(resolveValue(keyValue.getValue().toString())));
                     break;
                 case imagePullSecrets:
                     jobModel.setImagePullSecrets(getImagePullSecrets(keyValue));

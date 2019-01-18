@@ -62,5 +62,5 @@ type HotDrink record {
     string name;
     string description;
     float price;
-    !...
+    !...;
 };

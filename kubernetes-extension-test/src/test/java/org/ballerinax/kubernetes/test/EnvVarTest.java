@@ -31,7 +31,9 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
@@ -72,6 +74,42 @@ public class EnvVarTest {
         Assert.assertEquals(envVars.get(1).getName(), "city", "Invalid environment variable name found.");
         Assert.assertEquals(envVars.get(1).getValue(), "COLOMBO", "Invalid environment variable value found.");
     
+        KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesTestUtils.deleteDockerImage(dockerImage);
+    }
+    
+    /**
+     * Build bal file with deployment having name value environment variables having build environment variable.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
+     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
+     */
+    @Test
+    public void nameValueBuildEnvVarTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
+        Map<String, String> bRunEnvVar = new HashMap<>();
+        bRunEnvVar.put("DATABASE_PASSWORD", "root");
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "build_name_value.bal", bRunEnvVar),
+                0);
+        
+        // Check if docker image exists and correct
+        validateDockerfile();
+        validateDockerImage();
+        
+        // Validate deployment yaml
+        File deploymentYAML = Paths.get(targetPath).resolve("build_name_value_deployment.yaml").toFile();
+        Assert.assertTrue(deploymentYAML.exists());
+        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        List<EnvVar> envVars = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
+        Assert.assertEquals(envVars.size(), 3, "Invalid number of environment variables found.");
+        Assert.assertEquals(envVars.get(0).getName(), "location", "Invalid environment variable name found.");
+        Assert.assertEquals(envVars.get(0).getValue(), "SL", "Invalid environment variable value found.");
+        Assert.assertEquals(envVars.get(1).getName(), "city", "Invalid environment variable name found.");
+        Assert.assertEquals(envVars.get(1).getValue(), "COLOMBO", "Invalid environment variable value found.");
+        Assert.assertEquals(envVars.get(2).getName(), "DATABASE_PASSWORD", "Invalid environment variable name found.");
+        Assert.assertEquals(envVars.get(2).getValue(), "root", "Invalid environment variable value found.");
+        
         KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(dockerImage);
     }

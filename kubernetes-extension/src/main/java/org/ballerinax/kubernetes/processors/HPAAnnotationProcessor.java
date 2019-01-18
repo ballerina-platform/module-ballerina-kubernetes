@@ -46,13 +46,12 @@ public class HPAAnnotationProcessor extends AbstractAnnotationProcessor {
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
             PodAutoscalerConfiguration podAutoscalerConfiguration =
                     PodAutoscalerConfiguration.valueOf(keyValue.getKey().toString());
-            String annotationValue = resolveValue(keyValue.getValue().toString());
             switch (podAutoscalerConfiguration) {
                 case name:
-                    podAutoscalerModel.setName(getValidName(annotationValue));
+                    podAutoscalerModel.setName(getValidName(resolveValue(keyValue.getValue().toString())));
                     break;
                 case namespace:
-                    podAutoscalerModel.setNamespace(annotationValue);
+                    podAutoscalerModel.setNamespace(resolveValue(keyValue.getValue().toString()));
                     break;
                 case labels:
                     podAutoscalerModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
@@ -61,13 +60,13 @@ public class HPAAnnotationProcessor extends AbstractAnnotationProcessor {
                     podAutoscalerModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
                 case cpuPercentage:
-                    podAutoscalerModel.setCpuPercentage(Integer.parseInt(annotationValue));
+                    podAutoscalerModel.setCpuPercentage(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
                     break;
                 case minReplicas:
-                    podAutoscalerModel.setMinReplicas(Integer.parseInt(annotationValue));
+                    podAutoscalerModel.setMinReplicas(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
                     break;
                 case maxReplicas:
-                    podAutoscalerModel.setMaxReplicas(Integer.parseInt(annotationValue));
+                    podAutoscalerModel.setMaxReplicas(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
                     break;
                 default:
                     break;
