@@ -89,7 +89,8 @@ public class EnvVarTest {
     public void nameValueBuildEnvVarTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Map<String, String> bRunEnvVar = new HashMap<>();
-        bRunEnvVar.put("DATABASE_PASSWORD", "root");
+        bRunEnvVar.put("DATABASE_USERNAME", "root");
+        bRunEnvVar.put("DATABASE_PASSWORD", "rootpwd");
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "build_name_value.bal", bRunEnvVar),
                 0);
         
@@ -102,13 +103,15 @@ public class EnvVarTest {
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
         List<EnvVar> envVars = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
-        Assert.assertEquals(envVars.size(), 3, "Invalid number of environment variables found.");
+        Assert.assertEquals(envVars.size(), 4, "Invalid number of environment variables found.");
         Assert.assertEquals(envVars.get(0).getName(), "location", "Invalid environment variable name found.");
         Assert.assertEquals(envVars.get(0).getValue(), "SL", "Invalid environment variable value found.");
         Assert.assertEquals(envVars.get(1).getName(), "city", "Invalid environment variable name found.");
         Assert.assertEquals(envVars.get(1).getValue(), "COLOMBO", "Invalid environment variable value found.");
-        Assert.assertEquals(envVars.get(2).getName(), "DATABASE_PASSWORD", "Invalid environment variable name found.");
+        Assert.assertEquals(envVars.get(2).getName(), "DATABASE_USERNAME", "Invalid environment variable name found.");
         Assert.assertEquals(envVars.get(2).getValue(), "root", "Invalid environment variable value found.");
+        Assert.assertEquals(envVars.get(3).getName(), "DATABASE_PASSWORD", "Invalid environment variable name found.");
+        Assert.assertEquals(envVars.get(3).getValue(), "rootpwd", "Invalid environment variable value found.");
         
         KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(dockerImage);
