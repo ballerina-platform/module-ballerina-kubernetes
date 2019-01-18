@@ -72,13 +72,14 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
                         for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
                             ConfigMapMountConfig volumeMountConfig =
                                     ConfigMapMountConfig.valueOf(annotation.getKey().toString());
-                            String annotationValue = resolveValue(annotation.getValue().toString());
                             switch (volumeMountConfig) {
                                 case name:
-                                    configMapModel.setName(getValidName(annotationValue));
+                                    configMapModel.setName(getValidName(resolveValue(
+                                            annotation.getValue().toString())));
                                     break;
                                 case namespace:
-                                    configMapModel.setNamespace(getValidName(annotationValue));
+                                    configMapModel.setNamespace(getValidName(resolveValue(
+                                            annotation.getValue().toString())));
                                     break;
                                 case labels:
                                     configMapModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr)
@@ -90,7 +91,7 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
                                     break;
                                 case mountPath:
                                     // validate mount path is not set to ballerina home or ballerina runtime
-                                    final Path mountPath = Paths.get(annotationValue);
+                                    final Path mountPath = Paths.get(resolveValue(annotation.getValue().toString()));
                                     final Path homePath = Paths.get(BALLERINA_HOME);
                                     final Path runtimePath = Paths.get(BALLERINA_RUNTIME);
                                     final Path confPath = Paths.get(BALLERINA_CONF_MOUNT_PATH);
@@ -109,14 +110,15 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
                                                 "cannot be" +
                                                 " ballerina conf file mount path: " + BALLERINA_CONF_MOUNT_PATH);
                                     }
-                                    configMapModel.setMountPath(annotationValue);
+                                    configMapModel.setMountPath(resolveValue(annotation.getValue().toString()));
                                     break;
                                 case data:
                                     List<BLangExpression> data = ((BLangArrayLiteral) annotation.valueExpr).exprs;
                                     configMapModel.setData(getDataForConfigMap(data));
                                     break;
                                 case readOnly:
-                                    configMapModel.setReadOnly(Boolean.parseBoolean(annotationValue));
+                                    configMapModel.setReadOnly(Boolean.parseBoolean(resolveValue(
+                                            annotation.getValue().toString())));
                                     break;
                                 default:
                                     break;

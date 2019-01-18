@@ -314,7 +314,8 @@ public class KubernetesUtils {
      * @param envVarValues Value of env field of Deployment annotation.
      * @return A map of env var models.
      */
-    public static Map<String, EnvVarValueModel> getEnvVarMap(BLangExpression envVarValues) {
+    public static Map<String, EnvVarValueModel> getEnvVarMap(BLangExpression envVarValues)
+            throws KubernetesPluginException {
         Map<String, EnvVarValueModel> envVarMap = new LinkedHashMap<>();
         if (envVarValues.getKind() == NodeKind.RECORD_LITERAL_EXPR && envVarValues instanceof BLangRecordLiteral) {
             for (BLangRecordLiteral.BLangRecordKeyValue envVar : ((BLangRecordLiteral) envVarValues).keyValuePairs) {
@@ -323,7 +324,7 @@ public class KubernetesUtils {
                 if (envVar.getValue().getKind() == NodeKind.LITERAL) {
                     // Value is a string
                     BLangLiteral value = (BLangLiteral) envVar.getValue();
-                    envVarValue = new EnvVarValueModel(value.toString());
+                    envVarValue = new EnvVarValueModel(resolveValue(value.toString()));
                 } else if (envVar.getValue().getKind() == NodeKind.RECORD_LITERAL_EXPR) {
                     BLangRecordLiteral valueFrom = (BLangRecordLiteral) envVar.getValue();
                     BLangRecordLiteral.BLangRecordKeyValue bRefType = valueFrom.getKeyValuePairs().get(0);

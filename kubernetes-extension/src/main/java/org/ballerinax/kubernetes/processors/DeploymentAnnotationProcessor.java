@@ -73,13 +73,13 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
             DeploymentConfiguration deploymentConfiguration =
                     DeploymentConfiguration.valueOf(keyValue.getKey().toString());
-            String annotationValue = resolveValue(keyValue.getValue().toString());
             switch (deploymentConfiguration) {
                 case name:
-                    deploymentModel.setName(getValidName(annotationValue));
+                    deploymentModel.setName(getValidName(resolveValue(keyValue.getValue().toString())));
                     break;
                 case namespace:
-                    KubernetesContext.getInstance().getDataHolder().setNamespace(annotationValue);
+                    KubernetesContext.getInstance().getDataHolder().setNamespace(resolveValue(
+                            keyValue.getValue().toString()));
                     break;
                 case labels:
                     deploymentModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
@@ -91,55 +91,56 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                     deploymentModel.setPodAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
                 case enableLiveness:
-                    deploymentModel.setEnableLiveness(Boolean.valueOf(annotationValue));
+                    deploymentModel.setEnableLiveness(Boolean.valueOf(resolveValue(keyValue.getValue().toString())));
                     break;
                 case livenessPort:
-                    deploymentModel.setLivenessPort(Integer.parseInt(annotationValue));
+                    deploymentModel.setLivenessPort(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
                     break;
                 case initialDelaySeconds:
-                    deploymentModel.setInitialDelaySeconds(Integer.parseInt(annotationValue));
+                    deploymentModel.setInitialDelaySeconds(Integer.parseInt(resolveValue(
+                            keyValue.getValue().toString())));
                     break;
                 case periodSeconds:
-                    deploymentModel.setPeriodSeconds(Integer.parseInt(annotationValue));
+                    deploymentModel.setPeriodSeconds(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
                     break;
                 case username:
-                    deploymentModel.setUsername(annotationValue);
+                    deploymentModel.setUsername(resolveValue(keyValue.getValue().toString()));
                     break;
                 case env:
                     deploymentModel.setEnv(getEnvVarMap(keyValue.getValue()));
                     break;
                 case password:
-                    deploymentModel.setPassword(annotationValue);
+                    deploymentModel.setPassword(resolveValue(keyValue.getValue().toString()));
                     break;
                 case baseImage:
-                    deploymentModel.setBaseImage(annotationValue);
+                    deploymentModel.setBaseImage(resolveValue(keyValue.getValue().toString()));
                     break;
                 case push:
-                    deploymentModel.setPush(Boolean.valueOf(annotationValue));
+                    deploymentModel.setPush(Boolean.valueOf(resolveValue(keyValue.getValue().toString())));
                     break;
                 case buildImage:
-                    deploymentModel.setBuildImage(Boolean.valueOf(annotationValue));
+                    deploymentModel.setBuildImage(Boolean.valueOf(resolveValue(keyValue.getValue().toString())));
                     break;
                 case image:
-                    deploymentModel.setImage(annotationValue);
+                    deploymentModel.setImage(resolveValue(keyValue.getValue().toString()));
                     break;
                 case dockerHost:
-                    deploymentModel.setDockerHost(annotationValue);
+                    deploymentModel.setDockerHost(resolveValue(keyValue.getValue().toString()));
                     break;
                 case dockerCertPath:
-                    deploymentModel.setDockerCertPath(annotationValue);
+                    deploymentModel.setDockerCertPath(resolveValue(keyValue.getValue().toString()));
                     break;
                 case imagePullPolicy:
-                    deploymentModel.setImagePullPolicy(annotationValue);
+                    deploymentModel.setImagePullPolicy(resolveValue(keyValue.getValue().toString()));
                     break;
                 case replicas:
-                    deploymentModel.setReplicas(Integer.parseInt(annotationValue));
+                    deploymentModel.setReplicas(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
                     break;
                 case copyFiles:
                     deploymentModel.setCopyFiles(getExternalFileMap(keyValue));
                     break;
                 case singleYAML:
-                    deploymentModel.setSingleYAML(Boolean.valueOf(annotationValue));
+                    deploymentModel.setSingleYAML(Boolean.valueOf(resolveValue(keyValue.getValue().toString())));
                     break;
                 case dependsOn:
                     deploymentModel.setDependsOn(getDependsOn(keyValue));

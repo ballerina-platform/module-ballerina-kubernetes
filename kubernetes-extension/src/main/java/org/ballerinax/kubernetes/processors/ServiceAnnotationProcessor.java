@@ -115,13 +115,12 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
             ServiceConfiguration serviceConfiguration =
                     ServiceConfiguration.valueOf(keyValue.getKey().toString());
-            String annotationValue = resolveValue(keyValue.getValue().toString());
             switch (serviceConfiguration) {
                 case name:
-                    serviceModel.setName(getValidName(annotationValue));
+                    serviceModel.setName(getValidName(resolveValue(keyValue.getValue().toString())));
                     break;
                 case namespace:
-                    serviceModel.setNamespace(annotationValue);
+                    serviceModel.setNamespace(resolveValue(keyValue.getValue().toString()));
                     break;
                 case labels:
                     serviceModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
@@ -130,13 +129,14 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
                     serviceModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
                 case serviceType:
-                    serviceModel.setServiceType(KubernetesConstants.ServiceType.valueOf(annotationValue).name());
+                    serviceModel.setServiceType(KubernetesConstants.ServiceType.valueOf(resolveValue(
+                            keyValue.getValue().toString())).name());
                     break;
                 case port:
-                    serviceModel.setPort(Integer.parseInt(annotationValue));
+                    serviceModel.setPort(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
                     break;
                 case sessionAffinity:
-                    serviceModel.setSessionAffinity(annotationValue);
+                    serviceModel.setSessionAffinity(resolveValue(keyValue.getValue().toString()));
                     break;
                 default:
                     break;

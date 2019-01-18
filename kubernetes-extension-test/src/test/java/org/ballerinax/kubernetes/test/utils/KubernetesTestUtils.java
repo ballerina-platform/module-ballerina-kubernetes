@@ -36,6 +36,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -136,7 +137,8 @@ public class KubernetesTestUtils {
      * @throws InterruptedException if an error occurs while compiling
      * @throws IOException          if an error occurs while writing file
      */
-    public static int compileBallerinaFile(String sourceDirectory, String fileName) throws InterruptedException,
+    public static int compileBallerinaFile(String sourceDirectory, String fileName, Map<String, String> envVar)
+            throws InterruptedException,
             IOException {
         ProcessBuilder pb = new ProcessBuilder(BALLERINA_COMMAND, BUILD, fileName);
         log.info(COMPILING + sourceDirectory + File.separator + fileName);
@@ -144,6 +146,7 @@ public class KubernetesTestUtils {
         pb.directory(new File(sourceDirectory));
         Map<String, String> environment = pb.environment();
         addJavaAgents(environment);
+        environment.putAll(envVar);
         
         Process process = pb.start();
         int exitCode = process.waitFor();
@@ -157,6 +160,20 @@ public class KubernetesTestUtils {
             log.info(FileUtils.getContentsAsString(ballerinaInternalLog.toFile()));
         }
         return exitCode;
+    }
+    
+    /**
+     * Compile a ballerina file in a given directory
+     *
+     * @param sourceDirectory Ballerina source directory
+     * @param fileName        Ballerina source file name
+     * @return Exit code
+     * @throws InterruptedException if an error occurs while compiling
+     * @throws IOException          if an error occurs while writing file
+     */
+    public static int compileBallerinaFile(String sourceDirectory, String fileName) throws InterruptedException,
+            IOException {
+        return compileBallerinaFile(sourceDirectory, fileName, new HashMap<>());
     }
 
     /**
