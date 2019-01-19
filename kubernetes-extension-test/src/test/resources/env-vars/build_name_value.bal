@@ -34,6 +34,7 @@ listener http:Listener pizzaEP = new(9099);
     env: {
         "location": "SL",
         "city": "COLOMBO",
+        "DATABASE_USERNAME": "$env{DATABASE_USERNAME}",
         "DATABASE_PASSWORD": "$env{DATABASE_PASSWORD}"
     },
     singleYAML: false
