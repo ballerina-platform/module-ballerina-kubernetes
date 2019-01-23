@@ -72,6 +72,8 @@ public class KubernetesConstants {
     public static final String ISTIO_GATEWAY_SELECTOR = "istio";
     public static final String ISTIO_GATEWAY_POSTFIX = "-istio-gw";
     public static final String ISTIO_VIRTUAL_SERVICE_POSTFIX = "-istio-vs";
+    public static final String OPENSHIFT_BUILD_CONFIG_POSTFIX = "-openshift-bc";
+    public static final String OPENSHIFT_ROUTE_POSTFIX = "-openshift-bc";
 
     /**
      * Restart policy enum.

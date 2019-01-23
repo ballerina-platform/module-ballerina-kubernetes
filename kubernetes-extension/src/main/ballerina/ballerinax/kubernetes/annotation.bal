@@ -673,3 +673,20 @@ public type IstioVirtualServiceConfig record {
 
 # @kubernetes:IstioVirtualService annotation to generate istio virtual service.
 public annotation<service, listener> IstioVirtualService IstioVirtualServiceConfig;
+
+public type OpenShiftBuildConfigConfiguration record {
+    *Metadata;
+    boolean generateImageStream = true;
+    !...;
+};
+
+public annotation<service, listener, function> OpenShiftBuildConfig OpenShiftBuildConfigConfiguration;
+
+public type OpenShiftRouteConfiguration record {
+    *Metadata;
+    string host;
+    string domain;
+    !...;
+};
+
+public annotation<service, listener> OpenShiftRoute OpenShiftRouteConfiguration;

@@ -21,6 +21,8 @@ package org.ballerinax.kubernetes.models;
 import org.ballerinax.docker.generator.models.DockerModel;
 import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
 import org.ballerinax.kubernetes.models.istio.IstioVirtualServiceModel;
+import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildConfigModel;
+import org.ballerinax.kubernetes.models.openshift.OpenShiftRouteModel;
 
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -46,6 +48,8 @@ public class KubernetesDataHolder {
     private Set<ResourceQuotaModel> resourceQuotaModels;
     private Map<String, IstioGatewayModel> istioGatewayModels;
     private Map<String, IstioVirtualServiceModel> istioVirtualServiceModels;
+    private Set<OpenShiftBuildConfigModel> openShiftBuildConfigModels;
+    private Set<OpenShiftRouteModel> openShiftRouteModels;
     private JobModel jobModel;
     private String balxFilePath;
     private String outputDir;
@@ -216,5 +220,21 @@ public class KubernetesDataHolder {
     
     public void addIstioVirtualServiceModel(String serviceName, IstioVirtualServiceModel istioVirtualServiceModel) {
         this.istioVirtualServiceModels.put(serviceName, istioVirtualServiceModel);
+    }
+    
+    public Set<OpenShiftBuildConfigModel> getOpenShiftBuildConfigModels() {
+        return this.openShiftBuildConfigModels;
+    }
+    
+    public void addOpenShiftBuildConfigModel(OpenShiftBuildConfigModel openShiftBuildConfigModel) {
+        this.openShiftBuildConfigModels.add(openShiftBuildConfigModel);
+    }
+    
+    public Set<OpenShiftRouteModel> getOpenShiftRouteModels() {
+        return this.openShiftRouteModels;
+    }
+    
+    public void addOpenShiftRouteModel(OpenShiftRouteModel openShiftRouteModel) {
+        this.openShiftRouteModels.add(openShiftRouteModel);
     }
 }
