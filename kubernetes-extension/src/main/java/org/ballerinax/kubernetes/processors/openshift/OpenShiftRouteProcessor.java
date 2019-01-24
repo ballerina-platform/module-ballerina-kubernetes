@@ -37,7 +37,7 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
- *
+ * Annotation processor for OpenShift's Route.
  */
 public class OpenShiftRouteProcessor extends AbstractAnnotationProcessor {
     @Override
@@ -51,7 +51,8 @@ public class OpenShiftRouteProcessor extends AbstractAnnotationProcessor {
             openShiftRoute.setName(getValidName(serviceNode.getName().getValue()) + OPENSHIFT_ROUTE_POSTFIX);
         }
         
-        KubernetesContext.getInstance().getDataHolder().addOpenShiftRouteModel(openShiftRoute);
+        KubernetesContext.getInstance().getDataHolder().addOpenShiftRouteModel(serviceNode.getName().getValue(),
+                openShiftRoute);
     }
     
     @Override
@@ -65,7 +66,8 @@ public class OpenShiftRouteProcessor extends AbstractAnnotationProcessor {
             openShiftRoute.setName(getValidName(variableNode.getName().getValue()) + OPENSHIFT_ROUTE_POSTFIX);
         }
     
-        KubernetesContext.getInstance().getDataHolder().addOpenShiftRouteModel(openShiftRoute);
+        KubernetesContext.getInstance().getDataHolder().addOpenShiftRouteModel(variableNode.getName().getValue(),
+                openShiftRoute);
     }
     
     /**
@@ -97,7 +99,7 @@ public class OpenShiftRouteProcessor extends AbstractAnnotationProcessor {
                     openShiftRoute.setHost(resolveValue(bcField.getValue().toString()));
                     break;
                 case domain:
-                    openShiftRoute.setHost(resolveValue(bcField.getValue().toString()));
+                    openShiftRoute.setDomain(resolveValue(bcField.getValue().toString()));
                     break;
                 default:
                     throw new KubernetesPluginException("Unknown field found for OpenShiftRoute annotation.");

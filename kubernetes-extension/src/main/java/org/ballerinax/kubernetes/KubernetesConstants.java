@@ -48,6 +48,9 @@ public class KubernetesConstants {
     public static final String RESOURCE_QUOTA_FILE_POSTFIX = "_resource_quota";
     public static final String ISTIO_GATEWAY_FILE_POSTFIX = "_istio_gateway";
     public static final String ISTIO_VIRTUAL_SERVICE_FILE_POSTFIX = "_istio_virtual_service";
+    public static final String OPENSHIFT_BUILD_CONFIG_FILE_POSTFIX = "_openshift_bc";
+    public static final String OPENSHIFT_IMAGE_STREAM_TAG_FILE_POSTFIX = "_openshift_is";
+    public static final String OPENSHIFT_ROUTE_FILE_POSTFIX = "_openshift_route";
     public static final String HPA_FILE_POSTFIX = "_hpa";
     public static final String YAML = ".yaml";
     public static final String DOCKER_LATEST_TAG = ":latest";
