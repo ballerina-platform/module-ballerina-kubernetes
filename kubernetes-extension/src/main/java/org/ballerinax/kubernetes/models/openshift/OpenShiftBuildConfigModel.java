@@ -21,7 +21,7 @@ package org.ballerinax.kubernetes.models.openshift;
 import org.ballerinax.kubernetes.models.KubernetesModel;
 
 /**
- *
+ * Model class for OpenShift's Build Configs.
  */
 public class OpenShiftBuildConfigModel extends KubernetesModel {
     private boolean generateImageStream = false;

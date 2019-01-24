@@ -21,7 +21,7 @@ package org.ballerinax.kubernetes.models.openshift;
 import org.ballerinax.kubernetes.models.KubernetesModel;
 
 /**
- *
+ * Model class for OpenShift's Routes.
  */
 public class OpenShiftRouteModel extends KubernetesModel {
     private String host;

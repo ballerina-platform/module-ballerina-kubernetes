@@ -48,8 +48,8 @@ public class KubernetesDataHolder {
     private Set<ResourceQuotaModel> resourceQuotaModels;
     private Map<String, IstioGatewayModel> istioGatewayModels;
     private Map<String, IstioVirtualServiceModel> istioVirtualServiceModels;
-    private Set<OpenShiftBuildConfigModel> openShiftBuildConfigModels;
-    private Set<OpenShiftRouteModel> openShiftRouteModels;
+    private Map<String, OpenShiftBuildConfigModel> openShiftBuildConfigModels;
+    private Map<String, OpenShiftRouteModel> openShiftRouteModels;
     private JobModel jobModel;
     private String balxFilePath;
     private String outputDir;
@@ -68,6 +68,8 @@ public class KubernetesDataHolder {
         this.resourceQuotaModels = new HashSet<>();
         this.istioGatewayModels = new LinkedHashMap<>();
         this.istioVirtualServiceModels = new LinkedHashMap<>();
+        this.openShiftBuildConfigModels = new LinkedHashMap<>();
+        this.openShiftRouteModels = new LinkedHashMap<>();
     }
     
     public Path getSourceRoot() {
@@ -222,19 +224,19 @@ public class KubernetesDataHolder {
         this.istioVirtualServiceModels.put(serviceName, istioVirtualServiceModel);
     }
     
-    public Set<OpenShiftBuildConfigModel> getOpenShiftBuildConfigModels() {
+    public Map<String, OpenShiftBuildConfigModel> getOpenShiftBuildConfigModels() {
         return this.openShiftBuildConfigModels;
     }
     
-    public void addOpenShiftBuildConfigModel(OpenShiftBuildConfigModel openShiftBuildConfigModel) {
-        this.openShiftBuildConfigModels.add(openShiftBuildConfigModel);
+    public void addOpenShiftBuildConfigModel(String serviceName, OpenShiftBuildConfigModel openShiftBuildConfigModel) {
+        this.openShiftBuildConfigModels.put(serviceName, openShiftBuildConfigModel);
     }
     
-    public Set<OpenShiftRouteModel> getOpenShiftRouteModels() {
+    public Map<String, OpenShiftRouteModel> getOpenShiftRouteModels() {
         return this.openShiftRouteModels;
     }
     
-    public void addOpenShiftRouteModel(OpenShiftRouteModel openShiftRouteModel) {
-        this.openShiftRouteModels.add(openShiftRouteModel);
+    public void addOpenShiftRouteModel(String serviceName, OpenShiftRouteModel openShiftRouteModel) {
+        this.openShiftRouteModels.put(serviceName, openShiftRouteModel);
     }
 }

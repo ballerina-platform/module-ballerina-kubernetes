@@ -32,6 +32,9 @@ import org.ballerinax.kubernetes.handlers.SecretHandler;
 import org.ballerinax.kubernetes.handlers.ServiceHandler;
 import org.ballerinax.kubernetes.handlers.istio.IstioGatewayHandler;
 import org.ballerinax.kubernetes.handlers.istio.IstioVirtualServiceHandler;
+import org.ballerinax.kubernetes.handlers.openshift.OpenShiftBuildConfigHandler;
+import org.ballerinax.kubernetes.handlers.openshift.OpenShiftImageStreamHandler;
+import org.ballerinax.kubernetes.handlers.openshift.OpenShiftRouteHandler;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
@@ -81,6 +84,9 @@ class ArtifactManager {
         new HelmChartHandler().createArtifacts();
         new IstioGatewayHandler().createArtifacts();
         new IstioVirtualServiceHandler().createArtifacts();
+        new OpenShiftBuildConfigHandler().createArtifacts();
+        new OpenShiftImageStreamHandler().createArtifacts();
+        new OpenShiftRouteHandler().createArtifacts();
         printKubernetesInstructions(outputDir);
     }
 
