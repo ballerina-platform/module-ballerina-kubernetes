@@ -48,7 +48,7 @@ public class KubernetesDataHolder {
     private Set<ResourceQuotaModel> resourceQuotaModels;
     private Map<String, IstioGatewayModel> istioGatewayModels;
     private Map<String, IstioVirtualServiceModel> istioVirtualServiceModels;
-    private Map<String, OpenShiftBuildConfigModel> openShiftBuildConfigModels;
+    private OpenShiftBuildConfigModel openShiftBuildConfigModel;
     private Map<String, OpenShiftRouteModel> openShiftRouteModels;
     private JobModel jobModel;
     private String balxFilePath;
@@ -68,7 +68,6 @@ public class KubernetesDataHolder {
         this.resourceQuotaModels = new HashSet<>();
         this.istioGatewayModels = new LinkedHashMap<>();
         this.istioVirtualServiceModels = new LinkedHashMap<>();
-        this.openShiftBuildConfigModels = new LinkedHashMap<>();
         this.openShiftRouteModels = new LinkedHashMap<>();
     }
     
@@ -224,12 +223,12 @@ public class KubernetesDataHolder {
         this.istioVirtualServiceModels.put(serviceName, istioVirtualServiceModel);
     }
     
-    public Map<String, OpenShiftBuildConfigModel> getOpenShiftBuildConfigModels() {
-        return this.openShiftBuildConfigModels;
+    public OpenShiftBuildConfigModel getOpenShiftBuildConfigModel() {
+        return openShiftBuildConfigModel;
     }
     
-    public void addOpenShiftBuildConfigModel(String serviceName, OpenShiftBuildConfigModel openShiftBuildConfigModel) {
-        this.openShiftBuildConfigModels.put(serviceName, openShiftBuildConfigModel);
+    public void setOpenShiftBuildConfigModel(OpenShiftBuildConfigModel openShiftBuildConfigModel) {
+        this.openShiftBuildConfigModel = openShiftBuildConfigModel;
     }
     
     public Map<String, OpenShiftRouteModel> getOpenShiftRouteModels() {

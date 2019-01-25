@@ -27,52 +27,47 @@ import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildConfigModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT_BUILD_CONFIG_FILE_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT_IMAGE_STREAM_TAG_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 
 /**
- * Generates OpenShift's Image Streams.
+ * Generates OpenShift's Image Streams using build configs.
  */
 public class OpenShiftImageStreamHandler extends AbstractArtifactHandler {
     @Override
     public void createArtifacts() throws KubernetesPluginException {
-        Map<String, OpenShiftBuildConfigModel> buildConfigModels = dataHolder.getOpenShiftBuildConfigModels();
-        int size = buildConfigModels.size();
-        if (size > 0) {
+        OpenShiftBuildConfigModel buildConfigModel = dataHolder.getOpenShiftBuildConfigModel();
+        if (buildConfigModel.isGenerateImageStream()) {
+            generate(buildConfigModel);
             OUT.println();
-        }
-        Set<OpenShiftBuildConfigModel> imageStreams =
-                buildConfigModels.values().stream()
-                        .filter(OpenShiftBuildConfigModel::isGenerateImageStream)
-                        .collect(Collectors.toSet());
-        int count = 0;
-        for (OpenShiftBuildConfigModel imageStream : imageStreams) {
-            count++;
-            generate(imageStream);
-            OUT.print("\t@kubernetes:OpenShiftImageStream \t\t - complete " + count + "/" + imageStreams.size() +
-                      "\r");
+            OUT.println("\t@kubernetes:OpenShiftImageStream \t\t - complete 1/1");
         }
     }
     
-    private void generate(OpenShiftBuildConfigModel imageStream) throws KubernetesPluginException {
+    private void generate(OpenShiftBuildConfigModel buildConfigModel) throws KubernetesPluginException {
         try {
+            if (null != buildConfigModel.getLabels() && !buildConfigModel.getLabels().containsKey("build")) {
+                buildConfigModel.getLabels().put("build", buildConfigModel.getName());
+            }
+            
+            String dockerImageName = dataHolder.getDockerModel().getName().substring(0,
+                    dataHolder.getDockerModel().getName().indexOf(":"));
             
             ImageStream is = new ImageStreamBuilder()
                     .withNewMetadata()
-                    .withName(imageStream.getName())
-                    .withLabels(imageStream.getLabels())
-                    .withAnnotations(imageStream.getAnnotations())
+                    .withName(dockerImageName)
+                    .withLabels(buildConfigModel.getLabels())
+                    .withAnnotations(buildConfigModel.getAnnotations())
+                    .withNamespace(buildConfigModel.getNamespace())
                     .endMetadata()
                     .build();
+            
             String resourceQuotaContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(is);
-            KubernetesUtils.writeToFile(resourceQuotaContent, OPENSHIFT_BUILD_CONFIG_FILE_POSTFIX + YAML);
+            KubernetesUtils.writeToFile(resourceQuotaContent, OPENSHIFT_IMAGE_STREAM_TAG_FILE_POSTFIX + YAML);
         } catch (IOException e) {
-            String errorMessage = "Error while generating yaml file for openshift build config: " +
-                                  imageStream.getName();
+            String errorMessage = "Error while generating OpenShift Image Stream yaml file: " +
+                                  buildConfigModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
     }

@@ -21,17 +21,16 @@ package org.ballerinax.kubernetes.handlers.openshift;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import io.fabric8.openshift.api.model.BuildConfig;
 import io.fabric8.openshift.api.model.BuildConfigBuilder;
-import org.ballerinax.docker.generator.utils.DockerGenUtils;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.AbstractArtifactHandler;
 import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildConfigModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Map;
+import java.nio.file.Paths;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
+import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT_BUILD_CONFIG_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 
@@ -41,41 +40,26 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
     @Override
     public void createArtifacts() throws KubernetesPluginException {
-        Map<String, OpenShiftBuildConfigModel> buildConfigModels = dataHolder.getOpenShiftBuildConfigModels();
-        int size = buildConfigModels.size();
-        if (size > 0) {
-            OUT.println();
-        }
-        int count = 0;
-        for (Map.Entry<String, OpenShiftBuildConfigModel> buildConfigModel : buildConfigModels.entrySet()) {
-            count++;
-            generate(buildConfigModel.getValue());
-            OUT.print("\t@kubernetes:OpenShiftBuildConfig \t\t - complete " + count + "/" + buildConfigModels.size() +
-                      "\r");
-        }
+        OpenShiftBuildConfigModel buildConfigModel = dataHolder.getOpenShiftBuildConfigModel();
+        generate(buildConfigModel);
+        OUT.println();
+        OUT.println("\t@kubernetes:OpenShiftBuildConfig \t\t - complete 1/1");
     }
     
     private void generate(OpenShiftBuildConfigModel buildConfigModel) throws KubernetesPluginException {
         try {
-            String balxFileName = KubernetesUtils.extractBalxName(dataHolder.getBalxFilePath());
-    
-            if (!buildConfigModel.getLabels().containsKey("build")) {
-                buildConfigModel.getLabels().put("build", balxFileName);
+            if (null != buildConfigModel.getLabels() && !buildConfigModel.getLabels().containsKey("build")) {
+                buildConfigModel.getLabels().put("build", buildConfigModel.getName());
             }
             
-            String dockerOutputDir = dataHolder.getOutputDir();
-            if (dockerOutputDir.endsWith("target" + File.separator + "kubernetes" + File.separator)) {
-                //Compiling package therefore append balx file dependencies to docker artifact dir path
-                dockerOutputDir = dockerOutputDir + File.separator + DockerGenUtils.extractBalxName(dataHolder
-                        .getBalxFilePath());
-            }
-            dockerOutputDir = dockerOutputDir + File.separator + DOCKER;
+            String dockerOutputDir = Paths.get(KUBERNETES, DOCKER, "Dockerfile").toString();
             
             BuildConfig bc = new BuildConfigBuilder()
                     .withNewMetadata()
                     .withName(buildConfigModel.getName())
                     .withLabels(buildConfigModel.getLabels())
                     .withAnnotations(buildConfigModel.getAnnotations())
+                    .withNamespace(buildConfigModel.getNamespace())
                     .endMetadata()
                     .withNewSpec()
                     .withNewOutput()
@@ -91,15 +75,17 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
                     .withNewStrategy()
                     .withNewDockerStrategy()
                     .withDockerfilePath(dockerOutputDir)
-                    .withNoCache(true)
+                    .withNoCache(buildConfigModel.isForcePullDockerImage())
+                    .withNoCache(buildConfigModel.isBuildDockerWithNoCache())
                     .endDockerStrategy()
                     .endStrategy()
                     .endSpec()
                     .build();
+            
             String resourceQuotaContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(bc);
             KubernetesUtils.writeToFile(resourceQuotaContent, OPENSHIFT_BUILD_CONFIG_FILE_POSTFIX + YAML);
         } catch (IOException e) {
-            String errorMessage = "Error while generating yaml file for openshift build config: " +
+            String errorMessage = "Error while generating OpenShift Build Config yaml file: " +
                                   buildConfigModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }

@@ -131,8 +131,8 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
 
 
     @Override
-    public void codeGenerated(PackageID packageID, Path binaryPath) {
-        KubernetesContext.getInstance().setCurrentPackage(packageID);
+    public void codeGenerated(PackageID moduleID, Path binaryPath) {
+        KubernetesContext.getInstance().setCurrentPackage(moduleID);
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
         if (dataHolder.isCanProcess()) {
             String filePath = binaryPath.toAbsolutePath().toString();
@@ -149,9 +149,9 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                 KubernetesUtils.deleteDirectory(targetPath);
                 artifactManager.populateDeploymentModel();
                 validateDeploymentDependencies();
-                artifactManager.createArtifacts();
+                artifactManager.createArtifacts(moduleID);
             } catch (KubernetesPluginException e) {
-                String errorMessage = "package [" + packageID + "] " + e.getMessage();
+                String errorMessage = "module [" + moduleID + "] " + e.getMessage();
                 printError(errorMessage);
                 pluginLog.error(errorMessage, e);
                 try {

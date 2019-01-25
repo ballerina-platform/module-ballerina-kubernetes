@@ -677,9 +677,13 @@ public annotation<service, listener> IstioVirtualService IstioVirtualServiceConf
 # Build Config configuration for @kubernetes:OpenShiftBuildConfig.
 #
 # + generateImageStream - Generate image stream for the generated docker image.
+# + forcePullDockerImage - Set force pull images when building docker image.
+# + buildDockerWithNoCache - Build docker image with no cache enabled.
 public type OpenShiftBuildConfigConfiguration record {
     *Metadata;
     boolean generateImageStream = true;
+    boolean forcePullDockerImage = true;
+    boolean buildDockerWithNoCache = true;
     !...;
 };
 
@@ -688,7 +692,8 @@ public annotation<service, listener, function> OpenShiftBuildConfig OpenShiftBui
 
 # Route configuration for @kubernetes:OpenShiftRoute.
 #
-# + host - The host of the
+# + host - The host of the route.
+# + domain - Domain of the route.
 public type OpenShiftRouteConfiguration record {
     *Metadata;
     string host;
@@ -696,4 +701,5 @@ public type OpenShiftRouteConfiguration record {
     !...;
 };
 
+# @kubernetes:OpenShiftRoute annotation to generate openshift routes.
 public annotation<service, listener> OpenShiftRoute OpenShiftRouteConfiguration;
