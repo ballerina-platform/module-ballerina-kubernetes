@@ -29,7 +29,7 @@ import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import java.io.IOException;
 import java.util.Map;
 
-import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT_BUILD_CONFIG_FILE_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT_ROUTE_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 
 /**
@@ -58,6 +58,7 @@ public class OpenShiftRouteHandler extends AbstractArtifactHandler {
                     .withName(routeModel.getName())
                     .withLabels(routeModel.getLabels())
                     .withAnnotations(routeModel.getAnnotations())
+                    .withNamespace(routeModel.getNamespace())
                     .endMetadata()
                     .withNewSpec()
                     .withHost(routeModel.getName() + "-" + routeModel.getNamespace() + "." + routeModel.getDomain())
@@ -70,9 +71,9 @@ public class OpenShiftRouteHandler extends AbstractArtifactHandler {
                     .build();
             
             String resourceQuotaContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(route);
-            KubernetesUtils.writeToFile(resourceQuotaContent, OPENSHIFT_BUILD_CONFIG_FILE_POSTFIX + YAML);
+            KubernetesUtils.writeToFile(resourceQuotaContent, OPENSHIFT_ROUTE_FILE_POSTFIX + YAML);
         } catch (IOException e) {
-            String errorMessage = "Error while generating yaml file for openshift build config: " +
+            String errorMessage = "Error while generating OpenShift Image Stream yaml file: " +
                                   routeModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }

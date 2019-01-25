@@ -18,6 +18,7 @@
 
 package org.ballerinax.kubernetes;
 
+import org.ballerinalang.model.elements.PackageID;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.ConfigMapHandler;
 import org.ballerinax.kubernetes.handlers.DeploymentHandler;
@@ -41,6 +42,7 @@ import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.File;
+import java.io.PrintStream;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_LATEST_TAG;
@@ -51,7 +53,7 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
  * Generate and write artifacts to files.
  */
 class ArtifactManager {
-
+    private static final PrintStream OUT = System.out;
     private final String outputDir;
     private KubernetesDataHolder kubernetesDataHolder;
 
@@ -64,14 +66,25 @@ class ArtifactManager {
      * Generate kubernetes artifacts.
      *
      * @throws KubernetesPluginException if an error occurs while generating artifacts
+     * @param moduleID Package ID for which the artifacts are created.
      */
-    void createArtifacts() throws KubernetesPluginException {
+    void createArtifacts(PackageID moduleID) throws KubernetesPluginException {
+        // Disable docker build if openshift build configs are there for the package.
+        if (null != kubernetesDataHolder.getOpenShiftBuildConfigModel() &&
+            null != kubernetesDataHolder.getDockerModel() && kubernetesDataHolder.getDockerModel().isBuildImage()) {
+            OUT.println("warning: module [" + moduleID + "] is set to build the docker image. This will be disabled " +
+                        "as the docker image can be built with OpenShift's Build Config");
+            kubernetesDataHolder.getDockerModel().setBuildImage(false);
+            kubernetesDataHolder.getDockerModel().setPush(false);
+        }
+        
         if (kubernetesDataHolder.getJobModel() != null) {
             new JobHandler().createArtifacts();
             new DockerHandler().createArtifacts();
             printKubernetesInstructions(outputDir);
             return;
         }
+        
         new ServiceHandler().createArtifacts();
         new IngressHandler().createArtifacts();
         new SecretHandler().createArtifacts();

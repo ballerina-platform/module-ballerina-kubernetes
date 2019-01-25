@@ -22,7 +22,6 @@ import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.FunctionNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.SimpleVariableNode;
-import org.ballerinax.docker.generator.models.DockerModel;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildConfigModel;
@@ -30,7 +29,6 @@ import org.ballerinax.kubernetes.processors.AbstractAnnotationProcessor;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
-import java.io.PrintStream;
 import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT_BUILD_CONFIG_POSTFIX;
@@ -43,7 +41,6 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
  * Annotation processor for OpenShift's Build Config.
  */
 public class OpenShiftBuildConfigProcessor extends AbstractAnnotationProcessor {
-    private static final PrintStream OUT = System.out;
     @Override
     public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException {
@@ -56,15 +53,12 @@ public class OpenShiftBuildConfigProcessor extends AbstractAnnotationProcessor {
                                          OPENSHIFT_BUILD_CONFIG_POSTFIX);
         }
     
-        DockerModel dockerModel = KubernetesContext.getInstance().getDataHolder().getDockerModel();
-        if (dockerModel.isBuildImage()) {
-            OUT.println("Docker image is set build. This will be disabled as building is provisioned to OpenShift's " +
-                        "Build Config");
-            dockerModel.setBuildImage(false);
-            dockerModel.setPush(false);
+        if (null == KubernetesContext.getInstance().getDataHolder().getOpenShiftBuildConfigModel()) {
+            KubernetesContext.getInstance().getDataHolder().setOpenShiftBuildConfigModel(openShiftBuildConfig);
+        } else {
+            throw new KubernetesPluginException("A module or a ballerina file can only have 1 " +
+                                                "@kubernetes:OpenShiftBuildConfig annotation.");
         }
-        KubernetesContext.getInstance().getDataHolder().addOpenShiftBuildConfigModel(serviceNode.getName().getValue(),
-                openShiftBuildConfig);
     }
     
     @Override
@@ -79,16 +73,12 @@ public class OpenShiftBuildConfigProcessor extends AbstractAnnotationProcessor {
                                          OPENSHIFT_BUILD_CONFIG_POSTFIX);
         }
     
-        DockerModel dockerModel = KubernetesContext.getInstance().getDataHolder().getDockerModel();
-        if (dockerModel.isBuildImage()) {
-            OUT.println("Docker image is set build. This will be disabled as building is provisioned to OpenShift's " +
-                        "Build Config");
-            dockerModel.setBuildImage(false);
-            dockerModel.setPush(false);
+        if (null == KubernetesContext.getInstance().getDataHolder().getOpenShiftBuildConfigModel()) {
+            KubernetesContext.getInstance().getDataHolder().setOpenShiftBuildConfigModel(openShiftBuildConfig);
+        } else {
+            throw new KubernetesPluginException("A module or a ballerina file can only have 1 " +
+                                                "@kubernetes:OpenShiftBuildConfig annotation.");
         }
-        
-        KubernetesContext.getInstance().getDataHolder().addOpenShiftBuildConfigModel(variableNode.getName().getValue(),
-                openShiftBuildConfig);
     }
     
     @Override
@@ -103,16 +93,12 @@ public class OpenShiftBuildConfigProcessor extends AbstractAnnotationProcessor {
                                          OPENSHIFT_BUILD_CONFIG_POSTFIX);
         }
     
-        DockerModel dockerModel = KubernetesContext.getInstance().getDataHolder().getDockerModel();
-        if (dockerModel.isBuildImage()) {
-            OUT.println("Docker image is set build. This will be disabled as building is provisioned to OpenShift's " +
-                        "Build Config");
-            dockerModel.setBuildImage(false);
-            dockerModel.setPush(false);
+        if (null == KubernetesContext.getInstance().getDataHolder().getOpenShiftBuildConfigModel()) {
+            KubernetesContext.getInstance().getDataHolder().setOpenShiftBuildConfigModel(openShiftBuildConfig);
+        } else {
+            throw new KubernetesPluginException("A module or a ballerina file can only have 1 " +
+                                                "@kubernetes:OpenShiftBuildConfig annotation.");
         }
-    
-        KubernetesContext.getInstance().getDataHolder().addOpenShiftBuildConfigModel(functionNode.getName().getValue(),
-                openShiftBuildConfig);
     }
     
     /**
@@ -127,7 +113,7 @@ public class OpenShiftBuildConfigProcessor extends AbstractAnnotationProcessor {
         for (BLangRecordLiteral.BLangRecordKeyValue bcField : bcFields) {
             switch (OpenShiftBuildConfigFields.valueOf(bcField.getKey().toString())) {
                 case name:
-                    openShiftBC.setName(resolveValue(bcField.getValue().toString()));
+                    openShiftBC.setName(getValidName(resolveValue(bcField.getValue().toString())));
                     break;
                 case namespace:
                     openShiftBC.setNamespace(resolveValue(bcField.getValue().toString()));
@@ -143,6 +129,12 @@ public class OpenShiftBuildConfigProcessor extends AbstractAnnotationProcessor {
                 case generateImageStream:
                     openShiftBC.setGenerateImageStream(Boolean.valueOf(resolveValue(bcField.getValue().toString())));
                     break;
+                case forcePullDockerImage:
+                    openShiftBC.setForcePullDockerImage(Boolean.valueOf(resolveValue(bcField.getValue().toString())));
+                    break;
+                case buildDockerWithNoCache:
+                    openShiftBC.setBuildDockerWithNoCache(Boolean.valueOf(resolveValue(bcField.getValue().toString())));
+                    break;
                 default:
                     throw new KubernetesPluginException("Unknown field found for OpenShiftBuildConfig annotation.");
             }
@@ -156,6 +148,8 @@ public class OpenShiftBuildConfigProcessor extends AbstractAnnotationProcessor {
         namespace,
         labels,
         annotations,
-        generateImageStream
+        generateImageStream,
+        forcePullDockerImage,
+        buildDockerWithNoCache
     }
 }

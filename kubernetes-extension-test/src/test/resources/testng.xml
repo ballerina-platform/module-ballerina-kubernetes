@@ -48,6 +48,7 @@
             <class name="org.ballerinax.kubernetes.test.DeploymentTest"/>
             <class name="org.ballerinax.kubernetes.test.IstioGatewayTest"/>
             <class name="org.ballerinax.kubernetes.test.IstioVirtualServiceTest"/>
+            <class name="org.ballerinax.kubernetes.test.OpenShiftBuildConfigTest"/>
         </classes>
     </test>
 
