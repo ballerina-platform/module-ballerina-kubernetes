@@ -128,4 +128,8 @@ class ArtifactManager {
                 " " + new File(outputDir + File.separator + model.getName()).getAbsolutePath());
         KubernetesUtils.printInstruction("");
     }
+    
+    private void printOpenShiftInstructions(String outputDir) {
+        KubernetesUtils.printInstruction("\n\n\tRun the following command to deploy the Kubernetes artifacts: ");
+    }
 }

@@ -67,7 +67,7 @@ public class HelmChartHandler extends AbstractArtifactHandler {
         this.copyKubernetesArtifactsToHelmTemplates(helmTemplatesOutputDir);
         // Create the Chart.yaml
         this.generateChartYAML(helmBaseOutputDir);
-        OUT.print("\t@kubernetes:Helm \t\t\t - complete 1/1");
+        OUT.println("\t@kubernetes:Helm \t\t\t - complete 1/1");
     }
     
     private void copyKubernetesArtifactsToHelmTemplates(String helmTemplatesOutputDir) 

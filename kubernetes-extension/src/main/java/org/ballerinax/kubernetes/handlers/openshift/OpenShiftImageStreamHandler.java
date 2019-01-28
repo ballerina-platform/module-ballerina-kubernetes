@@ -27,6 +27,7 @@ import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildConfigModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT_IMAGE_STREAM_TAG_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
@@ -40,13 +41,13 @@ public class OpenShiftImageStreamHandler extends AbstractArtifactHandler {
         OpenShiftBuildConfigModel buildConfigModel = dataHolder.getOpenShiftBuildConfigModel();
         if (buildConfigModel.isGenerateImageStream()) {
             generate(buildConfigModel);
-            OUT.println();
             OUT.println("\t@kubernetes:OpenShiftImageStream \t\t - complete 1/1");
         }
     }
     
     private void generate(OpenShiftBuildConfigModel buildConfigModel) throws KubernetesPluginException {
         try {
+            buildConfigModel.setLabels(new LinkedHashMap<>());
             if (null != buildConfigModel.getLabels() && !buildConfigModel.getLabels().containsKey("build")) {
                 buildConfigModel.getLabels().put("build", buildConfigModel.getName());
             }
