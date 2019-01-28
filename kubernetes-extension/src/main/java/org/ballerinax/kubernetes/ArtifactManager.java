@@ -18,7 +18,6 @@
 
 package org.ballerinax.kubernetes;
 
-import org.ballerinalang.model.elements.PackageID;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.ConfigMapHandler;
 import org.ballerinax.kubernetes.handlers.DeploymentHandler;
@@ -42,7 +41,6 @@ import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.File;
-import java.io.PrintStream;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_LATEST_TAG;
@@ -53,7 +51,6 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
  * Generate and write artifacts to files.
  */
 class ArtifactManager {
-    private static final PrintStream OUT = System.out;
     private final String outputDir;
     private KubernetesDataHolder kubernetesDataHolder;
 
@@ -66,18 +63,8 @@ class ArtifactManager {
      * Generate kubernetes artifacts.
      *
      * @throws KubernetesPluginException if an error occurs while generating artifacts
-     * @param moduleID Package ID for which the artifacts are created.
      */
-    void createArtifacts(PackageID moduleID) throws KubernetesPluginException {
-        // Disable docker build if openshift build configs are there for the package.
-        if (null != kubernetesDataHolder.getOpenShiftBuildConfigModel() &&
-            null != kubernetesDataHolder.getDockerModel() && kubernetesDataHolder.getDockerModel().isBuildImage()) {
-            OUT.println("warning: module [" + moduleID + "] is set to build the docker image. This will be disabled " +
-                        "as the docker image can be built with OpenShift's Build Config");
-            kubernetesDataHolder.getDockerModel().setBuildImage(false);
-            kubernetesDataHolder.getDockerModel().setPush(false);
-        }
-        
+    void createArtifacts() throws KubernetesPluginException {
         if (kubernetesDataHolder.getJobModel() != null) {
             new JobHandler().createArtifacts();
             new DockerHandler().createArtifacts();
@@ -101,6 +88,7 @@ class ArtifactManager {
         new OpenShiftImageStreamHandler().createArtifacts();
         new OpenShiftRouteHandler().createArtifacts();
         printKubernetesInstructions(outputDir);
+        printOpenShiftInstructions(outputDir);
     }
 
     public void populateDeploymentModel() {
@@ -118,7 +106,12 @@ class ArtifactManager {
         deploymentModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
         kubernetesDataHolder.setDeploymentModel(deploymentModel);
     }
-
+    
+    /**
+     * Print instructions for kubernetes and helm artifacts.
+     *
+     * @param outputDir The output directory.
+     */
     private void printKubernetesInstructions(String outputDir) {
         KubernetesUtils.printInstruction("\n\n\tRun the following command to deploy the Kubernetes artifacts: ");
         KubernetesUtils.printInstruction("\tkubectl apply -f " + outputDir);
@@ -129,7 +122,29 @@ class ArtifactManager {
         KubernetesUtils.printInstruction("");
     }
     
+    /**
+     * Print the set of instructions for OpenShift.
+     *
+     * @param outputDir Artifact output directory.
+     */
     private void printOpenShiftInstructions(String outputDir) {
-        KubernetesUtils.printInstruction("\n\n\tRun the following command to deploy the Kubernetes artifacts: ");
+        if (null != kubernetesDataHolder.getOpenShiftBuildConfigModel() ||
+            kubernetesDataHolder.getOpenShiftRouteModels().size() != 0) {
+            KubernetesUtils.printInstruction("\tRun the following command to deploy the OpenShift artifacts: ");
+            KubernetesUtils.printInstruction("\toc create -f " + outputDir);
+            if (null != kubernetesDataHolder.getOpenShiftBuildConfigModel()) {
+                KubernetesUtils.printInstruction("\n\tRun the following command to start a build: ");
+                if (outputDir.contains("target")) {
+                    KubernetesUtils.printInstruction("\tcd target && oc start-build bc/" +
+                                                     kubernetesDataHolder.getOpenShiftBuildConfigModel().getName() +
+                                                     " --from-dir=. --follow");
+                } else {
+                    KubernetesUtils.printInstruction("\toc start-build bc/" +
+                                                     kubernetesDataHolder.getOpenShiftBuildConfigModel().getName() +
+                                                     " --from-dir=. --follow");
+                }
+            }
+            KubernetesUtils.printInstruction("");
+        }
     }
 }

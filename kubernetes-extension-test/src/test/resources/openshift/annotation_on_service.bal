@@ -17,17 +17,10 @@
 import ballerina/http;
 import ballerinax/kubernetes;
 
-@kubernetes:OpenShiftBuildConfig {
-    namespace: "ns"
-}
-@kubernetes:Deployment {
-    namespace: "ns"
-}
-@kubernetes:Service {
-    namespace: "ns"
-}
 listener http:Listener helloEP = new(9090);
 
+@kubernetes:Deployment {}
+@kubernetes:OpenShiftBuildConfig {}
 @http:ServiceConfig {
     basePath: "/helloWorld"
 }
