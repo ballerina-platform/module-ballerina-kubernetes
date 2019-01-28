@@ -43,7 +43,7 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
     public void createArtifacts() throws KubernetesPluginException {
         OpenShiftBuildConfigModel buildConfigModel = dataHolder.getOpenShiftBuildConfigModel();
         generate(buildConfigModel);
-        OUT.println("\t@kubernetes:OpenShiftBuildConfig \t\t - complete 1/1");
+        OUT.println("\t@kubernetes:OpenShiftBuildConfig \t - complete 1/1");
     }
     
     private void generate(OpenShiftBuildConfigModel buildConfigModel) throws KubernetesPluginException {

@@ -14,27 +14,11 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/http;
+import ballerina/io;
 import ballerinax/kubernetes;
 
-@kubernetes:OpenShiftBuildConfig {
-    namespace: "ns"
-}
-@kubernetes:Deployment {
-    namespace: "ns"
-}
-@kubernetes:Service {
-    namespace: "ns"
-}
-listener http:Listener helloEP = new(9090);
-
-@http:ServiceConfig {
-    basePath: "/helloWorld"
-}
-service helloWorld on helloEP {
-    resource function sayHello(http:Caller outboundEP, http:Request request) {
-        http:Response response = new;
-        response.setTextPayload("Hello, World from service helloWorld ! \n");
-        _ = outboundEP->respond(response);
-    }
+@kubernetes:OpenShiftBuildConfig {}
+@kubernetes:Deployment {}
+public function main(string... args) {
+    io:println("hello world");
 }

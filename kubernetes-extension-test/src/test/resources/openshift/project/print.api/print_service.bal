@@ -17,22 +17,16 @@
 import ballerina/http;
 import ballerinax/kubernetes;
 
-@kubernetes:OpenShiftBuildConfig {
-    namespace: "ns"
-}
-@kubernetes:Deployment {
-    namespace: "ns"
-}
-@kubernetes:Service {
-    namespace: "ns"
-}
-listener http:Listener helloEP = new(9090);
+@kubernetes:OpenShiftBuildConfig {}
+@kubernetes:Deployment {}
+@kubernetes:Service {}
+listener http:Listener printEP = new(9090);
 
 @http:ServiceConfig {
-    basePath: "/helloWorld"
+    basePath: "/"
 }
-service helloWorld on helloEP {
-    resource function sayHello(http:Caller outboundEP, http:Request request) {
+service funcs on printEP {
+    resource function print(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         response.setTextPayload("Hello, World from service helloWorld ! \n");
         _ = outboundEP->respond(response);

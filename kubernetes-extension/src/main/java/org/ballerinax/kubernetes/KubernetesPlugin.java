@@ -95,7 +95,6 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
         }
     }
 
-
     @Override
     public void process(SimpleVariableNode variableNode, List<AnnotationAttachmentNode> annotations) {
         if (!variableNode.getFlags().contains(Flag.LISTENER)) {
@@ -149,7 +148,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                 KubernetesUtils.deleteDirectory(targetPath);
                 artifactManager.populateDeploymentModel();
                 validateDeploymentDependencies();
-                artifactManager.createArtifacts(moduleID);
+                artifactManager.createArtifacts();
             } catch (KubernetesPluginException e) {
                 String errorMessage = "module [" + moduleID + "] " + e.getMessage();
                 printError(errorMessage);

@@ -73,10 +73,10 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
  */
 public class KubernetesUtils {
 
-    private static final boolean debugEnabled = "true".equals(System.getProperty(KubernetesConstants
+    private static final boolean DEBUG_ENABLED = "true".equals(System.getProperty(KubernetesConstants
             .ENABLE_DEBUG_LOGS));
-    private static final PrintStream error = System.err;
-    private static final PrintStream out = System.out;
+    private static final PrintStream ERR = System.err;
+    private static final PrintStream OUT = System.out;
 
     /**
      * Write content to a File. Create the required directories if they don't not exists.
@@ -173,14 +173,23 @@ public class KubernetesUtils {
         }
         return null;
     }
-
+    
+    /**
+     * Prints an Information message.
+     *
+     * @param msg message to be printed
+     */
+    public static void printInfo(String msg) {
+        OUT.println(msg);
+    }
+    
     /**
      * Prints an Error message.
      *
      * @param msg message to be printed
      */
     public static void printError(String msg) {
-        error.println("error [k8s plugin]: " + msg);
+        ERR.println("error [k8s plugin]: " + msg);
     }
 
     /**
@@ -189,9 +198,18 @@ public class KubernetesUtils {
      * @param msg message to be printed
      */
     public static void printDebug(String msg) {
-        if (debugEnabled) {
-            out.println("debug [k8s plugin]: " + msg);
+        if (DEBUG_ENABLED) {
+            OUT.println("debug [k8s plugin]: " + msg);
         }
+    }
+    
+    /**
+     * Print warning message.
+     *
+     * @param message Message content.
+     */
+    public static void printWarning(String message) {
+        OUT.println("warning [k8s plugin]: " + message);
     }
 
     /**
@@ -200,7 +218,7 @@ public class KubernetesUtils {
      * @param msg message to be printed
      */
     public static void printInstruction(String msg) {
-        out.println(msg);
+        OUT.println(msg);
     }
 
     /**
