@@ -28,6 +28,7 @@ import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.LinkedHashMap;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
@@ -42,12 +43,12 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
     public void createArtifacts() throws KubernetesPluginException {
         OpenShiftBuildConfigModel buildConfigModel = dataHolder.getOpenShiftBuildConfigModel();
         generate(buildConfigModel);
-        OUT.println();
         OUT.println("\t@kubernetes:OpenShiftBuildConfig \t\t - complete 1/1");
     }
     
     private void generate(OpenShiftBuildConfigModel buildConfigModel) throws KubernetesPluginException {
         try {
+            buildConfigModel.setLabels(new LinkedHashMap<>());
             if (null != buildConfigModel.getLabels() && !buildConfigModel.getLabels().containsKey("build")) {
                 buildConfigModel.getLabels().put("build", buildConfigModel.getName());
             }
@@ -75,7 +76,7 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
                     .withNewStrategy()
                     .withNewDockerStrategy()
                     .withDockerfilePath(dockerOutputDir)
-                    .withNoCache(buildConfigModel.isForcePullDockerImage())
+                    .withForcePull(buildConfigModel.isForcePullDockerImage())
                     .withNoCache(buildConfigModel.isBuildDockerWithNoCache())
                     .endDockerStrategy()
                     .endStrategy()
