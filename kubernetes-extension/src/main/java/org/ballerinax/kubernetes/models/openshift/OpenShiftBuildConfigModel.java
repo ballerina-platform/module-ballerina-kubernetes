@@ -25,8 +25,8 @@ import org.ballerinax.kubernetes.models.KubernetesModel;
  */
 public class OpenShiftBuildConfigModel extends KubernetesModel {
     private boolean generateImageStream = true;
-    private boolean forcePullDockerImage = true;
-    private boolean buildDockerWithNoCache = true;
+    private boolean forcePullDockerImage = false;
+    private boolean buildDockerWithNoCache = false;
     
     public boolean isGenerateImageStream() {
         return generateImageStream;

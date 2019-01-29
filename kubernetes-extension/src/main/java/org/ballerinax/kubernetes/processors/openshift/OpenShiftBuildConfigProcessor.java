@@ -20,6 +20,7 @@ package org.ballerinax.kubernetes.processors.openshift;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.FunctionNode;
+import org.ballerinalang.model.tree.IdentifierNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -44,103 +45,81 @@ public class OpenShiftBuildConfigProcessor extends AbstractAnnotationProcessor {
     @Override
     public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException {
-        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
-    
-        OpenShiftBuildConfigModel openShiftBuildConfig = this.processBuildConfigAnnotation(keyValues);
-        if (isBlank(openShiftBuildConfig.getName())) {
-            openShiftBuildConfig.setName(getValidName(serviceNode.getName().getValue()) +
-                                         OPENSHIFT_BUILD_CONFIG_POSTFIX);
-        }
-    
-        if (null == KubernetesContext.getInstance().getDataHolder().getOpenShiftBuildConfigModel()) {
-            KubernetesContext.getInstance().getDataHolder().setOpenShiftBuildConfigModel(openShiftBuildConfig);
-        } else {
-            throw new KubernetesPluginException("A module or a ballerina file can only have 1 " +
-                                                "@kubernetes:OpenShiftBuildConfig annotation.");
-        }
+        processBuildConfigAnnotation(serviceNode.getName(), attachmentNode);
     }
     
     @Override
     public void processAnnotation(SimpleVariableNode variableNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException {
-        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
-    
-        OpenShiftBuildConfigModel openShiftBuildConfig = this.processBuildConfigAnnotation(keyValues);
-        if (isBlank(openShiftBuildConfig.getName())) {
-            openShiftBuildConfig.setName(getValidName(variableNode.getName().getValue()) +
-                                         OPENSHIFT_BUILD_CONFIG_POSTFIX);
-        }
-    
-        if (null == KubernetesContext.getInstance().getDataHolder().getOpenShiftBuildConfigModel()) {
-            KubernetesContext.getInstance().getDataHolder().setOpenShiftBuildConfigModel(openShiftBuildConfig);
-        } else {
-            throw new KubernetesPluginException("A module or a ballerina file can only have 1 " +
-                                                "@kubernetes:OpenShiftBuildConfig annotation.");
-        }
+        processBuildConfigAnnotation(variableNode.getName(), attachmentNode);
     }
     
     @Override
     public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException {
-        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
-    
-        OpenShiftBuildConfigModel openShiftBuildConfig = this.processBuildConfigAnnotation(keyValues);
-        if (isBlank(openShiftBuildConfig.getName())) {
-            openShiftBuildConfig.setName(getValidName(functionNode.getName().getValue()) +
-                                         OPENSHIFT_BUILD_CONFIG_POSTFIX);
-        }
-    
-        if (null == KubernetesContext.getInstance().getDataHolder().getOpenShiftBuildConfigModel()) {
-            KubernetesContext.getInstance().getDataHolder().setOpenShiftBuildConfigModel(openShiftBuildConfig);
-        } else {
-            throw new KubernetesPluginException("A module or a ballerina file can only have 1 " +
-                                                "@kubernetes:OpenShiftBuildConfig annotation.");
-        }
+        processBuildConfigAnnotation(functionNode.getName(), attachmentNode);
     }
     
     /**
      * Process @kubernetes:OpenShiftBuildConfig annotation.
      *
-     * @param bcFields Fields of the gateway annotation.
+     * @param identifierNode Node of which the annotation was attached to.
+     * @param attachmentNode The annotation node.
      * @throws KubernetesPluginException Unable to process annotations.
      */
-    private OpenShiftBuildConfigModel processBuildConfigAnnotation(
-            List<BLangRecordLiteral.BLangRecordKeyValue> bcFields) throws KubernetesPluginException {
-        OpenShiftBuildConfigModel openShiftBC = new OpenShiftBuildConfigModel();
-        for (BLangRecordLiteral.BLangRecordKeyValue bcField : bcFields) {
-            switch (OpenShiftBuildConfigFields.valueOf(bcField.getKey().toString())) {
-                case name:
-                    openShiftBC.setName(getValidName(resolveValue(bcField.getValue().toString())));
-                    break;
-                case namespace:
-                    openShiftBC.setNamespace(resolveValue(bcField.getValue().toString()));
-                    break;
-                case labels:
-                    BLangRecordLiteral labelsField = (BLangRecordLiteral) bcField.getValue();
-                    openShiftBC.setLabels(getMap(labelsField.getKeyValuePairs()));
-                    break;
-                case annotations:
-                    BLangRecordLiteral annotationsField = (BLangRecordLiteral) bcField.getValue();
-                    openShiftBC.setAnnotations(getMap(annotationsField.getKeyValuePairs()));
-                    break;
-                case generateImageStream:
-                    openShiftBC.setGenerateImageStream(Boolean.valueOf(resolveValue(bcField.getValue().toString())));
-                    break;
-                case forcePullDockerImage:
-                    openShiftBC.setForcePullDockerImage(Boolean.valueOf(resolveValue(bcField.getValue().toString())));
-                    break;
-                case buildDockerWithNoCache:
-                    openShiftBC.setBuildDockerWithNoCache(Boolean.valueOf(resolveValue(bcField.getValue().toString())));
-                    break;
-                default:
-                    throw new KubernetesPluginException("Unknown field found for OpenShiftBuildConfig annotation.");
+    private void processBuildConfigAnnotation(IdentifierNode identifierNode, AnnotationAttachmentNode attachmentNode)
+            throws KubernetesPluginException {
+    
+        if (null == KubernetesContext.getInstance().getDataHolder().getOpenShiftBuildConfigModel()) {
+    
+            List<BLangRecordLiteral.BLangRecordKeyValue> bcFields =
+                    ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
+    
+            OpenShiftBuildConfigModel openShiftBC = new OpenShiftBuildConfigModel();
+            for (BLangRecordLiteral.BLangRecordKeyValue bcField : bcFields) {
+                switch (OpenShiftBuildConfigFields.valueOf(bcField.getKey().toString())) {
+                    case name:
+                        openShiftBC.setName(getValidName(resolveValue(bcField.getValue().toString())));
+                        break;
+                    case namespace:
+                        openShiftBC.setNamespace(resolveValue(bcField.getValue().toString()));
+                        break;
+                    case labels:
+                        BLangRecordLiteral labelsField = (BLangRecordLiteral) bcField.getValue();
+                        openShiftBC.setLabels(getMap(labelsField.getKeyValuePairs()));
+                        break;
+                    case annotations:
+                        BLangRecordLiteral annotationsField = (BLangRecordLiteral) bcField.getValue();
+                        openShiftBC.setAnnotations(getMap(annotationsField.getKeyValuePairs()));
+                        break;
+                    case generateImageStream:
+                        openShiftBC.setGenerateImageStream(Boolean.valueOf(resolveValue(
+                                bcField.getValue().toString())));
+                        break;
+                    case forcePullDockerImage:
+                        openShiftBC.setForcePullDockerImage(Boolean.valueOf(resolveValue(
+                                bcField.getValue().toString())));
+                        break;
+                    case buildDockerWithNoCache:
+                        openShiftBC.setBuildDockerWithNoCache(Boolean.valueOf(resolveValue(
+                                bcField.getValue().toString())));
+                        break;
+                    default:
+                        throw new KubernetesPluginException("Unknown field found " +
+                                                            "for @kubernetes:OpenShiftBuildConfig{} annotation.");
+                }
             }
+    
+            if (isBlank(openShiftBC.getName())) {
+                openShiftBC.setName(getValidName(identifierNode.getValue()) +
+                                             OPENSHIFT_BUILD_CONFIG_POSTFIX);
+            }
+    
+            KubernetesContext.getInstance().getDataHolder().setOpenShiftBuildConfigModel(openShiftBC);
+        } else {
+            throw new KubernetesPluginException("A module or a ballerina file can only have one " +
+                                                "@kubernetes:OpenShiftBuildConfig{} annotation.");
         }
-        
-        return openShiftBC;
     }
     
     private enum OpenShiftBuildConfigFields {

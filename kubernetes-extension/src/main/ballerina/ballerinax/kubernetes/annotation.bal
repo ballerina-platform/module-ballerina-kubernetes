@@ -682,8 +682,8 @@ public annotation<service, listener> IstioVirtualService IstioVirtualServiceConf
 public type OpenShiftBuildConfigConfiguration record {
     *Metadata;
     boolean generateImageStream = true;
-    boolean forcePullDockerImage = true;
-    boolean buildDockerWithNoCache = true;
+    boolean forcePullDockerImage = false;
+    boolean buildDockerWithNoCache = false;
     !...;
 };
 

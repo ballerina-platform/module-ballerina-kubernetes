@@ -19,6 +19,7 @@
 package org.ballerinax.kubernetes.processors.openshift;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
+import org.ballerinalang.model.tree.IdentifierNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -43,41 +44,28 @@ public class OpenShiftRouteProcessor extends AbstractAnnotationProcessor {
     @Override
     public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException {
-        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
-        
-        OpenShiftRouteModel openShiftRoute = this.processRouteAnnotation(keyValues);
-        if (isBlank(openShiftRoute.getName())) {
-            openShiftRoute.setName(getValidName(serviceNode.getName().getValue()) + OPENSHIFT_ROUTE_POSTFIX);
-        }
-        
-        KubernetesContext.getInstance().getDataHolder().addOpenShiftRouteModel(serviceNode.getName().getValue(),
-                openShiftRoute);
+        this.processRouteAnnotation(serviceNode.getName(), attachmentNode);
     }
     
     @Override
     public void processAnnotation(SimpleVariableNode variableNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException {
-        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
-    
-        OpenShiftRouteModel openShiftRoute = this.processRouteAnnotation(keyValues);
-        if (isBlank(openShiftRoute.getName())) {
-            openShiftRoute.setName(getValidName(variableNode.getName().getValue()) + OPENSHIFT_ROUTE_POSTFIX);
-        }
-    
-        KubernetesContext.getInstance().getDataHolder().addOpenShiftRouteModel(variableNode.getName().getValue(),
-                openShiftRoute);
+        this.processRouteAnnotation(variableNode.getName(), attachmentNode);
     }
     
     /**
      * Process @kubernetes:OpenShiftRoute annotation.
      *
-     * @param bcFields Fields of the gateway annotation.
+     * @param identifierNode Node of which the annotation was attached to.
+     * @param attachmentNode The annotation node.
      * @throws KubernetesPluginException Unable to process annotations.
      */
-    private OpenShiftRouteModel processRouteAnnotation(List<BLangRecordLiteral.BLangRecordKeyValue> bcFields)
+    private void processRouteAnnotation(IdentifierNode identifierNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException {
+    
+        List<BLangRecordLiteral.BLangRecordKeyValue> bcFields =
+                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
+
         OpenShiftRouteModel openShiftRoute = new OpenShiftRouteModel();
         for (BLangRecordLiteral.BLangRecordKeyValue bcField : bcFields) {
             switch (OpenShiftRouteFields.valueOf(bcField.getKey().toString())) {
@@ -105,8 +93,13 @@ public class OpenShiftRouteProcessor extends AbstractAnnotationProcessor {
                     throw new KubernetesPluginException("Unknown field found for OpenShiftRoute annotation.");
             }
         }
-        
-        return openShiftRoute;
+    
+        if (isBlank(openShiftRoute.getName())) {
+            openShiftRoute.setName(getValidName(identifierNode.getValue()) + OPENSHIFT_ROUTE_POSTFIX);
+        }
+    
+        KubernetesContext.getInstance().getDataHolder().addOpenShiftRouteModel(identifierNode.getValue(),
+                openShiftRoute);
     }
     
     private enum OpenShiftRouteFields {
