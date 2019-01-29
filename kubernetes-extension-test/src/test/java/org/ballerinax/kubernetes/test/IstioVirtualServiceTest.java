@@ -56,7 +56,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test
+    @Test(groups = {"istio"})
     public void httpRouteTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "http_route.bal"), 0);
@@ -122,7 +122,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test
+    @Test(groups = {"istio"})
     public void httpMatchRequestTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "http_match_request.bal"), 0);
@@ -172,7 +172,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test
+    @Test(groups = {"istio"})
     public void destinationWeightTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "destination_weight.bal"), 0);
@@ -223,7 +223,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test
+    @Test(groups = {"istio"})
     public void destinationTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "destination.bal"), 0);
@@ -268,7 +268,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test
+    @Test(groups = {"istio"})
     public void httpRedirectTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "http_redirect.bal"), 0);
@@ -315,7 +315,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test
+    @Test(groups = {"istio"})
     public void httpRetryTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "http_retry.bal"), 0);
@@ -363,7 +363,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test
+    @Test(groups = {"istio"})
     public void httpFaultInjectionTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "http_fault_injection.bal"), 0);
@@ -411,7 +411,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test
+    @Test(groups = {"istio"})
     public void corsPolicyTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "cors_policy.bal"), 0);
@@ -465,7 +465,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test
+    @Test(groups = {"istio"})
     public void tlsRouteTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tls_route.bal"), 0);
@@ -525,7 +525,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test
+    @Test(groups = {"istio"})
     public void tcpRouteTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tcp_route.bal"), 0);
@@ -574,7 +574,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test
+    @Test(groups = {"istio"})
     public void emptyAnnotationTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "empty_annotation.bal"), 0);
@@ -621,7 +621,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test
+    @Test(groups = {"istio"})
     public void useServiceAnnotationPortTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "svc_port.bal"), 0);

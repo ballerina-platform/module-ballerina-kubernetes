@@ -57,7 +57,7 @@ public class IstioGatewayTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test
+    @Test(groups = {"istio"})
     public void allFieldsTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "all_fields.bal"), 0);
@@ -115,7 +115,7 @@ public class IstioGatewayTest {
      * @throws IOException          Error when loading the generated yaml.
      * @throws InterruptedException Error when compiling the ballerina file.
      */
-    @Test(enabled = false)
+    @Test(enabled = false, groups = {"istio"})
     public void invalidPortTest() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "invalid_port.bal"), 1);
     }
@@ -127,7 +127,7 @@ public class IstioGatewayTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test
+    @Test(groups = {"istio"})
     public void multipleServersTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "multiple_servers.bal"), 0);
@@ -189,7 +189,7 @@ public class IstioGatewayTest {
      * @throws IOException          Error when loading the generated yaml.
      * @throws InterruptedException Error when compiling the ballerina file.
      */
-    @Test
+    @Test(groups = {"istio"})
     public void noSelectorTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "no_selector.bal"), 0);
@@ -221,7 +221,7 @@ public class IstioGatewayTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test
+    @Test(groups = {"istio"})
     public void noTLSHttpRedirect() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "no_tls_https_redirect.bal"), 0);
@@ -270,7 +270,7 @@ public class IstioGatewayTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test
+    @Test(groups = {"istio"})
     public void tlsMutualTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tls_mutual.bal"), 0);
@@ -325,7 +325,7 @@ public class IstioGatewayTest {
      * @throws IOException          Error when loading the generated yaml.
      * @throws InterruptedException Error when compiling the ballerina file.
      */
-    @Test(enabled = false)
+    @Test(enabled = false, groups = {"istio"})
     public void invalidTlsMutualTest() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tls_mutual_invalid.bal"), 1);
     }
@@ -337,7 +337,7 @@ public class IstioGatewayTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test
+    @Test(groups = {"istio"})
     public void tlsSimpleTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tls_simple.bal"), 0);
@@ -391,7 +391,7 @@ public class IstioGatewayTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test
+    @Test(groups = {"istio"})
     public void emptyAnnoForEndpointTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "empty_annotation_ep.bal"), 0);
@@ -436,7 +436,7 @@ public class IstioGatewayTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test
+    @Test(groups = {"istio"})
     public void emptyAnnotationForSvcTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "empty_annotation_svc.bal"), 0);
@@ -480,7 +480,7 @@ public class IstioGatewayTest {
      * @throws IOException          Error when loading the generated yaml.
      * @throws InterruptedException Error when compiling the ballerina file.
      */
-    @Test(enabled = false)
+    @Test(enabled = false, groups = {"istio"})
     public void invalidTlsSimpleTest() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tls_simple_invalid.bal"), 1);
     }
