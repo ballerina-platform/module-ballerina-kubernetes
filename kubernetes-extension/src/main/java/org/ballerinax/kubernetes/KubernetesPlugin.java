@@ -128,7 +128,6 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
 
     }
 
-
     @Override
     public void codeGenerated(PackageID moduleID, Path binaryPath) {
         KubernetesContext.getInstance().setCurrentPackage(moduleID);
