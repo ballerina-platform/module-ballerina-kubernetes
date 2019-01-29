@@ -183,7 +183,8 @@ public class KubernetesTestUtils {
         // log ballerina-internal.log content
         Path ballerinaInternalLog = Paths.get(sourceDirectory, "ballerina-internal.log");
         if (exitCode == 1 && Files.exists(ballerinaInternalLog)) {
-            log.info(FileUtils.getContentsAsString(ballerinaInternalLog.toFile()));
+            log.error("ballerina-internal.log file found. content: ");
+            log.error(FileUtils.getContentsAsString(ballerinaInternalLog.toFile()));
         }
         return exitCode;
     }
