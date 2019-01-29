@@ -60,13 +60,12 @@ public class VolumeClaimAnnotationProcessor extends AbstractAnnotationProcessor 
                 for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
                     VolumeClaimConfig volumeMountConfig =
                             VolumeClaimConfig.valueOf(annotation.getKey().toString());
-                    String annotationValue = resolveValue(annotation.getValue().toString());
                     switch (volumeMountConfig) {
                         case name:
-                            claimModel.setName(getValidName(annotationValue));
+                            claimModel.setName(getValidName(resolveValue(annotation.getValue().toString())));
                             break;
                         case namespace:
-                            claimModel.setNamespace(annotationValue);
+                            claimModel.setNamespace(resolveValue(annotation.getValue().toString()));
                             break;
                         case labels:
                             claimModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
@@ -75,16 +74,17 @@ public class VolumeClaimAnnotationProcessor extends AbstractAnnotationProcessor 
                             claimModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                             break;
                         case mountPath:
-                            claimModel.setMountPath(annotationValue);
+                            claimModel.setMountPath(resolveValue(annotation.getValue().toString()));
                             break;
                         case accessMode:
-                            claimModel.setAccessMode(annotationValue);
+                            claimModel.setAccessMode(resolveValue(annotation.getValue().toString()));
                             break;
                         case volumeClaimSize:
-                            claimModel.setVolumeClaimSize(annotationValue);
+                            claimModel.setVolumeClaimSize(resolveValue(annotation.getValue().toString()));
                             break;
                         case readOnly:
-                            claimModel.setReadOnly(Boolean.parseBoolean(annotationValue));
+                            claimModel.setReadOnly(Boolean.parseBoolean(resolveValue(
+                                    annotation.getValue().toString())));
                             break;
                         default:
                             break;

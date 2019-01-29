@@ -19,6 +19,7 @@
 package org.ballerinax.kubernetes.test.samples;
 
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
@@ -31,5 +32,5 @@ public interface SampleTest {
     void compileSample() throws IOException, InterruptedException;
 
     @AfterClass
-    void cleanUp() throws KubernetesPluginException;
+    void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException;
 }

@@ -65,13 +65,12 @@ public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
                 for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
                     SecretMountConfig secretMountConfig =
                             SecretMountConfig.valueOf(annotation.getKey().toString());
-                    String annotationValue = resolveValue(annotation.getValue().toString());
                     switch (secretMountConfig) {
                         case name:
-                            secretModel.setName(getValidName(annotationValue));
+                            secretModel.setName(getValidName(resolveValue(annotation.getValue().toString())));
                             break;
                         case namespace:
-                            secretModel.setNamespace(annotationValue);
+                            secretModel.setNamespace(resolveValue(annotation.getValue().toString()));
                             break;
                         case labels:
                             secretModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
@@ -80,14 +79,15 @@ public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
                             secretModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                             break;
                         case mountPath:
-                            secretModel.setMountPath(annotationValue);
+                            secretModel.setMountPath(resolveValue(annotation.getValue().toString()));
                             break;
                         case data:
                             List<BLangExpression> data = ((BLangArrayLiteral) annotation.valueExpr).exprs;
                             secretModel.setData(getDataForSecret(data));
                             break;
                         case readOnly:
-                            secretModel.setReadOnly(Boolean.parseBoolean(annotationValue));
+                            secretModel.setReadOnly(Boolean.parseBoolean(resolveValue(
+                                    annotation.getValue().toString())));
                             break;
                         default:
                             break;

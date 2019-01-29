@@ -25,7 +25,7 @@ public type Metadata record {
     string namespace?;
     map<string> labels?;
     map<string> annotations?;
-    !...
+    !...;
 };
 
 # External file type for docker.
@@ -35,7 +35,7 @@ public type Metadata record {
 public type FileConfig record {
     string source;
     string target;
-    !...
+    !...;
 };
 
 # Value for a field.
@@ -43,7 +43,7 @@ public type FileConfig record {
 # + fieldPath - Path of the field
 public type FieldValue record {
     string fieldPath;
-    !...
+    !...;
 };
 
 # Value for a secret key.
@@ -53,7 +53,7 @@ public type FieldValue record {
 public type SecretKeyValue record {
     string name;
     string key;
-    !...
+    !...;
 };
 
 # Value for resource field.
@@ -63,7 +63,7 @@ public type SecretKeyValue record {
 public type ResourceFieldValue record {
     string containerName?;
     string ^"resource";
-    !...
+    !...;
 };
 
 # Value for config map key.
@@ -73,7 +73,7 @@ public type ResourceFieldValue record {
 public type ConfigMapKeyValue record {
     string name;
     string key;
-    !...
+    !...;
 };
 
 # Value from field.
@@ -81,7 +81,7 @@ public type ConfigMapKeyValue record {
 # + fieldRef - Reference for a field.
 public type FieldRef record {
     FieldValue fieldRef;
-    !...
+    !...;
 };
 
 # Value from secret key.
@@ -89,7 +89,7 @@ public type FieldRef record {
 # + secretKeyRef - Reference for secret key.
 public type SecretKeyRef record {
     SecretKeyValue secretKeyRef;
-    !...
+    !...;
 };
 
 # Value from resource field.
@@ -97,7 +97,7 @@ public type SecretKeyRef record {
 # + resourceFieldRef - Reference for resource field.
 public type ResourceFieldRef record {
     ResourceFieldValue resourceFieldRef;
-    !...
+    !...;
 };
 
 # Value from config map key.
@@ -105,7 +105,7 @@ public type ResourceFieldRef record {
 # + configMapKeyRef - Reference for config map key.
 public type ConfigMapKeyRef record {
     ConfigMapKeyValue configMapKeyRef;
-    !...
+    !...;
 };
 
 public const string IMAGE_PULL_POLICY_IF_NOT_PRESENT = "IfNotPresent";
@@ -159,7 +159,7 @@ public type DeploymentConfiguration record {
     boolean singleYAML = true;
     string[] dependsOn?;
     string[] imagePullSecrets?;
-    !...
+    !...;
 };
 
 # @kubernetes:Deployment annotation to configure deplyoment yaml.
@@ -188,7 +188,7 @@ public type ServiceConfiguration record {
     int port?;
     SessionAffinity sessionAffinity = SESSION_AFFINITY_NONE;
     ServiceType serviceType = SERVICE_TYPE_CLUSTER_IP;
-    !...
+    !...;
 };
 
 # @kubernetes:Service annotation to configure service yaml.
@@ -210,7 +210,7 @@ public type IngressConfiguration record {
     string targetPath?;
     string ingressClass?;
     boolean enableTLS?;
-    !...
+    !...;
 };
 
 # @kubernetes:Ingress annotation to configure ingress yaml.
@@ -226,7 +226,7 @@ public type PodAutoscalerConfig record {
     int minReplicas?;
     int maxReplicas?;
     int cpuPercentage?;
-    !...
+    !...;
 };
 
 # @kubernetes:HPA annotation to configure horizontal pod autoscaler yaml.
@@ -242,7 +242,7 @@ public type Secret record {
     string mountPath;
     boolean readOnly = true;
     string[] data;
-    !...
+    !...;
 };
 
 #Secret volume mount configurations for kubernetes.
@@ -250,7 +250,7 @@ public type Secret record {
 # + secrets - Array of [Secret](kubernetes.html#Secret)
 public type SecretMount record {
     Secret[] secrets;
-    !...
+    !...;
 };
 
 # @kubernetes:Secret annotation to configure secrets.
@@ -266,7 +266,7 @@ public type ConfigMap record {
     string mountPath;
     boolean readOnly = true;
     string[] data;
-    !...
+    !...;
 };
 
 # Secret volume mount configurations for kubernetes.
@@ -276,7 +276,7 @@ public type ConfigMap record {
 public type ConfigMapMount record {
     string ballerinaConf;
     ConfigMap[] configMaps?;
-    !...
+    !...;
 };
 
 # @kubernetes:ConfigMap annotation to configure config maps.
@@ -294,7 +294,7 @@ public type PersistentVolumeClaimConfig record {
     string accessMode;
     string volumeClaimSize;
     boolean readOnly;
-    !...
+    !...;
 };
 
 # Persistent Volume Claims configurations for kubernetes.
@@ -302,7 +302,7 @@ public type PersistentVolumeClaimConfig record {
 # + volumeClaims - Array of [PersistentVolumeClaimConfig](kubernetes.html#PersistentVolumeClaimConfig)
 public type PersistentVolumeClaims record {
     PersistentVolumeClaimConfig[] volumeClaims;
-    !...
+    !...;
 };
 
 # @kubernetes:PersistentVolumeClaim annotation to configure Persistent Volume Claims.
@@ -319,7 +319,7 @@ public type ResourceQuotaConfig record {
     *Metadata;
     map<string> hard;
     ResourceQuotaScope[] scopes = [];
-    !...
+    !...;
 };
 
 # Resource Quota configuration for kubernetes.
@@ -327,7 +327,7 @@ public type ResourceQuotaConfig record {
 # + resourceQuotas - Array of [ResourceQuotaConfig](kubernetes.html#ResourceQuotaConfig)
 public type ResourceQuotas record {
     ResourceQuotaConfig[] resourceQuotas;
-    !...
+    !...;
 };
 
 # @kubernetes:ResourcesQuotas annotation to configure Resource Quotas.
@@ -378,7 +378,7 @@ public type JobConfig record {
     FileConfig[] copyFiles?;
     string[] imagePullSecrets?;
     boolean singleYAML = true;
-    !...
+    !...;
 };
 
 # @kubernetes:Job annotation to configure kubernetes jobs.
@@ -396,7 +396,7 @@ public type IstioPortConfig record {
     int number;
     IstioPortProtocol protocol;
     string name;
-    !...
+    !...;
 };
 
 # TLS mode enforced by the proxy.
@@ -417,7 +417,7 @@ public type IstioTLSOptionConfig record {
     string privateKey?;
     string caCertificates?;
     string[] subjectAltNames?;
-    !...
+    !...;
 };
 
 # Istio gateway server configuration to describe the properties of the proxy on a given load balancer.
@@ -429,7 +429,7 @@ public type IstioServerConfig record {
     IstioPortConfig port;
     string[] hosts;
     IstioTLSOptionConfig tls?;
-    !...
+    !...;
 };
 
 # Istio gateway annotation configuration.
@@ -440,7 +440,7 @@ public type IstioGatewayConfig record {
     *Metadata;
     map<string> selector?;
     IstioServerConfig[] servers?;
-    !...
+    !...;
 };
 
 # @kubernetes:IstioGateway annotation to generate istio gateways.
@@ -455,7 +455,7 @@ public type StringMatch record {
     string exact?;
     string prefix?;
     string regex?;
-    !...
+    !...;
 };
 
 # Configuration for a matching requests.
@@ -477,7 +477,7 @@ public type HTTPMatchRequestConfig record {
     int port?;
     map<string> sourceLabels?;
     string[] gateways?;
-    !...
+    !...;
 };
 
 # Configuration for a port selector.
@@ -485,7 +485,7 @@ public type HTTPMatchRequestConfig record {
 # + number - The number of the port.
 public type PortSelectorConfig record {
     int number;
-    !...
+    !...;
 };
 
 # Configuration to a network addressable service.
@@ -497,7 +497,7 @@ public type DestinationConfig record {
     string host;
     string subset?;
     PortSelectorConfig port?;
-    !...
+    !...;
 };
 
 # Configuration for weight for destination to traffic route.
@@ -507,7 +507,7 @@ public type DestinationConfig record {
 public type DestinationWeightConfig record {
     DestinationConfig destination;
     int weight?;
-    !...
+    !...;
 };
 
 # Configuration to rewrite or redirect requests.
@@ -517,7 +517,7 @@ public type DestinationWeightConfig record {
 public type HTTPRedirectRewriteConfig record {
     string uri?;
     string authority?;
-    !...
+    !...;
 };
 
 # Configuration for retrying http requests.
@@ -527,7 +527,7 @@ public type HTTPRedirectRewriteConfig record {
 public type HTTPRetryConfig record {
     int attempts;
     string perTryTimeout;
-    !...
+    !...;
 };
 
 # Configuration for delaying a request.
@@ -537,7 +537,7 @@ public type HTTPRetryConfig record {
 public type HTTPFaultInjectionDelayConfig record {
     int percent;
     string fixedDelay;
-    !...
+    !...;
 };
 
 # Configuration to abort request prematurely.
@@ -547,7 +547,7 @@ public type HTTPFaultInjectionDelayConfig record {
 public type HTTPFaultInjectionAbortConfig record {
     int percent;
     int httpStatus;
-    !...
+    !...;
 };
 
 # Configuration to specify faults to inject while forwarding.
@@ -557,7 +557,7 @@ public type HTTPFaultInjectionAbortConfig record {
 public type HTTPFaultInjectionConfig record {
     HTTPFaultInjectionDelayConfig delay?;
     HTTPFaultInjectionAbortConfig ^"abort"?;
-    !...
+    !...;
 };
 
 # Configuration for CORS policy.
@@ -575,7 +575,7 @@ public type CorsPolicyConfig record {
     string[] exposeHeaders?;
     string maxAge?;
     boolean allowCredentials?;
-    !...
+    !...;
 };
 
 # Configurations for conditions and actions for routing HTTP.
@@ -601,7 +601,7 @@ public type HTTPRouteConfig record {
     DestinationConfig mirror?;
     CorsPolicyConfig corsPolicy?;
     map<string> appendHeaders?;
-    !...
+    !...;
 };
 
 # Configuration to match TLS attributes.
@@ -617,7 +617,7 @@ public type TLSMatchAttributesConfig record {
     int port?;
     map<string> sourceLabels?;
     string[] gateways?;
-    !...
+    !...;
 };
 
 # Configuration for conditions and actions for routing TLS/HTTPS traffic.
@@ -627,7 +627,7 @@ public type TLSMatchAttributesConfig record {
 public type TLSRouteConfig record {
     TLSMatchAttributesConfig[] ^"match";
     DestinationWeightConfig[] route;
-    !...
+    !...;
 };
 
 # Configuration for L4 connection match attributes.
@@ -641,7 +641,7 @@ public type L4MatchAttributesConfig record {
     int port?;
     map<string> sourceLabels?;
     string[] gateways?;
-    !...
+    !...;
 };
 
 # Configuration for routing TCP traffic.
@@ -651,7 +651,7 @@ public type L4MatchAttributesConfig record {
 public type TCPRouteConfig record {
     L4MatchAttributesConfig[] ^"match";
     DestinationWeightConfig[] route;
-    !...
+    !...;
 };
 
 # Virtual service configuration for @kubernetes:IstioVirtualService annotation.
@@ -668,7 +668,7 @@ public type IstioVirtualServiceConfig record {
     HTTPRouteConfig[] http?;
     TLSRouteConfig[] tls?;
     TCPRouteConfig[] tcp?;
-    !...
+    !...;
 };
 
 # @kubernetes:IstioVirtualService annotation to generate istio virtual service.

@@ -18,9 +18,9 @@
 
 package org.ballerinax.kubernetes.test;
 
-import io.fabric8.docker.api.model.ImageInspect;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.testng.Assert;
@@ -36,7 +36,7 @@ import java.util.Map;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
-import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDockerImage;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 
 /**
  * Test cases for generating istio gateway artifacts.
@@ -58,7 +58,8 @@ public class IstioGatewayTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void allFieldsTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void allFieldsTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "all_fields.bal"), 0);
 
         // Check if docker image exists and correct
@@ -127,7 +128,8 @@ public class IstioGatewayTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void multipleServersTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void multipleServersTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "multiple_servers.bal"), 0);
 
         // Check if docker image exists and correct
@@ -188,7 +190,8 @@ public class IstioGatewayTest {
      * @throws InterruptedException Error when compiling the ballerina file.
      */
     @Test
-    public void noSelectorTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void noSelectorTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "no_selector.bal"), 0);
     
         // Check if docker image exists and correct
@@ -219,7 +222,8 @@ public class IstioGatewayTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void noTLSHttpRedirect() throws IOException, InterruptedException, KubernetesPluginException {
+    public void noTLSHttpRedirect() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "no_tls_https_redirect.bal"), 0);
 
         // Check if docker image exists and correct
@@ -267,7 +271,8 @@ public class IstioGatewayTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void tlsMutualTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void tlsMutualTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tls_mutual.bal"), 0);
 
         // Check if docker image exists and correct
@@ -333,7 +338,8 @@ public class IstioGatewayTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void tlsSimpleTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void tlsSimpleTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tls_simple.bal"), 0);
         
         // Check if docker image exists and correct
@@ -386,7 +392,8 @@ public class IstioGatewayTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void emptyAnnoForEndpointTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void emptyAnnoForEndpointTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "empty_annotation_ep.bal"), 0);
         
         // Check if docker image exists and correct
@@ -430,7 +437,8 @@ public class IstioGatewayTest {
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
-    public void emptyAnnotationForSvcTest() throws IOException, InterruptedException, KubernetesPluginException {
+    public void emptyAnnotationForSvcTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "empty_annotation_svc.bal"), 0);
         
         // Check if docker image exists and correct
@@ -488,9 +496,9 @@ public class IstioGatewayTest {
     /**
      * Validate contents of the Dockerfile.
      */
-    public void validateDockerImage() {
-        ImageInspect imageInspect = getDockerImage(dockerImage);
-        Assert.assertEquals(1, imageInspect.getContainerConfig().getExposedPorts().size());
-        Assert.assertTrue(imageInspect.getContainerConfig().getExposedPorts().keySet().contains("9090/tcp"));
+    public void validateDockerImage() throws DockerTestException, InterruptedException {
+        List<String> ports = getExposedPorts(this.dockerImage);
+        Assert.assertEquals(ports.size(), 1);
+        Assert.assertEquals(ports.get(0), "9090/tcp");
     }
 }

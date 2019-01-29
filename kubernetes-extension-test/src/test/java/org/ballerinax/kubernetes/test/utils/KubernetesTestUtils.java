@@ -18,26 +18,30 @@
 
 package org.ballerinax.kubernetes.test.utils;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.fabric8.docker.api.model.ImageInspect;
-import io.fabric8.docker.client.Config;
-import io.fabric8.docker.client.ConfigBuilder;
-import io.fabric8.docker.client.DockerClient;
+import com.mchange.io.FileUtils;
+import com.spotify.docker.client.DefaultDockerClient;
+import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.exceptions.DockerException;
+import com.spotify.docker.client.messages.ImageInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.ballerinax.docker.generator.DockerGenConstants;
+import org.glassfish.jersey.internal.RuntimeDelegateImpl;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import static org.ballerinax.kubernetes.KubernetesConstants.UNIX_DEFAULT_DOCKER_HOST;
-import static org.ballerinax.kubernetes.KubernetesConstants.WINDOWS_DEFAULT_DOCKER_HOST;
+import java.util.Objects;
+import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
  * Kubernetes test utils.
@@ -60,36 +64,68 @@ public class KubernetesTestUtils {
             br.lines().forEach(log::info);
         }
     }
-
+    
     /**
      * Return a ImageInspect object for a given Docker Image name
      *
      * @param imageName Docker image Name
      * @return ImageInspect object
      */
-    public static ImageInspect getDockerImage(String imageName) {
-        DockerClient client = getDockerClient();
-        return client.image().withName(imageName).inspect();
+    public static ImageInfo getDockerImage(String imageName) throws DockerTestException, InterruptedException {
+        try {
+            DockerClient client = getDockerClient();
+            return client.inspectImage(imageName);
+        } catch (DockerException e) {
+            throw new DockerTestException(e);
+        }
     }
-
+    
+    /**
+     * Get the list of exposed ports of the docker image.
+     *
+     * @param imageName The docker image name.
+     * @return Exposed ports.
+     * @throws DockerTestException      If issue occurs inspecting docker image
+     * @throws InterruptedException If issue occurs inspecting docker image
+     */
+    public static List<String> getExposedPorts(String imageName) throws DockerTestException, InterruptedException {
+        ImageInfo dockerImage = getDockerImage(imageName);
+        return Objects.requireNonNull(dockerImage.config().exposedPorts()).asList();
+    }
+    
+    /**
+     * Get the list of commands of the docker image.
+     *
+     * @param imageName The docker image name.
+     * @return The list of commands.
+     * @throws DockerTestException      If issue occurs inspecting docker image
+     * @throws InterruptedException If issue occurs inspecting docker image
+     */
+    public static List<String> getCommand(String imageName) throws DockerTestException, InterruptedException {
+        ImageInfo dockerImage = getDockerImage(imageName);
+        return dockerImage.config().cmd();
+    }
+    
     /**
      * Delete a given Docker image and prune
      *
      * @param imageName Docker image Name
      */
-    public static void deleteDockerImage(String imageName) {
-        DockerClient client = getDockerClient();
-        client.image().withName(imageName).delete().andPrune();
+    public static void deleteDockerImage(String imageName) throws DockerTestException, InterruptedException {
+        try {
+            DockerClient client = getDockerClient();
+            client.removeImage(imageName, true, false);
+        } catch (DockerException e) {
+            throw new DockerTestException(e);
+        }
     }
-
+    
     private static DockerClient getDockerClient() {
-        disableFailOnUnknownProperties();
+        RuntimeDelegate.setInstance(new RuntimeDelegateImpl());
         String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
-        String dockerHost = operatingSystem.contains("win") ? WINDOWS_DEFAULT_DOCKER_HOST : UNIX_DEFAULT_DOCKER_HOST;
-        Config dockerClientConfig = new ConfigBuilder()
-                .withDockerUrl(dockerHost)
-                .build();
-        return new io.fabric8.docker.client.DefaultDockerClient(dockerClientConfig);
+        String dockerHost = operatingSystem.contains("win") ? DockerGenConstants.WINDOWS_DEFAULT_DOCKER_HOST :
+                            DockerGenConstants.UNIX_DEFAULT_DOCKER_HOST;
+        return DefaultDockerClient.builder().uri(dockerHost).build();
     }
 
     /**
@@ -101,7 +137,8 @@ public class KubernetesTestUtils {
      * @throws InterruptedException if an error occurs while compiling
      * @throws IOException          if an error occurs while writing file
      */
-    public static int compileBallerinaFile(String sourceDirectory, String fileName) throws InterruptedException,
+    public static int compileBallerinaFile(String sourceDirectory, String fileName, Map<String, String> envVar)
+            throws InterruptedException,
             IOException {
         ProcessBuilder pb = new ProcessBuilder(BALLERINA_COMMAND, BUILD, fileName);
         log.info(COMPILING + sourceDirectory + File.separator + fileName);
@@ -109,13 +146,34 @@ public class KubernetesTestUtils {
         pb.directory(new File(sourceDirectory));
         Map<String, String> environment = pb.environment();
         addJavaAgents(environment);
+        environment.putAll(envVar);
         
         Process process = pb.start();
         int exitCode = process.waitFor();
         log.info(EXIT_CODE + exitCode);
         logOutput(process.getInputStream());
         logOutput(process.getErrorStream());
+    
+        // log ballerina-internal.log content
+        Path ballerinaInternalLog = Paths.get(sourceDirectory, "ballerina-internal.log");
+        if (exitCode == 1 && Files.exists(ballerinaInternalLog)) {
+            log.info(FileUtils.getContentsAsString(ballerinaInternalLog.toFile()));
+        }
         return exitCode;
+    }
+    
+    /**
+     * Compile a ballerina file in a given directory
+     *
+     * @param sourceDirectory Ballerina source directory
+     * @param fileName        Ballerina source file name
+     * @return Exit code
+     * @throws InterruptedException if an error occurs while compiling
+     * @throws IOException          if an error occurs while writing file
+     */
+    public static int compileBallerinaFile(String sourceDirectory, String fileName) throws InterruptedException,
+            IOException {
+        return compileBallerinaFile(sourceDirectory, fileName, new HashMap<>());
     }
 
     /**
@@ -151,20 +209,6 @@ public class KubernetesTestUtils {
         logOutput(process.getInputStream());
         logOutput(process.getErrorStream());
         return exitCode;
-    }
-
-    // Disable fail on unknown properties using reflection to avoid docker client issue.
-    // (https://github.com/fabric8io/docker-client/issues/106).
-    private static void disableFailOnUnknownProperties() {
-        try {
-            final Field jsonMapperField = Config.class.getDeclaredField("JSON_MAPPER");
-            assert jsonMapperField != null;
-            jsonMapperField.setAccessible(true);
-            final ObjectMapper objectMapper = (ObjectMapper) jsonMapperField.get(null);
-            assert objectMapper != null;
-            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        } catch (NoSuchFieldException | IllegalAccessException ignored) {
-        }
     }
     
     private static synchronized void addJavaAgents(Map<String, String> envProperties) {
