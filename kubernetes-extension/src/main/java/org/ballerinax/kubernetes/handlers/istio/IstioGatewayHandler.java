@@ -105,7 +105,7 @@ public class IstioGatewayHandler extends AbstractArtifactHandler {
             }
             
             generate(gatewayModel);
-            OUT.print("\t@kubernetes:IstioGatewayModel \t\t - complete " + count + "/" + gatewayModels.size() + "\r");
+            OUT.print("\t@kubernetes:IstioGatewayModel \t\t - complete " + count + "/" + size + "\r");
         }
     }
     

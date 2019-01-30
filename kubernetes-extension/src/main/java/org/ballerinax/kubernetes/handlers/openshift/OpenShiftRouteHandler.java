@@ -40,12 +40,16 @@ public class OpenShiftRouteHandler extends AbstractArtifactHandler {
     @Override
     public void createArtifacts() throws KubernetesPluginException {
         Map<String, OpenShiftRouteModel> routeModels = dataHolder.getOpenShiftRouteModels();
+        int size = routeModels.size();
+        if (size > 0) {
+            OUT.println();
+        }
         int count = 0;
         for (Map.Entry<String, OpenShiftRouteModel> routeModel : routeModels.entrySet()) {
             count++;
             ServiceModel serviceModel = dataHolder.getServiceModel(routeModel.getKey());
             generate(routeModel.getValue(), serviceModel);
-            OUT.println("\t@kubernetes:OpenShiftRoute \t\t - complete " + count + "/" + routeModels.size() + "\r");
+            OUT.print("\t@kubernetes:OpenShiftRoute \t\t - complete " + count + "/" + size + "\r");
         }
     }
     
