@@ -23,6 +23,7 @@ import io.fabric8.openshift.api.model.Route;
 import io.fabric8.openshift.api.model.RouteBuilder;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.AbstractArtifactHandler;
+import org.ballerinax.kubernetes.models.ServiceModel;
 import org.ballerinax.kubernetes.models.openshift.OpenShiftRouteModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
@@ -39,19 +40,23 @@ public class OpenShiftRouteHandler extends AbstractArtifactHandler {
     @Override
     public void createArtifacts() throws KubernetesPluginException {
         Map<String, OpenShiftRouteModel> routeModels = dataHolder.getOpenShiftRouteModels();
-        int size = routeModels.size();
-        if (size > 0) {
-            OUT.println();
-        }
         int count = 0;
         for (Map.Entry<String, OpenShiftRouteModel> routeModel : routeModels.entrySet()) {
             count++;
-            generate(routeModel.getValue());
-            OUT.print("\t@kubernetes:OpenShiftRoute \t\t - complete " + count + "/" + routeModels.size() + "\r");
+            ServiceModel serviceModel = dataHolder.getServiceModel(routeModel.getKey());
+            generate(routeModel.getValue(), serviceModel);
+            OUT.println("\t@kubernetes:OpenShiftRoute \t\t - complete " + count + "/" + routeModels.size() + "\r");
         }
     }
     
-    private void generate(OpenShiftRouteModel routeModel) throws KubernetesPluginException {
+    /**
+     * Generate the yaml file for a route model.
+     *
+     * @param routeModel The model.
+     * @param serviceModel Matching service model.
+     * @throws KubernetesPluginException When an error occurs while writing yaml files.
+     */
+    private void generate(OpenShiftRouteModel routeModel, ServiceModel serviceModel) throws KubernetesPluginException {
         try {
             Route route = new RouteBuilder()
                     .withNewMetadata()
@@ -61,10 +66,13 @@ public class OpenShiftRouteHandler extends AbstractArtifactHandler {
                     .withNamespace(routeModel.getNamespace())
                     .endMetadata()
                     .withNewSpec()
-                    .withHost(routeModel.getName() + "-" + routeModel.getNamespace() + "." + routeModel.getDomain())
+                    .withHost(routeModel.getHost())
+                    .withNewPort()
+                    .withNewTargetPort(serviceModel.getTargetPort())
+                    .endPort()
                     .withNewTo()
                     .withKind("Service")
-                    .withName(routeModel.getName())
+                    .withName(serviceModel.getName())
                     .withWeight(100)
                     .endTo()
                     .endSpec()
@@ -73,7 +81,7 @@ public class OpenShiftRouteHandler extends AbstractArtifactHandler {
             String resourceQuotaContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(route);
             KubernetesUtils.writeToFile(resourceQuotaContent, OPENSHIFT_ROUTE_FILE_POSTFIX + YAML);
         } catch (IOException e) {
-            String errorMessage = "Error while generating OpenShift Image Stream yaml file: " +
+            String errorMessage = "Error while generating OpenShift Route yaml file: " +
                                   routeModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }

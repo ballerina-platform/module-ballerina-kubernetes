@@ -690,14 +690,21 @@ public type OpenShiftBuildConfigConfiguration record {
 # @kubernetes:OpenShiftBuildConfig annotation to generate openshift's build configs.
 public annotation<service, listener, function> OpenShiftBuildConfig OpenShiftBuildConfigConfiguration;
 
+# Domain for OpenShift Route configuration.
+#
+# + domain - The domain of the hostname.
+public type OpenShiftRouteDomainConfig record {
+    string domain;
+    !...;
+};
+
 # Route configuration for @kubernetes:OpenShiftRoute.
 #
 # + host - The host of the route.
 # + domain - Domain of the route.
 public type OpenShiftRouteConfiguration record {
     *Metadata;
-    string host;
-    string domain;
+    string|OpenShiftRouteDomainConfig host;
     !...;
 };
 
