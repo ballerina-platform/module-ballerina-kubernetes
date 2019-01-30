@@ -64,7 +64,7 @@ class ArtifactManager {
      *
      * @throws KubernetesPluginException if an error occurs while generating artifacts
      */
-    void createArtifacts() throws KubernetesPluginException {
+    void   createArtifacts() throws KubernetesPluginException {
         if (kubernetesDataHolder.getJobModel() != null) {
             new JobHandler().createArtifacts();
             new DockerHandler().createArtifacts();

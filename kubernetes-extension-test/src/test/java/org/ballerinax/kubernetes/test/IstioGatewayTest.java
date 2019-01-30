@@ -115,7 +115,7 @@ public class IstioGatewayTest {
      * @throws IOException          Error when loading the generated yaml.
      * @throws InterruptedException Error when compiling the ballerina file.
      */
-    @Test(enabled = false, groups = {"istio"})
+    @Test(groups = {"istio"})
     public void invalidPortTest() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "invalid_port.bal"), 1);
     }
@@ -325,7 +325,7 @@ public class IstioGatewayTest {
      * @throws IOException          Error when loading the generated yaml.
      * @throws InterruptedException Error when compiling the ballerina file.
      */
-    @Test(enabled = false, groups = {"istio"})
+    @Test(groups = {"istio"})
     public void invalidTlsMutualTest() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tls_mutual_invalid.bal"), 1);
     }
@@ -480,7 +480,7 @@ public class IstioGatewayTest {
      * @throws IOException          Error when loading the generated yaml.
      * @throws InterruptedException Error when compiling the ballerina file.
      */
-    @Test(enabled = false, groups = {"istio"})
+    @Test(groups = {"istio"})
     public void invalidTlsSimpleTest() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tls_simple_invalid.bal"), 1);
     }
