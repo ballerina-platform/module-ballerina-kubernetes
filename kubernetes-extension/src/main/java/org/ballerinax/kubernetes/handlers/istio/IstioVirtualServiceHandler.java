@@ -61,7 +61,7 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
         for (Map.Entry<String, IstioVirtualServiceModel> vsModel : istioVSModels.entrySet()) {
             count++;
             generate(vsModel.getKey(), vsModel.getValue());
-            OUT.print("\t@kubernetes:IstioVirtualService \t - complete " + count + "/" + istioVSModels.size() + "\r");
+            OUT.print("\t@kubernetes:IstioVirtualService \t - complete " + count + "/" + size + "\r");
         }
     }
     
