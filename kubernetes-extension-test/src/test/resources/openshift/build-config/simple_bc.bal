@@ -18,7 +18,9 @@ import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:OpenShiftBuildConfig {}
-@kubernetes:Deployment {}
+@kubernetes:Deployment {
+    buildImage: false
+}
 @kubernetes:Service {}
 listener http:Listener helloEP = new(9090);
 

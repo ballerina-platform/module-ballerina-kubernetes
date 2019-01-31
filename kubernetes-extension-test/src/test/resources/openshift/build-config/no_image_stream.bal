@@ -20,7 +20,9 @@ import ballerinax/kubernetes;
 @kubernetes:OpenShiftBuildConfig {
     generateImageStream: false
 }
-@kubernetes:Deployment {}
+@kubernetes:Deployment {
+    buildImage: false
+}
 @kubernetes:Service {}
 listener http:Listener helloEP = new(9090);
 

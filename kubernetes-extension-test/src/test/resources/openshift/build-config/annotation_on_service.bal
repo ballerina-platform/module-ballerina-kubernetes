@@ -19,7 +19,9 @@ import ballerinax/kubernetes;
 
 listener http:Listener helloEP = new(9090);
 
-@kubernetes:Deployment {}
+@kubernetes:Deployment {
+    buildImage: false
+}
 @kubernetes:OpenShiftBuildConfig {}
 @http:ServiceConfig {
     basePath: "/helloWorld"

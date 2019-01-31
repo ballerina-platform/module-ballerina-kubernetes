@@ -21,7 +21,8 @@ import ballerinax/kubernetes;
     namespace: "ns"
 }
 @kubernetes:Deployment {
-    namespace: "ns"
+    namespace: "ns",
+    buildImage: false
 }
 @kubernetes:Service {
     namespace: "ns"

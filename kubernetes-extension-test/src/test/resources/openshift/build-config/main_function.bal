@@ -18,7 +18,9 @@ import ballerina/io;
 import ballerinax/kubernetes;
 
 @kubernetes:OpenShiftBuildConfig {}
-@kubernetes:Deployment {}
+@kubernetes:Deployment {
+    buildImage: false
+}
 public function main(string... args) {
     io:println("hello world");
 }
