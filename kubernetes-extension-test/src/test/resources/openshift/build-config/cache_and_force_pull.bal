@@ -21,7 +21,9 @@ import ballerinax/kubernetes;
     buildDockerWithNoCache: true,
     forcePullDockerImage: true
 }
-@kubernetes:Deployment {}
+@kubernetes:Deployment {
+    buildImage: false
+}
 @kubernetes:Service {}
 listener http:Listener helloEP = new(9090);
 

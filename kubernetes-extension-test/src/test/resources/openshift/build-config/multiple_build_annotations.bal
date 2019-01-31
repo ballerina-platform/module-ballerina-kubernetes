@@ -18,7 +18,9 @@ import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:OpenShiftBuildConfig {}
-@kubernetes:Deployment {}
+@kubernetes:Deployment {
+    buildImage: false
+}
 @kubernetes:Service {}
 listener http:Listener helloEP = new(9090);
 
@@ -35,7 +37,9 @@ service helloWorld on helloEP {
 
 
 @kubernetes:OpenShiftBuildConfig {}
-@kubernetes:Deployment {}
+@kubernetes:Deployment {
+    buildImage: false
+}
 @kubernetes:Service {}
 listener http:Listener helloEP2 = new(9092);
 

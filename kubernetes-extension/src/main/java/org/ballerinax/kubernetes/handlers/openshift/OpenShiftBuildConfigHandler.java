@@ -44,7 +44,8 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
         OpenShiftBuildConfigModel buildConfigModel = dataHolder.getOpenShiftBuildConfigModel();
         if (null != buildConfigModel) {
             generate(buildConfigModel);
-            OUT.println("\t@kubernetes:OpenShiftBuildConfig \t - complete 1/1");
+            OUT.println();
+            OUT.print("\t@kubernetes:OpenShiftBuildConfig \t - complete 1/1");
         }
     }
     
