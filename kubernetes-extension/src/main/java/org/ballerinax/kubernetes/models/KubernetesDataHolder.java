@@ -22,6 +22,7 @@ import org.ballerinax.docker.generator.models.DockerModel;
 import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
 import org.ballerinax.kubernetes.models.istio.IstioVirtualServiceModel;
 
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -49,8 +50,10 @@ public class KubernetesDataHolder {
     private String balxFilePath;
     private String outputDir;
     private String namespace;
+    private Path sourceRoot;
 
-    KubernetesDataHolder() {
+    KubernetesDataHolder(Path sourceRoot) {
+        this.sourceRoot = sourceRoot;
         this.bListenerToK8sServiceMap = new HashMap<>();
         this.bListenerToSecretMap = new HashMap<>();
         this.secretModelSet = new HashSet<>();
@@ -61,9 +64,12 @@ public class KubernetesDataHolder {
         this.resourceQuotaModels = new HashSet<>();
         this.istioGatewayModels = new LinkedHashMap<>();
         this.istioVirtualServiceModels = new LinkedHashMap<>();
-//        this.namespace = "";
     }
-
+    
+    public Path getSourceRoot() {
+        return sourceRoot;
+    }
+    
     public DeploymentModel getDeploymentModel() {
         return deploymentModel;
     }
