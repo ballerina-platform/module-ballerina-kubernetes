@@ -270,6 +270,8 @@
                                     <include>org.glassfish.jersey.ext:jersey-entity-filtering</include>
                                     <include>org.glassfish.jersey.media:jersey-media-json-jackson</include>
                                     <include>org.ow2.asm:asm</include>
+                                    <include>org.bouncycastle:bcpkix-jdk15on</include>
+                                    <include>org.bouncycastle:bcprov-jdk15on</include>
                                 </includes>
                                 <excludes>
                                     <exclude>com.fasterxml.jackson.core:jackson-annotations</exclude>

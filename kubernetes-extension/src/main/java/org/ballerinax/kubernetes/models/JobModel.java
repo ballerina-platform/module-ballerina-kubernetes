@@ -29,8 +29,11 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.ballerinax.docker.generator.DockerGenConstants.BALLERINA_BASE_IMAGE;
+import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_CERT_PATH;
+import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_HOST;
 import static org.ballerinax.kubernetes.KubernetesConstants.UNIX_DEFAULT_DOCKER_HOST;
 import static org.ballerinax.kubernetes.KubernetesConstants.WINDOWS_DEFAULT_DOCKER_HOST;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 
 /**
  * Job model class.
@@ -72,6 +75,16 @@ public class JobModel extends KubernetesModel {
         } else {
             this.dockerHost = UNIX_DEFAULT_DOCKER_HOST;
         }
+        
+        String dockerHost = System.getenv(DOCKER_HOST);
+        if (!isBlank(dockerHost)) {
+            this.dockerHost = dockerHost;
+        }
+        String dockerCertPath = System.getenv(DOCKER_CERT_PATH);
+        if (!isBlank(dockerCertPath)) {
+            this.dockerCertPath = dockerCertPath;
+        }
+        
         this.activeDeadlineSeconds = 20;
         this.imagePullSecrets = new HashSet<>();
         this.singleYAML = true;
