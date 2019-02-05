@@ -28,13 +28,15 @@ import org.wso2.ballerinalang.compiler.util.Name;
 import org.wso2.ballerinalang.compiler.util.Names;
 
 import java.io.File;
+import java.nio.file.Paths;
 
 public class HandlerTestSuite {
 
     @BeforeSuite
     public static void setUp() {
         KubernetesContext context = KubernetesContext.getInstance();
-        context.addDataHolder(new PackageID(Names.ANON_ORG, new Name("my_pkg"), Names.DEFAULT_VERSION));
+        context.addDataHolder(new PackageID(Names.ANON_ORG, new Name("my_pkg"), Names.DEFAULT_VERSION),
+                Paths.get("target"));
         KubernetesDataHolder dataHolder = context.getDataHolder();
         dataHolder.setOutputDir("target" + File.separator + "kubernetes/");
         File resourcesDirectory = new File("src" + File.separator + "test" + File.separator + "resources");
