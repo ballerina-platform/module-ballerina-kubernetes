@@ -60,6 +60,11 @@
             <classifier>ballerina-binary-repo</classifier>
         </dependency>
         <dependency>
+            <groupId>org.ballerinax.docker</groupId>
+            <artifactId>docker-generator</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-api</artifactId>
             <scope>test</scope>
