@@ -1,4 +1,4 @@
-# Copyright (c) 2017, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+# Copyright (c) 2019, WSO2 Inc. (http://wso2.com) All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,19 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-language: java
-
-services:
-  - docker
-
-install:
-  - mvn install -B -V
-
-script: echo "Done"
-
-cache:
-  directories:
-  - $HOME/.m2
-
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+codecov:
+  ci:
+    - travis
+    - !appveyor                # ignore CI builds by AppVeyor
