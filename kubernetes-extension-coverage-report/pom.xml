@@ -46,8 +46,6 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <configuration>
-                </configuration>
                 <executions>
                     <execution>
                         <id>report-aggregate</id>

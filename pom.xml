@@ -51,13 +51,6 @@
                                 <destFile>${project.build.directory}/coverage-reports/jacoco.exec</destFile>
                             </configuration>
                         </execution>
-                        <execution>
-                            <id>generate-code-coverage-report</id>
-                            <phase>test</phase>
-                            <goals>
-                                <goal>report</goal>
-                            </goals>
-                        </execution>
                     </executions>
                 </plugin>
             </plugins>
