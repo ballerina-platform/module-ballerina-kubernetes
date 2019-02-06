@@ -22,6 +22,7 @@ import org.ballerinalang.model.elements.PackageID;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.wso2.ballerinalang.compiler.util.Names;
 
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,9 +49,9 @@ public class KubernetesContext {
         return instance;
     }
 
-    public void addDataHolder(PackageID packageID) {
+    public void addDataHolder(PackageID packageID, Path sourcePath) {
         this.currentPackage = packageID;
-        this.packageIDtoDataHolderMap.put(packageID, new KubernetesDataHolder());
+        this.packageIDtoDataHolderMap.put(packageID, new KubernetesDataHolder(sourcePath));
     }
 
     public void setCurrentPackage(PackageID packageID) {

@@ -149,6 +149,9 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
         Map<String, String> dataMap = new HashMap<>();
         for (BLangExpression bLangExpression : data) {
             Path dataFilePath = Paths.get(((BLangLiteral) bLangExpression).getValue().toString());
+            if (!dataFilePath.isAbsolute()) {
+                dataFilePath = KubernetesContext.getInstance().getDataHolder().getSourceRoot().resolve(dataFilePath);
+            }
             String key = String.valueOf(dataFilePath.getFileName());
             String content = new String(KubernetesUtils.readFileContent(dataFilePath), StandardCharsets.UTF_8);
             dataMap.put(key, content);
@@ -163,6 +166,9 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
         configMapModel.setName(getValidName(serviceName) + "-ballerina-conf" + CONFIG_MAP_POSTFIX);
         configMapModel.setMountPath(BALLERINA_CONF_MOUNT_PATH);
         Path dataFilePath = Paths.get(configFilePath);
+        if (!dataFilePath.isAbsolute()) {
+            dataFilePath = KubernetesContext.getInstance().getDataHolder().getSourceRoot().resolve(dataFilePath);
+        }
         String content = new String(KubernetesUtils.readFileContent(dataFilePath), StandardCharsets.UTF_8);
         Map<String, String> dataMap = new HashMap<>();
         dataMap.put(BALLERINA_CONF_FILE_NAME, content);

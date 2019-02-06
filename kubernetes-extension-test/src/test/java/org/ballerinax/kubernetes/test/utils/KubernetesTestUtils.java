@@ -18,14 +18,17 @@
 
 package org.ballerinax.kubernetes.test.utils;
 
+import com.google.common.base.Optional;
 import com.mchange.io.FileUtils;
 import com.spotify.docker.client.DefaultDockerClient;
+import com.spotify.docker.client.DockerCertificates;
+import com.spotify.docker.client.DockerCertificatesStore;
 import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.exceptions.DockerCertificateException;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.ImageInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.ballerinax.docker.generator.DockerGenConstants;
 import org.glassfish.jersey.internal.RuntimeDelegateImpl;
 
 import java.io.BufferedReader;
@@ -42,6 +45,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import javax.ws.rs.ext.RuntimeDelegate;
+
+import static org.ballerinax.docker.generator.DockerGenConstants.UNIX_DEFAULT_DOCKER_HOST;
+import static org.ballerinax.docker.generator.DockerGenConstants.WINDOWS_DEFAULT_DOCKER_HOST;
 
 /**
  * Kubernetes test utils.
@@ -120,12 +126,32 @@ public class KubernetesTestUtils {
         }
     }
     
-    private static DockerClient getDockerClient() {
+    public static DockerClient getDockerClient() throws DockerTestException {
         RuntimeDelegate.setInstance(new RuntimeDelegateImpl());
         String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
-        String dockerHost = operatingSystem.contains("win") ? DockerGenConstants.WINDOWS_DEFAULT_DOCKER_HOST :
-                            DockerGenConstants.UNIX_DEFAULT_DOCKER_HOST;
-        return DefaultDockerClient.builder().uri(dockerHost).build();
+        String dockerHost = operatingSystem.contains("win") ? WINDOWS_DEFAULT_DOCKER_HOST : UNIX_DEFAULT_DOCKER_HOST;
+        DockerClient dockerClient = DefaultDockerClient.builder().uri(dockerHost).build();
+        try {
+            String dockerCertPath = System.getenv("DOCKER_CERT_PATH");
+            if (null != dockerCertPath && !"".equals(dockerCertPath)) {
+                if (null != System.getenv("DOCKER_HOST")) {
+                    dockerHost = System.getenv("DOCKER_HOST").replace("tcp", "https");
+                }
+                Optional<DockerCertificatesStore> certOptional =
+                        DockerCertificates.builder()
+                                .dockerCertPath(Paths.get(dockerCertPath))
+                                .build();
+                if (certOptional.isPresent()) {
+                    dockerClient = DefaultDockerClient.builder()
+                            .uri(dockerHost)
+                            .dockerCertificates(certOptional.get())
+                            .build();
+                }
+            }
+        } catch (DockerCertificateException e) {
+            throw new DockerTestException(e);
+        }
+        return dockerClient;
     }
 
     /**

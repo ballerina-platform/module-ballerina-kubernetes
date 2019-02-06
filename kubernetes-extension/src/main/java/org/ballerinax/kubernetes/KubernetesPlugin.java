@@ -37,7 +37,9 @@ import org.ballerinax.kubernetes.utils.DependencyValidator;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.ballerinalang.compiler.SourceDirectory;
 import org.wso2.ballerinalang.compiler.tree.BLangPackage;
+import org.wso2.ballerinalang.compiler.util.CompilerContext;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -59,7 +61,16 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
 public class KubernetesPlugin extends AbstractCompilerPlugin {
     private static final Logger pluginLog = LoggerFactory.getLogger(KubernetesPlugin.class);
     private DiagnosticLog dlog;
-
+    private SourceDirectory sourceDirectory;
+    
+    @Override
+    public void setCompilerContext(CompilerContext context) {
+        this.sourceDirectory = context.get(SourceDirectory.class);
+        if (this.sourceDirectory == null) {
+            throw new IllegalArgumentException("source directory has not been initialized");
+        }
+    }
+    
     @Override
     public void init(DiagnosticLog diagnosticLog) {
         this.dlog = diagnosticLog;
@@ -68,7 +79,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     @Override
     public void process(PackageNode packageNode) {
         BLangPackage bPackage = (BLangPackage) packageNode;
-        KubernetesContext.getInstance().addDataHolder(bPackage.packageID);
+        KubernetesContext.getInstance().addDataHolder(bPackage.packageID, sourceDirectory.getPath());
     }
     
     @Override
