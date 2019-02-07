@@ -17,6 +17,7 @@
  */
 package org.ballerinax.kubernetes.models;
 
+import com.spotify.docker.client.DockerHost;
 import org.ballerinax.docker.generator.models.CopyFileModel;
 import org.ballerinax.kubernetes.KubernetesConstants;
 
@@ -29,8 +30,6 @@ import java.util.Set;
 import static org.ballerinax.docker.generator.DockerGenConstants.BALLERINA_BASE_IMAGE;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_CERT_PATH;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_HOST;
-import static org.ballerinax.kubernetes.KubernetesConstants.UNIX_DEFAULT_DOCKER_HOST;
-import static org.ballerinax.kubernetes.KubernetesConstants.WINDOWS_DEFAULT_DOCKER_HOST;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 
 /**
@@ -82,9 +81,9 @@ public class DeploymentModel extends KubernetesModel {
         // Configure Docker Host based on operating system.
         String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
         if (operatingSystem.contains("win")) {
-            this.dockerHost = WINDOWS_DEFAULT_DOCKER_HOST;
+            this.setDockerHost(DockerHost.defaultWindowsEndpoint());
         } else {
-            this.dockerHost = UNIX_DEFAULT_DOCKER_HOST;
+            this.setDockerHost(DockerHost.defaultUnixEndpoint());
         }
     
         String dockerHost = System.getenv(DOCKER_HOST);
