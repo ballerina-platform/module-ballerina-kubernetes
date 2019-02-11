@@ -701,7 +701,6 @@ public type OpenShiftRouteDomainConfig record {
 # Route configuration for @kubernetes:OpenShiftRoute.
 #
 # + host - The host of the route.
-# + domain - Domain of the route.
 public type OpenShiftRouteConfiguration record {
     *Metadata;
     string|OpenShiftRouteDomainConfig host;

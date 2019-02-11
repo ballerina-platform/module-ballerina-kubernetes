@@ -22,8 +22,9 @@ package org.ballerinax.kubernetes;
  * Constants used in kubernetes extension.
  */
 public class KubernetesConstants {
-    public static final String ENABLE_DEBUG_LOGS = "debugKubernetes";
+    public static final String ENABLE_DEBUG_LOGS = "BAL_KUBERNETES_DEBUG";
     public static final String KUBERNETES = "kubernetes";
+    public static final String OPENSHIFT = "openshift";
     public static final String KUBERNETES_SVC_PROTOCOL = "TCP";
     public static final String KUBERNETES_SELECTOR_KEY = "app";
     public static final String INGRESS_POSTFIX = "-ingress";
