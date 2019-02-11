@@ -73,8 +73,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
  */
 public class KubernetesUtils {
 
-    private static final boolean DEBUG_ENABLED = "true".equals(System.getProperty(KubernetesConstants
-            .ENABLE_DEBUG_LOGS));
+    private static final boolean DEBUG_ENABLED = "true".equals(System.getenv(KubernetesConstants.ENABLE_DEBUG_LOGS));
     private static final PrintStream ERR = System.err;
     private static final PrintStream OUT = System.out;
 

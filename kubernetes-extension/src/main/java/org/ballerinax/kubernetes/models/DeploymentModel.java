@@ -88,7 +88,7 @@ public class DeploymentModel extends KubernetesModel {
     
         String dockerHost = System.getenv(DOCKER_HOST);
         if (!isBlank(dockerHost)) {
-            this.dockerHost = dockerHost;
+            this.setDockerHost(dockerHost);
         }
         String dockerCertPath = System.getenv(DOCKER_CERT_PATH);
         if (!isBlank(dockerCertPath)) {
