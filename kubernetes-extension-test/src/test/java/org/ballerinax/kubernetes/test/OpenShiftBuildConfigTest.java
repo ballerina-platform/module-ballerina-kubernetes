@@ -48,7 +48,7 @@ public class OpenShiftBuildConfigTest {
     /**
      * Validate generated service yaml.
      */
-    @Test(groups = "openshift")
+    @Test(groups = {"openshift"})
     public void simpleBuildConfig() throws IOException, InterruptedException, KubernetesPluginException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "simple_bc.bal"), 0);
         File yamlFile = new File(targetPath + File.separator + "simple_bc.yaml");
@@ -106,6 +106,125 @@ public class OpenShiftBuildConfigTest {
             }
         }
     
+        KubernetesUtils.deleteDirectory(targetPath);
+    }
+    
+    /**
+     * Validate generated service yaml.
+     */
+    @Test(groups = {"openshift"})
+    public void noImageStream() throws IOException, InterruptedException, KubernetesPluginException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "no_image_stream.bal"), 0);
+        File yamlFile = new File(targetPath + File.separator + "no_image_stream.yaml");
+        Assert.assertTrue(yamlFile.exists());
+        KubernetesClient client = new DefaultKubernetesClient();
+        List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
+        for (HasMetadata data : k8sItems) {
+            switch (data.getKind()) {
+                case "Service":
+                case "Deployment":
+                    break;
+                case "BuildConfig":
+                    BuildConfig bc = (BuildConfig) data;
+                    // metadata
+                    Assert.assertNotNull(bc.getMetadata());
+                    Assert.assertEquals(bc.getMetadata().getName(), "helloep-openshift-bc", "Invalid name found.");
+                    Assert.assertNotNull(bc.getMetadata().getLabels(), "Labels are missing");
+                    Assert.assertEquals(bc.getMetadata().getLabels().size(), 1, "Labels are missing");
+                    Assert.assertNotNull(bc.getMetadata().getLabels().get("build"), "'build' label is missing");
+                    Assert.assertEquals(bc.getMetadata().getLabels().get("build"), "helloep-openshift-bc",
+                            "Invalid label 'build' label value.");
+                    
+                    // spec
+                    Assert.assertNotNull(bc.getSpec());
+                    Assert.assertNotNull(bc.getSpec().getOutput());
+                    Assert.assertNotNull(bc.getSpec().getOutput().getTo());
+                    Assert.assertEquals(bc.getSpec().getOutput().getTo().getKind(), "ImageStreamTag",
+                            "Invalid output kind.");
+                    Assert.assertEquals(bc.getSpec().getOutput().getTo().getName(), "no_image_stream:latest",
+                            "Invalid image stream name.");
+                    Assert.assertNotNull(bc.getSpec().getSource());
+                    Assert.assertNotNull(bc.getSpec().getSource().getBinary(), "Binary source is missing");
+                    Assert.assertNotNull(bc.getSpec().getStrategy());
+                    Assert.assertNotNull(bc.getSpec().getStrategy().getDockerStrategy(), "Docker strategy is missing.");
+                    Assert.assertEquals(bc.getSpec().getStrategy().getDockerStrategy().getBuildArgs().size(), 0,
+                            "Invalid number of build args.");
+                    Assert.assertEquals(bc.getSpec().getStrategy().getDockerStrategy().getDockerfilePath(),
+                            "kubernetes/docker/Dockerfile", "Invalid docker path.");
+                    
+                    break;
+                default:
+                    Assert.fail("Unknown k8s resource found: " + data.getKind());
+                    break;
+            }
+        }
+        
+        KubernetesUtils.deleteDirectory(targetPath);
+    }
+    
+    /**
+     * Validate generated service yaml.
+     */
+    @Test(groups = {"openshift"})
+    public void withNamespace() throws IOException, InterruptedException, KubernetesPluginException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "namespace_openshift.bal"), 0);
+        File yamlFile = new File(targetPath + File.separator + "namespace_openshift.yaml");
+        Assert.assertTrue(yamlFile.exists());
+        KubernetesClient client = new DefaultKubernetesClient();
+        List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
+        for (HasMetadata data : k8sItems) {
+            switch (data.getKind()) {
+                case "Service":
+                case "Deployment":
+                    break;
+                case "BuildConfig":
+                    BuildConfig bc = (BuildConfig) data;
+                    // metadata
+                    Assert.assertNotNull(bc.getMetadata());
+                    Assert.assertEquals(bc.getMetadata().getName(), "helloep-openshift-bc", "Invalid name found.");
+                    Assert.assertEquals(bc.getMetadata().getNamespace(), "ns", "Invalid namespace.");
+                    Assert.assertNotNull(bc.getMetadata().getLabels(), "Labels are missing");
+                    Assert.assertEquals(bc.getMetadata().getLabels().size(), 1, "Labels are missing");
+                    Assert.assertNotNull(bc.getMetadata().getLabels().get("build"), "'build' label is missing");
+                    Assert.assertEquals(bc.getMetadata().getLabels().get("build"), "helloep-openshift-bc",
+                            "Invalid label 'build' label value.");
+                    
+                    // spec
+                    Assert.assertNotNull(bc.getSpec());
+                    Assert.assertNotNull(bc.getSpec().getOutput());
+                    Assert.assertNotNull(bc.getSpec().getOutput().getTo());
+                    Assert.assertEquals(bc.getSpec().getOutput().getTo().getKind(), "ImageStreamTag",
+                            "Invalid output kind.");
+                    Assert.assertEquals(bc.getSpec().getOutput().getTo().getName(), "namespace_openshift:latest",
+                            "Invalid image stream name.");
+                    Assert.assertNotNull(bc.getSpec().getSource());
+                    Assert.assertNotNull(bc.getSpec().getSource().getBinary(), "Binary source is missing");
+                    Assert.assertNotNull(bc.getSpec().getStrategy());
+                    Assert.assertNotNull(bc.getSpec().getStrategy().getDockerStrategy(), "Docker strategy is missing.");
+                    Assert.assertEquals(bc.getSpec().getStrategy().getDockerStrategy().getBuildArgs().size(), 0,
+                            "Invalid number of build args.");
+                    Assert.assertEquals(bc.getSpec().getStrategy().getDockerStrategy().getDockerfilePath(),
+                            "kubernetes/docker/Dockerfile", "Invalid docker path.");
+                    
+                    break;
+                case "ImageStream":
+                    ImageStream is = (ImageStream) data;
+                    Assert.assertNotNull(is.getMetadata());
+                    Assert.assertEquals(is.getMetadata().getName(), "namespace_openshift", "Invalid name found.");
+                    Assert.assertEquals(is.getMetadata().getNamespace(), "ns", "Invalid namespace.");
+                    Assert.assertEquals(is.getMetadata().getLabels().size(), 1, "Labels are missing");
+                    Assert.assertNotNull(is.getMetadata().getLabels().get("build"), "'build' label is missing");
+                    Assert.assertEquals(is.getMetadata().getLabels().get("build"), "helloep-openshift-bc",
+                            "Invalid label 'build' label value.");
+                    
+                    Assert.assertNull(is.getSpec());
+                    break;
+                default:
+                    Assert.fail("Unknown k8s resource found: " + data.getKind());
+                    break;
+            }
+        }
+        
         KubernetesUtils.deleteDirectory(targetPath);
     }
 }
