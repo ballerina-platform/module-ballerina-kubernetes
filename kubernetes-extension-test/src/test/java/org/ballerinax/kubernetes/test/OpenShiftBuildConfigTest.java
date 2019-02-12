@@ -227,4 +227,13 @@ public class OpenShiftBuildConfigTest {
         
         KubernetesUtils.deleteDirectory(targetPath);
     }
+    
+    /**
+     * Validate generated service yaml.
+     */
+    @Test(groups = {"openshift"})
+    public void multipleBuildAnnotations() throws IOException, InterruptedException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "multiple_build_annotations.bal"),
+                1);
+    }
 }
