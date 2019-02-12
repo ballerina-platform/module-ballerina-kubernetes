@@ -238,6 +238,18 @@ public class KubernetesTestUtils {
         return exitCode;
     }
     
+    /**
+     * Compile a ballerina project in a given directory
+     *
+     * @param sourceDirectory Ballerina source directory
+     * @return Exit code
+     * @throws InterruptedException if an error occurs while compiling
+     * @throws IOException          if an error occurs while writing file
+     */
+    public static int compileBallerinaProject(Path sourceDirectory) throws InterruptedException, IOException {
+        return compileBallerinaProject(sourceDirectory.toAbsolutePath().toString());
+    }
+    
     private static synchronized void addJavaAgents(Map<String, String> envProperties) {
         String javaOpts = "";
         if (envProperties.containsKey(JAVA_OPTS)) {
