@@ -241,6 +241,16 @@ public class KubernetesUtils {
         }
 
     }
+    
+    /**
+     * Deletes a given directory.
+     *
+     * @param path path to directory
+     * @throws KubernetesPluginException if an error occurs while deleting
+     */
+    public static void deleteDirectory(Path path) throws KubernetesPluginException {
+        deleteDirectory(path.toAbsolutePath().toString());
+    }
 
     /* Checks if a String is empty ("") or null.
      *

@@ -23,6 +23,7 @@ import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.openshift.api.model.BuildConfig;
 import io.fabric8.openshift.api.model.ImageStream;
+import org.apache.commons.io.FileUtils;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
@@ -32,6 +33,7 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -440,6 +442,80 @@ public class OpenShiftBuildConfigTest {
                     Assert.assertEquals(is.getMetadata().getLabels().size(), 1, "Labels are missing");
                     Assert.assertNotNull(is.getMetadata().getLabels().get("build"), "'build' label is missing");
                     Assert.assertEquals(is.getMetadata().getLabels().get("build"), "helloworld-openshift-bc",
+                            "Invalid label 'build' label value.");
+                    
+                    Assert.assertNull(is.getSpec());
+                    break;
+                default:
+                    Assert.fail("Unknown k8s resource found: " + data.getKind());
+                    break;
+            }
+        }
+        
+        KubernetesUtils.deleteDirectory(targetPath);
+    }
+    
+    /**
+     * Validate generated service yaml.
+     */
+    @Test(groups = {"openshift"})
+    public void buildProject() throws IOException, InterruptedException, KubernetesPluginException {
+        Path projectPath = Paths.get(balDirectory).resolve("project");
+        Path targetPath = projectPath.resolve("target");
+        Path projectTarget = targetPath.resolve("kubernetes").resolve("printer");
+        
+        FileUtils.deleteQuietly(targetPath.toFile());
+    
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaProject(projectPath.toAbsolutePath()), 0);
+        File yamlFile = targetPath.resolve(projectTarget).resolve("printer.yaml").toAbsolutePath().toFile();
+        Assert.assertTrue(yamlFile.exists());
+        KubernetesClient client = new DefaultKubernetesClient();
+        List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
+        for (HasMetadata data : k8sItems) {
+            switch (data.getKind()) {
+                case "Service":
+                case "Deployment":
+                    break;
+                case "BuildConfig":
+                    BuildConfig bc = (BuildConfig) data;
+                    // metadata
+                    Assert.assertNotNull(bc.getMetadata());
+                    Assert.assertEquals(bc.getMetadata().getName(), "printep-openshift-bc", "Invalid name found.");
+                    Assert.assertNotNull(bc.getMetadata().getLabels(), "Labels are missing");
+                    Assert.assertEquals(bc.getMetadata().getLabels().size(), 1, "Labels are missing");
+                    Assert.assertNotNull(bc.getMetadata().getLabels().get("build"), "'build' label is missing");
+                    Assert.assertEquals(bc.getMetadata().getLabels().get("build"), "printep-openshift-bc",
+                            "Invalid label 'build' label value.");
+                    
+                    // spec
+                    Assert.assertNotNull(bc.getSpec());
+                    Assert.assertNotNull(bc.getSpec().getOutput());
+                    Assert.assertNotNull(bc.getSpec().getOutput().getTo());
+                    Assert.assertEquals(bc.getSpec().getOutput().getTo().getKind(), "ImageStreamTag",
+                            "Invalid output kind.");
+                    Assert.assertEquals(bc.getSpec().getOutput().getTo().getName(), "printer:latest",
+                            "Invalid image stream name.");
+                    Assert.assertNotNull(bc.getSpec().getSource());
+                    Assert.assertNotNull(bc.getSpec().getSource().getBinary(), "Binary source is missing");
+                    Assert.assertNotNull(bc.getSpec().getStrategy());
+                    Assert.assertNotNull(bc.getSpec().getStrategy().getDockerStrategy(), "Docker strategy is missing.");
+                    Assert.assertEquals(bc.getSpec().getStrategy().getDockerStrategy().getBuildArgs().size(), 0,
+                            "Invalid number of build args.");
+                    Assert.assertEquals(bc.getSpec().getStrategy().getDockerStrategy().getDockerfilePath(),
+                            "kubernetes/docker/Dockerfile", "Invalid docker path.");
+                    Assert.assertFalse(bc.getSpec().getStrategy().getDockerStrategy().getForcePull(),
+                            "Force pull image set to false");
+                    Assert.assertFalse(bc.getSpec().getStrategy().getDockerStrategy().getNoCache(),
+                            "No cache for image build set to false");
+                    
+                    break;
+                case "ImageStream":
+                    ImageStream is = (ImageStream) data;
+                    Assert.assertNotNull(is.getMetadata());
+                    Assert.assertEquals(is.getMetadata().getName(), "printer", "Invalid name found.");
+                    Assert.assertEquals(is.getMetadata().getLabels().size(), 1, "Labels are missing");
+                    Assert.assertNotNull(is.getMetadata().getLabels().get("build"), "'build' label is missing");
+                    Assert.assertEquals(is.getMetadata().getLabels().get("build"), "printep-openshift-bc",
                             "Invalid label 'build' label value.");
                     
                     Assert.assertNull(is.getSpec());
