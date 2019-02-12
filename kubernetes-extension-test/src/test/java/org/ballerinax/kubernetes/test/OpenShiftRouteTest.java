@@ -18,8 +18,73 @@
 
 package org.ballerinax.kubernetes.test;
 
+import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.openshift.api.model.Route;
+import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
+import org.ballerinax.kubernetes.utils.KubernetesUtils;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.List;
+
+import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
+
 /**
  *
  */
 public class OpenShiftRouteTest {
+    private final String balDirectory = Paths.get("src").resolve("test").resolve("resources").resolve("openshift")
+            .resolve("route").toAbsolutePath().toString();
+    private final String targetPath = Paths.get(balDirectory).resolve(KUBERNETES).toString();
+    
+    /**
+     * Validate generated service yaml.
+     */
+    @Test(groups = {"openshift"})
+    public void noDomainTest() throws IOException, InterruptedException, KubernetesPluginException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "with_domain.bal"), 0);
+        File yamlFile = new File(targetPath + File.separator + "with_domain.yaml");
+        Assert.assertTrue(yamlFile.exists());
+        KubernetesClient client = new DefaultKubernetesClient();
+        List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
+        for (HasMetadata data : k8sItems) {
+            switch (data.getKind()) {
+                case "Service":
+                case "Deployment":
+                    break;
+                case "Route":
+                    Route route = (Route) data;
+                    // metadata
+                    Assert.assertNotNull(route.getMetadata());
+                    Assert.assertEquals(route.getMetadata().getName(), "helloep-openshift-route",
+                            "Invalid name found.");
+                    Assert.assertEquals(route.getMetadata().getNamespace(), "ns", "Namespace is missing.");
+                    Assert.assertNotNull(route.getSpec(), "Spec is missing.");
+                    
+                    // spec
+                    Assert.assertNotNull(route.getSpec());
+                    Assert.assertNotNull(route.getSpec().getPort());
+                    Assert.assertEquals(route.getSpec().getPort().getTargetPort().getIntVal().intValue(), 9090,
+                            "Invalid port found");
+                    Assert.assertNotNull(route.getSpec().getTo(), "To is missing.");
+                    Assert.assertEquals(route.getSpec().getTo().getKind(), "Service", "Kind is missing.");
+                    Assert.assertEquals(route.getSpec().getTo().getName(), "helloep-svc", "Service name is invalid.");
+                    Assert.assertEquals(route.getSpec().getTo().getWeight().intValue(), 100, "Invalid route weight.");
+                    
+                    break;
+                default:
+                    Assert.fail("Unknown k8s resource found: " + data.getKind());
+                    break;
+            }
+        }
+        
+        KubernetesUtils.deleteDirectory(targetPath);
+    }
 }
