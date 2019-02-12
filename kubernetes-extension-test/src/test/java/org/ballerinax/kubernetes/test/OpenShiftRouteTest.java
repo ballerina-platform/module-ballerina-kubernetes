@@ -66,10 +66,54 @@ public class OpenShiftRouteTest {
                     Assert.assertEquals(route.getMetadata().getName(), "helloep-openshift-route",
                             "Invalid name found.");
                     Assert.assertEquals(route.getMetadata().getNamespace(), "ns", "Namespace is missing.");
-                    Assert.assertNotNull(route.getSpec(), "Spec is missing.");
                     
                     // spec
-                    Assert.assertNotNull(route.getSpec());
+                    Assert.assertNotNull(route.getSpec(), "Spec is missing.");
+                    Assert.assertEquals(route.getSpec().getHost(), "helloep-openshift-route-ns.abc.com",
+                            "Invalid host");
+                    Assert.assertNotNull(route.getSpec().getPort());
+                    Assert.assertEquals(route.getSpec().getPort().getTargetPort().getIntVal().intValue(), 9090,
+                            "Invalid port found");
+                    Assert.assertNotNull(route.getSpec().getTo(), "To is missing.");
+                    Assert.assertEquals(route.getSpec().getTo().getKind(), "Service", "Kind is missing.");
+                    Assert.assertEquals(route.getSpec().getTo().getName(), "helloep-svc", "Service name is invalid.");
+                    Assert.assertEquals(route.getSpec().getTo().getWeight().intValue(), 100, "Invalid route weight.");
+                    
+                    break;
+                default:
+                    Assert.fail("Unknown k8s resource found: " + data.getKind());
+                    break;
+            }
+        }
+        
+        KubernetesUtils.deleteDirectory(targetPath);
+    }
+    
+    /**
+     * Validate generated service yaml.
+     */
+    @Test(groups = {"openshift"})
+    public void simpleRoute() throws IOException, InterruptedException, KubernetesPluginException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "simple_route.bal"), 0);
+        File yamlFile = new File(targetPath + File.separator + "simple_route.yaml");
+        Assert.assertTrue(yamlFile.exists());
+        KubernetesClient client = new DefaultKubernetesClient();
+        List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
+        for (HasMetadata data : k8sItems) {
+            switch (data.getKind()) {
+                case "Service":
+                case "Deployment":
+                    break;
+                case "Route":
+                    Route route = (Route) data;
+                    // metadata
+                    Assert.assertNotNull(route.getMetadata());
+                    Assert.assertEquals(route.getMetadata().getName(), "helloep-openshift-route",
+                            "Invalid name found.");
+                    
+                    // spec
+                    Assert.assertNotNull(route.getSpec(), "Spec is missing.");
+                    Assert.assertEquals(route.getSpec().getHost(), "www.bxoc.com", "Invalid host");
                     Assert.assertNotNull(route.getSpec().getPort());
                     Assert.assertEquals(route.getSpec().getPort().getTargetPort().getIntVal().intValue(), 9090,
                             "Invalid port found");
