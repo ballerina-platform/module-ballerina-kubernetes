@@ -40,7 +40,7 @@ import java.util.List;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 
 /**
- * Test cases for OpenShift Build Configs generation.
+ * Test cases for @kubernetes:OpenShiftBuildConfig{} annotation generated artifacts.
  */
 public class OpenShiftBuildConfigTest {
     private final String balDirectory = Paths.get("src").resolve("test").resolve("resources").resolve("openshift")
@@ -48,7 +48,7 @@ public class OpenShiftBuildConfigTest {
     private final String targetPath = Paths.get(balDirectory).resolve(KUBERNETES).toString();
     
     /**
-     * Validate generated service yaml.
+     * Test case openshift build config annotation with default values.
      */
     @Test(groups = {"openshift"})
     public void simpleBuildConfigTest() throws IOException, InterruptedException, KubernetesPluginException {
@@ -116,7 +116,7 @@ public class OpenShiftBuildConfigTest {
     }
     
     /**
-     * Validate generated service yaml.
+     * Test case openshift build config annotation with image stream generation disabled.
      */
     @Test(groups = {"openshift"})
     public void noImageStreamTest() throws IOException, InterruptedException, KubernetesPluginException {
@@ -173,7 +173,7 @@ public class OpenShiftBuildConfigTest {
     }
     
     /**
-     * Validate generated service yaml.
+     * Test case openshift build config annotation with namespace.
      */
     @Test(groups = {"openshift"})
     public void withNamespaceTest() throws IOException, InterruptedException, KubernetesPluginException {
@@ -243,7 +243,7 @@ public class OpenShiftBuildConfigTest {
     }
     
     /**
-     * Validate generated service yaml.
+     * Test case openshift build config annotation with multiple build configs in the same module/file.
      */
     @Test(groups = {"openshift"})
     public void multipleBuildAnnotations() throws IOException, InterruptedException {
@@ -252,7 +252,7 @@ public class OpenShiftBuildConfigTest {
     }
     
     /**
-     * Validate generated service yaml.
+     * Test case openshift build config annotation with a main function.
      */
     @Test(groups = {"openshift"})
     public void mainFunctionTest() throws IOException, InterruptedException, KubernetesPluginException {
@@ -320,7 +320,7 @@ public class OpenShiftBuildConfigTest {
     }
     
     /**
-     * Validate generated service yaml.
+     * Test case openshift build config annotation with force pull and caching disabled when docker image building.
      */
     @Test(groups = {"openshift"})
     public void noCacheAndForcePullTest() throws IOException, InterruptedException, KubernetesPluginException {
@@ -388,7 +388,7 @@ public class OpenShiftBuildConfigTest {
     }
     
     /**
-     * Validate generated service yaml.
+     * Test case openshift build config annotation with a service.
      */
     @Test(groups = {"openshift"})
     public void serviceAnnotationTest() throws IOException, InterruptedException, KubernetesPluginException {
@@ -456,7 +456,7 @@ public class OpenShiftBuildConfigTest {
     }
     
     /**
-     * Validate generated service yaml.
+     * Test case openshift build config annotation with a ballerina project.
      */
     @Test(groups = {"openshift"})
     public void buildProject() throws IOException, InterruptedException, KubernetesPluginException {
