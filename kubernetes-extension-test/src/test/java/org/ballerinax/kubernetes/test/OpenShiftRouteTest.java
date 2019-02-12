@@ -37,7 +37,7 @@ import java.util.List;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 
 /**
- *
+ * Test cases for @kubernetes:OpenShiftRoute{} annotation generated artifacts.
  */
 public class OpenShiftRouteTest {
     private final String balDirectory = Paths.get("src").resolve("test").resolve("resources").resolve("openshift")
@@ -45,7 +45,7 @@ public class OpenShiftRouteTest {
     private final String targetPath = Paths.get(balDirectory).resolve(KUBERNETES).toString();
     
     /**
-     * Validate generated service yaml.
+     * Test case openshift route with host domain.
      */
     @Test(groups = {"openshift"})
     public void noDomainTest() throws IOException, InterruptedException, KubernetesPluginException {
@@ -90,7 +90,7 @@ public class OpenShiftRouteTest {
     }
     
     /**
-     * Validate generated service yaml.
+     * Test case openshift route with host.
      */
     @Test(groups = {"openshift"})
     public void simpleRoute() throws IOException, InterruptedException, KubernetesPluginException {
@@ -130,5 +130,13 @@ public class OpenShiftRouteTest {
         }
         
         KubernetesUtils.deleteDirectory(targetPath);
+    }
+    
+    /**
+     * Test case to check that namespace is required.
+     */
+    @Test(groups = {"openshift"})
+    public void noNamespace() throws IOException, InterruptedException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "domain_with_no_namespace.bal"), 1);
     }
 }
