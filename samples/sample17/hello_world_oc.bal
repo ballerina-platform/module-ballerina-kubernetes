@@ -18,20 +18,21 @@ import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:OpenShiftBuildConfig {
-    namespace: "bal-sample17"
+    namespace: "bal-oc",
+    dockerRegistry: "172.30.1.1:5000"
 }
 @kubernetes:OpenShiftRoute {
-    namespace: "bal-sample17",
+    namespace: "bal-oc",
     host: {
-        domain: "nip.io"
+        domain: "192.168.99.101.nip.io"
     }
 }
 @kubernetes:Deployment {
-    namespace: "bal-sample17",
+    namespace: "bal-oc",
     buildImage: false
 }
 @kubernetes:Service {
-    namespace: "bal-sample17"
+    namespace: "bal-oc"
 }
 listener http:Listener helloEP = new(9090);
 

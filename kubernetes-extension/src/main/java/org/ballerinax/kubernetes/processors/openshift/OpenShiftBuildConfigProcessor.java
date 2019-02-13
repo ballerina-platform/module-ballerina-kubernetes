@@ -92,6 +92,9 @@ public class OpenShiftBuildConfigProcessor extends AbstractAnnotationProcessor {
                         BLangRecordLiteral annotationsField = (BLangRecordLiteral) bcField.getValue();
                         openShiftBC.setAnnotations(getMap(annotationsField.getKeyValuePairs()));
                         break;
+                    case dockerRegistry:
+                        openShiftBC.setDockerRegistry(resolveValue(bcField.getValue().toString()));
+                        break;
                     case generateImageStream:
                         openShiftBC.setGenerateImageStream(Boolean.valueOf(resolveValue(
                                 bcField.getValue().toString())));
@@ -111,8 +114,7 @@ public class OpenShiftBuildConfigProcessor extends AbstractAnnotationProcessor {
             }
     
             if (isBlank(openShiftBC.getName())) {
-                openShiftBC.setName(getValidName(identifierNode.getValue()) +
-                                             OPENSHIFT_BUILD_CONFIG_POSTFIX);
+                openShiftBC.setName(getValidName(identifierNode.getValue()) + OPENSHIFT_BUILD_CONFIG_POSTFIX);
             }
     
             KubernetesContext.getInstance().getDataHolder().setOpenShiftBuildConfigModel(openShiftBC);
@@ -127,6 +129,7 @@ public class OpenShiftBuildConfigProcessor extends AbstractAnnotationProcessor {
         namespace,
         labels,
         annotations,
+        dockerRegistry,
         generateImageStream,
         forcePullDockerImage,
         buildDockerWithNoCache

@@ -44,6 +44,7 @@ import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
 import org.ballerinax.kubernetes.models.SecretModel;
+import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildConfigModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
@@ -121,9 +122,17 @@ public class DeploymentHandler extends AbstractArtifactHandler {
 
     private Container generateContainer(DeploymentModel deploymentModel, List<ContainerPort>
             containerPorts) {
+        // Change docker image id of the deployment if an OpenShiftBuildConfig is there.
+        OpenShiftBuildConfigModel buildConfigModel = dataHolder.getOpenShiftBuildConfigModel();
+        String deploymentImageName = deploymentModel.getImage();
+        if (null != buildConfigModel) {
+            deploymentImageName = buildConfigModel.getDockerRegistry() + "/" + buildConfigModel.getNamespace() +
+                                     "/" + deploymentImageName;
+        }
+        
         return new ContainerBuilder()
                 .withName(deploymentModel.getName())
-                .withImage(deploymentModel.getImage())
+                .withImage(deploymentImageName)
                 .withImagePullPolicy(deploymentModel.getImagePullPolicy())
                 .withPorts(containerPorts)
                 .withEnv(populateEnvVar(deploymentModel.getEnv()))

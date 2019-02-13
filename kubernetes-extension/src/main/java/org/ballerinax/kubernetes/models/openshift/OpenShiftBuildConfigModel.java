@@ -24,6 +24,7 @@ import org.ballerinax.kubernetes.models.KubernetesModel;
  * Model class for OpenShift's Build Configs.
  */
 public class OpenShiftBuildConfigModel extends KubernetesModel {
+    private String dockerRegistry = null;
     private boolean generateImageStream = true;
     private boolean forcePullDockerImage = false;
     private boolean buildDockerWithNoCache = false;
@@ -50,5 +51,13 @@ public class OpenShiftBuildConfigModel extends KubernetesModel {
     
     public void setBuildDockerWithNoCache(boolean buildDockerWithNoCache) {
         this.buildDockerWithNoCache = buildDockerWithNoCache;
+    }
+    
+    public String getDockerRegistry() {
+        return dockerRegistry;
+    }
+    
+    public void setDockerRegistry(String dockerRegistry) {
+        this.dockerRegistry = dockerRegistry;
     }
 }
