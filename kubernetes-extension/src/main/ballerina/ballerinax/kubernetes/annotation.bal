@@ -676,11 +676,21 @@ public annotation<service, listener> IstioVirtualService IstioVirtualServiceConf
 
 # Build Config configuration for @kubernetes:OpenShiftBuildConfig.
 #
+# + name - Name of the resource
+# + namespace - The openshift project name or the namespace.
+# + labels - Map of labels for the resource
+# + annotations - Map of annotations for resource
+# + dockerRegistry - The ip of the docker registry.
 # + generateImageStream - Generate image stream for the generated docker image.
 # + forcePullDockerImage - Set force pull images when building docker image.
 # + buildDockerWithNoCache - Build docker image with no cache enabled.
 public type OpenShiftBuildConfigConfiguration record {
-    *Metadata;
+    // Not using record referencing as namespace is required.
+    string name?;
+    string namespace;
+    map<string> labels?;
+    map<string> annotations?;
+    string dockerRegistry;
     boolean generateImageStream = true;
     boolean forcePullDockerImage = false;
     boolean buildDockerWithNoCache = false;
