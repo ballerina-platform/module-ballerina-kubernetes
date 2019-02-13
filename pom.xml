@@ -24,7 +24,7 @@
     </parent>
 
     <groupId>org.ballerinax.kubernetes</groupId>
-    <version>0.990.3-SNAPSHOT</version>
+    <version>0.990.4-SNAPSHOT</version>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>kubernetes-extension-parent</artifactId>
     <name>Ballerinax - Kubernetes Extension Parent</name>
@@ -253,11 +253,11 @@
     </scm>
 
     <properties>
-        <ballerina.lang.version>0.990.3-SNAPSHOT</ballerina.lang.version>
+        <ballerina.lang.version>0.990.3</ballerina.lang.version>
         <ballerina.source.directory>${project.build.directory}/../src/main/ballerina</ballerina.source.directory>
         <com.fasterxml.jackson.core.annotations.version>2.9.1</com.fasterxml.jackson.core.annotations.version>
         <com.fasterxml.jackson.dataformat.yaml.version>2.9.1</com.fasterxml.jackson.dataformat.yaml.version>
-        <docker.generator.version>0.990.3-SNAPSHOT</docker.generator.version>
+        <docker.generator.version>0.990.3</docker.generator.version>
         <fabric8.kubernetes.api.version>3.0.11</fabric8.kubernetes.api.version>
         <fabric8.kubernetes.client.version>3.1.10</fabric8.kubernetes.client.version>
         <jackson.version>2.9.1</jackson.version>
