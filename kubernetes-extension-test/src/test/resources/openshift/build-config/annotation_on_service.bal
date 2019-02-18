@@ -22,7 +22,10 @@ listener http:Listener helloEP = new(9090);
 @kubernetes:Deployment {
     buildImage: false
 }
-@kubernetes:OpenShiftBuildConfig {}
+@kubernetes:OpenShiftBuildConfig {
+    namespace: "bal-oc-test",
+    dockerRegistry: "172.30.1.1:5000"
+}
 @http:ServiceConfig {
     basePath: "/helloWorld"
 }

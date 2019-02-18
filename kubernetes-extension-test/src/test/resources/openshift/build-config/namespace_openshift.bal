@@ -18,7 +18,8 @@ import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:OpenShiftBuildConfig {
-    namespace: "ns"
+    namespace: "ns",
+    dockerRegistry: "172.30.1.1:5000"
 }
 @kubernetes:Deployment {
     namespace: "ns",
