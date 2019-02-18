@@ -17,7 +17,10 @@
 import ballerina/http;
 import ballerinax/kubernetes;
 
-@kubernetes:OpenShiftBuildConfig {}
+@kubernetes:OpenShiftBuildConfig {
+    namespace: "bal-oc-test",
+    dockerRegistry: "172.30.1.1:5000"
+}
 @kubernetes:Deployment {
     buildImage: false
 }

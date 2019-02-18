@@ -18,6 +18,8 @@ import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:OpenShiftBuildConfig {
+    namespace: "bal-oc-test",
+    dockerRegistry: "172.30.1.1:5000",
     buildDockerWithNoCache: true,
     forcePullDockerImage: true
 }
