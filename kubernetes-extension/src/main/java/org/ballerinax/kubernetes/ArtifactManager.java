@@ -131,18 +131,19 @@ class ArtifactManager {
         if (null != kubernetesDataHolder.getOpenShiftBuildConfigModel() ||
             kubernetesDataHolder.getOpenShiftRouteModels().size() != 0) {
             KubernetesUtils.printInstruction("\tRun the following command to deploy the OpenShift artifacts: ");
-            KubernetesUtils.printInstruction("\toc create -f " + outputDir);
+            KubernetesUtils.printInstruction("\toc apply -f " + outputDir);
             if (null != kubernetesDataHolder.getOpenShiftBuildConfigModel()) {
                 KubernetesUtils.printInstruction("\n\tRun the following command to start a build: ");
                 if (outputDir.contains("target")) {
-                    KubernetesUtils.printInstruction("\tcd target && oc start-build bc/" +
+                    KubernetesUtils.printInstruction("\toc start-build bc/" +
                                                      kubernetesDataHolder.getOpenShiftBuildConfigModel().getName() +
-                                                     " --from-dir=. --follow");
+                                                     " --from-dir=./target --follow");
                 } else {
                     KubernetesUtils.printInstruction("\toc start-build bc/" +
                                                      kubernetesDataHolder.getOpenShiftBuildConfigModel().getName() +
                                                      " --from-dir=. --follow");
                 }
+                KubernetesUtils.printInstruction("\toc apply -f " + outputDir);
             }
             KubernetesUtils.printInstruction("");
         }
