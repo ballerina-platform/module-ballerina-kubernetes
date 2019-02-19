@@ -20,7 +20,7 @@ package org.ballerinax.kubernetes.test;
 
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.EnvVar;
-import io.fabric8.kubernetes.api.model.extensions.Deployment;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;

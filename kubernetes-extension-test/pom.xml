@@ -45,6 +45,18 @@
                     <groupId> org.bouncycastle</groupId>
                     <artifactId>bcprov-jdk15on</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-jdk14</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-nop</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -58,6 +70,10 @@
             <artifactId>testerina-core</artifactId>
             <type>zip</type>
             <classifier>ballerina-binary-repo</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinax.kubernetes</groupId>
+            <artifactId>kubernetes-extension</artifactId>
         </dependency>
         <dependency>
             <groupId>org.ballerinax.docker</groupId>
@@ -78,10 +94,6 @@
             <groupId>com.spotify</groupId>
             <artifactId>docker-client</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ballerinax.kubernetes</groupId>
-            <artifactId>kubernetes-extension</artifactId>
         </dependency>
     </dependencies>
 

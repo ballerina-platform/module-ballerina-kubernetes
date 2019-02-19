@@ -21,7 +21,7 @@ package org.ballerinax.kubernetes.test;
 import com.spotify.docker.client.messages.ImageInfo;
 import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Container;
-import io.fabric8.kubernetes.api.model.Job;
+import io.fabric8.kubernetes.api.model.batch.Job;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;

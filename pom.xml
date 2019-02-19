@@ -253,20 +253,20 @@
     </scm>
 
     <properties>
-        <ballerina.lang.version>0.990.3</ballerina.lang.version>
+        <ballerina.lang.version>0.990.4-SNAPSHOT</ballerina.lang.version>
         <ballerina.source.directory>${project.build.directory}/../src/main/ballerina</ballerina.source.directory>
-        <com.fasterxml.jackson.core.annotations.version>2.9.1</com.fasterxml.jackson.core.annotations.version>
-        <com.fasterxml.jackson.dataformat.yaml.version>2.9.1</com.fasterxml.jackson.dataformat.yaml.version>
-        <docker.generator.version>0.990.3</docker.generator.version>
-        <fabric8.kubernetes.api.version>3.0.11</fabric8.kubernetes.api.version>
-        <fabric8.kubernetes.client.version>3.1.10</fabric8.kubernetes.client.version>
-        <jackson.version>2.9.1</jackson.version>
+        <com.fasterxml.jackson.core.annotations.version>2.9.8</com.fasterxml.jackson.core.annotations.version>
+        <com.fasterxml.jackson.dataformat.yaml.version>2.9.8</com.fasterxml.jackson.dataformat.yaml.version>
+        <docker.generator.version>0.990.4-SNAPSHOT</docker.generator.version>
+        <fabric8.kubernetes.api.version>3.0.12</fabric8.kubernetes.api.version>
+        <fabric8.kubernetes.client.version>4.1.2</fabric8.kubernetes.client.version>
+        <jackson.version>2.9.8</jackson.version>
         <maven.jacoco.plugin.version>0.8.1</maven.jacoco.plugin.version>
         <mvn.processor.plugin.version>2.2.4</mvn.processor.plugin.version>
         <mvn.shade.plugin.version>3.1.1</mvn.shade.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <spotify.docker.client.version>8.14.5</spotify.docker.client.version>
+        <spotify.docker.client.version>8.15.0</spotify.docker.client.version>
         <testng.version>6.14.3</testng.version>
     </properties>
 

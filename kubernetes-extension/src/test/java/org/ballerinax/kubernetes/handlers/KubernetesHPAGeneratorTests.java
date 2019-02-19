@@ -90,12 +90,16 @@ public class KubernetesHPAGeneratorTests {
 
     private void assertGeneratedYAML(File yamlFile) throws IOException {
         HorizontalPodAutoscaler podAutoscaler = KubernetesHelper.loadYaml(yamlFile);
-        Assert.assertEquals(hpaName, podAutoscaler.getMetadata().getName());
-        Assert.assertEquals(selector, podAutoscaler.getMetadata().getLabels().get(KubernetesConstants
-                .KUBERNETES_SELECTOR_KEY));
-        Assert.assertEquals(maxReplicas, podAutoscaler.getSpec().getMaxReplicas().intValue());
-        Assert.assertEquals(minReplicas, podAutoscaler.getSpec().getMinReplicas().intValue());
-        Assert.assertEquals(cpuPercentage, podAutoscaler.getSpec().getTargetCPUUtilizationPercentage().intValue());
-        Assert.assertEquals(deploymentName, podAutoscaler.getSpec().getScaleTargetRef().getName());
+        Assert.assertEquals(podAutoscaler.getMetadata().getName(), hpaName);
+        Assert.assertEquals(podAutoscaler.getMetadata().getLabels().get(KubernetesConstants
+                .KUBERNETES_SELECTOR_KEY), selector);
+        Assert.assertEquals(podAutoscaler.getSpec().getMaxReplicas().intValue(), maxReplicas);
+        Assert.assertEquals(podAutoscaler.getSpec().getMinReplicas().intValue(), minReplicas);
+        Assert.assertEquals(podAutoscaler.getSpec().getMetrics().size(), 1, "CPU metric is missing.");
+        Assert.assertEquals(podAutoscaler.getSpec().getMetrics().get(0).getResource().getName(), "cpu",
+                "Invalid resource name.");
+        Assert.assertEquals(podAutoscaler.getSpec().getMetrics().get(0).getResource().getTargetAverageUtilization()
+                .intValue(), cpuPercentage);
+        Assert.assertEquals(podAutoscaler.getSpec().getScaleTargetRef().getName(), deploymentName);
     }
 }
