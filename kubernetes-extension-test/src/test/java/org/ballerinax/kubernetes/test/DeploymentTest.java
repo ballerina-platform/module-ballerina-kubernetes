@@ -19,7 +19,6 @@
 package org.ballerinax.kubernetes.test;
 
 import com.spotify.docker.client.messages.ImageInfo;
-import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
@@ -64,7 +63,7 @@ public class DeploymentTest {
         // Validate deployment yaml
         File deploymentYAML = Paths.get(targetPath).resolve("dep_annotations_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
-        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         Assert.assertEquals(deployment.getMetadata().getAnnotations().size(), 2,
                 "Invalid number of annotations found.");
         Assert.assertEquals(deployment.getMetadata().getAnnotations().get("anno1"), "anno1Val",
@@ -95,7 +94,7 @@ public class DeploymentTest {
         // Validate deployment yaml
         File deploymentYAML = Paths.get(targetPath).resolve("pod_annotations_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
-        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         Assert.assertEquals(deployment.getSpec().getTemplate().getMetadata().getAnnotations().size(), 2,
                 "Invalid number of annotations found.");
         Assert.assertEquals(deployment.getSpec().getTemplate().getMetadata().getAnnotations().get("anno1"), "anno1Val",

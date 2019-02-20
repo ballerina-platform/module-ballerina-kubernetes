@@ -21,8 +21,6 @@ package org.ballerinax.kubernetes.test;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
-import io.fabric8.kubernetes.client.KubernetesClient;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
@@ -34,7 +32,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
@@ -61,8 +58,7 @@ public class ServiceTest {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "different_svc_ports.bal"), 0);
         File yamlFile = new File(targetPath + File.separator + "different_svc_ports.yaml");
         Assert.assertTrue(yamlFile.exists());
-        KubernetesClient client = new DefaultKubernetesClient();
-        List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
+        List<HasMetadata> k8sItems = KubernetesTestUtils.loadYaml(yamlFile);
         for (HasMetadata data : k8sItems) {
             switch (data.getKind()) {
                 case "Service":

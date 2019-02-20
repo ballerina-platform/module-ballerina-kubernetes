@@ -19,7 +19,6 @@
 package org.ballerinax.kubernetes.test.samples;
 
 import com.spotify.docker.client.messages.ImageInfo;
-import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.batch.Job;
 import org.ballerinax.kubernetes.KubernetesConstants;
@@ -65,7 +64,7 @@ public class Sample11Test implements SampleTest {
     @Test
     public void validateJob() throws IOException {
         File jobYAML = new File(targetPath + File.separator + "hello_world_job_job.yaml");
-        Job job = KubernetesHelper.loadYaml(jobYAML);
+        Job job = KubernetesTestUtils.loadYaml(jobYAML);
         Assert.assertEquals("hello-world-job-job", job.getMetadata().getName());
         Assert.assertEquals(1, job.getSpec().getTemplate().getSpec().getContainers().size());
         Container container = job.getSpec().getTemplate().getSpec().getContainers().get(0);

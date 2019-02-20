@@ -18,11 +18,11 @@
 
 package org.ballerinax.kubernetes.handlers;
 
-import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.ConfigMapModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
+import org.ballerinax.kubernetes.utils.Utils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -70,7 +70,7 @@ public class KubernetesConfigMapGeneratorTests {
     }
 
     private void assertGeneratedYAML(File yamlFile) throws IOException {
-        ConfigMap configMap = KubernetesHelper.loadYaml(yamlFile);
+        ConfigMap configMap = Utils.loadYaml(yamlFile);
         Assert.assertEquals(this.configMapName, configMap.getMetadata().getName());
         Assert.assertEquals(2, configMap.getData().size());
         Assert.assertEquals("world", configMap.getData().get("hello"));

@@ -18,7 +18,6 @@
 
 package org.ballerinax.kubernetes.test.samples;
 
-import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.ballerinax.kubernetes.KubernetesConstants;
@@ -67,7 +66,7 @@ public class Sample12Test implements SampleTest {
     public void validateDeployment() throws IOException {
         File deploymentYAML = new File(targetPath + File.separator + "hello_world_copy_file_deployment.yaml");
         Assert.assertTrue(deploymentYAML.exists());
-        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         // Assert Deployment
         Assert.assertEquals("hello-world-copy-file-deployment", deployment.getMetadata().getName());
         Assert.assertEquals(1, deployment.getSpec().getReplicas().intValue());

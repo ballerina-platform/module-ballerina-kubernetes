@@ -18,7 +18,6 @@
 
 package org.ballerinax.kubernetes.test.samples;
 
-import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
@@ -55,7 +54,7 @@ public class Sample1Test implements SampleTest {
     public void validateDeployment() throws IOException {
         File deploymentYAML = new File(targetPath + File.separator + "hello_world_k8s_deployment.yaml");
         Assert.assertTrue(deploymentYAML.exists());
-        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         Assert.assertEquals("hello-world-k8s-deployment", deployment.getMetadata().getName());
         Assert.assertEquals(1, deployment.getSpec().getReplicas().intValue());
         Assert.assertEquals("hello_world_k8s", deployment.getMetadata().getLabels().get(KubernetesConstants
@@ -72,7 +71,7 @@ public class Sample1Test implements SampleTest {
     public void validateK8SService() throws IOException {
         File serviceYAML = new File(targetPath + File.separator + "hello_world_k8s_svc.yaml");
         Assert.assertTrue(serviceYAML.exists());
-        Service service = KubernetesHelper.loadYaml(serviceYAML);
+        Service service = KubernetesTestUtils.loadYaml(serviceYAML);
         Assert.assertEquals("helloworld-svc", service.getMetadata().getName());
         Assert.assertEquals("hello_world_k8s", service.getMetadata().getLabels().get(KubernetesConstants
                 .KUBERNETES_SELECTOR_KEY));

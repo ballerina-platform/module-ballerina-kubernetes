@@ -18,7 +18,6 @@
 
 package org.ballerinax.kubernetes.test.samples;
 
-import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.ballerinax.kubernetes.KubernetesConstants;
@@ -94,7 +93,7 @@ public class Sample16Test implements SampleTest {
     public void validateShopDeployment() throws IOException {
         File deploymentYAML = new File(bookShopPkgTargetPath + File.separator + "book.shop_deployment.yaml");
         Assert.assertTrue(deploymentYAML.exists(), "Cannot find deployment yaml");
-        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         // Assert Deployment
         Assert.assertEquals(deployment.getMetadata().getName(), "book-shop-deployment");
         Assert.assertEquals(deployment.getSpec().getReplicas().intValue(), 1, "Invalid replica value");

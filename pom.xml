@@ -75,12 +75,6 @@
                 <artifactId>lib-creator</artifactId>
             </dependency>
             <dependency>
-                <groupId>io.fabric8</groupId>
-                <artifactId>kubernetes-api</artifactId>
-                <version>${fabric8.kubernetes.api.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-client</artifactId>
                 <version>${spotify.docker.client.version}</version>
@@ -258,7 +252,6 @@
         <com.fasterxml.jackson.core.annotations.version>2.9.8</com.fasterxml.jackson.core.annotations.version>
         <com.fasterxml.jackson.dataformat.yaml.version>2.9.8</com.fasterxml.jackson.dataformat.yaml.version>
         <docker.generator.version>0.990.4-SNAPSHOT</docker.generator.version>
-        <fabric8.kubernetes.api.version>3.0.12</fabric8.kubernetes.api.version>
         <fabric8.kubernetes.client.version>4.1.2</fabric8.kubernetes.client.version>
         <jackson.version>2.9.8</jackson.version>
         <maven.jacoco.plugin.version>0.8.3</maven.jacoco.plugin.version>

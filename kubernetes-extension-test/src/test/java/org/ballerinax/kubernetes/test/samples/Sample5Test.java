@@ -18,7 +18,6 @@
 
 package org.ballerinax.kubernetes.test.samples;
 
-import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscaler;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -67,7 +66,7 @@ public class Sample5Test implements SampleTest {
     public void validatePodAutoscaler() throws IOException {
         File hpaYAML = new File(targetPath + File.separator + "pizzashack_hpa.yaml");
         Assert.assertTrue(hpaYAML.exists());
-        HorizontalPodAutoscaler podAutoscaler = KubernetesHelper.loadYaml(hpaYAML);
+        HorizontalPodAutoscaler podAutoscaler = KubernetesTestUtils.loadYaml(hpaYAML);
         Assert.assertEquals(podAutoscaler.getMetadata().getName(), "pizzashack-hpa");
         Assert.assertEquals(podAutoscaler.getMetadata().getLabels().get(KubernetesConstants
                 .KUBERNETES_SELECTOR_KEY), "pizzashack");

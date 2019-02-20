@@ -18,11 +18,11 @@
 
 package org.ballerinax.kubernetes.handlers;
 
-import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Secret;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.SecretModel;
+import org.ballerinax.kubernetes.utils.Utils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -69,7 +69,7 @@ public class KubernetesSecretGeneratorTests {
     }
 
     private void assertGeneratedYAML(File yamlFile) throws IOException {
-        Secret secret = KubernetesHelper.loadYaml(yamlFile);
+        Secret secret = Utils.loadYaml(yamlFile);
         Assert.assertEquals(secretName, secret.getMetadata().getName());
         Assert.assertEquals(2, secret.getData().size());
         Assert.assertEquals("world", secret.getData().get("hello"));

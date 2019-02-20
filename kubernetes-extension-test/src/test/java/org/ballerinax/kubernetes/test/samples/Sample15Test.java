@@ -18,7 +18,6 @@
 
 package org.ballerinax.kubernetes.test.samples;
 
-import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.ResourceQuota;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
@@ -66,7 +65,7 @@ public class Sample15Test implements SampleTest {
     public void validateResourceQuota() throws IOException {
         File resourceQuotaYAML = new File(targetPath + File.separator + "hello_world_k8s_rq_resource_quota.yaml");
         Assert.assertTrue(resourceQuotaYAML.exists());
-        ResourceQuota resourceQuota = KubernetesHelper.loadYaml(resourceQuotaYAML);
+        ResourceQuota resourceQuota = KubernetesTestUtils.loadYaml(resourceQuotaYAML);
         // Assert Resource quota
         Assert.assertEquals("pod-limit", resourceQuota.getMetadata().getName());
         Assert.assertEquals(resourceQuota.getMetadata().getLabels().size(), 0, "Invalid number of labels.");
