@@ -55,6 +55,10 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>org.ballerinalang</groupId>
+            <artifactId>lib-creator</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.ballerinax.docker</groupId>
             <artifactId>docker-generator</artifactId>
         </dependency>
@@ -63,12 +67,9 @@
             <artifactId>kubernetes-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.ballerinalang</groupId>
-            <artifactId>lib-creator</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-api</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.spotify</groupId>
@@ -238,7 +239,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>${mvn.shade.plugin.version}</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
