@@ -72,10 +72,6 @@
             <classifier>ballerina-binary-repo</classifier>
         </dependency>
         <dependency>
-            <groupId>org.ballerinax.kubernetes</groupId>
-            <artifactId>kubernetes-extension</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.ballerinax.docker</groupId>
             <artifactId>docker-generator</artifactId>
             <scope>test</scope>
@@ -94,6 +90,10 @@
             <groupId>com.spotify</groupId>
             <artifactId>docker-client</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ballerinax.kubernetes</groupId>
+            <artifactId>kubernetes-extension</artifactId>
         </dependency>
     </dependencies>
 
