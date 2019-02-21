@@ -18,7 +18,6 @@
 
 package org.ballerinax.kubernetes.test.samples;
 
-import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscaler;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -67,14 +66,18 @@ public class Sample5Test implements SampleTest {
     public void validatePodAutoscaler() throws IOException {
         File hpaYAML = new File(targetPath + File.separator + "pizzashack_hpa.yaml");
         Assert.assertTrue(hpaYAML.exists());
-        HorizontalPodAutoscaler podAutoscaler = KubernetesHelper.loadYaml(hpaYAML);
-        Assert.assertEquals("pizzashack-hpa", podAutoscaler.getMetadata().getName());
-        Assert.assertEquals("pizzashack", podAutoscaler.getMetadata().getLabels().get(KubernetesConstants
-                .KUBERNETES_SELECTOR_KEY));
-        Assert.assertEquals(2, podAutoscaler.getSpec().getMaxReplicas().intValue());
-        Assert.assertEquals(1, podAutoscaler.getSpec().getMinReplicas().intValue());
-        Assert.assertEquals(50, podAutoscaler.getSpec().getTargetCPUUtilizationPercentage().intValue());
-        Assert.assertEquals("pizzashack-deployment", podAutoscaler.getSpec().getScaleTargetRef().getName());
+        HorizontalPodAutoscaler podAutoscaler = KubernetesTestUtils.loadYaml(hpaYAML);
+        Assert.assertEquals(podAutoscaler.getMetadata().getName(), "pizzashack-hpa");
+        Assert.assertEquals(podAutoscaler.getMetadata().getLabels().get(KubernetesConstants
+                .KUBERNETES_SELECTOR_KEY), "pizzashack");
+        Assert.assertEquals(podAutoscaler.getSpec().getMaxReplicas().intValue(), 2);
+        Assert.assertEquals(podAutoscaler.getSpec().getMinReplicas().intValue(), 1);
+        Assert.assertEquals(podAutoscaler.getSpec().getMetrics().size(), 1, "CPU metric is missing.");
+        Assert.assertEquals(podAutoscaler.getSpec().getMetrics().get(0).getResource().getName(), "cpu",
+                "Invalid resource name.");
+        Assert.assertEquals(podAutoscaler.getSpec().getMetrics().get(0).getResource().getTargetAverageUtilization()
+                .intValue(), 50);
+        Assert.assertEquals(podAutoscaler.getSpec().getScaleTargetRef().getName(), "pizzashack-deployment");
     }
     
     @AfterClass

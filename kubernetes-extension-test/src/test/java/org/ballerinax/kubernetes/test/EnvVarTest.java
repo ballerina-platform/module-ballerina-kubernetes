@@ -18,9 +18,8 @@
 
 package org.ballerinax.kubernetes.test;
 
-import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.EnvVar;
-import io.fabric8.kubernetes.api.model.extensions.Deployment;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
@@ -66,7 +65,7 @@ public class EnvVarTest {
         // Validate deployment yaml
         File deploymentYAML = Paths.get(targetPath).resolve("name_value_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
-        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         List<EnvVar> envVars = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
         Assert.assertEquals(envVars.size(), 2, "Invalid number of environment variables found.");
         Assert.assertEquals(envVars.get(0).getName(), "location", "Invalid environment variable name found.");
@@ -101,7 +100,7 @@ public class EnvVarTest {
         // Validate deployment yaml
         File deploymentYAML = Paths.get(targetPath).resolve("build_name_value_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
-        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         List<EnvVar> envVars = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
         Assert.assertEquals(envVars.size(), 4, "Invalid number of environment variables found.");
         Assert.assertEquals(envVars.get(0).getName(), "location", "Invalid environment variable name found.");
@@ -135,7 +134,7 @@ public class EnvVarTest {
         // Validate deployment yaml
         File deploymentYAML = Paths.get(targetPath).resolve("field_ref_value_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
-        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         List<EnvVar> envVars = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
         Assert.assertEquals(envVars.size(), 2, "Invalid number of environment variables found.");
         
@@ -169,7 +168,7 @@ public class EnvVarTest {
         // Validate deployment yaml
         File deploymentYAML = Paths.get(targetPath).resolve("secret_key_ref_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
-        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         List<EnvVar> envVars = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
         Assert.assertEquals(envVars.size(), 2, "Invalid number of environment variables found.");
         
@@ -207,7 +206,7 @@ public class EnvVarTest {
         // Validate deployment yaml
         File deploymentYAML = Paths.get(targetPath).resolve("resource_field_ref_value_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
-        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         List<EnvVar> envVars = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
         Assert.assertEquals(envVars.size(), 2, "Invalid number of environment variables found.");
         
@@ -243,7 +242,7 @@ public class EnvVarTest {
         // Validate deployment yaml
         File deploymentYAML = Paths.get(targetPath).resolve("config_map_key_ref_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
-        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         List<EnvVar> envVars = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
         Assert.assertEquals(envVars.size(), 2, "Invalid number of environment variables found.");
         
@@ -281,7 +280,7 @@ public class EnvVarTest {
         // Validate deployment yaml
         File deploymentYAML = Paths.get(targetPath).resolve("combination_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
-        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         List<EnvVar> envVars = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
         Assert.assertEquals(envVars.size(), 5, "Invalid number of environment variables found.");
         

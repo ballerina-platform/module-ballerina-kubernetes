@@ -19,7 +19,6 @@
 package org.ballerinax.kubernetes.test.utils;
 
 import com.google.common.base.Optional;
-import com.mchange.io.FileUtils;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerCertificates;
 import com.spotify.docker.client.DockerCertificatesStore;
@@ -28,18 +27,22 @@ import com.spotify.docker.client.DockerHost;
 import com.spotify.docker.client.exceptions.DockerCertificateException;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.ImageInfo;
+import io.fabric8.kubernetes.client.utils.Serialization;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.glassfish.jersey.internal.RuntimeDelegateImpl;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -183,7 +186,7 @@ public class KubernetesTestUtils {
         // log ballerina-internal.log content
         Path ballerinaInternalLog = Paths.get(sourceDirectory, "ballerina-internal.log");
         if (exitCode == 1 && Files.exists(ballerinaInternalLog)) {
-            log.info(FileUtils.getContentsAsString(ballerinaInternalLog.toFile()));
+            log.info(FileUtils.readFileToString(ballerinaInternalLog.toFile()));
         }
         return exitCode;
     }
@@ -256,5 +259,18 @@ public class KubernetesTestUtils {
             return "";
         }
         return jacocoArgLine + " ";
+    }
+    
+    /**
+     * Load YAML files to kubernetes resource(s).
+     *
+     * @param file The path of the file.
+     * @param <T>  The type reference of the artifact.
+     * @return The refered type.
+     * @throws IOException When yaml file could not be loaded.
+     */
+    public static <T> T loadYaml(File file) throws IOException {
+        FileInputStream fileInputStream = FileUtils.openInputStream(file);
+        return Serialization.unmarshal(fileInputStream, Collections.emptyMap());
     }
 }

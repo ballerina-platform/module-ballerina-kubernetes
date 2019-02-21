@@ -17,14 +17,11 @@
  */
 package org.ballerinax.kubernetes.test.samples;
 
-import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Service;
-import io.fabric8.kubernetes.api.model.extensions.Deployment;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
-import io.fabric8.kubernetes.client.KubernetesClient;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
@@ -36,7 +33,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -76,7 +72,7 @@ public class Sample3Test implements SampleTest {
     public void validateDeployment() throws IOException {
         File deploymentYAML = new File(targetPath + File.separator + "foodstore_deployment.yaml");
         Assert.assertTrue(deploymentYAML.exists());
-        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         Assert.assertEquals(selectorApp, deployment.getMetadata().getName());
         Assert.assertEquals(3, deployment.getSpec().getReplicas().intValue());
         Assert.assertEquals(selectorApp, deployment.getMetadata().getLabels().get(KubernetesConstants
@@ -95,8 +91,7 @@ public class Sample3Test implements SampleTest {
     public void validateK8SService() throws IOException {
         File serviceYAML = new File(targetPath + File.separator + "foodstore_svc.yaml");
         Assert.assertTrue(serviceYAML.exists());
-        KubernetesClient client = new DefaultKubernetesClient();
-        List<HasMetadata> k8sItems = client.load(new FileInputStream(serviceYAML)).get();
+        List<HasMetadata> k8sItems = KubernetesTestUtils.loadYaml(serviceYAML);
         Assert.assertEquals(2, k8sItems.size());
         for (HasMetadata data : k8sItems) {
             switch (data.getMetadata().getName()) {
@@ -135,8 +130,7 @@ public class Sample3Test implements SampleTest {
     public void validateIngress() throws IOException {
         File ingressYAML = new File(targetPath + File.separator + "foodstore_ingress.yaml");
         Assert.assertTrue(ingressYAML.exists());
-        KubernetesClient client = new DefaultKubernetesClient();
-        List<HasMetadata> k8sItems = client.load(new FileInputStream(ingressYAML)).get();
+        List<HasMetadata> k8sItems = KubernetesTestUtils.loadYaml(ingressYAML);
         Assert.assertEquals(2, k8sItems.size());
         Ingress pizzaIngress = null;
         Ingress burgerIngress = null;

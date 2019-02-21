@@ -19,8 +19,7 @@
 package org.ballerinax.kubernetes.test;
 
 import com.spotify.docker.client.messages.ImageInfo;
-import io.fabric8.kubernetes.api.KubernetesHelper;
-import io.fabric8.kubernetes.api.model.extensions.Deployment;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
@@ -64,7 +63,7 @@ public class MainFunctionDeploymentTest {
         // Validate deployment yaml
         File deploymentYAML = Paths.get(targetPath).resolve("main_function_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
-        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         Assert.assertEquals(deployment.getMetadata().getLabels().size(), 2, "Invalid number of labels found.");
         Assert.assertEquals(deployment.getMetadata().getLabels().get(KubernetesConstants.KUBERNETES_SELECTOR_KEY),
                 "main_function", "Invalid label found.");

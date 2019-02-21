@@ -18,10 +18,9 @@
 
 package org.ballerinax.kubernetes.test.samples;
 
-import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.PersistentVolumeClaim;
-import io.fabric8.kubernetes.api.model.extensions.Deployment;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
@@ -49,8 +48,7 @@ public class Sample9Test implements SampleTest {
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(sourceDirPath,
-                "hello_world_persistence_volume_k8s.bal")
-                , 0);
+                "hello_world_persistence_volume_k8s.bal") , 0);
     }
 
     @Test
@@ -64,7 +62,7 @@ public class Sample9Test implements SampleTest {
         File deploymentYAML = new File(targetPath + File.separator + "hello_world_persistence_volume_k8s_deployment" +
                 ".yaml");
         Assert.assertTrue(deploymentYAML.exists());
-        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         // Assert Deployment
         Assert.assertEquals("hello-world-persistence-volume-k8s-deployment", deployment.getMetadata().getName());
         Assert.assertEquals(1, deployment.getSpec().getReplicas().intValue());
@@ -86,7 +84,7 @@ public class Sample9Test implements SampleTest {
         File deploymentYAML = new File(targetPath + File.separator + "hello_world_persistence_volume_k8s_volume_claim" +
                 ".yaml");
         Assert.assertTrue(deploymentYAML.exists());
-        PersistentVolumeClaim volumeClaim = KubernetesHelper.loadYaml(deploymentYAML);
+        PersistentVolumeClaim volumeClaim = KubernetesTestUtils.loadYaml(deploymentYAML);
         // Assert Deployment
         Assert.assertEquals("local-pv-2", volumeClaim.getMetadata().getName());
         Assert.assertEquals(1, volumeClaim.getSpec().getAccessModes().size());

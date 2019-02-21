@@ -318,7 +318,7 @@ public type ResourceQuotaScope "Terminating"|"NotTerminating"|"BestEffort"|"NotB
 public type ResourceQuotaConfig record {
     *Metadata;
     map<string> hard;
-    ResourceQuotaScope[] scopes = [];
+    ResourceQuotaScope?[] scopes = [];
     !...;
 };
 
@@ -439,7 +439,7 @@ public type IstioServerConfig record {
 public type IstioGatewayConfig record {
     *Metadata;
     map<string> selector?;
-    IstioServerConfig[] servers?;
+    IstioServerConfig?[] servers?;
     !...;
 };
 

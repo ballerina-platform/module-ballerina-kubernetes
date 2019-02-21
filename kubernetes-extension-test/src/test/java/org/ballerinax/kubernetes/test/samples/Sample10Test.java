@@ -18,11 +18,10 @@
 
 package org.ballerinax.kubernetes.test.samples;
 
-import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.Secret;
 import io.fabric8.kubernetes.api.model.Service;
-import io.fabric8.kubernetes.api.model.extensions.Deployment;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -99,7 +98,7 @@ public class Sample10Test implements SampleTest {
     public void validateBurgerDeployment() throws IOException {
         File deploymentYAML = new File(burgerPkgTargetPath + File.separator + "burger_deployment.yaml");
         Assert.assertTrue(deploymentYAML.exists());
-        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         // Assert Deployment
         Assert.assertEquals("burger-deployment", deployment.getMetadata().getName());
         Assert.assertEquals(1, deployment.getSpec().getReplicas().intValue());
@@ -120,7 +119,7 @@ public class Sample10Test implements SampleTest {
     public void validatePizzaDeployment() throws IOException {
         File deploymentYAML = new File(pizzaPkgTargetPath + File.separator + "pizza_deployment.yaml");
         Assert.assertTrue(deploymentYAML.exists());
-        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         // Assert Deployment
         Assert.assertEquals("foodstore", deployment.getMetadata().getName());
         Assert.assertEquals(3, deployment.getSpec().getReplicas().intValue());
@@ -142,7 +141,7 @@ public class Sample10Test implements SampleTest {
     public void validatePizzaSVC() throws IOException {
         File serviceYAML = new File(pizzaPkgTargetPath + File.separator + "pizza_svc.yaml");
         Assert.assertTrue(serviceYAML.exists());
-        Service service = KubernetesHelper.loadYaml(serviceYAML);
+        Service service = KubernetesTestUtils.loadYaml(serviceYAML);
         Assert.assertEquals("pizzaep-svc", service.getMetadata().getName());
         Assert.assertEquals(pizzaSelector, service.getMetadata().getLabels().get(KubernetesConstants
                 .KUBERNETES_SELECTOR_KEY));
@@ -155,7 +154,7 @@ public class Sample10Test implements SampleTest {
     public void validateBurgerSVC() throws IOException {
         File serviceYAML = new File(burgerPkgTargetPath + File.separator + "burger_svc.yaml");
         Assert.assertTrue(serviceYAML.exists());
-        Service service = KubernetesHelper.loadYaml(serviceYAML);
+        Service service = KubernetesTestUtils.loadYaml(serviceYAML);
         Assert.assertEquals("burgerep-svc", service.getMetadata().getName());
         Assert.assertEquals(burgerSelector, service.getMetadata().getLabels().get(KubernetesConstants
                 .KUBERNETES_SELECTOR_KEY));
@@ -168,7 +167,7 @@ public class Sample10Test implements SampleTest {
     public void validatePizzaIngress() throws IOException {
         File ingressYAML = new File(pizzaPkgTargetPath + File.separator + "pizza_ingress.yaml");
         Assert.assertNotNull(ingressYAML);
-        Ingress ingress = KubernetesHelper.loadYaml(ingressYAML);
+        Ingress ingress = KubernetesTestUtils.loadYaml(ingressYAML);
         Assert.assertEquals("pizzaep-ingress", ingress.getMetadata().getName());
         Assert.assertEquals(pizzaSelector, ingress.getMetadata().getLabels().get(KubernetesConstants
                 .KUBERNETES_SELECTOR_KEY));
@@ -185,7 +184,7 @@ public class Sample10Test implements SampleTest {
     public void validateBurgerIngress() throws IOException {
         File ingressYAML = new File(burgerPkgTargetPath + File.separator + "burger_ingress.yaml");
         Assert.assertNotNull(ingressYAML);
-        Ingress ingress = KubernetesHelper.loadYaml(ingressYAML);
+        Ingress ingress = KubernetesTestUtils.loadYaml(ingressYAML);
         Assert.assertEquals("burgerep-ingress", ingress.getMetadata().getName());
         Assert.assertEquals(burgerSelector, ingress.getMetadata().getLabels().get(KubernetesConstants
                 .KUBERNETES_SELECTOR_KEY));
@@ -204,7 +203,7 @@ public class Sample10Test implements SampleTest {
     public void validateBurgerSecret() throws IOException {
         File secretYAML = new File(burgerPkgTargetPath + File.separator + "burger_secret.yaml");
         Assert.assertTrue(secretYAML.exists());
-        Secret secret = KubernetesHelper.loadYaml(secretYAML);
+        Secret secret = KubernetesTestUtils.loadYaml(secretYAML);
         Assert.assertEquals("burgerep-keystore", secret.getMetadata().getName());
         Assert.assertEquals(1, secret.getData().size());
     }

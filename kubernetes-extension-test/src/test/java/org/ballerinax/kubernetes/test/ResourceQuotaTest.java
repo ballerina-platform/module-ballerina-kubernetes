@@ -18,7 +18,6 @@
 
 package org.ballerinax.kubernetes.test;
 
-import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.ResourceQuota;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
@@ -63,7 +62,7 @@ public class ResourceQuotaTest {
         // Validate deployment yaml
         File deploymentYAML = Paths.get(targetPath).resolve("simple_quota_resource_quota.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
-        ResourceQuota resourceQuota = KubernetesHelper.loadYaml(deploymentYAML);
+        ResourceQuota resourceQuota = KubernetesTestUtils.loadYaml(deploymentYAML);
         Assert.assertEquals(resourceQuota.getMetadata().getName(), "compute-resources");
         
         Assert.assertEquals(resourceQuota.getMetadata().getLabels().size(), 1, "Invalid number of labels.");
@@ -105,7 +104,7 @@ public class ResourceQuotaTest {
         // Validate deployment yaml
         File deploymentYAML = Paths.get(targetPath).resolve("quota_with_scope_resource_quota.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
-        ResourceQuota resourceQuota = KubernetesHelper.loadYaml(deploymentYAML);
+        ResourceQuota resourceQuota = KubernetesTestUtils.loadYaml(deploymentYAML);
         Assert.assertEquals(resourceQuota.getMetadata().getName(), "compute-resources");
         
         Assert.assertEquals(resourceQuota.getSpec().getHard().size(), 5, "Invalid number of hard limits.");
@@ -144,22 +143,26 @@ public class ResourceQuotaTest {
         // Validate deployment yaml
         File deploymentYAML = Paths.get(targetPath).resolve("multiple_quotas_resource_quota.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
-        ResourceQuota resourceQuota = KubernetesHelper.loadYaml(deploymentYAML);
+        List<ResourceQuota> resourceQuotas = KubernetesTestUtils.loadYaml(deploymentYAML);
     
-        Assert.assertEquals(resourceQuota.getMetadata().getName(), "compute-resources");
-    
-        Assert.assertEquals(resourceQuota.getSpec().getHard().size(), 5, "Invalid number of hard limits.");
-        Assert.assertEquals(resourceQuota.getSpec().getHard().get("pods").getAmount(), "4", "Invalid number of pods.");
-        Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.cpu").getAmount(), "1",
+        Assert.assertEquals(resourceQuotas.get(0).getMetadata().getName(), "compute-resources");
+        Assert.assertEquals(resourceQuotas.get(0).getSpec().getHard().size(), 5, "Invalid number of hard limits.");
+        Assert.assertEquals(resourceQuotas.get(0).getSpec().getHard().get("pods").getAmount(), "4",
+                "Invalid number of pods.");
+        Assert.assertEquals(resourceQuotas.get(0).getSpec().getHard().get("requests.cpu").getAmount(), "1",
                 "Invalid number of cpu requests.");
-        Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.memory").getAmount(), "1Gi",
+        Assert.assertEquals(resourceQuotas.get(0).getSpec().getHard().get("requests.memory").getAmount(), "1Gi",
                 "Invalid number of memory requests.");
-        Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.cpu").getAmount(), "2",
+        Assert.assertEquals(resourceQuotas.get(0).getSpec().getHard().get("limits.cpu").getAmount(), "2",
                 "Invalid number of cpu limits");
-        Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.memory").getAmount(), "2Gi",
+        Assert.assertEquals(resourceQuotas.get(0).getSpec().getHard().get("limits.memory").getAmount(), "2Gi",
                 "Invalid number of memory limits.");
+    
         
-        // TODO: Assert additional quota
+        Assert.assertEquals(resourceQuotas.get(1).getMetadata().getName(), "minimum-resources");
+        Assert.assertEquals(resourceQuotas.get(1).getSpec().getHard().size(), 1, "Invalid number of hard limits.");
+        Assert.assertEquals(resourceQuotas.get(1).getSpec().getHard().get("pods").getAmount(), "1",
+                "Invalid number of pods.");
 
         KubernetesUtils.deleteDirectory(targetPath);
         KubernetesTestUtils.deleteDockerImage(dockerImage);

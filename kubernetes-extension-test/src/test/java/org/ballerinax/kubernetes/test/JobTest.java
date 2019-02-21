@@ -19,9 +19,8 @@
 package org.ballerinax.kubernetes.test;
 
 import com.spotify.docker.client.messages.ImageInfo;
-import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Container;
-import io.fabric8.kubernetes.api.model.Job;
+import io.fabric8.kubernetes.api.model.batch.Job;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
@@ -53,7 +52,7 @@ public class JobTest {
         ImageInfo imageInspect = getDockerImage(dockerImage);
         Assert.assertNotNull(imageInspect.config());
         File jobYAML = new File(targetPath + File.separator + "ballerina_job_job.yaml");
-        Job job = KubernetesHelper.loadYaml(jobYAML);
+        Job job = KubernetesTestUtils.loadYaml(jobYAML);
         Assert.assertEquals("ballerina-job-job", job.getMetadata().getName());
         Assert.assertEquals(1, job.getSpec().getTemplate().getSpec().getContainers().size());
         Container container = job.getSpec().getTemplate().getSpec().getContainers().get(0);

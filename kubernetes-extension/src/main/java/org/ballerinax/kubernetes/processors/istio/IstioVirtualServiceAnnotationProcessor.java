@@ -22,7 +22,7 @@ import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
-import org.ballerinalang.model.types.TypeTags;
+import org.ballerinalang.model.types.TypeKind;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.istio.IstioDestination;
@@ -321,11 +321,11 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
             return mapModels;
         } else if (value instanceof BLangLiteral) {
             BLangLiteral literal = (BLangLiteral) value;
-            if (literal.typeTag == TypeTags.INT_TAG) {
+            if (literal.type.getKind() == TypeKind.INT) {
                 return Integer.parseInt((literal).getValue().toString());
-            } else if (literal.typeTag == TypeTags.BOOLEAN_TAG) {
+            } else if (literal.type.getKind() == TypeKind.BOOLEAN) {
                 return Boolean.parseBoolean((literal).getValue().toString());
-            } else if (literal.typeTag == TypeTags.FLOAT_TAG) {
+            } else if (literal.type.getKind() == TypeKind.FLOAT) {
                 return Float.parseFloat((literal).getValue().toString());
             } else {
                 return resolveValue((literal).getValue().toString());
