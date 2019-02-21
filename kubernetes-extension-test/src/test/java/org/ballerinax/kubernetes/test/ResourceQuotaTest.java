@@ -160,7 +160,7 @@ public class ResourceQuotaTest {
     
         
         Assert.assertEquals(resourceQuotas.get(1).getMetadata().getName(), "minimum-resources");
-        Assert.assertEquals(resourceQuotas.get(1).getSpec().getHard().size(), 5, "Invalid number of hard limits.");
+        Assert.assertEquals(resourceQuotas.get(1).getSpec().getHard().size(), 1, "Invalid number of hard limits.");
         Assert.assertEquals(resourceQuotas.get(1).getSpec().getHard().get("pods").getAmount(), "1",
                 "Invalid number of pods.");
 
