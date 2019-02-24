@@ -132,7 +132,7 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
                         }
                     }
                     break;
-                case "ballerinaConf":
+                case "conf":
                     //create a new config map model with ballerina conf and add it to data holder.
                     configMapModels.add(getBallerinaConfConfigMap(keyValue.getValue().toString(), serviceNode.getName()
                             .getValue()));
@@ -167,7 +167,8 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
         configMapModel.setMountPath(BALLERINA_CONF_MOUNT_PATH);
         Path dataFilePath = Paths.get(configFilePath);
         if (!dataFilePath.isAbsolute()) {
-            dataFilePath = KubernetesContext.getInstance().getDataHolder().getSourceRoot().resolve(dataFilePath);
+            dataFilePath = KubernetesContext.getInstance().getDataHolder().getSourceRoot().resolve(dataFilePath)
+                    .normalize();
         }
         String content = new String(KubernetesUtils.readFileContent(dataFilePath), StandardCharsets.UTF_8);
         Map<String, String> dataMap = new HashMap<>();

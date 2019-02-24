@@ -24,7 +24,7 @@ listener http:Listener helloWorldEP = new(9090, config = {
     singleYAML: false
 }
 @kubernetes:ConfigMap {
-    ballerinaConf: "./conf/ballerina.conf",
+    conf: "./conf/ballerina.conf",
     configMaps:[
         {
             mountPath: "/home/ballerina/data",

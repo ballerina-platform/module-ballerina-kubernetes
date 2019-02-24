@@ -271,10 +271,10 @@ public type ConfigMap record {
 
 # Secret volume mount configurations for kubernetes.
 #
-# + ballerinaConf - path to ballerina configuration file
+# + conf - path to ballerina configuration file
 # + configMaps - Array of [ConfigMap](kubernetes.html#ConfigMap)
 public type ConfigMapMount record {
-    string ballerinaConf;
+    string conf;
     ConfigMap[] configMaps?;
     !...;
 };
