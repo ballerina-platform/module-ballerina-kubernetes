@@ -17,12 +17,11 @@
 import ballerina/http;
 import ballerinax/kubernetes;
 
-@kubernetes:OpenShiftBuildConfig {
-    namespace: "bal-oc-test",
-    dockerRegistry: "172.30.1.1:5000"
-}
 @kubernetes:Deployment {
-    buildImage: false
+    namespace: "bal-oc-test",
+    buildImage: false,
+    registry: "172.30.1.1:5000",
+    buildExtension: kubernetes:BUILD_EXTENSION_OPENSHIFT
 }
 @kubernetes:Service {}
 listener http:Listener helloEP = new(9090);
@@ -39,9 +38,11 @@ service helloWorld on helloEP {
 }
 
 
-@kubernetes:OpenShiftBuildConfig {}
 @kubernetes:Deployment {
-    buildImage: false
+    namespace: "bal-oc-test",
+    buildImage: false,
+    registry: "172.30.1.1:5000",
+    buildExtension: "openshift"
 }
 @kubernetes:Service {}
 listener http:Listener helloEP2 = new(9092);

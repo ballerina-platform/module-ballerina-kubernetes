@@ -121,9 +121,8 @@ public class DeploymentHandler extends AbstractArtifactHandler {
         return initContainers;
     }
 
-    private Container generateContainer(DeploymentModel deploymentModel, List<ContainerPort>
-            containerPorts) throws KubernetesPluginException {
-    
+    private Container generateContainer(DeploymentModel deploymentModel, List<ContainerPort> containerPorts)
+            throws KubernetesPluginException {
         String dockerRegistry = deploymentModel.getRegistry();
         String deploymentImageName = deploymentModel.getImage();
         if (null != dockerRegistry && !"".equals(dockerRegistry)) {

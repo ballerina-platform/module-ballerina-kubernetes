@@ -122,9 +122,6 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
                 case name:
                     gatewayModel.setName(resolveValue(gatewayField.getValue().toString()));
                     break;
-                case namespace:
-                    gatewayModel.setNamespace(resolveValue(gatewayField.getValue().toString()));
-                    break;
                 case labels:
                     BLangRecordLiteral labelsField = (BLangRecordLiteral) gatewayField.getValue();
                     gatewayModel.setLabels(getMap(labelsField.getKeyValuePairs()));
@@ -278,7 +275,6 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
     
     private enum IstioGatewayConfig {
         name,
-        namespace,
         labels,
         annotations,
         selector,

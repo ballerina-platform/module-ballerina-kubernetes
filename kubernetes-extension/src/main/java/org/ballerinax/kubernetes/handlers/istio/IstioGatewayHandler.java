@@ -123,8 +123,8 @@ public class IstioGatewayHandler extends AbstractArtifactHandler {
             // metadata
             Map<String, Object> metadata = new LinkedHashMap<>();
             metadata.put("name", gatewayModel.getName());
-            if (null != gatewayModel.getNamespace()) {
-                metadata.put("namespace", gatewayModel.getNamespace());
+            if (null != dataHolder.getNamespace()) {
+                metadata.put("namespace", dataHolder.getNamespace());
             }
             if (null != gatewayModel.getLabels() && gatewayModel.getLabels().size() > 0) {
                 metadata.put("labels", gatewayModel.getLabels());

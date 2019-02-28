@@ -120,7 +120,7 @@ public class OpenShiftBuildConfigTest {
      */
     @Test(groups = {"openshift"})
     public void noImageStreamTest() throws IOException, InterruptedException, KubernetesPluginException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "no_image_stream.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "no_namespace.bal"), 0);
         File yamlFile = new File(targetPath + File.separator + "no_image_stream.yaml");
         Assert.assertTrue(yamlFile.exists());
         KubernetesClient client = new DefaultKubernetesClient();

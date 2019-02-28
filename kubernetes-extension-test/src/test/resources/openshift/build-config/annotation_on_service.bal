@@ -23,9 +23,7 @@ listener http:Listener helloEP = new(9090);
     namespace: "bal-oc-test",
     buildImage: false,
     registry: "172.30.1.1:5000",
-    buildExtension: {
-        openshift: {}
-    }
+    buildExtension: "openshift"
 }
 @http:ServiceConfig {
     basePath: "/helloWorld"

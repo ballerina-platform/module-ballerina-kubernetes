@@ -17,12 +17,10 @@
 # Metadata for artifacts
 #
 # + name - Name of the resource
-# + namespace - Kubernetes namespace to be used
 # + labels - Map of labels for the resource
 # + annotations - Map of annotations for resource
 public type Metadata record {
     string name?;
-    string namespace?;
     map<string> labels?;
     map<string> annotations?;
     !...;
@@ -127,6 +125,7 @@ public type BuildExtension record {
 
 # Kubernetes deployment configuration.
 #
+# + namespace - Kubernetes namespace to be used on all artifacts
 # + podAnnotations - Map of annotations for pods
 # + replicas - Number of replicas
 # + enableLiveness - Enable/Disable liveness probe
@@ -151,6 +150,7 @@ public type BuildExtension record {
 # + imagePullSecrets - Image pull secrets
 public type DeploymentConfiguration record {
     *Metadata;
+    string namespace?;
     map<string> podAnnotations?;
     int replicas?;
     boolean enableLiveness?;
@@ -356,6 +356,7 @@ public type RestartPolicy "OnFailure"|"Always"|"Never";
 
 # Kubernetes job configuration.
 #
+# + namespace - Kubernetes namespace to be used on all artifacts
 # + restartPolicy - Restart policy
 # + backoffLimit - Backoff limit
 # + activeDeadlineSeconds - Active deadline seconds
@@ -375,6 +376,7 @@ public type RestartPolicy "OnFailure"|"Always"|"Never";
 # + singleYAML - Generate a single yaml file with all kubernetes artifacts (services,deployment,ingress,)
 public type JobConfig record {
     *Metadata;
+    string namespace?;
     RestartPolicy restartPolicy = RESTART_POLICY_NEVER;
     string backoffLimit?;
     string activeDeadlineSeconds?;

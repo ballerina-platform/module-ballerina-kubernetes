@@ -116,9 +116,6 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                 case name:
                     vsModel.setName(resolveValue(vsField.getValue().toString()));
                     break;
-                case namespace:
-                    vsModel.setNamespace(resolveValue(vsField.getValue().toString()));
-                    break;
                 case labels:
                     BLangRecordLiteral labelsField = (BLangRecordLiteral) vsField.getValue();
                     vsModel.setLabels(getMap(labelsField.getKeyValuePairs()));
@@ -361,7 +358,6 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
     
     private enum IstioVSConfig {
         name,
-        namespace,
         labels,
         annotations,
         hosts,

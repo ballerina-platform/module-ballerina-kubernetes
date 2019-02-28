@@ -119,9 +119,6 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
                 case name:
                     serviceModel.setName(getValidName(resolveValue(keyValue.getValue().toString())));
                     break;
-                case namespace:
-                    serviceModel.setNamespace(resolveValue(keyValue.getValue().toString()));
-                    break;
                 case labels:
                     serviceModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
@@ -150,7 +147,6 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
      */
     private enum ServiceConfiguration {
         name,
-        namespace,
         labels,
         annotations,
         serviceType,

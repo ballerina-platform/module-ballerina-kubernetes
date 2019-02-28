@@ -60,7 +60,7 @@ public class OpenShiftImageStreamHandler extends AbstractArtifactHandler {
                     .withName(dockerImageName)
                     .withLabels(buildConfigModel.getLabels())
                     .withAnnotations(buildConfigModel.getAnnotations())
-                    .withNamespace(buildConfigModel.getNamespace())
+                    .withNamespace(dataHolder.getNamespace())
                     .endMetadata()
                     .build();
             

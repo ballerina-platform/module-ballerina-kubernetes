@@ -81,8 +81,8 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
             // metadata
             Map<String, Object> metadata = new LinkedHashMap<>();
             metadata.put("name", vsModel.getName());
-            if (null != vsModel.getNamespace()) {
-                metadata.put("namespace", vsModel.getNamespace());
+            if (null != dataHolder.getNamespace()) {
+                metadata.put("namespace", dataHolder.getNamespace());
             }
             if (null != vsModel.getLabels() && vsModel.getLabels().size() > 0) {
                 metadata.put("labels", vsModel.getLabels());

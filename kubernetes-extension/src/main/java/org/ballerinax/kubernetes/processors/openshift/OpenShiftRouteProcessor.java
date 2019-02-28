@@ -66,15 +66,11 @@ public class OpenShiftRouteProcessor extends AbstractAnnotationProcessor {
         List<BLangRecordLiteral.BLangRecordKeyValue> bcFields =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
         
-        boolean setWithDomainValue = false;
         OpenShiftRouteModel openShiftRoute = new OpenShiftRouteModel();
         for (BLangRecordLiteral.BLangRecordKeyValue bcField : bcFields) {
             switch (OpenShiftRouteFields.valueOf(bcField.getKey().toString())) {
                 case name:
                     openShiftRoute.setName(resolveValue(bcField.getValue().toString()));
-                    break;
-                case namespace:
-                    openShiftRoute.setNamespace(resolveValue(bcField.getValue().toString()));
                     break;
                 case labels:
                     BLangRecordLiteral labelsField = (BLangRecordLiteral) bcField.getValue();
@@ -88,8 +84,7 @@ public class OpenShiftRouteProcessor extends AbstractAnnotationProcessor {
                     if (bcField.getValue() instanceof BLangRecordLiteral) {
                         BLangRecordLiteral hostRecord = (BLangRecordLiteral) bcField.getValue();
                         String domainValue = hostRecord.getKeyValuePairs().get(0).getValue().toString();
-                        openShiftRoute.setHost(resolveValue(domainValue));
-                        setWithDomainValue = true;
+                        openShiftRoute.setDomain(resolveValue(domainValue));
                     } else {
                         openShiftRoute.setHost(resolveValue(bcField.getValue().toString()));
                     }
@@ -101,17 +96,6 @@ public class OpenShiftRouteProcessor extends AbstractAnnotationProcessor {
     
         if (isBlank(openShiftRoute.getName())) {
             openShiftRoute.setName(getValidName(identifierNode.getValue()) + OPENSHIFT_ROUTE_POSTFIX);
-        }
-    
-        // If domain is used for setting the host, then update the host as <service_name>-<namespace>.<domain>
-        if (setWithDomainValue) {
-            // Setting the host using domain name required namespace.
-            if (null == openShiftRoute.getNamespace() || "".equals(openShiftRoute.getNamespace().trim())) {
-                throw new KubernetesPluginException("'namespace' field is required when using 'domain' field for " +
-                                                    "setting the host of the @kubernetes:OpenShiftRoute{} annotation.");
-            }
-            openShiftRoute.setHost(openShiftRoute.getName() + "-" + openShiftRoute.getNamespace() + "." +
-                                   openShiftRoute.getHost());
         }
     
         KubernetesContext.getInstance().getDataHolder().addOpenShiftRouteModel(identifierNode.getValue(),

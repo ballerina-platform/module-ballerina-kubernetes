@@ -25,6 +25,7 @@ import org.ballerinax.kubernetes.models.KubernetesModel;
  */
 public class OpenShiftRouteModel extends KubernetesModel {
     private String host;
+    private String domain;
     
     public String getHost() {
         return host;
@@ -32,5 +33,13 @@ public class OpenShiftRouteModel extends KubernetesModel {
     
     public void setHost(String host) {
         this.host = host;
+    }
+    
+    public String getDomain() {
+        return domain;
+    }
+    
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 }

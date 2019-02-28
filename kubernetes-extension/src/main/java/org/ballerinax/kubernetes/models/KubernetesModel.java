@@ -26,7 +26,6 @@ import java.util.Objects;
 public abstract class KubernetesModel {
     private String version;
     protected String name;
-    protected String namespace;
     protected Map<String, String> labels;
     protected Map<String, String> annotations;
     
@@ -44,14 +43,6 @@ public abstract class KubernetesModel {
 
     public void setVersion(String version) {
         this.version = version;
-    }
-    
-    public String getNamespace() {
-        return namespace;
-    }
-    
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
     }
     
     public Map<String, String> getLabels() {

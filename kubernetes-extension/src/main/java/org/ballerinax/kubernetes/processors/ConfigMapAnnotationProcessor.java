@@ -77,10 +77,6 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
                                     configMapModel.setName(getValidName(resolveValue(
                                             annotation.getValue().toString())));
                                     break;
-                                case namespace:
-                                    configMapModel.setNamespace(getValidName(resolveValue(
-                                            annotation.getValue().toString())));
-                                    break;
                                 case labels:
                                     configMapModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr)
                                             .keyValuePairs));
@@ -181,7 +177,6 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
      */
     private enum ConfigMapMountConfig {
         name,
-        namespace,
         labels,
         annotations,
         mountPath,

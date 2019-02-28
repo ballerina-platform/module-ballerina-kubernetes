@@ -17,17 +17,11 @@
 import ballerina/io;
 import ballerinax/kubernetes;
 
-@kubernetes:OpenShiftBuildConfig {
-    namespace: "bal-oc-test",
-    dockerRegistry: "172.30.1.1:5000"
-}
 @kubernetes:Deployment {
     namespace: "bal-oc-test",
     buildImage: false,
     registry: "172.30.1.1:5000",
-    buildExtension: {
-        openshift: {}
-    }
+    buildExtension: kubernetes:BUILD_EXTENSION_OPENSHIFT
 }
 public function main(string... args) {
     io:println("hello world");

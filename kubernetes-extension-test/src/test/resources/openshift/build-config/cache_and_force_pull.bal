@@ -28,9 +28,7 @@ import ballerinax/kubernetes;
         }
     }
 }
-@kubernetes:Service {
-    namespace: "bal-oc-test"
-}
+@kubernetes:Service { }
 listener http:Listener helloEP = new(9090);
 
 @http:ServiceConfig {

@@ -23,9 +23,7 @@ import ballerinax/kubernetes;
     registry: "172.30.1.1:5000",
     buildExtension: kubernetes:BUILD_EXTENSION_OPENSHIFT
 }
-@kubernetes:Service {
-    namespace: "bal-oc-test"
-}
+@kubernetes:Service { }
 listener http:Listener printEP = new(9090);
 
 @http:ServiceConfig {

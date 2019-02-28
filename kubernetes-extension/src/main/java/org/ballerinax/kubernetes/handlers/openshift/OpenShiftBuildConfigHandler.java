@@ -90,7 +90,7 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
                     .withName(buildConfigModel.getName())
                     .withLabels(buildConfigModel.getLabels())
                     .withAnnotations(buildConfigModel.getAnnotations())
-                    .withNamespace(buildConfigModel.getNamespace())
+                    .withNamespace(dataHolder.getNamespace())
                     .endMetadata()
                     .withNewSpec()
                     .withNewOutput()

@@ -42,6 +42,7 @@ public class DeploymentModel extends KubernetesModel {
     private int livenessPort;
     private int initialDelaySeconds;
     private int periodSeconds;
+    private String namespace;
     private String imagePullPolicy;
     private String image;
     private boolean buildImage;
@@ -155,7 +156,15 @@ public class DeploymentModel extends KubernetesModel {
     public void setImagePullPolicy(String imagePullPolicy) {
         this.imagePullPolicy = imagePullPolicy;
     }
-
+    
+    public String getNamespace() {
+        return namespace;
+    }
+    
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+    
     public String getImage() {
         return image;
     }

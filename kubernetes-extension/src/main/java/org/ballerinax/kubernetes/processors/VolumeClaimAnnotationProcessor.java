@@ -64,9 +64,6 @@ public class VolumeClaimAnnotationProcessor extends AbstractAnnotationProcessor 
                         case name:
                             claimModel.setName(getValidName(resolveValue(annotation.getValue().toString())));
                             break;
-                        case namespace:
-                            claimModel.setNamespace(resolveValue(annotation.getValue().toString()));
-                            break;
                         case labels:
                             claimModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                             break;
@@ -101,7 +98,6 @@ public class VolumeClaimAnnotationProcessor extends AbstractAnnotationProcessor 
      */
     private enum VolumeClaimConfig {
         name,
-        namespace,
         labels,
         annotations,
         mountPath,

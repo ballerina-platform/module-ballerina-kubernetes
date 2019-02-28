@@ -52,7 +52,6 @@ public class IstioGatewayGeneratorTests {
     public void testSimpleGateway() {
         IstioGatewayModel istioGatewayModel = new IstioGatewayModel();
         istioGatewayModel.setName("my-gateway");
-        istioGatewayModel.setNamespace("ballerina");
         
         Map<String, String> selectors = new LinkedHashMap<>();
         selectors.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, "my-gatweway-controller");
@@ -89,7 +88,6 @@ public class IstioGatewayGeneratorTests {
             // metadata
             Map metadata = (Map) gateway.get("metadata");
             Assert.assertEquals("my-gateway", metadata.get("name"));
-            Assert.assertEquals("ballerina", metadata.get("namespace"));
     
             Map spec = (Map) gateway.get("spec");
             
