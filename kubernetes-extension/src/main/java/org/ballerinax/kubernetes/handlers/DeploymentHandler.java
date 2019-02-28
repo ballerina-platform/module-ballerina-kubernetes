@@ -137,15 +137,15 @@ public class DeploymentHandler extends AbstractArtifactHandler {
         
                 dockerRegistry = deploymentModel.getRegistry();
                 if (dockerRegistry == null || "".equals(dockerRegistry.trim())) {
-                    throw new KubernetesPluginException("A value for 'registry' field in @kubernetes:Deployment{} " +
+                    throw new KubernetesPluginException("value for 'registry' field in @kubernetes:Deployment{} " +
                                                         "annotation is required to generate OpenShift Build Configs.");
                 }
         
-                String namespace = deploymentModel.getNamespace();
+                String namespace = dataHolder.getNamespace();
                 if (namespace == null || "".equals(namespace.trim())) {
-                    throw new KubernetesPluginException("A value for 'namespace' field in @kubernetes:Deployment{} " +
+                    throw new KubernetesPluginException("value for 'namespace' field in @kubernetes:Deployment{} " +
                                                         "annotation is required to generate OpenShift Build Configs. " +
-                                                        "Use the value of the OpenShift project name.");
+                                                        "use the value of the OpenShift project name.");
                 }
         
                 deploymentImageName = dockerRegistry + REGISTRY_SEPARATOR + namespace + REGISTRY_SEPARATOR +

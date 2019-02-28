@@ -460,7 +460,7 @@ public class OpenShiftBuildConfigTest {
      */
     @Test(groups = {"openshift"})
     public void buildProject() throws IOException, InterruptedException, KubernetesPluginException {
-        Path projectPath = Paths.get(balDirectory).resolve("project");
+        Path projectPath = Paths.get(balDirectory).resolve("print-project");
         Path targetPath = projectPath.resolve("target");
         Path projectTarget = targetPath.resolve("kubernetes").resolve("printer");
         

@@ -123,7 +123,7 @@ public const string BUILD_EXTENSION_OPENSHIFT = "openshift";
 public type BuildExtension record {
     OpenShiftBuildConfigConfiguration openshift?;
     !...;
-} | BUILD_EXTENSION_OPENSHIFT;
+};
 
 # Kubernetes deployment configuration.
 #
@@ -165,7 +165,7 @@ public type DeploymentConfiguration record {
     string registry?;
     string username?;
     string password?;
-    BuildExtension buildExtension?;
+    BuildExtension|BUILD_EXTENSION_OPENSHIFT buildExtension?;
     string baseImage?;
     boolean push?;
     string dockerCertPath?;

@@ -60,7 +60,7 @@ public class AnnotationProcessorFactory {
                 return new OpenShiftRouteProcessor();
             default:
                 KubernetesContext.getInstance().getDataHolder().setCanProcess(false);
-                throw new KubernetesPluginException("Error while getting annotation processor for type: " + type);
+                throw new KubernetesPluginException("error while getting annotation processor for type: " + type);
         }
     }
 

@@ -95,7 +95,7 @@ public class OpenShiftRouteProcessor extends AbstractAnnotationProcessor {
                     }
                     break;
                 default:
-                    throw new KubernetesPluginException("Unknown field found for OpenShiftRoute annotation.");
+                    throw new KubernetesPluginException("unknown field found for OpenShiftRoute annotation.");
             }
         }
     

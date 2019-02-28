@@ -45,6 +45,8 @@ import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
 import org.ballerinax.kubernetes.processors.openshift.OpenShiftBuildExtensionProcessor;
+import org.wso2.ballerinalang.compiler.semantics.model.types.BFiniteType;
+import org.wso2.ballerinalang.compiler.semantics.model.types.BType;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
@@ -142,10 +144,10 @@ public class KubernetesUtils {
             try {
                 return Files.readAllBytes(targetFilePath);
             } catch (IOException e) {
-                throw new KubernetesPluginException("Unable to read contents of the file " + targetFilePath);
+                throw new KubernetesPluginException("unable to read contents of the file " + targetFilePath);
             }
         }
-        throw new KubernetesPluginException("Unable to read contents of the file " + targetFilePath);
+        throw new KubernetesPluginException("unable to read contents of the file " + targetFilePath);
     }
 
     /**
@@ -171,7 +173,7 @@ public class KubernetesUtils {
                 FileUtils.copyDirectory(src, dst);
             }
         } catch (IOException e) {
-            throw new KubernetesPluginException("Error while copying file", e);
+            throw new KubernetesPluginException("error while copying file", e);
         }
     }
 
@@ -252,7 +254,7 @@ public class KubernetesUtils {
                     .map(Path::toFile)
                     .forEach(File::delete);
         } catch (IOException e) {
-            throw new KubernetesPluginException("Unable to delete directory: " + path, e);
+            throw new KubernetesPluginException("unable to delete directory: " + path, e);
         }
 
     }
@@ -335,8 +337,8 @@ public class KubernetesUtils {
      */
     public static DeploymentBuildExtension parseBuildExtension(BLangExpression buildExtensionValue)
             throws KubernetesPluginException {
-        if (buildExtensionValue instanceof BLangSimpleVarRef) {
-            if (buildExtensionValue.toString().equals("openshift")) {
+        if (buildExtensionValue instanceof BLangSimpleVarRef || buildExtensionValue instanceof BLangLiteral) {
+            if ("openshift".equals(getStringValue(buildExtensionValue))) {
                 return new OpenShiftBuildExtensionModel();
             }
         } else {
@@ -350,7 +352,21 @@ public class KubernetesUtils {
                 }
             }
         }
-        throw new KubernetesPluginException("Unknown build extension found");
+        throw new KubernetesPluginException("unknown build extension found");
+    }
+    
+    public static String getStringValue(BLangExpression expr) throws KubernetesPluginException {
+        BType exprType = expr.type;
+        if (expr instanceof BLangSimpleVarRef && exprType instanceof BFiniteType) {
+            // Parse compile time constant
+            BFiniteType compileConst = (BFiniteType) exprType;
+            if (compileConst.valueSpace.size() > 0) {
+                return compileConst.valueSpace.iterator().next().toString();
+            }
+        } else if (expr instanceof BLangLiteral) {
+            return expr.toString();
+        }
+        throw new KubernetesPluginException("unable to parse value: " + expr.toString());
     }
 
     /**

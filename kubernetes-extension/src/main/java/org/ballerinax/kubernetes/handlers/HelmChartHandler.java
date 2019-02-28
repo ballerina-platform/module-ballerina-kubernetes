@@ -75,7 +75,7 @@ public class HelmChartHandler extends AbstractArtifactHandler {
         File dir = this.dataHolder.getOutputDir().toFile();
         File[] yamlFiles = dir.listFiles(new KubernetesArtifactsFileFilter());
         if (yamlFiles == null) {
-            throw new KubernetesPluginException("Kuberenetes artifacts not available to generate Helm templates");
+            throw new KubernetesPluginException("kuberenetes artifacts not available to generate Helm templates");
         }
         for (File yamlFile : yamlFiles) {
             KubernetesUtils.copyFileOrDirectory(yamlFile.getAbsolutePath(),
@@ -97,7 +97,7 @@ public class HelmChartHandler extends AbstractArtifactHandler {
         try (FileWriter writer = new FileWriter(helmBaseOutputDir.resolve(HELM_CHART_YAML_FILE_NAME).toString())) {
             yaml.dump(values, writer);
         } catch (IOException e) {
-            throw new KubernetesPluginException("Error in generating the Helm chart: " + e.getMessage(), e);
+            throw new KubernetesPluginException("error in generating the Helm chart: " + e.getMessage(), e);
         }
     }
     

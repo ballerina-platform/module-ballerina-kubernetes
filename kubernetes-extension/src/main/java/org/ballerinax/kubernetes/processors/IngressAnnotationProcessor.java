@@ -238,7 +238,7 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
         BLangService bService = (BLangService) serviceNode;
         for (BLangExpression attachedExpr : bService.getAttachedExprs()) {
             if (attachedExpr instanceof BLangTypeInit) {
-                throw new KubernetesPluginException("Adding @kubernetes:Ingress{} annotation to a service is only " +
+                throw new KubernetesPluginException("adding @kubernetes:Ingress{} annotation to a service is only " +
                                                     "supported when service is bind to an anonymous listener");
             }
         }

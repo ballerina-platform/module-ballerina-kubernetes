@@ -53,7 +53,7 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         for (BLangExpression attachedExpr : bService.getAttachedExprs()) {
             // If not anonymous endpoint throw error.
             if (attachedExpr instanceof BLangSimpleVarRef) {
-                throw new KubernetesPluginException("Adding @kubernetes:Service{} annotation to a service is only " +
+                throw new KubernetesPluginException("adding @kubernetes:Service{} annotation to a service is only " +
                                                     "supported when the service has an anonymous listener");
             }
             
@@ -102,7 +102,7 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         try {
             return Integer.parseInt(bListener.argsExpr.get(0).toString());
         } catch (NumberFormatException e) {
-            throw new KubernetesPluginException("Unable to parse port of the service: " +
+            throw new KubernetesPluginException("unable to parse port of the service: " +
                                             bListener.argsExpr.get(0).toString());
         }
     }

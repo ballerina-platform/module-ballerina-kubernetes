@@ -96,19 +96,16 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
                                     final Path runtimePath = Paths.get(BALLERINA_RUNTIME);
                                     final Path confPath = Paths.get(BALLERINA_CONF_MOUNT_PATH);
                                     if (mountPath.equals(homePath)) {
-                                        throw new KubernetesPluginException("@kubernetes:ConfigMap{} Mount path " +
-                                                "cannot be" +
-                                                " ballerina home: " + BALLERINA_HOME);
+                                        throw new KubernetesPluginException("@kubernetes:ConfigMap{} mount path " +
+                                                "cannot be ballerina home: " + BALLERINA_HOME);
                                     }
                                     if (mountPath.equals(runtimePath)) {
-                                        throw new KubernetesPluginException("@kubernetes:ConfigMap{} Mount path " +
-                                                "cannot be" +
-                                                " ballerina runtime: " + BALLERINA_RUNTIME);
+                                        throw new KubernetesPluginException("@kubernetes:ConfigMap{} mount path " +
+                                                "cannot be ballerina runtime: " + BALLERINA_RUNTIME);
                                     }
                                     if (mountPath.equals(confPath)) {
-                                        throw new KubernetesPluginException("@kubernetes:ConfigMap{} Mount path " +
-                                                "cannot be" +
-                                                " ballerina conf file mount path: " + BALLERINA_CONF_MOUNT_PATH);
+                                        throw new KubernetesPluginException("@kubernetes:ConfigMap{} mount path " +
+                                            "cannot be ballerina conf file mount path: " + BALLERINA_CONF_MOUNT_PATH);
                                     }
                                     configMapModel.setMountPath(resolveValue(annotation.getValue().toString()));
                                     break;

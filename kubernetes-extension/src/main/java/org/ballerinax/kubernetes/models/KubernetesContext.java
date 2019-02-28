@@ -78,14 +78,14 @@ public class KubernetesContext {
                 return getDataHolder(packageID).getbListenerToK8sServiceMap().get(listener).getName();
             }
         }
-        throw new KubernetesPluginException("Dependent listener " + dependsOn + " is not annotated with " +
+        throw new KubernetesPluginException("dependent listener " + dependsOn + " is not annotated with " +
                 "@kubernetes:Service{}");
     }
 
     public String getDeploymentNameFromListener(String dependsOn) throws KubernetesPluginException {
         if (isBlank(dependsOn) || !dependsOn.contains(Names.VERSION_SEPARATOR.value) || !(dependsOn.indexOf
                 (Names.VERSION_SEPARATOR.value) > 1)) {
-            throw new KubernetesPluginException("@kubernetes:Deployment{} Invalid dependsOn format specified " +
+            throw new KubernetesPluginException("@kubernetes:Deployment{} invalid dependsOn format specified " +
                     dependsOn);
         }
         String packageName = dependsOn.substring(0, dependsOn.indexOf(Names.VERSION_SEPARATOR.value));
@@ -94,6 +94,6 @@ public class KubernetesContext {
                 return getDataHolder(packageID).getDeploymentModel().getName();
             }
         }
-        throw new KubernetesPluginException("Dependent listener " + dependsOn + " not found.");
+        throw new KubernetesPluginException("dependent listener " + dependsOn + " not found.");
     }
 }

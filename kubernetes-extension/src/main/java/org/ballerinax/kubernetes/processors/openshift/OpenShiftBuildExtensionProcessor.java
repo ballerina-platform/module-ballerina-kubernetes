@@ -52,7 +52,7 @@ public class OpenShiftBuildExtensionProcessor {
                             resolveValue(bcField.getValue().toString())));
                     break;
                 default:
-                    throw new KubernetesPluginException("Unknown field found for OpenShift Build extension .");
+                    throw new KubernetesPluginException("unknown field found for OpenShift Build extension .");
             }
         }
         

@@ -153,7 +153,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                     vsModel.setTcp(tcpModels);
                     break;
                 default:
-                    throw new KubernetesPluginException("Unknown field found for istio virtual service: " +
+                    throw new KubernetesPluginException("unknown field found for istio virtual service: " +
                                                         vsField.getKey().toString());
             }
         }
@@ -195,7 +195,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                                     break;
                                 default:
                                     throw new KubernetesPluginException(
-                                            "Unknown field found for istio virtual service: " +
+                                            "unknown field found for istio virtual service: " +
                                             redirectField.getKey().toString());
                             }
                         }
@@ -223,7 +223,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                         httpRoute.setAppendHeaders(getMap(((BLangRecordLiteral) httpField.valueExpr).keyValuePairs));
                         break;
                     default:
-                        throw new KubernetesPluginException("Unknown field found for istio virtual service: " +
+                        throw new KubernetesPluginException("unknown field found for istio virtual service: " +
                                                             httpField.getKey().toString());
                 }
             }
@@ -256,7 +256,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                         destinationWeight.setWeight(Integer.parseInt((routeField).getValue().toString()));
                         break;
                     default:
-                        throw new KubernetesPluginException("Unknown field found for istio virtual service: " +
+                        throw new KubernetesPluginException("unknown field found for istio virtual service: " +
                                                             routeField.getKey().toString());
                 }
             }
@@ -290,7 +290,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                     destination.setPort(Integer.parseInt(portField.getValue().toString()));
                     break;
                 default:
-                    throw new KubernetesPluginException("Unknown field found for istio virtual service.");
+                    throw new KubernetesPluginException("unknown field found for istio virtual service.");
             }
         }
         
@@ -331,7 +331,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                 return resolveValue((literal).getValue().toString());
             }
         } else {
-            throw new KubernetesPluginException("Unable to resolve annotation values.");
+            throw new KubernetesPluginException("unable to resolve annotation values.");
         }
     }
     

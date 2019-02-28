@@ -108,7 +108,7 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
                 if (vsModel.getGateways().size() == 0) {
                     vsModel.getGateways().add(gwModel.getName());
                 } else if (vsModel.getHosts().size() == 1 && vsModel.getHosts().contains("*")) {
-                    throw new KubernetesPluginException("Unable to resolve a gateway for '" + vsModel + "' " +
+                    throw new KubernetesPluginException("unable to resolve a gateway for '" + vsModel + "' " +
                                                         "virtual service. Add @kubernetes:IstioGateway annotation" +
                                                         " to your listener or service, else explicitly state to " +
                                                         "use the 'mesh' gateway.");
