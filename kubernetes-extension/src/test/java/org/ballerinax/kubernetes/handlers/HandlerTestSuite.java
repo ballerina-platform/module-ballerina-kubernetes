@@ -38,7 +38,7 @@ public class HandlerTestSuite {
         context.addDataHolder(new PackageID(Names.ANON_ORG, new Name("my_pkg"), Names.DEFAULT_VERSION),
                 Paths.get("target"));
         KubernetesDataHolder dataHolder = context.getDataHolder();
-        dataHolder.setOutputDir(Paths.get("target").resolve("kubernetes"));
+        dataHolder.setArtifactOutputPath(Paths.get("target").resolve("kubernetes"));
         Path resourcesDirectory = Paths.get("src").resolve("test").resolve("resources");
         DeploymentModel deploymentModel = new DeploymentModel();
         deploymentModel.setSingleYAML(false);

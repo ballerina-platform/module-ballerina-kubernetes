@@ -65,7 +65,7 @@ public class OpenShiftImageStreamHandler extends AbstractArtifactHandler {
                     .build();
             
             String resourceQuotaContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(is);
-            KubernetesUtils.writeToFile(dataHolder.getOutputDir().resolve(OPENSHIFT), resourceQuotaContent,
+            KubernetesUtils.writeToFile(dataHolder.getArtifactOutputPath().resolve(OPENSHIFT), resourceQuotaContent,
                     OPENSHIFT_IMAGE_STREAM_TAG_FILE_POSTFIX + YAML);
         } catch (IOException e) {
             String errorMessage = "Error while generating OpenShift Image Stream yaml file: " +

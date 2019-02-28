@@ -55,7 +55,7 @@ public class HelmChartHandler extends AbstractArtifactHandler {
     public void createArtifacts() throws KubernetesPluginException {
         DeploymentModel model = this.dataHolder.getDeploymentModel();
         OUT.println();
-        Path helmBaseOutputDir = this.dataHolder.getOutputDir();
+        Path helmBaseOutputDir = this.dataHolder.getArtifactOutputPath();
         if (helmBaseOutputDir.endsWith("target" + File.separator + "kubernetes" + File.separator)) {
             helmBaseOutputDir = helmBaseOutputDir.resolve(extractBalxName(this.dataHolder.getBalxFilePath()));
         }
@@ -72,7 +72,7 @@ public class HelmChartHandler extends AbstractArtifactHandler {
     
     private void copyKubernetesArtifactsToHelmTemplates(String helmTemplatesOutputDir) 
             throws KubernetesPluginException {
-        File dir = this.dataHolder.getOutputDir().toFile();
+        File dir = this.dataHolder.getArtifactOutputPath().toFile();
         File[] yamlFiles = dir.listFiles(new KubernetesArtifactsFileFilter());
         if (yamlFiles == null) {
             throw new KubernetesPluginException("kuberenetes artifacts not available to generate Helm templates");

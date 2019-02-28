@@ -92,43 +92,42 @@ public class KubernetesUtils {
      */
     public static void writeToFile(String context, String outputFileName) throws IOException {
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
-        writeToFile(dataHolder.getOutputDir(), context, outputFileName);
+        writeToFile(dataHolder.getArtifactOutputPath(), context, outputFileName);
     }
     
     /**
      * Write content to a File. Create the required directories if they don't not exists.
      *
-     * @param context        context of the file
-     * @param fileSuffix target file path
+     * @param outputDir  Artifact output path.
+     * @param context    Context of the file
+     * @param fileSuffix Suffix for artifact.
      * @throws IOException If an error occurs when writing to a file
      */
     public static void writeToFile(Path outputDir, String context, String fileSuffix) throws IOException {
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
-        fileSuffix = outputDir + File
-                .separator + extractBalxName(dataHolder.getBalxFilePath()) + fileSuffix;
+        Path artifactFileName = outputDir.resolve(extractBalxName(dataHolder.getBalxFilePath()) + fileSuffix);
         DeploymentModel deploymentModel = dataHolder.getDeploymentModel();
         JobModel jobModel = dataHolder.getJobModel();
         // Priority given for job, then deployment.
         if (jobModel != null && jobModel.isSingleYAML()) {
-            fileSuffix =
-                    outputDir + File.separator + extractBalxName(dataHolder.getBalxFilePath()) + YAML;
+            artifactFileName = outputDir.resolve(extractBalxName(dataHolder.getBalxFilePath()) + YAML);
         } else if (jobModel == null && deploymentModel != null && deploymentModel.isSingleYAML()) {
-            fileSuffix =
-                    outputDir + File.separator + extractBalxName(dataHolder.getBalxFilePath()) + YAML;
+            artifactFileName = outputDir.resolve(extractBalxName(dataHolder.getBalxFilePath()) + YAML);
             
         }
-        File newFile = new File(fileSuffix);
+        File newFile = artifactFileName.toFile();
         // append if file exists
         if (newFile.exists()) {
-            Files.write(Paths.get(fileSuffix), context.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
+            Files.write(artifactFileName, context.getBytes(StandardCharsets.UTF_8),
+                    StandardOpenOption.APPEND);
             return;
         }
         //create required directories
         if (newFile.getParentFile().mkdirs()) {
-            Files.write(Paths.get(fileSuffix), context.getBytes(StandardCharsets.UTF_8));
+            Files.write(artifactFileName, context.getBytes(StandardCharsets.UTF_8));
             return;
         }
-        Files.write(Paths.get(fileSuffix), context.getBytes(StandardCharsets.UTF_8));
+        Files.write(artifactFileName, context.getBytes(StandardCharsets.UTF_8));
     }
 
     /**

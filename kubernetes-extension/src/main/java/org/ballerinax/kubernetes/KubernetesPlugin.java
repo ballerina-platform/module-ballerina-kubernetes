@@ -132,18 +132,20 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
         KubernetesContext.getInstance().setCurrentPackage(moduleID);
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
         if (dataHolder.isCanProcess()) {
-            Path balXPath = binaryPath.toAbsolutePath();
-            Path buildOutputPath = balXPath.getParent().toAbsolutePath();
-            Path targetPath = buildOutputPath.resolve(KUBERNETES);
-            if (buildOutputPath.endsWith("target")) {
-                //Compiling package therefore append balx file name to docker artifact dir path
-                targetPath = buildOutputPath.resolve(KUBERNETES).resolve(extractBalxName(balXPath));
+            binaryPath = binaryPath.toAbsolutePath();
+            boolean isProject = binaryPath.getParent().getParent().resolve(".ballerina").toFile().exists();
+            dataHolder.setProject(isProject);
+            Path balBuildOutputPath = binaryPath.getParent();
+            Path artifactOutputPath = balBuildOutputPath.resolve(KUBERNETES);
+            if (isProject) {
+                // Compiling package therefore append balx file name to docker artifact dir path
+                artifactOutputPath = balBuildOutputPath.resolve(KUBERNETES).resolve(extractBalxName(binaryPath));
             }
-            dataHolder.setBalxFilePath(balXPath);
-            dataHolder.setOutputDir(buildOutputPath);
-            ArtifactManager artifactManager = new ArtifactManager(targetPath);
+            dataHolder.setBalxFilePath(binaryPath);
+            dataHolder.setArtifactOutputPath(artifactOutputPath);
+            ArtifactManager artifactManager = new ArtifactManager();
             try {
-                KubernetesUtils.deleteDirectory(targetPath);
+                KubernetesUtils.deleteDirectory(artifactOutputPath);
                 artifactManager.populateDeploymentModel();
                 validateDeploymentDependencies();
                 artifactManager.createArtifacts();
@@ -152,7 +154,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                 printError(errorMessage);
                 pluginLog.error(errorMessage, e);
                 try {
-                    KubernetesUtils.deleteDirectory(targetPath);
+                    KubernetesUtils.deleteDirectory(artifactOutputPath);
                 } catch (KubernetesPluginException ignored) {
                     //ignored
                 }

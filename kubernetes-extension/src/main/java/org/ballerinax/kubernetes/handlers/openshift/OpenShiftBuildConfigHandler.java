@@ -28,7 +28,6 @@ import org.ballerinax.kubernetes.handlers.AbstractArtifactHandler;
 import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -55,8 +54,8 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
     
             Map<String, String> instructions = ArtifactManager.getInstructions();
             instructions.put("\tRun the following command to deploy the OpenShift artifacts: ",
-                    "\toc apply -f " + dataHolder.getOutputDir().resolve(OPENSHIFT).toAbsolutePath());
-            if (dataHolder.getOutputDir().toString().contains("target")) {
+                    "\toc apply -f " + dataHolder.getArtifactOutputPath().resolve(OPENSHIFT).toAbsolutePath());
+            if (dataHolder.getArtifactOutputPath().toString().contains("target")) {
                 instructions.put("\tRun the following command to start a build: ",
                         "\toc start-build bc/" + buildConfigModel.getName() +
                         " --from-dir=./target --follow");
@@ -66,7 +65,7 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
                         " --from-dir=. --follow");
             }
             instructions.put("\tRun the following command to deploy the Kubernetes artifacts: ",
-                    "\tkubectl apply -f " + dataHolder.getOutputDir());
+                    "\tkubectl apply -f " + dataHolder.getArtifactOutputPath());
         }
     }
     
@@ -78,8 +77,8 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
             }
     
             // Generate docker artifacts
-            Path dockerOutputDir = dataHolder.getOutputDir();
-            if (dockerOutputDir.endsWith("target" + File.separator + KUBERNETES + File.separator)) {
+            Path dockerOutputDir = dataHolder.getArtifactOutputPath();
+            if (dataHolder.isProject()) {
                 //Compiling package therefore append balx file dependencies to docker artifact dir path
                 dockerOutputDir = Paths.get(KUBERNETES).resolve(DockerGenUtils.extractBalxName(dataHolder
                         .getBalxFilePath().toString()));
@@ -114,7 +113,7 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
                     .build();
             
             String resourceQuotaContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(bc);
-            KubernetesUtils.writeToFile(dataHolder.getOutputDir().resolve(OPENSHIFT),
+            KubernetesUtils.writeToFile(dataHolder.getArtifactOutputPath().resolve(OPENSHIFT),
                     resourceQuotaContent, OPENSHIFT_BUILD_CONFIG_FILE_POSTFIX + YAML);
             
             // Modify instructions

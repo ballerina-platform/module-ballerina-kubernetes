@@ -40,7 +40,6 @@ import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
-import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -54,12 +53,10 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.printInstruction;
  * Generate and write artifacts to files.
  */
 public class ArtifactManager {
-    private final Path artifactsPath;
     private static final Map<String, String> instructions = new LinkedHashMap<>();
     private KubernetesDataHolder kubernetesDataHolder;
 
-    ArtifactManager(Path artifactsPath) {
-        this.artifactsPath = artifactsPath;
+    ArtifactManager() {
         this.kubernetesDataHolder = KubernetesContext.getInstance().getDataHolder();
     }
 
@@ -142,11 +139,11 @@ public class ArtifactManager {
      */
     private void setDefaultKubernetesInstructions() {
         instructions.put("\tRun the following command to deploy the Kubernetes artifacts: ",
-                "\tkubectl apply -f " + artifactsPath);
+                "\tkubectl apply -f " + this.kubernetesDataHolder.getArtifactOutputPath().toAbsolutePath());
         
         DeploymentModel model = this.kubernetesDataHolder.getDeploymentModel();
         instructions.put("\tRun the following command to install the application using Helm: ",
                 "\thelm install --name " + model.getName() + " " +
-                artifactsPath.resolve(model.getName()).toAbsolutePath());
+                this.kubernetesDataHolder.getArtifactOutputPath().resolve(model.getName()).toAbsolutePath());
     }
 }

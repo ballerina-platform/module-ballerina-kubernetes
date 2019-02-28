@@ -37,7 +37,7 @@ public class DockerHandler extends AbstractArtifactHandler {
     public void createArtifacts() throws KubernetesPluginException {
         try {
             // Generate docker artifacts
-            Path dockerOutputDir = dataHolder.getOutputDir();
+            Path dockerOutputDir = dataHolder.getArtifactOutputPath();
             if (dockerOutputDir.endsWith("target" + File.separator + KUBERNETES + File.separator)) {
                 //Compiling package therefore append balx file dependencies to docker artifact dir path
                 dockerOutputDir = dockerOutputDir.resolve(DockerGenUtils.extractBalxName(dataHolder
