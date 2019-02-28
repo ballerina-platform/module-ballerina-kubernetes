@@ -22,7 +22,12 @@ import ballerinax/kubernetes;
     dockerRegistry: "172.30.1.1:5000"
 }
 @kubernetes:Deployment {
-    buildImage: false
+    namespace: "bal-oc-test",
+    buildImage: false,
+    registry: "172.30.1.1:5000",
+    buildExtension: {
+        openshift: {}
+    }
 }
 public function main(string... args) {
     io:println("hello world");

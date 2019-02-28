@@ -104,6 +104,7 @@ public class ArtifactManager {
     
     private void printInstructions() {
         printInstruction("");
+        printInstruction("");
         for (Map.Entry<String, String> instruction : instructions.entrySet()) {
             printInstruction(instruction.getKey());
             printInstruction(instruction.getValue());

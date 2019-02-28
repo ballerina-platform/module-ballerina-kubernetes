@@ -43,6 +43,7 @@ import org.ballerinax.kubernetes.models.EnvVarValueModel;
 import org.ballerinax.kubernetes.models.JobModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
 import org.ballerinax.kubernetes.processors.openshift.OpenShiftBuildExtensionProcessor;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
@@ -328,19 +329,28 @@ public class KubernetesUtils {
     /**
      * Parse build extension of @kubernetes:Deployment annotation.
      *
-     * @param keyValues Fields of the buildExtension field.
+     * @param buildExtensionValue Fields of the buildExtension field.
      * @return Build extension model.
      * @throws KubernetesPluginException When an unknown extension is found.
      */
-    public static DeploymentBuildExtension parseBuildExtension(List<BLangRecordLiteral.BLangRecordKeyValue> keyValues)
+    public static DeploymentBuildExtension parseBuildExtension(BLangExpression buildExtensionValue)
             throws KubernetesPluginException {
-        BLangExpression buildExtensionType = keyValues.get(0).getKey();
-        if ("openshift".equals(buildExtensionType.toString())) {
-            BLangRecordLiteral openShiftField = (BLangRecordLiteral) keyValues.get(0).getValue();
-            return OpenShiftBuildExtensionProcessor.processBuildExtension(openShiftField.getKeyValuePairs());
+        if (buildExtensionValue instanceof BLangSimpleVarRef) {
+            if (buildExtensionValue.toString().equals("openshift")) {
+                return new OpenShiftBuildExtensionModel();
+            }
         } else {
-            throw new KubernetesPluginException("Unknown build extension found");
+            if (buildExtensionValue instanceof BLangRecordLiteral) {
+                List<BLangRecordLiteral.BLangRecordKeyValue> buildExtensionRecord =
+                        ((BLangRecordLiteral) buildExtensionValue).keyValuePairs;
+                BLangExpression buildExtensionType = buildExtensionRecord.get(0).getKey();
+                if ("openshift".equals(buildExtensionType.toString())) {
+                    BLangRecordLiteral openShiftField = (BLangRecordLiteral) buildExtensionRecord.get(0).getValue();
+                    return OpenShiftBuildExtensionProcessor.processBuildExtension(openShiftField.getKeyValuePairs());
+                }
+            }
         }
+        throw new KubernetesPluginException("Unknown build extension found");
     }
 
     /**

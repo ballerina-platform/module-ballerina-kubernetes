@@ -153,8 +153,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                     deploymentModel.setRegistry(resolveValue(keyValue.getValue().toString()));
                     break;
                 case buildExtension:
-                    deploymentModel.setBuildExtension(parseBuildExtension(
-                            ((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    deploymentModel.setBuildExtension(parseBuildExtension(keyValue.getValue()));
                     break;
                 default:
                     break;

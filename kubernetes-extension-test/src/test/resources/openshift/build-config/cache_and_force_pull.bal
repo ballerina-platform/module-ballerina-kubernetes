@@ -17,16 +17,20 @@
 import ballerina/http;
 import ballerinax/kubernetes;
 
-@kubernetes:OpenShiftBuildConfig {
-    namespace: "bal-oc-test",
-    dockerRegistry: "172.30.1.1:5000",
-    buildDockerWithNoCache: true,
-    forcePullDockerImage: true
-}
 @kubernetes:Deployment {
-    buildImage: false
+    namespace: "bal-oc-test",
+    buildImage: false,
+    registry: "172.30.1.1:5000",
+    buildExtension: {
+        openshift: {
+            buildDockerWithNoCache: true,
+            forcePullDockerImage: true
+        }
+    }
 }
-@kubernetes:Service {}
+@kubernetes:Service {
+    namespace: "bal-oc-test"
+}
 listener http:Listener helloEP = new(9090);
 
 @http:ServiceConfig {

@@ -20,11 +20,12 @@ import ballerinax/kubernetes;
 listener http:Listener helloEP = new(9090);
 
 @kubernetes:Deployment {
-    buildImage: false
-}
-@kubernetes:OpenShiftBuildConfig {
     namespace: "bal-oc-test",
-    dockerRegistry: "172.30.1.1:5000"
+    buildImage: false,
+    registry: "172.30.1.1:5000",
+    buildExtension: {
+        openshift: {}
+    }
 }
 @http:ServiceConfig {
     basePath: "/helloWorld"
