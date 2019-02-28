@@ -99,36 +99,36 @@ public class KubernetesUtils {
      * Write content to a File. Create the required directories if they don't not exists.
      *
      * @param context        context of the file
-     * @param outputFileName target file path
+     * @param fileSuffix target file path
      * @throws IOException If an error occurs when writing to a file
      */
-    public static void writeToFile(Path outputDir, String context, String outputFileName) throws IOException {
+    public static void writeToFile(Path outputDir, String context, String fileSuffix) throws IOException {
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
-        outputFileName = outputDir + File
-                .separator + extractBalxName(dataHolder.getBalxFilePath()) + outputFileName;
+        fileSuffix = outputDir + File
+                .separator + extractBalxName(dataHolder.getBalxFilePath()) + fileSuffix;
         DeploymentModel deploymentModel = dataHolder.getDeploymentModel();
         JobModel jobModel = dataHolder.getJobModel();
         // Priority given for job, then deployment.
         if (jobModel != null && jobModel.isSingleYAML()) {
-            outputFileName =
+            fileSuffix =
                     outputDir + File.separator + extractBalxName(dataHolder.getBalxFilePath()) + YAML;
         } else if (jobModel == null && deploymentModel != null && deploymentModel.isSingleYAML()) {
-            outputFileName =
+            fileSuffix =
                     outputDir + File.separator + extractBalxName(dataHolder.getBalxFilePath()) + YAML;
             
         }
-        File newFile = new File(outputFileName);
+        File newFile = new File(fileSuffix);
         // append if file exists
         if (newFile.exists()) {
-            Files.write(Paths.get(outputFileName), context.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
+            Files.write(Paths.get(fileSuffix), context.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
             return;
         }
         //create required directories
         if (newFile.getParentFile().mkdirs()) {
-            Files.write(Paths.get(outputFileName), context.getBytes(StandardCharsets.UTF_8));
+            Files.write(Paths.get(fileSuffix), context.getBytes(StandardCharsets.UTF_8));
             return;
         }
-        Files.write(Paths.get(outputFileName), context.getBytes(StandardCharsets.UTF_8));
+        Files.write(Paths.get(fileSuffix), context.getBytes(StandardCharsets.UTF_8));
     }
 
     /**

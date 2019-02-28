@@ -55,6 +55,8 @@ import java.util.Set;
 import static org.ballerinax.docker.generator.DockerGenConstants.REGISTRY_SEPARATOR;
 import static org.ballerinax.kubernetes.KubernetesConstants.BALX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_FILE_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT_BUILD_CONFIG_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.populateEnvVar;
 
@@ -131,8 +133,11 @@ public class DeploymentHandler extends AbstractArtifactHandler {
         
         if (deploymentModel.getBuildExtension() != null) {
             if (deploymentModel.getBuildExtension() instanceof OpenShiftBuildExtensionModel) {
-                dataHolder.setOpenShiftBuildExtensionModel(
-                        (OpenShiftBuildExtensionModel) deploymentModel.getBuildExtension());
+                OpenShiftBuildExtensionModel openShiftBC =
+                        (OpenShiftBuildExtensionModel) deploymentModel.getBuildExtension();
+                openShiftBC.setName(deploymentModel.getName().replace(DEPLOYMENT_POSTFIX,
+                        OPENSHIFT_BUILD_CONFIG_POSTFIX));
+                dataHolder.setOpenShiftBuildExtensionModel(openShiftBC);
         
                 dockerRegistry = deploymentModel.getRegistry();
                 if (dockerRegistry == null || "".equals(dockerRegistry.trim())) {
