@@ -44,7 +44,7 @@ import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
 import org.ballerinax.kubernetes.models.SecretModel;
-import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildConfigModel;
+import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static org.ballerinax.docker.generator.DockerGenConstants.REGISTRY_SEPARATOR;
 import static org.ballerinax.kubernetes.KubernetesConstants.BALX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
@@ -121,15 +122,37 @@ public class DeploymentHandler extends AbstractArtifactHandler {
     }
 
     private Container generateContainer(DeploymentModel deploymentModel, List<ContainerPort>
-            containerPorts) {
-        // Change docker image id of the deployment if an OpenShiftBuildConfig is there.
-        OpenShiftBuildConfigModel buildConfigModel = dataHolder.getOpenShiftBuildConfigModel();
+            containerPorts) throws KubernetesPluginException {
+    
+        String dockerRegistry = deploymentModel.getRegistry();
         String deploymentImageName = deploymentModel.getImage();
-        if (null != buildConfigModel) {
-            deploymentImageName = buildConfigModel.getDockerRegistry() + "/" + buildConfigModel.getNamespace() +
-                                     "/" + deploymentImageName;
+        if (null != dockerRegistry && !"".equals(dockerRegistry)) {
+            deploymentImageName = dockerRegistry + REGISTRY_SEPARATOR + deploymentImageName;
         }
         
+        if (deploymentModel.getBuildExtension() != null) {
+            if (deploymentModel.getBuildExtension() instanceof OpenShiftBuildExtensionModel) {
+                dataHolder.setOpenShiftBuildExtensionModel(
+                        (OpenShiftBuildExtensionModel) deploymentModel.getBuildExtension());
+        
+                dockerRegistry = deploymentModel.getRegistry();
+                if (dockerRegistry == null || "".equals(dockerRegistry.trim())) {
+                    throw new KubernetesPluginException("A value for 'registry' field in @kubernetes:Deployment{} " +
+                                                        "annotation is required to generate OpenShift Build Configs.");
+                }
+        
+                String namespace = deploymentModel.getNamespace();
+                if (namespace == null || "".equals(namespace.trim())) {
+                    throw new KubernetesPluginException("A value for 'namespace' field in @kubernetes:Deployment{} " +
+                                                        "annotation is required to generate OpenShift Build Configs. " +
+                                                        "Use the value of the OpenShift project name.");
+                }
+        
+                deploymentImageName = dockerRegistry + REGISTRY_SEPARATOR + namespace + REGISTRY_SEPARATOR +
+                                      deploymentModel.getImage();
+            }
+        }
+    
         return new ContainerBuilder()
                 .withName(deploymentModel.getName())
                 .withImage(deploymentImageName)
@@ -140,7 +163,6 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                 .withLivenessProbe(generateLivenessProbe(deploymentModel))
                 .build();
     }
-
 
     private List<Volume> populateVolume(DeploymentModel deploymentModel) {
         List<Volume> volumes = new ArrayList<>();

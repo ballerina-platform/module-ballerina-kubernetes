@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -54,12 +55,11 @@ public class HelmChartHandler extends AbstractArtifactHandler {
     public void createArtifacts() throws KubernetesPluginException {
         DeploymentModel model = this.dataHolder.getDeploymentModel();
         OUT.println();
-        String helmBaseOutputDir = this.dataHolder.getOutputDir();
+        Path helmBaseOutputDir = this.dataHolder.getOutputDir();
         if (helmBaseOutputDir.endsWith("target" + File.separator + "kubernetes" + File.separator)) {
-            helmBaseOutputDir = helmBaseOutputDir + File.separator + 
-                    extractBalxName(this.dataHolder.getBalxFilePath());
+            helmBaseOutputDir = helmBaseOutputDir.resolve(extractBalxName(this.dataHolder.getBalxFilePath()));
         }
-        helmBaseOutputDir = helmBaseOutputDir + File.separator + model.getName();
+        helmBaseOutputDir = helmBaseOutputDir.resolve(model.getName());
         String helmTemplatesOutputDir = helmBaseOutputDir + File.separator + HELM_CHART_TEMPLATES;
         // Create the Helm templates directory
         new File(helmTemplatesOutputDir).mkdirs();
@@ -72,7 +72,7 @@ public class HelmChartHandler extends AbstractArtifactHandler {
     
     private void copyKubernetesArtifactsToHelmTemplates(String helmTemplatesOutputDir) 
             throws KubernetesPluginException {
-        File dir = new File(this.dataHolder.getOutputDir());
+        File dir = this.dataHolder.getOutputDir().toFile();
         File[] yamlFiles = dir.listFiles(new KubernetesArtifactsFileFilter());
         if (yamlFiles == null) {
             throw new KubernetesPluginException("Kuberenetes artifacts not available to generate Helm templates");
@@ -83,7 +83,7 @@ public class HelmChartHandler extends AbstractArtifactHandler {
         }
     }
 
-    private void generateChartYAML(String helmBaseOutputDir) throws KubernetesPluginException {
+    private void generateChartYAML(Path helmBaseOutputDir) throws KubernetesPluginException {
         DeploymentModel model = this.dataHolder.getDeploymentModel();
         DumperOptions options = new DumperOptions();
         options.setDefaultFlowStyle(FlowStyle.BLOCK);
@@ -94,7 +94,7 @@ public class HelmChartHandler extends AbstractArtifactHandler {
         values.put(HELM_DESCRIPTION, "Helm chart for " + model.getName());
         values.put(HELM_NAME, model.getName());
         values.put(HELM_VERSION, model.getVersion() == null ? HELM_VERSION_DEFAULT : model.getVersion());
-        try (FileWriter writer = new FileWriter(helmBaseOutputDir + File.separator + HELM_CHART_YAML_FILE_NAME)) {
+        try (FileWriter writer = new FileWriter(helmBaseOutputDir.resolve(HELM_CHART_YAML_FILE_NAME).toString())) {
             yaml.dump(values, writer);
         } catch (IOException e) {
             throw new KubernetesPluginException("Error in generating the Helm chart: " + e.getMessage(), e);

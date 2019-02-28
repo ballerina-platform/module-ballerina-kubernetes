@@ -115,6 +115,14 @@ public const string IMAGE_PULL_POLICY_NEVER = "Never";
 # Image pull policy type field for kubernetes deployment and jobs.
 public type ImagePullPolicy "IfNotPresent"|"Always"|"Never";
 
+# Extend building of the docker image.
+#
+# + openshift - Openshift build config.
+public type BuildExtension record {
+    OpenShiftBuildConfigConfiguration openshift?;
+    !...;
+};
+
 # Kubernetes deployment configuration.
 #
 # + podAnnotations - Map of annotations for pods
@@ -128,8 +136,10 @@ public type ImagePullPolicy "IfNotPresent"|"Always"|"Never";
 # + env - Environment varialbe map for containers
 # + buildImage - Docker image to be build or not
 # + dockerHost - Docker host IP and docker PORT. (e.g minikube IP and docker PORT)
+# + registry - Docker registry url
 # + username - Username for docker registry
 # + password - Password for docker registry
+# + buildExtension - Docker image build extensions
 # + baseImage - Base image for docker image building
 # + push - Push to remote registry
 # + dockerCertPath - Docker certificate path
@@ -150,8 +160,10 @@ public type DeploymentConfiguration record {
     map<string|FieldRef|SecretKeyRef|ResourceFieldRef|ConfigMapKeyRef> env?;
     boolean buildImage?;
     string dockerHost?;
+    string registry?;
     string username?;
     string password?;
+    BuildExtension buildExtension?;
     string baseImage?;
     boolean push?;
     string dockerCertPath?;
@@ -674,31 +686,15 @@ public type IstioVirtualServiceConfig record {
 # @kubernetes:IstioVirtualService annotation to generate istio virtual service.
 public annotation<service, listener> IstioVirtualService IstioVirtualServiceConfig;
 
-# Build Config configuration for @kubernetes:OpenShiftBuildConfig.
+# Build Config configuration for OpenShift.
 #
-# + name - Name of the resource
-# + namespace - The openshift project name or the namespace.
-# + labels - Map of labels for the resource
-# + annotations - Map of annotations for resource
-# + dockerRegistry - The ip of the docker registry.
-# + generateImageStream - Generate image stream for the generated docker image.
 # + forcePullDockerImage - Set force pull images when building docker image.
 # + buildDockerWithNoCache - Build docker image with no cache enabled.
 public type OpenShiftBuildConfigConfiguration record {
-    // Not using record referencing as namespace is required.
-    string name?;
-    string namespace;
-    map<string> labels?;
-    map<string> annotations?;
-    string dockerRegistry;
-    boolean generateImageStream = true;
     boolean forcePullDockerImage = false;
     boolean buildDockerWithNoCache = false;
     !...;
 };
-
-# @kubernetes:OpenShiftBuildConfig annotation to generate openshift's build configs.
-public annotation<service, listener, function> OpenShiftBuildConfig OpenShiftBuildConfigConfiguration;
 
 # Domain for OpenShift Route configuration.
 #

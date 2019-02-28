@@ -1,0 +1,74 @@
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  annotations: {}
+  labels:
+    app: "namespace_openshift"
+  name: "helloep-svc"
+  namespace: "ns"
+spec:
+  ports:
+  - port: 9090
+    protocol: "TCP"
+    targetPort: 9090
+  selector:
+    app: "namespace_openshift"
+  type: "ClusterIP"
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  annotations: {}
+  labels:
+    app: "namespace_openshift"
+  name: "namespace-openshift-deployment"
+  namespace: "ns"
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations: {}
+      labels:
+        app: "namespace_openshift"
+    spec:
+      containers:
+      - image: "172.30.1.1:5000/ns/namespace_openshift:latest"
+        imagePullPolicy: "IfNotPresent"
+        name: "namespace-openshift-deployment"
+        ports:
+        - containerPort: 9090
+          protocol: "TCP"
+      nodeSelector: {}
+---
+apiVersion: "build.openshift.io/v1"
+kind: "BuildConfig"
+metadata:
+  annotations: {}
+  labels:
+    build: "helloep-openshift-bc"
+  name: "helloep-openshift-bc"
+  namespace: "ns"
+spec:
+  nodeSelector: {}
+  output:
+    to:
+      kind: "ImageStreamTag"
+      name: "namespace_openshift:latest"
+  source:
+    binary: {}
+  strategy:
+    dockerStrategy:
+      dockerfilePath: "kubernetes/docker/Dockerfile"
+      forcePull: false
+      noCache: false
+  triggers: []
+---
+apiVersion: "image.openshift.io/v1"
+kind: "ImageStream"
+metadata:
+  annotations: {}
+  labels:
+    build: "helloep-openshift-bc"
+  name: "namespace_openshift"
+  namespace: "ns"

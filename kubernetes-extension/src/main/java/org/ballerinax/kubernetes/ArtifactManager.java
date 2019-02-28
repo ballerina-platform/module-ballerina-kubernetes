@@ -40,22 +40,26 @@ import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
-import java.io.File;
+import java.nio.file.Path;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_LATEST_TAG;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.printInstruction;
 
 /**
  * Generate and write artifacts to files.
  */
-class ArtifactManager {
-    private final String outputDir;
+public class ArtifactManager {
+    private final Path artifactsPath;
+    private static final Map<String, String> instructions = new LinkedHashMap<>();
     private KubernetesDataHolder kubernetesDataHolder;
 
-    ArtifactManager(String outputDir) {
-        this.outputDir = outputDir;
+    ArtifactManager(Path artifactsPath) {
+        this.artifactsPath = artifactsPath;
         this.kubernetesDataHolder = KubernetesContext.getInstance().getDataHolder();
     }
 
@@ -65,32 +69,48 @@ class ArtifactManager {
      * @throws KubernetesPluginException if an error occurs while generating artifacts
      */
     void   createArtifacts() throws KubernetesPluginException {
+        // add default kubernetes instructions.
+        setDefaultKubernetesInstructions();
+        
         if (kubernetesDataHolder.getJobModel() != null) {
             new JobHandler().createArtifacts();
             new DockerHandler().createArtifacts();
-            printKubernetesInstructions(outputDir);
             return;
+        } else {
+            new ServiceHandler().createArtifacts();
+            new IngressHandler().createArtifacts();
+            new SecretHandler().createArtifacts();
+            new PersistentVolumeClaimHandler().createArtifacts();
+            new ResourceQuotaHandler().createArtifacts();
+            new ConfigMapHandler().createArtifacts();
+            new DeploymentHandler().createArtifacts();
+            new HPAHandler().createArtifacts();
+            new DockerHandler().createArtifacts();
+            new HelmChartHandler().createArtifacts();
+            new IstioGatewayHandler().createArtifacts();
+            new IstioVirtualServiceHandler().createArtifacts();
+            if (kubernetesDataHolder.getOpenShiftBuildExtensionModel() != null ||
+                kubernetesDataHolder.getOpenShiftRouteModels().size() > 0) {
+                // Clean all instructions
+                instructions.clear();
+                new OpenShiftBuildConfigHandler().createArtifacts();
+                new OpenShiftImageStreamHandler().createArtifacts();
+                new OpenShiftRouteHandler().createArtifacts();
+            }
         }
         
-        new ServiceHandler().createArtifacts();
-        new IngressHandler().createArtifacts();
-        new SecretHandler().createArtifacts();
-        new PersistentVolumeClaimHandler().createArtifacts();
-        new ResourceQuotaHandler().createArtifacts();
-        new ConfigMapHandler().createArtifacts();
-        new DeploymentHandler().createArtifacts();
-        new HPAHandler().createArtifacts();
-        new DockerHandler().createArtifacts();
-        new HelmChartHandler().createArtifacts();
-        new IstioGatewayHandler().createArtifacts();
-        new IstioVirtualServiceHandler().createArtifacts();
-        new OpenShiftBuildConfigHandler().createArtifacts();
-        new OpenShiftImageStreamHandler().createArtifacts();
-        new OpenShiftRouteHandler().createArtifacts();
-        printKubernetesInstructions(outputDir);
-        printOpenShiftInstructions(outputDir);
+        printInstructions();
     }
-
+    
+    private void printInstructions() {
+        printInstruction("");
+        for (Map.Entry<String, String> instruction : instructions.entrySet()) {
+            printInstruction(instruction.getKey());
+            printInstruction(instruction.getValue());
+            printInstruction("");
+        }
+    }
+    
     public void populateDeploymentModel() {
         DeploymentModel deploymentModel = kubernetesDataHolder.getDeploymentModel();
         kubernetesDataHolder.setDeploymentModel(deploymentModel);
@@ -108,44 +128,24 @@ class ArtifactManager {
     }
     
     /**
-     * Print instructions for kubernetes and helm artifacts.
+     * Returns print instructions.
      *
-     * @param outputDir The output directory.
+     * @return instructions.
      */
-    private void printKubernetesInstructions(String outputDir) {
-        KubernetesUtils.printInstruction("\n\n\tRun the following command to deploy the Kubernetes artifacts: ");
-        KubernetesUtils.printInstruction("\tkubectl apply -f " + outputDir);
-        DeploymentModel model = this.kubernetesDataHolder.getDeploymentModel();
-        KubernetesUtils.printInstruction("\n\tRun the following command to install the application using Helm: ");
-        KubernetesUtils.printInstruction("\thelm install --name " + model.getName() +
-                " " + new File(outputDir + File.separator + model.getName()).getAbsolutePath());
-        KubernetesUtils.printInstruction("");
+    public static Map<String, String> getInstructions() {
+        return instructions;
     }
     
     /**
-     * Print the set of instructions for OpenShift.
-     *
-     * @param outputDir Artifact output directory.
+     * Set instructions for kubernetes and helm artifacts.
      */
-    private void printOpenShiftInstructions(String outputDir) {
-        if (null != kubernetesDataHolder.getOpenShiftBuildConfigModel() ||
-            kubernetesDataHolder.getOpenShiftRouteModels().size() != 0) {
-            KubernetesUtils.printInstruction("\tRun the following command to deploy the OpenShift artifacts: ");
-            KubernetesUtils.printInstruction("\toc apply -f " + outputDir);
-            if (null != kubernetesDataHolder.getOpenShiftBuildConfigModel()) {
-                KubernetesUtils.printInstruction("\n\tRun the following command to start a build: ");
-                if (outputDir.contains("target")) {
-                    KubernetesUtils.printInstruction("\toc start-build bc/" +
-                                                     kubernetesDataHolder.getOpenShiftBuildConfigModel().getName() +
-                                                     " --from-dir=./target --follow");
-                } else {
-                    KubernetesUtils.printInstruction("\toc start-build bc/" +
-                                                     kubernetesDataHolder.getOpenShiftBuildConfigModel().getName() +
-                                                     " --from-dir=. --follow");
-                }
-                KubernetesUtils.printInstruction("\toc apply -f " + outputDir);
-            }
-            KubernetesUtils.printInstruction("");
-        }
+    private void setDefaultKubernetesInstructions() {
+        instructions.put("\tRun the following command to deploy the Kubernetes artifacts: ",
+                "\tkubectl apply -f " + artifactsPath);
+        
+        DeploymentModel model = this.kubernetesDataHolder.getDeploymentModel();
+        instructions.put("\tRun the following command to install the application using Helm: ",
+                "\thelm install --name " + model.getName() + " " +
+                artifactsPath.resolve(model.getName()).toAbsolutePath());
     }
 }

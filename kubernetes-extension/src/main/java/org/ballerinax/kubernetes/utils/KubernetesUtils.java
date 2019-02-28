@@ -31,16 +31,19 @@ import io.fabric8.kubernetes.api.model.ResourceFieldSelectorBuilder;
 import io.fabric8.kubernetes.api.model.SecretKeySelector;
 import io.fabric8.kubernetes.api.model.SecretKeySelectorBuilder;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.ballerinalang.model.tree.NodeKind;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
 import org.ballerinax.docker.generator.models.CopyFileModel;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.DeploymentBuildExtension;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.EnvVarValueModel;
 import org.ballerinax.kubernetes.models.JobModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.processors.openshift.OpenShiftBuildExtensionProcessor;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
@@ -86,17 +89,29 @@ public class KubernetesUtils {
      */
     public static void writeToFile(String context, String outputFileName) throws IOException {
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
-        outputFileName = dataHolder.getOutputDir() + File
+        writeToFile(dataHolder.getOutputDir(), context, outputFileName);
+    }
+    
+    /**
+     * Write content to a File. Create the required directories if they don't not exists.
+     *
+     * @param context        context of the file
+     * @param outputFileName target file path
+     * @throws IOException If an error occurs when writing to a file
+     */
+    public static void writeToFile(Path outputDir, String context, String outputFileName) throws IOException {
+        KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
+        outputFileName = outputDir + File
                 .separator + extractBalxName(dataHolder.getBalxFilePath()) + outputFileName;
         DeploymentModel deploymentModel = dataHolder.getDeploymentModel();
         JobModel jobModel = dataHolder.getJobModel();
         // Priority given for job, then deployment.
         if (jobModel != null && jobModel.isSingleYAML()) {
             outputFileName =
-                    dataHolder.getOutputDir() + File.separator + extractBalxName(dataHolder.getBalxFilePath()) + YAML;
+                    outputDir + File.separator + extractBalxName(dataHolder.getBalxFilePath()) + YAML;
         } else if (jobModel == null && deploymentModel != null && deploymentModel.isSingleYAML()) {
             outputFileName =
-                    dataHolder.getOutputDir() + File.separator + extractBalxName(dataHolder.getBalxFilePath()) + YAML;
+                    outputDir + File.separator + extractBalxName(dataHolder.getBalxFilePath()) + YAML;
             
         }
         File newFile = new File(outputFileName);
@@ -165,10 +180,9 @@ public class KubernetesUtils {
      * @param balxFilePath balx file path.
      * @return output file name of balx
      */
-    public static String extractBalxName(String balxFilePath) {
-        if (balxFilePath.contains(".balx")) {
-            return balxFilePath.substring(balxFilePath.lastIndexOf(File.separator) + 1, balxFilePath.lastIndexOf(
-                    ".balx"));
+    public static String extractBalxName(Path balxFilePath) {
+        if (FilenameUtils.isExtension(balxFilePath.toString(), "balx")) {
+            return FilenameUtils.getBaseName(balxFilePath.toString());
         }
         return null;
     }
@@ -309,6 +323,24 @@ public class KubernetesUtils {
             }
         }
         return map;
+    }
+    
+    /**
+     * Parse build extension of @kubernetes:Deployment annotation.
+     *
+     * @param keyValues Fields of the buildExtension field.
+     * @return Build extension model.
+     * @throws KubernetesPluginException When an unknown extension is found.
+     */
+    public static DeploymentBuildExtension parseBuildExtension(List<BLangRecordLiteral.BLangRecordKeyValue> keyValues)
+            throws KubernetesPluginException {
+        BLangExpression buildExtensionType = keyValues.get(0).getKey();
+        if ("openshift".equals(buildExtensionType.toString())) {
+            BLangRecordLiteral openShiftField = (BLangRecordLiteral) keyValues.get(0).getValue();
+            return OpenShiftBuildExtensionProcessor.processBuildExtension(openShiftField.getKeyValuePairs());
+        } else {
+            throw new KubernetesPluginException("Unknown build extension found");
+        }
     }
 
     /**

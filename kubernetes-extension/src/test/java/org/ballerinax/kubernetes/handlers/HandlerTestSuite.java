@@ -27,7 +27,7 @@ import org.testng.annotations.BeforeSuite;
 import org.wso2.ballerinalang.compiler.util.Name;
 import org.wso2.ballerinalang.compiler.util.Names;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class HandlerTestSuite {
@@ -38,12 +38,12 @@ public class HandlerTestSuite {
         context.addDataHolder(new PackageID(Names.ANON_ORG, new Name("my_pkg"), Names.DEFAULT_VERSION),
                 Paths.get("target"));
         KubernetesDataHolder dataHolder = context.getDataHolder();
-        dataHolder.setOutputDir("target" + File.separator + "kubernetes/");
-        File resourcesDirectory = new File("src" + File.separator + "test" + File.separator + "resources");
+        dataHolder.setOutputDir(Paths.get("target").resolve("kubernetes"));
+        Path resourcesDirectory = Paths.get("src").resolve("test").resolve("resources");
         DeploymentModel deploymentModel = new DeploymentModel();
         deploymentModel.setSingleYAML(false);
         dataHolder.setDeploymentModel(deploymentModel);
-        dataHolder.setBalxFilePath(resourcesDirectory.getAbsolutePath() + File.separator + "hello.balx");
+        dataHolder.setBalxFilePath(resourcesDirectory.toAbsolutePath().resolve("hello.balx"));
     }
 
     @AfterSuite

@@ -62,7 +62,9 @@ public class DeploymentModel extends KubernetesModel {
     private Set<String> imagePullSecrets;
     private String commandArgs;
     private boolean singleYAML;
-
+    private String registry;
+    private DeploymentBuildExtension buildExtension;
+    
     public DeploymentModel() {
         // Initialize with default values.
         this.replicas = 1;
@@ -103,6 +105,7 @@ public class DeploymentModel extends KubernetesModel {
         this.imagePullSecrets = new HashSet<>();
         this.singleYAML = true;
         this.commandArgs = "";
+        this.registry = "";
     }
     
     public Map<String, String> getPodAnnotations() {
@@ -342,5 +345,25 @@ public class DeploymentModel extends KubernetesModel {
 
     public void setImagePullSecrets(Set<String> imagePullSecrets) {
         this.imagePullSecrets = imagePullSecrets;
+    }
+    
+    public void setRegistry(String registry) {
+        this.registry = registry;
+    }
+    
+    public String getRegistry() {
+        return registry;
+    }
+    
+    public void setPorts(Set<Integer> ports) {
+        this.ports = ports;
+    }
+    
+    public DeploymentBuildExtension getBuildExtension() {
+        return buildExtension;
+    }
+    
+    public void setBuildExtension(DeploymentBuildExtension buildExtension) {
+        this.buildExtension = buildExtension;
     }
 }

@@ -21,6 +21,7 @@ package org.ballerinax.kubernetes.handlers.openshift;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import io.fabric8.openshift.api.model.Route;
 import io.fabric8.openshift.api.model.RouteBuilder;
+import org.ballerinax.kubernetes.ArtifactManager;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.AbstractArtifactHandler;
 import org.ballerinax.kubernetes.models.ServiceModel;
@@ -30,6 +31,7 @@ import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT;
 import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT_ROUTE_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 
@@ -43,6 +45,12 @@ public class OpenShiftRouteHandler extends AbstractArtifactHandler {
         int size = routeModels.size();
         if (size > 0) {
             OUT.println();
+            // setting instructions
+            Map<String, String> instructions = ArtifactManager.getInstructions();
+            instructions.put("\tRun the following command to deploy the OpenShift artifacts: ",
+                    "\toc apply -f " + dataHolder.getOutputDir().resolve(OPENSHIFT).toAbsolutePath());
+            instructions.put("\tRun the following command to deploy the Kubernetes artifacts: ",
+                    "\tkubectl apply -f " + dataHolder.getOutputDir());
         }
         int count = 0;
         for (Map.Entry<String, OpenShiftRouteModel> routeModel : routeModels.entrySet()) {
@@ -83,7 +91,8 @@ public class OpenShiftRouteHandler extends AbstractArtifactHandler {
                     .build();
             
             String resourceQuotaContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(route);
-            KubernetesUtils.writeToFile(resourceQuotaContent, OPENSHIFT_ROUTE_FILE_POSTFIX + YAML);
+            KubernetesUtils.writeToFile(dataHolder.getOutputDir().resolve(OPENSHIFT), resourceQuotaContent,
+                    OPENSHIFT_ROUTE_FILE_POSTFIX + YAML);
         } catch (IOException e) {
             String errorMessage = "Error while generating OpenShift Route yaml file: " +
                                   routeModel.getName();

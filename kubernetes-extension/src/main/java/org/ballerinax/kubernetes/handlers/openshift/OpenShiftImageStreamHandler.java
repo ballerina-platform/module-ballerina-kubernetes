@@ -23,12 +23,13 @@ import io.fabric8.openshift.api.model.ImageStream;
 import io.fabric8.openshift.api.model.ImageStreamBuilder;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.AbstractArtifactHandler;
-import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildConfigModel;
+import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT;
 import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT_IMAGE_STREAM_TAG_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 
@@ -38,15 +39,13 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 public class OpenShiftImageStreamHandler extends AbstractArtifactHandler {
     @Override
     public void createArtifacts() throws KubernetesPluginException {
-        OpenShiftBuildConfigModel buildConfigModel = dataHolder.getOpenShiftBuildConfigModel();
-        if (null != buildConfigModel && buildConfigModel.isGenerateImageStream()) {
-            generate(buildConfigModel);
-            OUT.println();
-            OUT.print("\t@kubernetes:OpenShiftImageStream \t - complete 1/1");
-        }
+        OpenShiftBuildExtensionModel buildConfigModel = dataHolder.getOpenShiftBuildExtensionModel();
+        generate(buildConfigModel);
+        OUT.println();
+        OUT.print("\t@kubernetes:OpenShiftImageStream \t - complete 1/1");
     }
     
-    private void generate(OpenShiftBuildConfigModel buildConfigModel) throws KubernetesPluginException {
+    private void generate(OpenShiftBuildExtensionModel buildConfigModel) throws KubernetesPluginException {
         try {
             buildConfigModel.setLabels(new LinkedHashMap<>());
             if (null != buildConfigModel.getLabels() && !buildConfigModel.getLabels().containsKey("build")) {
@@ -66,7 +65,8 @@ public class OpenShiftImageStreamHandler extends AbstractArtifactHandler {
                     .build();
             
             String resourceQuotaContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(is);
-            KubernetesUtils.writeToFile(resourceQuotaContent, OPENSHIFT_IMAGE_STREAM_TAG_FILE_POSTFIX + YAML);
+            KubernetesUtils.writeToFile(dataHolder.getOutputDir().resolve(OPENSHIFT), resourceQuotaContent,
+                    OPENSHIFT_IMAGE_STREAM_TAG_FILE_POSTFIX + YAML);
         } catch (IOException e) {
             String errorMessage = "Error while generating OpenShift Image Stream yaml file: " +
                                   buildConfigModel.getName();

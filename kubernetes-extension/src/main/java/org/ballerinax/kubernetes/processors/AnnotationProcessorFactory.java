@@ -22,7 +22,6 @@ import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.processors.istio.IstioGatewayAnnotationProcessor;
 import org.ballerinax.kubernetes.processors.istio.IstioVirtualServiceAnnotationProcessor;
-import org.ballerinax.kubernetes.processors.openshift.OpenShiftBuildConfigProcessor;
 import org.ballerinax.kubernetes.processors.openshift.OpenShiftRouteProcessor;
 
 /**
@@ -57,8 +56,6 @@ public class AnnotationProcessorFactory {
                 return new IstioGatewayAnnotationProcessor();
             case IstioVirtualService:
                 return new IstioVirtualServiceAnnotationProcessor();
-            case OpenShiftBuildConfig:
-                return new OpenShiftBuildConfigProcessor();
             case OpenShiftRoute:
                 return new OpenShiftRouteProcessor();
             default:
@@ -79,7 +76,6 @@ public class AnnotationProcessorFactory {
         ResourceQuota,
         IstioGateway,
         IstioVirtualService,
-        OpenShiftBuildConfig,
         OpenShiftRoute
     }
 }

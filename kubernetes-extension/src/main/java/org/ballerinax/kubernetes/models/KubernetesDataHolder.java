@@ -21,7 +21,7 @@ package org.ballerinax.kubernetes.models;
 import org.ballerinax.docker.generator.models.DockerModel;
 import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
 import org.ballerinax.kubernetes.models.istio.IstioVirtualServiceModel;
-import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildConfigModel;
+import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
 import org.ballerinax.kubernetes.models.openshift.OpenShiftRouteModel;
 
 import java.nio.file.Path;
@@ -48,11 +48,11 @@ public class KubernetesDataHolder {
     private Set<ResourceQuotaModel> resourceQuotaModels;
     private Map<String, IstioGatewayModel> istioGatewayModels;
     private Map<String, IstioVirtualServiceModel> istioVirtualServiceModels;
-    private OpenShiftBuildConfigModel openShiftBuildConfigModel;
+    private OpenShiftBuildExtensionModel openShiftBuildExtensionModel;
     private Map<String, OpenShiftRouteModel> openShiftRouteModels;
     private JobModel jobModel;
-    private String balxFilePath;
-    private String outputDir;
+    private Path balxFilePath;
+    private Path outputDir;
     private String namespace;
     private Path sourceRoot;
 
@@ -167,19 +167,19 @@ public class KubernetesDataHolder {
         this.canProcess = canProcess;
     }
 
-    public String getBalxFilePath() {
+    public Path getBalxFilePath() {
         return balxFilePath;
     }
 
-    public void setBalxFilePath(String balxFilePath) {
+    public void setBalxFilePath(Path balxFilePath) {
         this.balxFilePath = balxFilePath;
     }
 
-    public String getOutputDir() {
+    public Path getOutputDir() {
         return outputDir;
     }
 
-    public void setOutputDir(String outputDir) {
+    public void setOutputDir(Path outputDir) {
         this.outputDir = outputDir;
     }
 
@@ -223,12 +223,12 @@ public class KubernetesDataHolder {
         this.istioVirtualServiceModels.put(serviceName, istioVirtualServiceModel);
     }
     
-    public OpenShiftBuildConfigModel getOpenShiftBuildConfigModel() {
-        return openShiftBuildConfigModel;
+    public OpenShiftBuildExtensionModel getOpenShiftBuildExtensionModel() {
+        return openShiftBuildExtensionModel;
     }
     
-    public void setOpenShiftBuildConfigModel(OpenShiftBuildConfigModel openShiftBuildConfigModel) {
-        this.openShiftBuildConfigModel = openShiftBuildConfigModel;
+    public void setOpenShiftBuildExtensionModel(OpenShiftBuildExtensionModel openShiftBuildExtensionModel) {
+        this.openShiftBuildExtensionModel = openShiftBuildExtensionModel;
     }
     
     public Map<String, OpenShiftRouteModel> getOpenShiftRouteModels() {

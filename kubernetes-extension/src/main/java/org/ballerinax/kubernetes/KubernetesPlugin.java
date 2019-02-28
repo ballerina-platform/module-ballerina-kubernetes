@@ -41,7 +41,6 @@ import org.wso2.ballerinalang.compiler.SourceDirectory;
 import org.wso2.ballerinalang.compiler.tree.BLangPackage;
 import org.wso2.ballerinalang.compiler.util.CompilerContext;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -133,15 +132,15 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
         KubernetesContext.getInstance().setCurrentPackage(moduleID);
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
         if (dataHolder.isCanProcess()) {
-            String filePath = binaryPath.toAbsolutePath().toString();
-            String userDir = new File(filePath).getParentFile().getAbsolutePath();
-            String targetPath = userDir + File.separator + KUBERNETES + File.separator;
-            if (userDir.endsWith("target")) {
+            Path balXPath = binaryPath.toAbsolutePath();
+            Path buildOutputPath = balXPath.getParent().toAbsolutePath();
+            Path targetPath = buildOutputPath.resolve(KUBERNETES);
+            if (buildOutputPath.endsWith("target")) {
                 //Compiling package therefore append balx file name to docker artifact dir path
-                targetPath = userDir + File.separator + KUBERNETES + File.separator + extractBalxName(filePath);
+                targetPath = buildOutputPath.resolve(KUBERNETES).resolve(extractBalxName(balXPath));
             }
-            dataHolder.setBalxFilePath(filePath);
-            dataHolder.setOutputDir(targetPath);
+            dataHolder.setBalxFilePath(balXPath);
+            dataHolder.setOutputDir(buildOutputPath);
             ArtifactManager artifactManager = new ArtifactManager(targetPath);
             try {
                 KubernetesUtils.deleteDirectory(targetPath);
