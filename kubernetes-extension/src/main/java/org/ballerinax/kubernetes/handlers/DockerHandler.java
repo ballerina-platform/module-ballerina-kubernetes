@@ -20,12 +20,9 @@ package org.ballerinax.kubernetes.handlers;
 
 import org.ballerinax.docker.generator.DockerArtifactHandler;
 import org.ballerinax.docker.generator.exceptions.DockerGenException;
-import org.ballerinax.docker.generator.utils.DockerGenUtils;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 
-import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 
@@ -37,17 +34,10 @@ public class DockerHandler extends AbstractArtifactHandler {
     public void createArtifacts() throws KubernetesPluginException {
         try {
             // Generate docker artifacts
-            Path dockerOutputDir = Paths.get(dataHolder.getOutputDir());
-            if (dockerOutputDir.endsWith("target" + File.separator + "kubernetes" + File.separator)) {
-                //Compiling package therefore append balx file dependencies to docker artifact dir path
-                dockerOutputDir = dockerOutputDir.resolve(DockerGenUtils.extractBalxName(dataHolder
-                        .getBalxFilePath()));
-            }
-            dockerOutputDir = dockerOutputDir.resolve(DOCKER);
-            DockerArtifactHandler dockerArtifactHandler =
-                    new DockerArtifactHandler(dataHolder.getDockerModel());
+            Path dockerOutputDir = dataHolder.getArtifactOutputPath().resolve(DOCKER);
+            DockerArtifactHandler dockerArtifactHandler = new DockerArtifactHandler(dataHolder.getDockerModel());
             dockerArtifactHandler.createArtifacts(OUT, "\t@kubernetes:Docker \t\t\t", dataHolder
-                    .getBalxFilePath(), dockerOutputDir);
+                    .getBalxFilePath().toString(), dockerOutputDir);
         } catch (DockerGenException e) {
             throw new KubernetesPluginException(e.getMessage(), e);
         }

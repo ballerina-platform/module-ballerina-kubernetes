@@ -41,6 +41,7 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.getImagePullSecret
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.parseBuildExtension;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
@@ -148,6 +149,12 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 case imagePullSecrets:
                     deploymentModel.setImagePullSecrets(getImagePullSecrets(keyValue));
                     break;
+                case registry:
+                    deploymentModel.setRegistry(resolveValue(keyValue.getValue().toString()));
+                    break;
+                case buildExtension:
+                    deploymentModel.setBuildExtension(parseBuildExtension(keyValue.getValue()));
+                    break;
                 default:
                     break;
             }
@@ -193,6 +200,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         env,
         buildImage,
         dockerHost,
+        registry,
         username,
         password,
         baseImage,
@@ -201,6 +209,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         copyFiles,
         singleYAML,
         dependsOn,
-        imagePullSecrets
+        imagePullSecrets,
+        buildExtension
     }
 }

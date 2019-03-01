@@ -31,16 +31,22 @@ import io.fabric8.kubernetes.api.model.ResourceFieldSelectorBuilder;
 import io.fabric8.kubernetes.api.model.SecretKeySelector;
 import io.fabric8.kubernetes.api.model.SecretKeySelectorBuilder;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.ballerinalang.model.tree.NodeKind;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
 import org.ballerinax.docker.generator.models.CopyFileModel;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.DeploymentBuildExtension;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.EnvVarValueModel;
 import org.ballerinax.kubernetes.models.JobModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
+import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
+import org.ballerinax.kubernetes.processors.openshift.OpenShiftBuildExtensionProcessor;
+import org.wso2.ballerinalang.compiler.semantics.model.types.BFiniteType;
+import org.wso2.ballerinalang.compiler.semantics.model.types.BType;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
@@ -73,10 +79,9 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
  */
 public class KubernetesUtils {
 
-    private static final boolean debugEnabled = "true".equals(System.getProperty(KubernetesConstants
-            .ENABLE_DEBUG_LOGS));
-    private static final PrintStream error = System.err;
-    private static final PrintStream out = System.out;
+    private static final boolean DEBUG_ENABLED = "true".equals(System.getenv(KubernetesConstants.ENABLE_DEBUG_LOGS));
+    private static final PrintStream ERR = System.err;
+    private static final PrintStream OUT = System.out;
 
     /**
      * Write content to a File. Create the required directories if they don't not exists.
@@ -87,31 +92,42 @@ public class KubernetesUtils {
      */
     public static void writeToFile(String context, String outputFileName) throws IOException {
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
-        outputFileName = dataHolder.getOutputDir() + File
-                .separator + extractBalxName(dataHolder.getBalxFilePath()) + outputFileName;
+        writeToFile(dataHolder.getArtifactOutputPath(), context, outputFileName);
+    }
+    
+    /**
+     * Write content to a File. Create the required directories if they don't not exists.
+     *
+     * @param outputDir  Artifact output path.
+     * @param context    Context of the file
+     * @param fileSuffix Suffix for artifact.
+     * @throws IOException If an error occurs when writing to a file
+     */
+    public static void writeToFile(Path outputDir, String context, String fileSuffix) throws IOException {
+        KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
+        Path artifactFileName = outputDir.resolve(extractBalxName(dataHolder.getBalxFilePath()) + fileSuffix);
         DeploymentModel deploymentModel = dataHolder.getDeploymentModel();
         JobModel jobModel = dataHolder.getJobModel();
         // Priority given for job, then deployment.
         if (jobModel != null && jobModel.isSingleYAML()) {
-            outputFileName =
-                    dataHolder.getOutputDir() + File.separator + extractBalxName(dataHolder.getBalxFilePath()) + YAML;
+            artifactFileName = outputDir.resolve(extractBalxName(dataHolder.getBalxFilePath()) + YAML);
         } else if (jobModel == null && deploymentModel != null && deploymentModel.isSingleYAML()) {
-            outputFileName =
-                    dataHolder.getOutputDir() + File.separator + extractBalxName(dataHolder.getBalxFilePath()) + YAML;
+            artifactFileName = outputDir.resolve(extractBalxName(dataHolder.getBalxFilePath()) + YAML);
             
         }
-        File newFile = new File(outputFileName);
+        File newFile = artifactFileName.toFile();
         // append if file exists
         if (newFile.exists()) {
-            Files.write(Paths.get(outputFileName), context.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
+            Files.write(artifactFileName, context.getBytes(StandardCharsets.UTF_8),
+                    StandardOpenOption.APPEND);
             return;
         }
         //create required directories
         if (newFile.getParentFile().mkdirs()) {
-            Files.write(Paths.get(outputFileName), context.getBytes(StandardCharsets.UTF_8));
+            Files.write(artifactFileName, context.getBytes(StandardCharsets.UTF_8));
             return;
         }
-        Files.write(Paths.get(outputFileName), context.getBytes(StandardCharsets.UTF_8));
+        Files.write(artifactFileName, context.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -127,10 +143,10 @@ public class KubernetesUtils {
             try {
                 return Files.readAllBytes(targetFilePath);
             } catch (IOException e) {
-                throw new KubernetesPluginException("Unable to read contents of the file " + targetFilePath);
+                throw new KubernetesPluginException("unable to read contents of the file " + targetFilePath);
             }
         }
-        throw new KubernetesPluginException("Unable to read contents of the file " + targetFilePath);
+        throw new KubernetesPluginException("unable to read contents of the file " + targetFilePath);
     }
 
     /**
@@ -156,7 +172,7 @@ public class KubernetesUtils {
                 FileUtils.copyDirectory(src, dst);
             }
         } catch (IOException e) {
-            throw new KubernetesPluginException("Error while copying file", e);
+            throw new KubernetesPluginException("error while copying file", e);
         }
     }
 
@@ -166,21 +182,29 @@ public class KubernetesUtils {
      * @param balxFilePath balx file path.
      * @return output file name of balx
      */
-    public static String extractBalxName(String balxFilePath) {
-        if (balxFilePath.contains(".balx")) {
-            return balxFilePath.substring(balxFilePath.lastIndexOf(File.separator) + 1, balxFilePath.lastIndexOf(
-                    ".balx"));
+    public static String extractBalxName(Path balxFilePath) {
+        if (FilenameUtils.isExtension(balxFilePath.toString(), "balx")) {
+            return FilenameUtils.getBaseName(balxFilePath.toString());
         }
         return null;
     }
-
+    
+    /**
+     * Prints an Information message.
+     *
+     * @param msg message to be printed
+     */
+    public static void printInfo(String msg) {
+        OUT.println(msg);
+    }
+    
     /**
      * Prints an Error message.
      *
      * @param msg message to be printed
      */
     public static void printError(String msg) {
-        error.println("error [k8s plugin]: " + msg);
+        ERR.println("error [k8s plugin]: " + msg);
     }
 
     /**
@@ -189,9 +213,18 @@ public class KubernetesUtils {
      * @param msg message to be printed
      */
     public static void printDebug(String msg) {
-        if (debugEnabled) {
-            out.println("debug [k8s plugin]: " + msg);
+        if (DEBUG_ENABLED) {
+            OUT.println("debug [k8s plugin]: " + msg);
         }
+    }
+    
+    /**
+     * Print warning message.
+     *
+     * @param message Message content.
+     */
+    public static void printWarning(String message) {
+        OUT.println("warning [k8s plugin]: " + message);
     }
 
     /**
@@ -200,7 +233,7 @@ public class KubernetesUtils {
      * @param msg message to be printed
      */
     public static void printInstruction(String msg) {
-        out.println(msg);
+        OUT.println(msg);
     }
 
     /**
@@ -220,9 +253,19 @@ public class KubernetesUtils {
                     .map(Path::toFile)
                     .forEach(File::delete);
         } catch (IOException e) {
-            throw new KubernetesPluginException("Unable to delete directory: " + path, e);
+            throw new KubernetesPluginException("unable to delete directory: " + path, e);
         }
 
+    }
+    
+    /**
+     * Deletes a given directory.
+     *
+     * @param path path to directory
+     * @throws KubernetesPluginException if an error occurs while deleting
+     */
+    public static void deleteDirectory(Path path) throws KubernetesPluginException {
+        deleteDirectory(path.toAbsolutePath().toString());
     }
 
     /* Checks if a String is empty ("") or null.
@@ -282,6 +325,47 @@ public class KubernetesUtils {
             }
         }
         return map;
+    }
+    
+    /**
+     * Parse build extension of @kubernetes:Deployment annotation.
+     *
+     * @param buildExtensionValue Fields of the buildExtension field.
+     * @return Build extension model.
+     * @throws KubernetesPluginException When an unknown extension is found.
+     */
+    public static DeploymentBuildExtension parseBuildExtension(BLangExpression buildExtensionValue)
+            throws KubernetesPluginException {
+        if (buildExtensionValue instanceof BLangSimpleVarRef || buildExtensionValue instanceof BLangLiteral) {
+            if ("openshift".equals(getStringValue(buildExtensionValue))) {
+                return new OpenShiftBuildExtensionModel();
+            }
+        } else {
+            if (buildExtensionValue instanceof BLangRecordLiteral) {
+                List<BLangRecordLiteral.BLangRecordKeyValue> buildExtensionRecord =
+                        ((BLangRecordLiteral) buildExtensionValue).keyValuePairs;
+                BLangExpression buildExtensionType = buildExtensionRecord.get(0).getKey();
+                if ("openshift".equals(buildExtensionType.toString())) {
+                    BLangRecordLiteral openShiftField = (BLangRecordLiteral) buildExtensionRecord.get(0).getValue();
+                    return OpenShiftBuildExtensionProcessor.processBuildExtension(openShiftField.getKeyValuePairs());
+                }
+            }
+        }
+        throw new KubernetesPluginException("unknown build extension found");
+    }
+    
+    public static String getStringValue(BLangExpression expr) throws KubernetesPluginException {
+        BType exprType = expr.type;
+        if (expr instanceof BLangSimpleVarRef && exprType instanceof BFiniteType) {
+            // Parse compile time constant
+            BFiniteType compileConst = (BFiniteType) exprType;
+            if (compileConst.valueSpace.size() > 0) {
+                return compileConst.valueSpace.iterator().next().toString();
+            }
+        } else if (expr instanceof BLangLiteral) {
+            return expr.toString();
+        }
+        throw new KubernetesPluginException("unable to parse value: " + expr.toString());
     }
 
     /**

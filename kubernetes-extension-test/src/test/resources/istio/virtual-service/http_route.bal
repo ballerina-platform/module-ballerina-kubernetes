@@ -19,7 +19,6 @@ import ballerinax/kubernetes;
 
 @kubernetes:IstioVirtualService {
     name: "my-gateway",
-    namespace: "ballerina",
     annotations: {
         anno1: "anno1Val",
         anno2: "anno2Val"
@@ -70,6 +69,7 @@ import ballerinax/kubernetes;
     ]
 }
 @kubernetes:Deployment {
+    namespace: "ballerina",
     image: "pizza-shop:latest",
     singleYAML: false
 }

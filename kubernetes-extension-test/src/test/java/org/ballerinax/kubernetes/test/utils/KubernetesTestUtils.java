@@ -186,7 +186,8 @@ public class KubernetesTestUtils {
         // log ballerina-internal.log content
         Path ballerinaInternalLog = Paths.get(sourceDirectory, "ballerina-internal.log");
         if (exitCode == 1 && Files.exists(ballerinaInternalLog)) {
-            log.info(FileUtils.readFileToString(ballerinaInternalLog.toFile()));
+            log.error("ballerina-internal.log file found. content: ");
+            log.error(FileUtils.readFileToString(ballerinaInternalLog.toFile()));
         }
         return exitCode;
     }
@@ -238,6 +239,18 @@ public class KubernetesTestUtils {
         logOutput(process.getInputStream());
         logOutput(process.getErrorStream());
         return exitCode;
+    }
+    
+    /**
+     * Compile a ballerina project in a given directory
+     *
+     * @param sourceDirectory Ballerina source directory
+     * @return Exit code
+     * @throws InterruptedException if an error occurs while compiling
+     * @throws IOException          if an error occurs while writing file
+     */
+    public static int compileBallerinaProject(Path sourceDirectory) throws InterruptedException, IOException {
+        return compileBallerinaProject(sourceDirectory.toAbsolutePath().toString());
     }
     
     private static synchronized void addJavaAgents(Map<String, String> envProperties) {

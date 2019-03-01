@@ -186,9 +186,6 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
                 case name:
                     ingressModel.setName(getValidName(resolveValue(keyValue.getValue().toString())));
                     break;
-                case namespace:
-                    ingressModel.setNamespace(getValidName(resolveValue(keyValue.getValue().toString())));
-                    break;
                 case labels:
                     ingressModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
@@ -238,7 +235,7 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
         BLangService bService = (BLangService) serviceNode;
         for (BLangExpression attachedExpr : bService.getAttachedExprs()) {
             if (attachedExpr instanceof BLangTypeInit) {
-                throw new KubernetesPluginException("Adding @kubernetes:Ingress{} annotation to a service is only " +
+                throw new KubernetesPluginException("adding @kubernetes:Ingress{} annotation to a service is only " +
                                                     "supported when service is bind to an anonymous listener");
             }
         }
@@ -278,7 +275,6 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
      */
     private enum IngressConfiguration {
         name,
-        namespace,
         labels,
         annotations,
         hostname,

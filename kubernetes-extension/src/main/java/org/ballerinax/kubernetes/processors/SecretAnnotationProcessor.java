@@ -69,9 +69,6 @@ public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
                         case name:
                             secretModel.setName(getValidName(resolveValue(annotation.getValue().toString())));
                             break;
-                        case namespace:
-                            secretModel.setNamespace(resolveValue(annotation.getValue().toString()));
-                            break;
                         case labels:
                             secretModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                             break;
@@ -118,7 +115,6 @@ public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
      */
     private enum SecretMountConfig {
         name,
-        namespace,
         labels,
         annotations,
         mountPath,

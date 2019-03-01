@@ -122,9 +122,6 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
                 case name:
                     gatewayModel.setName(resolveValue(gatewayField.getValue().toString()));
                     break;
-                case namespace:
-                    gatewayModel.setNamespace(resolveValue(gatewayField.getValue().toString()));
-                    break;
                 case labels:
                     BLangRecordLiteral labelsField = (BLangRecordLiteral) gatewayField.getValue();
                     gatewayModel.setLabels(getMap(labelsField.getKeyValuePairs()));
@@ -141,7 +138,7 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
                     processIstioGatewayServerAnnotation(gatewayModel, (BLangArrayLiteral) gatewayField.getValue());
                     break;
                 default:
-                    throw new KubernetesPluginException("Unknown field found for istio gateway.");
+                    throw new KubernetesPluginException("unknown field found for istio gateway.");
             }
         }
         
@@ -177,7 +174,7 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
                             processIstioGatewayTLSAnnotation(server, tlsRecord.getKeyValuePairs());
                             break;
                         default:
-                            throw new KubernetesPluginException("Unknown field found for istio gateway server.");
+                            throw new KubernetesPluginException("unknown field found for istio gateway server.");
                     }
                 }
                 servers.add(server);
@@ -209,7 +206,7 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
                     portModel.setName(portField.getValue().toString());
                     break;
                 default:
-                    throw new KubernetesPluginException("Unknown field found for istio gateway server port.");
+                    throw new KubernetesPluginException("unknown field found for istio gateway server port.");
             }
         }
         server.setPort(portModel);
@@ -248,7 +245,7 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
                     tlsOptions.setSubjectAltNames(getArray(subjectAltNames));
                     break;
                 default:
-                    throw new KubernetesPluginException("Unknown field found for istio gateway server tls options.");
+                    throw new KubernetesPluginException("unknown field found for istio gateway server tls options.");
             }
         }
         
@@ -278,7 +275,6 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
     
     private enum IstioGatewayConfig {
         name,
-        namespace,
         labels,
         annotations,
         selector,

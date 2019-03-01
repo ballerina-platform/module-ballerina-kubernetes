@@ -61,7 +61,7 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
         for (Map.Entry<String, IstioVirtualServiceModel> vsModel : istioVSModels.entrySet()) {
             count++;
             generate(vsModel.getKey(), vsModel.getValue());
-            OUT.print("\t@kubernetes:IstioVirtualService \t - complete " + count + "/" + istioVSModels.size() + "\r");
+            OUT.print("\t@kubernetes:IstioVirtualService \t - complete " + count + "/" + size + "\r");
         }
     }
     
@@ -81,8 +81,8 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
             // metadata
             Map<String, Object> metadata = new LinkedHashMap<>();
             metadata.put("name", vsModel.getName());
-            if (null != vsModel.getNamespace()) {
-                metadata.put("namespace", vsModel.getNamespace());
+            if (null != dataHolder.getNamespace()) {
+                metadata.put("namespace", dataHolder.getNamespace());
             }
             if (null != vsModel.getLabels() && vsModel.getLabels().size() > 0) {
                 metadata.put("labels", vsModel.getLabels());
@@ -108,7 +108,7 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
                 if (vsModel.getGateways().size() == 0) {
                     vsModel.getGateways().add(gwModel.getName());
                 } else if (vsModel.getHosts().size() == 1 && vsModel.getHosts().contains("*")) {
-                    throw new KubernetesPluginException("Unable to resolve a gateway for '" + vsModel + "' " +
+                    throw new KubernetesPluginException("unable to resolve a gateway for '" + vsModel + "' " +
                                                         "virtual service. Add @kubernetes:IstioGateway annotation" +
                                                         " to your listener or service, else explicitly state to " +
                                                         "use the 'mesh' gateway.");

@@ -42,6 +42,7 @@ public class DeploymentModel extends KubernetesModel {
     private int livenessPort;
     private int initialDelaySeconds;
     private int periodSeconds;
+    private String namespace;
     private String imagePullPolicy;
     private String image;
     private boolean buildImage;
@@ -62,7 +63,9 @@ public class DeploymentModel extends KubernetesModel {
     private Set<String> imagePullSecrets;
     private String commandArgs;
     private boolean singleYAML;
-
+    private String registry;
+    private DeploymentBuildExtension buildExtension;
+    
     public DeploymentModel() {
         // Initialize with default values.
         this.replicas = 1;
@@ -88,7 +91,7 @@ public class DeploymentModel extends KubernetesModel {
     
         String dockerHost = System.getenv(DOCKER_HOST);
         if (!isBlank(dockerHost)) {
-            this.dockerHost = dockerHost;
+            this.setDockerHost(dockerHost);
         }
         String dockerCertPath = System.getenv(DOCKER_CERT_PATH);
         if (!isBlank(dockerCertPath)) {
@@ -103,6 +106,7 @@ public class DeploymentModel extends KubernetesModel {
         this.imagePullSecrets = new HashSet<>();
         this.singleYAML = true;
         this.commandArgs = "";
+        this.registry = "";
     }
     
     public Map<String, String> getPodAnnotations() {
@@ -152,7 +156,15 @@ public class DeploymentModel extends KubernetesModel {
     public void setImagePullPolicy(String imagePullPolicy) {
         this.imagePullPolicy = imagePullPolicy;
     }
-
+    
+    public String getNamespace() {
+        return namespace;
+    }
+    
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+    
     public String getImage() {
         return image;
     }
@@ -342,5 +354,25 @@ public class DeploymentModel extends KubernetesModel {
 
     public void setImagePullSecrets(Set<String> imagePullSecrets) {
         this.imagePullSecrets = imagePullSecrets;
+    }
+    
+    public void setRegistry(String registry) {
+        this.registry = registry;
+    }
+    
+    public String getRegistry() {
+        return registry;
+    }
+    
+    public void setPorts(Set<Integer> ports) {
+        this.ports = ports;
+    }
+    
+    public DeploymentBuildExtension getBuildExtension() {
+        return buildExtension;
+    }
+    
+    public void setBuildExtension(DeploymentBuildExtension buildExtension) {
+        this.buildExtension = buildExtension;
     }
 }

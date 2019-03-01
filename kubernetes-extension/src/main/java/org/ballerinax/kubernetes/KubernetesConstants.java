@@ -22,8 +22,9 @@ package org.ballerinax.kubernetes;
  * Constants used in kubernetes extension.
  */
 public class KubernetesConstants {
-    public static final String ENABLE_DEBUG_LOGS = "debugKubernetes";
+    public static final String ENABLE_DEBUG_LOGS = "BAL_KUBERNETES_DEBUG";
     public static final String KUBERNETES = "kubernetes";
+    public static final String OPENSHIFT = "openshift";
     public static final String KUBERNETES_SVC_PROTOCOL = "TCP";
     public static final String KUBERNETES_SELECTOR_KEY = "app";
     public static final String INGRESS_POSTFIX = "-ingress";
@@ -48,6 +49,9 @@ public class KubernetesConstants {
     public static final String RESOURCE_QUOTA_FILE_POSTFIX = "_resource_quota";
     public static final String ISTIO_GATEWAY_FILE_POSTFIX = "_istio_gateway";
     public static final String ISTIO_VIRTUAL_SERVICE_FILE_POSTFIX = "_istio_virtual_service";
+    public static final String OPENSHIFT_BUILD_CONFIG_FILE_POSTFIX = "_openshift_bc";
+    public static final String OPENSHIFT_IMAGE_STREAM_TAG_FILE_POSTFIX = "_openshift_is";
+    public static final String OPENSHIFT_ROUTE_FILE_POSTFIX = "_openshift_route";
     public static final String HPA_FILE_POSTFIX = "_hpa";
     public static final String YAML = ".yaml";
     public static final String DOCKER_LATEST_TAG = ":latest";
@@ -72,6 +76,8 @@ public class KubernetesConstants {
     public static final String ISTIO_GATEWAY_SELECTOR = "istio";
     public static final String ISTIO_GATEWAY_POSTFIX = "-istio-gw";
     public static final String ISTIO_VIRTUAL_SERVICE_POSTFIX = "-istio-vs";
+    public static final String OPENSHIFT_BUILD_CONFIG_POSTFIX = "-openshift-bc";
+    public static final String OPENSHIFT_ROUTE_POSTFIX = "-openshift-route";
 
     /**
      * Restart policy enum.

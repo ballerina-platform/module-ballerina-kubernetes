@@ -26,6 +26,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,11 +53,14 @@ public class DockerGeneratorTests {
         dockerModel.setBuildImage(false);
         KubernetesContext context = KubernetesContext.getInstance();
         KubernetesDataHolder dataHolder = context.getDataHolder();
+        Path tempArtifactHolder = dataHolder.getArtifactOutputPath();
+        dataHolder.setArtifactOutputPath(tempArtifactHolder.resolve("hello"));
         dataHolder.setDockerModel(dockerModel);
         new DockerHandler().createArtifacts();
         File dockerfile = new File("target/kubernetes/hello/docker/");
         dockerfile.mkdirs();
         dockerfile = new File("target/kubernetes/hello/docker/Dockerfile");
+        dataHolder.setArtifactOutputPath(tempArtifactHolder);
         Assert.assertTrue(dockerfile.exists());
         dockerfile.deleteOnExit();
     }

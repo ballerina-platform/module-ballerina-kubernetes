@@ -69,7 +69,7 @@ public class ConfigMapHandler extends AbstractArtifactHandler {
             count++;
             if (!isBlank(configMapModel.getBallerinaConf())) {
                 if (configMapModel.getData().size() != 1) {
-                    throw new KubernetesPluginException("There can be only 1 ballerina config file");
+                    throw new KubernetesPluginException("there can be only 1 ballerina config file");
                 }
                 DeploymentModel deploymentModel = dataHolder.getDeploymentModel();
                 deploymentModel.setCommandArgs("--config ${CONFIG_FILE}");

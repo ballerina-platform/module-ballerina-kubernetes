@@ -116,9 +116,6 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                 case name:
                     vsModel.setName(resolveValue(vsField.getValue().toString()));
                     break;
-                case namespace:
-                    vsModel.setNamespace(resolveValue(vsField.getValue().toString()));
-                    break;
                 case labels:
                     BLangRecordLiteral labelsField = (BLangRecordLiteral) vsField.getValue();
                     vsModel.setLabels(getMap(labelsField.getKeyValuePairs()));
@@ -153,7 +150,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                     vsModel.setTcp(tcpModels);
                     break;
                 default:
-                    throw new KubernetesPluginException("Unknown field found for istio virtual service: " +
+                    throw new KubernetesPluginException("unknown field found for istio virtual service: " +
                                                         vsField.getKey().toString());
             }
         }
@@ -195,7 +192,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                                     break;
                                 default:
                                     throw new KubernetesPluginException(
-                                            "Unknown field found for istio virtual service: " +
+                                            "unknown field found for istio virtual service: " +
                                             redirectField.getKey().toString());
                             }
                         }
@@ -223,7 +220,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                         httpRoute.setAppendHeaders(getMap(((BLangRecordLiteral) httpField.valueExpr).keyValuePairs));
                         break;
                     default:
-                        throw new KubernetesPluginException("Unknown field found for istio virtual service: " +
+                        throw new KubernetesPluginException("unknown field found for istio virtual service: " +
                                                             httpField.getKey().toString());
                 }
             }
@@ -256,7 +253,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                         destinationWeight.setWeight(Integer.parseInt((routeField).getValue().toString()));
                         break;
                     default:
-                        throw new KubernetesPluginException("Unknown field found for istio virtual service: " +
+                        throw new KubernetesPluginException("unknown field found for istio virtual service: " +
                                                             routeField.getKey().toString());
                 }
             }
@@ -290,7 +287,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                     destination.setPort(Integer.parseInt(portField.getValue().toString()));
                     break;
                 default:
-                    throw new KubernetesPluginException("Unknown field found for istio virtual service.");
+                    throw new KubernetesPluginException("unknown field found for istio virtual service.");
             }
         }
         
@@ -331,7 +328,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                 return resolveValue((literal).getValue().toString());
             }
         } else {
-            throw new KubernetesPluginException("Unable to resolve annotation values.");
+            throw new KubernetesPluginException("unable to resolve annotation values.");
         }
     }
     
@@ -361,7 +358,6 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
     
     private enum IstioVSConfig {
         name,
-        namespace,
         labels,
         annotations,
         hosts,

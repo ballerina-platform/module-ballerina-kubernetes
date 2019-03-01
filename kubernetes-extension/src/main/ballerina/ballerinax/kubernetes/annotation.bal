@@ -17,12 +17,10 @@
 # Metadata for artifacts
 #
 # + name - Name of the resource
-# + namespace - Kubernetes namespace to be used
 # + labels - Map of labels for the resource
 # + annotations - Map of annotations for resource
 public type Metadata record {
     string name?;
-    string namespace?;
     map<string> labels?;
     map<string> annotations?;
     !...;
@@ -115,8 +113,19 @@ public const string IMAGE_PULL_POLICY_NEVER = "Never";
 # Image pull policy type field for kubernetes deployment and jobs.
 public type ImagePullPolicy "IfNotPresent"|"Always"|"Never";
 
+public const string BUILD_EXTENSION_OPENSHIFT = "openshift";
+
+# Extend building of the docker image.
+#
+# + openshift - Openshift build config.
+public type BuildExtension record {
+    OpenShiftBuildConfigConfiguration openshift?;
+    !...;
+};
+
 # Kubernetes deployment configuration.
 #
+# + namespace - Kubernetes namespace to be used on all artifacts
 # + podAnnotations - Map of annotations for pods
 # + replicas - Number of replicas
 # + enableLiveness - Enable/Disable liveness probe
@@ -128,8 +137,10 @@ public type ImagePullPolicy "IfNotPresent"|"Always"|"Never";
 # + env - Environment varialbe map for containers
 # + buildImage - Docker image to be build or not
 # + dockerHost - Docker host IP and docker PORT. (e.g minikube IP and docker PORT)
+# + registry - Docker registry url
 # + username - Username for docker registry
 # + password - Password for docker registry
+# + buildExtension - Docker image build extensions
 # + baseImage - Base image for docker image building
 # + push - Push to remote registry
 # + dockerCertPath - Docker certificate path
@@ -139,6 +150,7 @@ public type ImagePullPolicy "IfNotPresent"|"Always"|"Never";
 # + imagePullSecrets - Image pull secrets
 public type DeploymentConfiguration record {
     *Metadata;
+    string namespace?;
     map<string> podAnnotations?;
     int replicas?;
     boolean enableLiveness?;
@@ -150,8 +162,10 @@ public type DeploymentConfiguration record {
     map<string|FieldRef|SecretKeyRef|ResourceFieldRef|ConfigMapKeyRef> env?;
     boolean buildImage?;
     string dockerHost?;
+    string registry?;
     string username?;
     string password?;
+    BuildExtension|BUILD_EXTENSION_OPENSHIFT buildExtension?;
     string baseImage?;
     boolean push?;
     string dockerCertPath?;
@@ -342,6 +356,7 @@ public type RestartPolicy "OnFailure"|"Always"|"Never";
 
 # Kubernetes job configuration.
 #
+# + namespace - Kubernetes namespace to be used on all artifacts
 # + restartPolicy - Restart policy
 # + backoffLimit - Backoff limit
 # + activeDeadlineSeconds - Active deadline seconds
@@ -361,6 +376,7 @@ public type RestartPolicy "OnFailure"|"Always"|"Never";
 # + singleYAML - Generate a single yaml file with all kubernetes artifacts (services,deployment,ingress,)
 public type JobConfig record {
     *Metadata;
+    string namespace?;
     RestartPolicy restartPolicy = RESTART_POLICY_NEVER;
     string backoffLimit?;
     string activeDeadlineSeconds?;
@@ -673,3 +689,33 @@ public type IstioVirtualServiceConfig record {
 
 # @kubernetes:IstioVirtualService annotation to generate istio virtual service.
 public annotation<service, listener> IstioVirtualService IstioVirtualServiceConfig;
+
+# Build Config configuration for OpenShift.
+#
+# + forcePullDockerImage - Set force pull images when building docker image.
+# + buildDockerWithNoCache - Build docker image with no cache enabled.
+public type OpenShiftBuildConfigConfiguration record {
+    boolean forcePullDockerImage = false;
+    boolean buildDockerWithNoCache = false;
+    !...;
+};
+
+# Domain for OpenShift Route configuration.
+#
+# + domain - The domain of the hostname.
+public type OpenShiftRouteDomainConfig record {
+    string domain;
+    !...;
+};
+
+# Route configuration for @kubernetes:OpenShiftRoute.
+#
+# + host - The host of the route.
+public type OpenShiftRouteConfiguration record {
+    *Metadata;
+    string|OpenShiftRouteDomainConfig host;
+    !...;
+};
+
+# @kubernetes:OpenShiftRoute annotation to generate openshift routes.
+public annotation<service, listener> OpenShiftRoute OpenShiftRouteConfiguration;

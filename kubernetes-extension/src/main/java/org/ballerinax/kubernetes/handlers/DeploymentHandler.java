@@ -44,6 +44,7 @@ import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
 import org.ballerinax.kubernetes.models.SecretModel;
+import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
@@ -51,8 +52,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static org.ballerinax.docker.generator.DockerGenConstants.REGISTRY_SEPARATOR;
 import static org.ballerinax.kubernetes.KubernetesConstants.BALX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_FILE_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT_BUILD_CONFIG_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.populateEnvVar;
 
@@ -119,11 +123,43 @@ public class DeploymentHandler extends AbstractArtifactHandler {
         return initContainers;
     }
 
-    private Container generateContainer(DeploymentModel deploymentModel, List<ContainerPort>
-            containerPorts) {
+    private Container generateContainer(DeploymentModel deploymentModel, List<ContainerPort> containerPorts)
+            throws KubernetesPluginException {
+        String dockerRegistry = deploymentModel.getRegistry();
+        String deploymentImageName = deploymentModel.getImage();
+        if (null != dockerRegistry && !"".equals(dockerRegistry)) {
+            deploymentImageName = dockerRegistry + REGISTRY_SEPARATOR + deploymentImageName;
+        }
+        
+        if (deploymentModel.getBuildExtension() != null) {
+            if (deploymentModel.getBuildExtension() instanceof OpenShiftBuildExtensionModel) {
+                OpenShiftBuildExtensionModel openShiftBC =
+                        (OpenShiftBuildExtensionModel) deploymentModel.getBuildExtension();
+                openShiftBC.setName(deploymentModel.getName().replace(DEPLOYMENT_POSTFIX,
+                        OPENSHIFT_BUILD_CONFIG_POSTFIX));
+                dataHolder.setOpenShiftBuildExtensionModel(openShiftBC);
+        
+                dockerRegistry = deploymentModel.getRegistry();
+                if (dockerRegistry == null || "".equals(dockerRegistry.trim())) {
+                    throw new KubernetesPluginException("value for 'registry' field in @kubernetes:Deployment{} " +
+                                                        "annotation is required to generate OpenShift Build Configs.");
+                }
+        
+                String namespace = dataHolder.getNamespace();
+                if (namespace == null || "".equals(namespace.trim())) {
+                    throw new KubernetesPluginException("value for 'namespace' field in @kubernetes:Deployment{} " +
+                                                        "annotation is required to generate OpenShift Build Configs. " +
+                                                        "use the value of the OpenShift project name.");
+                }
+        
+                deploymentImageName = dockerRegistry + REGISTRY_SEPARATOR + namespace + REGISTRY_SEPARATOR +
+                                      deploymentModel.getImage();
+            }
+        }
+    
         return new ContainerBuilder()
                 .withName(deploymentModel.getName())
-                .withImage(deploymentModel.getImage())
+                .withImage(deploymentImageName)
                 .withImagePullPolicy(deploymentModel.getImagePullPolicy())
                 .withPorts(containerPorts)
                 .withEnv(populateEnvVar(deploymentModel.getEnv()))
@@ -131,7 +167,6 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                 .withLivenessProbe(generateLivenessProbe(deploymentModel))
                 .build();
     }
-
 
     private List<Volume> populateVolume(DeploymentModel deploymentModel) {
         List<Volume> volumes = new ArrayList<>();

@@ -22,6 +22,7 @@ import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.processors.istio.IstioGatewayAnnotationProcessor;
 import org.ballerinax.kubernetes.processors.istio.IstioVirtualServiceAnnotationProcessor;
+import org.ballerinax.kubernetes.processors.openshift.OpenShiftRouteProcessor;
 
 /**
  * Annotation processor factory.
@@ -55,9 +56,11 @@ public class AnnotationProcessorFactory {
                 return new IstioGatewayAnnotationProcessor();
             case IstioVirtualService:
                 return new IstioVirtualServiceAnnotationProcessor();
+            case OpenShiftRoute:
+                return new OpenShiftRouteProcessor();
             default:
                 KubernetesContext.getInstance().getDataHolder().setCanProcess(false);
-                throw new KubernetesPluginException("Error while getting annotation processor for type: " + type);
+                throw new KubernetesPluginException("error while getting annotation processor for type: " + type);
         }
     }
 
@@ -72,6 +75,7 @@ public class AnnotationProcessorFactory {
         Job,
         ResourceQuota,
         IstioGateway,
-        IstioVirtualService
+        IstioVirtualService,
+        OpenShiftRoute
     }
 }

@@ -19,7 +19,6 @@ import ballerinax/kubernetes;
 
 @kubernetes:IstioGateway {
     name: "my-gateway",
-    namespace: "ballerina",
     annotations: {
         anno1: "anno1Val",
         anno2: "anno2Val"

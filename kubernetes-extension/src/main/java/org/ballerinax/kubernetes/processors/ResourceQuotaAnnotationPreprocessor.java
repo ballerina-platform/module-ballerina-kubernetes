@@ -80,10 +80,6 @@ public class ResourceQuotaAnnotationPreprocessor extends AbstractAnnotationProce
                         case name:
                             resourceQuotaModel.setName(getValidName(resolveValue(annotation.getValue().toString())));
                             break;
-                        case namespace:
-                            resourceQuotaModel.setNamespace(getValidName(resolveValue(annotation.getValue()
-                                    .toString())));
-                            break;
                         case labels:
                             BLangRecordLiteral labelValues = (BLangRecordLiteral) annotation.getValue();
                             resourceQuotaModel.setLabels(getMap(labelValues.getKeyValuePairs()));
@@ -114,7 +110,6 @@ public class ResourceQuotaAnnotationPreprocessor extends AbstractAnnotationProce
      */
     private enum ResourceQuotaConfig {
         name,
-        namespace,
         labels,
         annotations,
         hard,

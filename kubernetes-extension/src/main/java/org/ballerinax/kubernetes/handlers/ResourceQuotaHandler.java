@@ -51,6 +51,7 @@ public class ResourceQuotaHandler extends AbstractArtifactHandler {
                 .withNewMetadata()
                 .withName(resourceQuotaModel.getName())
                 .withLabels(resourceQuotaModel.getLabels())
+                .withAnnotations(resourceQuotaModel.getAnnotations())
                 .endMetadata()
                 .withNewSpec()
                 .withHard(getHard(resourceQuotaModel.getHard()))

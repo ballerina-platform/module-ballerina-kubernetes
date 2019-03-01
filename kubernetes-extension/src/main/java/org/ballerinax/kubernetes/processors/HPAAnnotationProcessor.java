@@ -50,9 +50,6 @@ public class HPAAnnotationProcessor extends AbstractAnnotationProcessor {
                 case name:
                     podAutoscalerModel.setName(getValidName(resolveValue(keyValue.getValue().toString())));
                     break;
-                case namespace:
-                    podAutoscalerModel.setNamespace(resolveValue(keyValue.getValue().toString()));
-                    break;
                 case labels:
                     podAutoscalerModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
@@ -80,7 +77,6 @@ public class HPAAnnotationProcessor extends AbstractAnnotationProcessor {
      */
     private enum PodAutoscalerConfiguration {
         name,
-        namespace,
         labels,
         annotations,
         minReplicas,
