@@ -75,10 +75,10 @@ public class OpenShiftRouteHandler extends AbstractArtifactHandler {
             if (routeModel.getDomain() != null) {
                 // Setting the host using domain name required namespace.
                 if (null == dataHolder.getNamespace() || "".equals(dataHolder.getNamespace().trim())) {
-                    throw new KubernetesPluginException("'namespace' field in @kubernetes:Deployment{}is required " +
+                    throw new KubernetesPluginException("'namespace' field in @kubernetes:Deployment{} is required " +
                                                         "when using 'domain' field for setting the host of the " +
-                                                        "@kubernetes:OpenShiftRoute{} annotation. set a namespace for" +
-                                                        " the @kubernetes:Deployment{} annotation.");
+                                                        "@kubernetes:OpenShiftRoute{} annotation. use the OpenShift " +
+                                                        "project name for the namespace value.");
                 }
                 routeHost = routeModel.getName() + "-" + dataHolder.getNamespace() + "." + routeModel.getDomain();
             }
