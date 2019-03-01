@@ -54,7 +54,7 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
             // If not anonymous endpoint throw error.
             if (attachedExpr instanceof BLangSimpleVarRef) {
                 throw new KubernetesPluginException("Adding @kubernetes:Service{} annotation to a service is only " +
-                                                    "supported when the has an anonymous listener");
+                                                    "supported when the service has an anonymous listener");
             }
             
         }
