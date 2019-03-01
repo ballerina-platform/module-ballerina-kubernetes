@@ -27,4 +27,8 @@
         <Class name="org.ballerinax.kubernetes.KubernetesPlugin"/>
         <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
     </Match>
+    <Match>
+        <Class name="org.ballerinax.kubernetes.handlers.openshift.OpenShiftBuildConfigHandler"/>
+        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
+    </Match>
 </FindBugsFilter>

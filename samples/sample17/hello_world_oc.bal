@@ -19,12 +19,12 @@ import ballerinax/kubernetes;
 
 @kubernetes:OpenShiftRoute {
     host: {
-        domain: "<MINISHIFT_IP>.nip.io"
+        domain: "192.168.99.101.nip.io"
     }
 }
 @kubernetes:Deployment {
     namespace: "bal-oc",
-    registry: "<MINISHIFT_DOCKER_REGISTRY_IP>",
+    registry: "172.30.1.1:5000",
     buildImage: false,   // We do not want to create the docker image when building as the OpenShift Build Configs takes care of it.
     buildExtension: "openshift"
 }

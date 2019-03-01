@@ -21,7 +21,6 @@ package org.ballerinax.kubernetes.handlers.openshift;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import io.fabric8.openshift.api.model.BuildConfig;
 import io.fabric8.openshift.api.model.BuildConfigBuilder;
-import org.ballerinax.docker.generator.utils.DockerGenUtils;
 import org.ballerinax.kubernetes.ArtifactManager;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.AbstractArtifactHandler;
@@ -30,12 +29,10 @@ import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
-import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT;
 import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT_BUILD_CONFIG_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
@@ -77,12 +74,7 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
             }
     
             // Generate docker artifacts
-            Path dockerOutputDir = dataHolder.getArtifactOutputPath();
-            if (dataHolder.isProject()) {
-                //Compiling package therefore append balx file dependencies to docker artifact dir path
-                dockerOutputDir = Paths.get(KUBERNETES).resolve(DockerGenUtils.extractBalxName(dataHolder
-                        .getBalxFilePath().toString()));
-            }
+            Path dockerOutputDir = dataHolder.getArtifactOutputPath().resolve(DOCKER).resolve("Dockerfile");
             
             BuildConfig bc = new BuildConfigBuilder()
                     .withNewMetadata()
@@ -104,7 +96,7 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
                     .endSource()
                     .withNewStrategy()
                     .withNewDockerStrategy()
-                    .withDockerfilePath(dockerOutputDir.resolve(DOCKER).resolve("Dockerfile").toString())
+                    .withDockerfilePath(dataHolder.getBalxFilePath().getParent().relativize(dockerOutputDir).toString())
                     .withForcePull(buildConfigModel.isForcePullDockerImage())
                     .withNoCache(buildConfigModel.isBuildDockerWithNoCache())
                     .endDockerStrategy()
