@@ -18,12 +18,13 @@ import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:OpenShiftRoute {
-    namespace: "ns",
     host: {
         domain: "abc.com"
     }
 }
-@kubernetes:Deployment {}
+@kubernetes:Deployment {
+    namespace: "bal-oc-test"
+}
 @kubernetes:Service {}
 listener http:Listener helloEP = new(9090);
 

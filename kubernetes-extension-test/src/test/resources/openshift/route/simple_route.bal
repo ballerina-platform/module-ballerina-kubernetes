@@ -20,7 +20,9 @@ import ballerinax/kubernetes;
 @kubernetes:OpenShiftRoute {
     host: "www.bxoc.com"
 }
-@kubernetes:Deployment {}
+@kubernetes:Deployment {
+    namespace: "bal-oc-test"
+}
 @kubernetes:Service {}
 listener http:Listener helloEP = new(9090);
 

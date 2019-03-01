@@ -40,9 +40,11 @@ public class OpenShiftImageStreamHandler extends AbstractArtifactHandler {
     @Override
     public void createArtifacts() throws KubernetesPluginException {
         OpenShiftBuildExtensionModel buildConfigModel = dataHolder.getOpenShiftBuildExtensionModel();
-        generate(buildConfigModel);
-        OUT.println();
-        OUT.print("\t@kubernetes:OpenShiftImageStream \t - complete 1/1");
+        if (null != buildConfigModel) {
+            generate(buildConfigModel);
+            OUT.println();
+            OUT.print("\t@kubernetes:OpenShiftImageStream \t - complete 1/1");
+        }
     }
     
     private void generate(OpenShiftBuildExtensionModel buildConfigModel) throws KubernetesPluginException {

@@ -72,7 +72,6 @@ public class ArtifactManager {
         if (kubernetesDataHolder.getJobModel() != null) {
             new JobHandler().createArtifacts();
             new DockerHandler().createArtifacts();
-            return;
         } else {
             new ServiceHandler().createArtifacts();
             new IngressHandler().createArtifacts();

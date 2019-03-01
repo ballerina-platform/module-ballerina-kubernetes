@@ -137,6 +137,8 @@ public class OpenShiftRouteTest {
      */
     @Test(groups = {"openshift"})
     public void noNamespace() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "domain_with_no_namespace.bal"), 1);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "domain_with_no_namespace.bal"), 0);
+        File yamlFile = new File(targetPath + File.separator + "domain_with_no_namespace.yaml");
+        Assert.assertFalse(yamlFile.exists());
     }
 }
