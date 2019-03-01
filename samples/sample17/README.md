@@ -6,10 +6,10 @@ service.
 - `@kubernetes:OpenShiftRoute` annotation generates a route to the generated kubernetes service.
 - This sample uses minikube and minishift for demonstration purposes. Hence make sure they are started up.
 - The `hello_world_oc.bal` file has placeholders that needs to be filled prior building.
-- Use the value from `minishift openshift registry` to fill in the `MINISHIFT_DOCKER_REGISTRY_IP` placeholder. This 
-refers to the IP and port of the docker registry which OpenShift uses. 
 - Use the value from `minishift ip` to fill in the `MINISHIFT_IP` placeholder. Make sure you dont remove the `nip.io` 
 from the value.
+- Use the value from `minishift openshift registry` to fill in the `MINISHIFT_DOCKER_REGISTRY_IP` placeholder. This 
+refers to the IP and port of the docker registry which OpenShift uses. 
 - Namespace value of `@kubernetes:OpenShiftBuildConfig` and `@kubernetes:OpenShiftRoute` refers to the OpenShift 
 project.
 - Remove the nginx artifacts added in setting up of the tutorial. Run `kubectl delete -f 
