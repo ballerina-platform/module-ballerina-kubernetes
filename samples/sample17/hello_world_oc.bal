@@ -17,23 +17,18 @@
 import ballerina/http;
 import ballerinax/kubernetes;
 
-@kubernetes:OpenShiftBuildConfig {
-    namespace: "bal-oc",
-    dockerRegistry: "<MINISHIFT_DOCKER_REGISTRY_IP>"
-}
 @kubernetes:OpenShiftRoute {
-    namespace: "bal-oc",
     host: {
         domain: "<MINISHIFT_IP>.nip.io"
     }
 }
 @kubernetes:Deployment {
     namespace: "bal-oc",
-    buildImage: false   // We do not want to create the docker image when building as the OpenShift Build Config takes care of it.
+    registry: "<MINISHIFT_DOCKER_REGISTRY_IP>",
+    buildImage: false,   // We do not want to create the docker image when building as the OpenShift Build Configs takes care of it.
+    buildExtension: "openshift"
 }
-@kubernetes:Service {
-    namespace: "bal-oc"
-}
+@kubernetes:Service { }
 listener http:Listener helloEP = new(9090);
 
 @http:ServiceConfig {
