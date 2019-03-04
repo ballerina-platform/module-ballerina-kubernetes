@@ -37,7 +37,7 @@ listener http:Listener helloWorldEP = new(9090, config = {
 //Add `@kubernetes:Deployment` annotation to a Ballerna service to generate Kuberenetes Deployment for a Ballerina module.
 @kubernetes:Deployment {
     //Enable Kubernetes liveness probe to this service.
-    enableLiveness: true,
+    livenessProbe: true,
     //Genrate Docker image with name `kubernetes:v1.0`.
     image: "kubernetes:v.1.0"
     //Uncomment and change the following values accordingly if you are using minikube.

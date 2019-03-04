@@ -8,7 +8,7 @@ import ballerinax/kubernetes;
 listener http:Listener gceHelloWorldDEP = new(9090);
 
 @kubernetes:Deployment {
-    enableLiveness: true,
+    livenessProbe: true,
     push: true,
     image: "index.docker.io/$env{DOCKER_USERNAME}/gce-sample:1.0",
     username: "$env{DOCKER_USERNAME}",

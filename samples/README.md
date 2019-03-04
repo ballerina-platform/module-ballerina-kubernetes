@@ -44,7 +44,7 @@ nginx-ingress   nginx-5667df56c8-8d8ct                       1/1       Running  
 ## Try kubernetes annotation samples:
 
 1. [Sample1: Kubernetes Hello World](sample1/)
-1. [Sample2: Kubernetes Hello World with enableLiveness and hostname mapping](sample2/)
+1. [Sample2: Kubernetes Hello World with livenessProbe and hostname mapping](sample2/)
 1. [Sample3: Ballerina program with multiple services running in multiple ports](sample3/)
 1. [Sample4: Kubernetes Hello World Secured](sample4/)
 1. [Sample5: Ballerina service with http and https endpoint](sample5/)
