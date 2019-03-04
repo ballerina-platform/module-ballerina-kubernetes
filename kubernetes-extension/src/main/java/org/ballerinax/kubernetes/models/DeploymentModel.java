@@ -39,6 +39,7 @@ public class DeploymentModel extends KubernetesModel {
     private Map<String, String> podAnnotations;
     private int replicas;
     private ProbeModel livenessProbe;
+    private ProbeModel readinessProbe;
     private String namespace;
     private String imagePullPolicy;
     private String image;
@@ -125,6 +126,14 @@ public class DeploymentModel extends KubernetesModel {
     
     public void setLivenessProbe(ProbeModel livenessProbe) {
         this.livenessProbe = livenessProbe;
+    }
+    
+    public ProbeModel getReadinessProbe() {
+        return readinessProbe;
+    }
+    
+    public void setReadinessProbe(ProbeModel readinessProbe) {
+        this.readinessProbe = readinessProbe;
     }
     
     public String getImagePullPolicy() {

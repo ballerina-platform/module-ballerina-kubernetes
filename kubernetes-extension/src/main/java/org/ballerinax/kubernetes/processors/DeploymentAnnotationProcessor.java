@@ -99,6 +99,9 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 case livenessProbe:
                     deploymentModel.setLivenessProbe(parseProbeConfiguration(keyValue.getValue()));
                     break;
+                case readinessProbe:
+                    deploymentModel.setReadinessProbe(parseProbeConfiguration(keyValue.getValue()));
+                    break;
                 case username:
                     deploymentModel.setUsername(resolveValue(keyValue.getValue().toString()));
                     break;
@@ -196,7 +199,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                             probeModel.setPeriodSeconds(getIntValue(probeField.getValue()));
                             break;
                         default:
-                            throw new KubernetesPluginException("unknown probe field detected: " +
+                            throw new KubernetesPluginException("unknown probe field found: " +
                                                                 probeField.getKey().toString());
                     }
                 }
@@ -227,6 +230,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         podAnnotations,
         replicas,
         livenessProbe,
+        readinessProbe,
         imagePullPolicy,
         image,
         env,

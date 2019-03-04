@@ -141,6 +141,7 @@ public type ProbeConfiguration record {
 # + podAnnotations - Map of annotations for pods
 # + replicas - Number of replicas
 # + livenessProbe - Enable/Disable liveness probe and configure it.
+# + readinessProbe - Enable/Disable readiness probe and configure it.
 # + imagePullPolicy - Kubernetes image pull policy
 # + image - Docker image with tag
 # + env - Environment varialbe map for containers
@@ -163,6 +164,7 @@ public type DeploymentConfiguration record {
     map<string> podAnnotations?;
     int replicas?;
     boolean|ProbeConfiguration livenessProbe = false;
+    boolean|ProbeConfiguration readinessProbe = false;
     ImagePullPolicy imagePullPolicy = IMAGE_PULL_POLICY_IF_NOT_PRESENT;
     string image?;
     map<string|FieldRef|SecretKeyRef|ResourceFieldRef|ConfigMapKeyRef> env?;
