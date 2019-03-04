@@ -354,16 +354,24 @@ public class KubernetesUtils {
         throw new KubernetesPluginException("unknown build extension found");
     }
     
+    public static boolean getBooleanValue(BLangExpression expr) throws KubernetesPluginException {
+        return Boolean.parseBoolean(getStringValue(expr));
+    }
+    
+    public static int getIntValue(BLangExpression expr) throws KubernetesPluginException {
+        return Integer.parseInt(getStringValue(expr));
+    }
+    
     public static String getStringValue(BLangExpression expr) throws KubernetesPluginException {
         BType exprType = expr.type;
         if (expr instanceof BLangSimpleVarRef && exprType instanceof BFiniteType) {
             // Parse compile time constant
             BFiniteType compileConst = (BFiniteType) exprType;
             if (compileConst.valueSpace.size() > 0) {
-                return compileConst.valueSpace.iterator().next().toString();
+                return resolveValue(compileConst.valueSpace.iterator().next().toString());
             }
         } else if (expr instanceof BLangLiteral) {
-            return expr.toString();
+            return resolveValue(expr.toString());
         }
         throw new KubernetesPluginException("unable to parse value: " + expr.toString());
     }

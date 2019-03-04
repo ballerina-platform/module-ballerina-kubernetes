@@ -24,10 +24,13 @@ import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
+import org.ballerinax.kubernetes.models.ProbeModel;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
 
 import java.util.HashSet;
 import java.util.List;
@@ -35,9 +38,11 @@ import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_CERT_PATH;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_HOST;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getBooleanValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getEnvVarMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getExternalFileMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getImagePullSecrets;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getIntValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
@@ -91,18 +96,8 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 case podAnnotations:
                     deploymentModel.setPodAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
                     break;
-                case enableLiveness:
-                    deploymentModel.setEnableLiveness(Boolean.valueOf(resolveValue(keyValue.getValue().toString())));
-                    break;
-                case livenessPort:
-                    deploymentModel.setLivenessPort(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
-                    break;
-                case initialDelaySeconds:
-                    deploymentModel.setInitialDelaySeconds(Integer.parseInt(resolveValue(
-                            keyValue.getValue().toString())));
-                    break;
-                case periodSeconds:
-                    deploymentModel.setPeriodSeconds(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
+                case livenessProbe:
+                    deploymentModel.setLivenessProbe(parseProbeConfiguration(keyValue.getValue()));
                     break;
                 case username:
                     deploymentModel.setUsername(resolveValue(keyValue.getValue().toString()));
@@ -170,6 +165,46 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         }
         KubernetesContext.getInstance().getDataHolder().setDeploymentModel(deploymentModel);
     }
+    
+    /**
+     * Parse probe configuration from a record.
+     *
+     * @param probeValue Probe configuration record.
+     * @return Parse probe model.
+     * @throws KubernetesPluginException When an unknown field is found.
+     */
+    private ProbeModel parseProbeConfiguration(BLangExpression probeValue) throws KubernetesPluginException {
+        if ((probeValue instanceof BLangSimpleVarRef || probeValue instanceof BLangLiteral) &&
+            getBooleanValue(probeValue)) {
+            return new ProbeModel();
+        } else {
+            if (probeValue instanceof BLangRecordLiteral) {
+                List<BLangRecordLiteral.BLangRecordKeyValue> buildExtensionRecord =
+                        ((BLangRecordLiteral) probeValue).keyValuePairs;
+                ProbeModel probeModel = new ProbeModel();
+                for (BLangRecordLiteral.BLangRecordKeyValue probeField : buildExtensionRecord) {
+                    ProbeConfiguration probeConfiguration =
+                            ProbeConfiguration.valueOf(probeField.getKey().toString());
+                    switch (probeConfiguration) {
+                        case port:
+                            probeModel.setPort(getIntValue(probeField.getValue()));
+                            break;
+                        case initialDelaySeconds:
+                            probeModel.setInitialDelaySeconds(getIntValue(probeField.getValue()));
+                            break;
+                        case periodSeconds:
+                            probeModel.setPeriodSeconds(getIntValue(probeField.getValue()));
+                            break;
+                        default:
+                            throw new KubernetesPluginException("unknown probe field detected: " +
+                                                                probeField.getKey().toString());
+                    }
+                }
+                return probeModel;
+            }
+        }
+        return null;
+    }
 
     private Set<String> getDependsOn(BLangRecordLiteral.BLangRecordKeyValue keyValue) {
         Set<String> dependsOnList = new HashSet<>();
@@ -191,10 +226,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         annotations,
         podAnnotations,
         replicas,
-        enableLiveness,
-        livenessPort,
-        initialDelaySeconds,
-        periodSeconds,
+        livenessProbe,
         imagePullPolicy,
         image,
         env,
@@ -211,5 +243,11 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         dependsOn,
         imagePullSecrets,
         buildExtension
+    }
+    
+    private enum ProbeConfiguration {
+        port,
+        initialDelaySeconds,
+        periodSeconds
     }
 }
