@@ -2,7 +2,7 @@ import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:Deployment {
-    enableLiveness: true,
+    livenessProbe: true,
     namespace: "ballerina"
 }
 @kubernetes:Ingress {
