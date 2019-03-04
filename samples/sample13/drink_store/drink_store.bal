@@ -26,7 +26,7 @@ http:Client coolDrinkBackend = new("http://cooldrink-backend:9090");
 http:Client weatherEP = new("http://api.openweathermap.org");
 
 @kubernetes:Deployment {
-    enableLiveness: true,
+    livenessProbe: true,
     dependsOn: ["cool_drink:coolDrinkEP", "hot_drink:hotDrinkEP"]
 }
 @http:ServiceConfig {

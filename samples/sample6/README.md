@@ -1,6 +1,6 @@
 ## Sample6: Kubernetes Hello World in Google Cloud Environment
 
-- This sample runs  ballerina hello world service in GCE kubernetes cluster with enableLiveness probe and  hostname
+- This sample runs  ballerina hello world service in GCE kubernetes cluster with livenessProbe probe and  hostname
  mapping for ingress. 
 - This sample will build the docker image and push it to docker-hub. 
 - Kubernetes cluster will pull the image from docker registry.

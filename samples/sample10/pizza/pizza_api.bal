@@ -13,8 +13,9 @@ listener http:Listener pizzaEP = new(9099);
     name: "foodstore",
     replicas: 3,
     env: { "location": "SL", "city": "COLOMBO" },
-    enableLiveness: true,
-    livenessPort: 9099,
+    livenessProbe: {
+        port: 9099
+    },
     singleYAML: false
 }
 @http:ServiceConfig {

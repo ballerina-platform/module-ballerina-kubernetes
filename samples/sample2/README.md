@@ -1,6 +1,6 @@
-## Sample2: Kubernetes Hello World with enableLiveness and hostname mapping
+## Sample2: Kubernetes Hello World with livenessProbe and hostname mapping
 
-- This sample runs simple ballerina hello world service in kubernetes cluster with enableLiveness probe and  hostname
+- This sample runs simple ballerina hello world service in kubernetes cluster with livenessProbe probe and  hostname
  mapping for ingress. 
 - Following files will be generated from this sample.
     ``` 

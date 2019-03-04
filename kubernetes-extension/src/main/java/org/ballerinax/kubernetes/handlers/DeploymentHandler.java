@@ -201,15 +201,15 @@ public class DeploymentHandler extends AbstractArtifactHandler {
     }
 
     private Probe generateLivenessProbe(DeploymentModel deploymentModel) {
-        if (!deploymentModel.isEnableLiveness()) {
+        if (null == deploymentModel.getLivenessProbe()) {
             return null;
         }
         TCPSocketAction tcpSocketAction = new TCPSocketActionBuilder()
-                .withNewPort(deploymentModel.getLivenessPort())
+                .withNewPort(deploymentModel.getLivenessProbe().getPort())
                 .build();
         return new ProbeBuilder()
-                .withInitialDelaySeconds(deploymentModel.getInitialDelaySeconds())
-                .withPeriodSeconds(deploymentModel.getPeriodSeconds())
+                .withInitialDelaySeconds(deploymentModel.getLivenessProbe().getInitialDelaySeconds())
+                .withPeriodSeconds(deploymentModel.getLivenessProbe().getPeriodSeconds())
                 .withTcpSocket(tcpSocketAction)
                 .build();
     }
@@ -277,9 +277,9 @@ public class DeploymentHandler extends AbstractArtifactHandler {
         deploymentModel.setSecretModels(dataHolder.getSecretModelSet());
         deploymentModel.setConfigMapModels(dataHolder.getConfigMapModelSet());
         deploymentModel.setVolumeClaimModels(dataHolder.getVolumeClaimModelSet());
-        if (deploymentModel.isEnableLiveness() && deploymentModel.getLivenessPort() == 0) {
+        if (null != deploymentModel.getLivenessProbe() && deploymentModel.getLivenessProbe().getPort() == 0) {
             //set first port as liveness port
-            deploymentModel.setLivenessPort(deploymentModel.getPorts().iterator().next());
+            deploymentModel.getLivenessProbe().setPort(deploymentModel.getPorts().iterator().next());
         }
         generate(deploymentModel);
         OUT.println();

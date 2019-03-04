@@ -37,10 +37,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |podAnnotations|Pod annotations|{}|
 |replicas|Number of replicas|1|
 |dependsOn|Listeners this deployment Depends on|null|
-|enableLiveness|Enable or disable liveness probe|false|
-|initialDelaySeconds|Initial delay in seconds before performing the first probe|10s|
-|periodSeconds|Liveness probe interval|5s|
-|livenessPort|Port which the Liveness probe check|\<ServicePort\>|
+|livenessProbe|Enable or disable liveness probe|false|
 |imagePullPolicy|Docker image pull policy|IfNotPresent|
 |image|Docker image with tag|<output file name>:latest|
 |env|List of environment variables|null|
@@ -176,7 +173,7 @@ import ballerinax/kubernetes;
 listener http:Listener helloEP = new(9090);
 
 @kubernetes:Deployment{
-    enableLiveness:true
+    livenessProbe: true
 }
 @http:ServiceConfig {
     basePath:"/helloWorld"

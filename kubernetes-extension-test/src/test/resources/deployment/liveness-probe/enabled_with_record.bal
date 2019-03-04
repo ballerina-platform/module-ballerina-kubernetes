@@ -1,4 +1,4 @@
-// Copyright (c) 2018 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+// Copyright (c) 2019 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 //
 // WSO2 Inc. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -18,14 +18,13 @@ import ballerina/http;
 import ballerinax/kubernetes;
 
 @kubernetes:Deployment {
-    livenessProbe: true
+    image: "pizza-shop:latest",
+    singleYAML: false,
+    livenessProbe: {}
 }
-@kubernetes:Ingress {
-    hostname: "abc.com"
-}
+@kubernetes:Service {}
 listener http:Listener helloEP = new(9090);
 
-@kubernetes:Service { name: "hello" }
 @http:ServiceConfig {
     basePath: "/helloWorld"
 }

@@ -123,15 +123,24 @@ public type BuildExtension record {
     !...;
 };
 
+# Probing configuration.
+#
+# + port - Port to check for tcp connection.
+# + initialDelaySeconds - Initial delay for pobing in seconds.
+# + periodSeconds - Interval between probes in seconds.
+public type ProbeConfiguration record {
+    int port?;
+    int initialDelaySeconds = 10;
+    int periodSeconds = 5;
+    !...;
+};
+
 # Kubernetes deployment configuration.
 #
 # + namespace - Kubernetes namespace to be used on all artifacts
 # + podAnnotations - Map of annotations for pods
 # + replicas - Number of replicas
-# + enableLiveness - Enable/Disable liveness probe
-# + livenessPort - Port to check the liveness
-# + initialDelaySeconds - Initial delay in seconds before performing the first probe
-# + periodSeconds - Liveness probe interval
+# + livenessProbe - Enable/Disable liveness probe and configure it.
 # + imagePullPolicy - Kubernetes image pull policy
 # + image - Docker image with tag
 # + env - Environment varialbe map for containers
@@ -153,10 +162,7 @@ public type DeploymentConfiguration record {
     string namespace?;
     map<string> podAnnotations?;
     int replicas?;
-    boolean enableLiveness?;
-    int livenessPort?;
-    int initialDelaySeconds?;
-    int periodSeconds?;
+    boolean|ProbeConfiguration livenessProbe = false;
     ImagePullPolicy imagePullPolicy = IMAGE_PULL_POLICY_IF_NOT_PRESENT;
     string image?;
     map<string|FieldRef|SecretKeyRef|ResourceFieldRef|ConfigMapKeyRef> env?;
