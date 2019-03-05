@@ -23,8 +23,8 @@ package org.ballerinax.kubernetes.models;
  */
 public class ProbeModel {
     private int port;
-    private int initialDelaySeconds = 10;
-    private int periodSeconds = 5;
+    private int initialDelaySeconds = -1;
+    private int periodSeconds = -1;
     
     public int getPort() {
         return port;
