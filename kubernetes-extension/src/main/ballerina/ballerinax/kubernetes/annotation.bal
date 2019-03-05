@@ -130,8 +130,8 @@ public type BuildExtension record {
 # + periodSeconds - Interval between probes in seconds.
 public type ProbeConfiguration record {
     int port?;
-    int initialDelaySeconds = 10;
-    int periodSeconds = 5;
+    int initialDelaySeconds?;
+    int periodSeconds?;
     !...;
 };
 
