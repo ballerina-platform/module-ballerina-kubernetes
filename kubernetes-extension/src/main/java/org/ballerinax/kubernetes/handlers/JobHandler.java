@@ -24,6 +24,7 @@ import io.fabric8.kubernetes.api.model.batch.CronJobBuilder;
 import io.fabric8.kubernetes.api.model.batch.Job;
 import io.fabric8.kubernetes.api.model.batch.JobBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
+import org.ballerinax.docker.generator.exceptions.DockerGenException;
 import org.ballerinax.docker.generator.models.DockerModel;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -120,23 +121,27 @@ public class JobHandler extends AbstractArtifactHandler {
 
     @Override
     public void createArtifacts() throws KubernetesPluginException {
-        String balxFileName = KubernetesUtils.extractBalxName(dataHolder.getBalxFilePath());
-        JobModel jobModel = dataHolder.getJobModel();
-        if (isBlank(jobModel.getName())) {
-            jobModel.setName(getValidName(balxFileName) + JOB_POSTFIX);
+        try {
+            String balxFileName = KubernetesUtils.extractBalxName(dataHolder.getBalxFilePath());
+            JobModel jobModel = dataHolder.getJobModel();
+            if (isBlank(jobModel.getName())) {
+                jobModel.setName(getValidName(balxFileName) + JOB_POSTFIX);
+            }
+            if (isBlank(jobModel.getImage())) {
+                jobModel.setImage(balxFileName + DOCKER_LATEST_TAG);
+            }
+            jobModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
+            generate(jobModel);
+            //generate dockerfile and docker image
+            dataHolder.setDockerModel(getDockerModel(jobModel));
+            OUT.println();
+            OUT.println("\t@kubernetes:Job \t\t\t - complete 1/1");
+        } catch (DockerGenException e) {
+            throw new KubernetesPluginException("error occurred creating docker image.", e);
         }
-        if (isBlank(jobModel.getImage())) {
-            jobModel.setImage(balxFileName + DOCKER_LATEST_TAG);
-        }
-        jobModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
-        generate(jobModel);
-        //generate dockerfile and docker image
-        dataHolder.setDockerModel(getDockerModel(jobModel));
-        OUT.println();
-        OUT.println("\t@kubernetes:Job \t\t\t - complete 1/1");
     }
 
-    private DockerModel getDockerModel(JobModel jobModel) {
+    private DockerModel getDockerModel(JobModel jobModel) throws DockerGenException {
         DockerModel dockerModel = new DockerModel();
         String dockerImage = jobModel.getImage();
         String imageTag = dockerImage.substring(dockerImage.lastIndexOf(":") + 1);

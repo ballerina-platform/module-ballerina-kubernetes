@@ -36,6 +36,7 @@ import io.fabric8.kubernetes.api.model.VolumeMountBuilder;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
+import org.ballerinax.docker.generator.exceptions.DockerGenException;
 import org.ballerinax.docker.generator.models.DockerModel;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -274,24 +275,28 @@ public class DeploymentHandler extends AbstractArtifactHandler {
 
     @Override
     public void createArtifacts() throws KubernetesPluginException {
-        DeploymentModel deploymentModel = dataHolder.getDeploymentModel();
-        deploymentModel.setPodAutoscalerModel(dataHolder.getPodAutoscalerModel());
-        deploymentModel.setSecretModels(dataHolder.getSecretModelSet());
-        deploymentModel.setConfigMapModels(dataHolder.getConfigMapModelSet());
-        deploymentModel.setVolumeClaimModels(dataHolder.getVolumeClaimModelSet());
-        if (null != deploymentModel.getLivenessProbe() && deploymentModel.getLivenessProbe().getPort() == 0) {
-            //set first port as liveness port
-            deploymentModel.getLivenessProbe().setPort(deploymentModel.getPorts().iterator().next());
-        }
+        try {
+            DeploymentModel deploymentModel = dataHolder.getDeploymentModel();
+            deploymentModel.setPodAutoscalerModel(dataHolder.getPodAutoscalerModel());
+            deploymentModel.setSecretModels(dataHolder.getSecretModelSet());
+            deploymentModel.setConfigMapModels(dataHolder.getConfigMapModelSet());
+            deploymentModel.setVolumeClaimModels(dataHolder.getVolumeClaimModelSet());
+            if (null != deploymentModel.getLivenessProbe() && deploymentModel.getLivenessProbe().getPort() == 0) {
+                //set first port as liveness port
+                deploymentModel.getLivenessProbe().setPort(deploymentModel.getPorts().iterator().next());
+            }
         
-        if (null != deploymentModel.getReadinessProbe() && deploymentModel.getReadinessProbe().getPort() == 0) {
-            //set first port as readiness port
-            deploymentModel.getReadinessProbe().setPort(deploymentModel.getPorts().iterator().next());
+            if (null != deploymentModel.getReadinessProbe() && deploymentModel.getReadinessProbe().getPort() == 0) {
+                //set first port as readiness port
+                deploymentModel.getReadinessProbe().setPort(deploymentModel.getPorts().iterator().next());
+            }
+            generate(deploymentModel);
+            OUT.println();
+            OUT.println("\t@kubernetes:Deployment \t\t\t - complete 1/1");
+            dataHolder.setDockerModel(getDockerModel(deploymentModel));
+        } catch (DockerGenException e) {
+            throw new KubernetesPluginException("error occurred creating docker image.", e);
         }
-        generate(deploymentModel);
-        OUT.println();
-        OUT.println("\t@kubernetes:Deployment \t\t\t - complete 1/1");
-        dataHolder.setDockerModel(getDockerModel(deploymentModel));
     }
 
 
@@ -300,7 +305,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
      *
      * @param deploymentModel Deployment model
      */
-    private DockerModel getDockerModel(DeploymentModel deploymentModel) {
+    private DockerModel getDockerModel(DeploymentModel deploymentModel) throws DockerGenException {
         DockerModel dockerModel = new DockerModel();
         String dockerImage = deploymentModel.getImage();
         String imageTag = dockerImage.substring(dockerImage.lastIndexOf(":") + 1);
