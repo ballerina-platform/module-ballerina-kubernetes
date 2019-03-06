@@ -17,9 +17,7 @@ listener http:Listener burgerEP = new(9096, config = {
 });
 
 
-@kubernetes:Deployment {
-    singleYAML: false
-}
+@kubernetes:Deployment {}
 @http:ServiceConfig {
     basePath: "/burger"
 }

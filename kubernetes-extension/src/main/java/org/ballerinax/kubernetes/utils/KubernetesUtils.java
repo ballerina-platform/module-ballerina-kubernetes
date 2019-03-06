@@ -235,15 +235,15 @@ public class KubernetesUtils {
     public static void printInstruction(String msg) {
         OUT.println(msg);
     }
-
+    
     /**
      * Deletes a given directory.
      *
      * @param path path to directory
      * @throws KubernetesPluginException if an error occurs while deleting
      */
-    public static void deleteDirectory(String path) throws KubernetesPluginException {
-        Path pathToBeDeleted = Paths.get(path);
+    public static void deleteDirectory(Path path) throws KubernetesPluginException {
+        Path pathToBeDeleted = path.toAbsolutePath();
         if (!Files.exists(pathToBeDeleted)) {
             return;
         }
@@ -255,17 +255,7 @@ public class KubernetesUtils {
         } catch (IOException e) {
             throw new KubernetesPluginException("unable to delete directory: " + path, e);
         }
-
-    }
     
-    /**
-     * Deletes a given directory.
-     *
-     * @param path path to directory
-     * @throws KubernetesPluginException if an error occurs while deleting
-     */
-    public static void deleteDirectory(Path path) throws KubernetesPluginException {
-        deleteDirectory(path.toAbsolutePath().toString());
     }
 
     /* Checks if a String is empty ("") or null.

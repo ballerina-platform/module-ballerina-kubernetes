@@ -18,7 +18,10 @@
 
 package org.ballerinax.kubernetes.test.samples;
 
+import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscaler;
+import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClient;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
@@ -30,7 +33,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
@@ -39,34 +44,38 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
 
 public class Sample5Test implements SampleTest {
     
-    private final String sourceDirPath = SAMPLE_DIR + File.separator + "sample5";
-    private final String targetPath = sourceDirPath + File.separator + KUBERNETES;
-    private final String dockerImage = "ballerina.com/pizzashack:2.1.0";
+    private static final Path SOURCE_DIR_PATH = SAMPLE_DIR.resolve("sample5");
+    private static final Path TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
+    private static final String DOCKER_IMAGE = "ballerina.com/pizzashack:2.1.0";
+    private HorizontalPodAutoscaler podAutoscaler;
     
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(sourceDirPath, "pizzashack.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "pizzashack.bal"), 0);
+        File artifactYaml = TARGET_PATH.resolve("pizzashack.yaml").toFile();
+        Assert.assertTrue(artifactYaml.exists());
+        KubernetesClient client = new DefaultKubernetesClient();
+        List<HasMetadata> k8sItems = client.load(new FileInputStream(artifactYaml)).get();
+        for (HasMetadata data : k8sItems) {
+            switch (data.getKind()) {
+                case "HorizontalPodAutoscaler":
+                    podAutoscaler = (HorizontalPodAutoscaler) data;
+                    break;
+                case "Service":
+                case "Ingress":
+                case "Secret":
+                case "Deployment":
+                    break;
+                default:
+                    Assert.fail("Unexpected k8s resource found: " + data.getKind());
+                    break;
+            }
+        }
     }
     
     @Test
-    public void validateDockerfile() {
-        File dockerFile = new File(targetPath + File.separator + DOCKER + File.separator + "Dockerfile");
-        Assert.assertTrue(dockerFile.exists());
-    }
-    
-    @Test
-    public void validateDockerImage() throws DockerTestException, InterruptedException {
-        List<String> ports = getExposedPorts(this.dockerImage);
-        Assert.assertEquals(ports.size(), 2);
-        Assert.assertEquals(ports.get(0), "9090/tcp");
-        Assert.assertEquals(ports.get(1), "9095/tcp");
-    }
-    
-    @Test
-    public void validatePodAutoscaler() throws IOException {
-        File hpaYAML = new File(targetPath + File.separator + "pizzashack_hpa.yaml");
-        Assert.assertTrue(hpaYAML.exists());
-        HorizontalPodAutoscaler podAutoscaler = KubernetesTestUtils.loadYaml(hpaYAML);
+    public void validatePodAutoscaler() {
+        Assert.assertNotNull(podAutoscaler);
         Assert.assertEquals(podAutoscaler.getMetadata().getName(), "pizzashack-hpa");
         Assert.assertEquals(podAutoscaler.getMetadata().getLabels().get(KubernetesConstants
                 .KUBERNETES_SELECTOR_KEY), "pizzashack");
@@ -80,9 +89,23 @@ public class Sample5Test implements SampleTest {
         Assert.assertEquals(podAutoscaler.getSpec().getScaleTargetRef().getName(), "pizzashack-deployment");
     }
     
+    @Test
+    public void validateDockerfile() {
+        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
+        Assert.assertTrue(dockerFile.exists());
+    }
+    
+    @Test
+    public void validateDockerImage() throws DockerTestException, InterruptedException {
+        List<String> ports = getExposedPorts(DOCKER_IMAGE);
+        Assert.assertEquals(ports.size(), 2);
+        Assert.assertEquals(ports.get(0), "9090/tcp");
+        Assert.assertEquals(ports.get(1), "9095/tcp");
+    }
+    
     @AfterClass
     public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
 }

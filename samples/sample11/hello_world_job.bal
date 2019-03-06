@@ -1,9 +1,7 @@
 import ballerina/io;
 import ballerinax/kubernetes;
 
-@kubernetes:Job {
-    singleYAML: false
-}
+@kubernetes:Job {}
 public function main(string... args) {
     io:println("hello world");
 }

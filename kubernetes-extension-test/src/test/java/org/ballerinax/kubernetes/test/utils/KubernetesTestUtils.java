@@ -29,6 +29,7 @@ import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.ImageInfo;
 import io.fabric8.kubernetes.client.utils.Serialization;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.glassfish.jersey.internal.RuntimeDelegateImpl;
@@ -48,17 +49,20 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
  * Kubernetes test utils.
  */
 public class KubernetesTestUtils {
-
     private static final Log log = LogFactory.getLog(KubernetesTestUtils.class);
     private static final String JAVA_OPTS = "JAVA_OPTS";
-    private static final String DISTRIBUTION_PATH = System.getProperty("ballerina.pack");
-    private static final String BALLERINA_COMMAND = DISTRIBUTION_PATH + File.separator + "ballerina";
+    private static final Path DISTRIBUTION_PATH = Paths.get(FilenameUtils.separatorsToSystem(
+            System.getProperty("ballerina.pack")));
+    private static final String COMMAND = System.getProperty("os.name").toLowerCase(Locale.getDefault()).contains("win")
+                                          ? "ballerina.bat" : "ballerina";
+    private static final String BALLERINA_COMMAND = DISTRIBUTION_PATH.resolve(COMMAND).toString();
     private static final String BUILD = "build";
     private static final String EXECUTING_COMMAND = "Executing command: ";
     private static final String COMPILING = "Compiling: ";
@@ -118,13 +122,16 @@ public class KubernetesTestUtils {
      *
      * @param imageName Docker image Name
      */
-    public static void deleteDockerImage(String imageName) throws DockerTestException, InterruptedException {
-        try {
-            DockerClient client = getDockerClient();
-            client.removeImage(imageName, true, false);
-        } catch (DockerException e) {
-            throw new DockerTestException(e);
-        }
+    public static void deleteDockerImage(String imageName) {
+        // using a thread to make tests run faster
+        CompletableFuture.runAsync(() -> {
+            try {
+                DockerClient client = getDockerClient();
+                client.removeImage(imageName, true, false);
+            } catch (DockerException | InterruptedException | DockerTestException e) {
+                log.error(e);
+            }
+        });
     }
     
     public static DockerClient getDockerClient() throws DockerTestException {
@@ -166,13 +173,13 @@ public class KubernetesTestUtils {
      * @throws InterruptedException if an error occurs while compiling
      * @throws IOException          if an error occurs while writing file
      */
-    public static int compileBallerinaFile(String sourceDirectory, String fileName, Map<String, String> envVar)
+    public static int compileBallerinaFile(Path sourceDirectory, String fileName, Map<String, String> envVar)
             throws InterruptedException,
             IOException {
         ProcessBuilder pb = new ProcessBuilder(BALLERINA_COMMAND, BUILD, fileName);
         log.info(COMPILING + sourceDirectory + File.separator + fileName);
         log.debug(EXECUTING_COMMAND + pb.command());
-        pb.directory(new File(sourceDirectory));
+        pb.directory(sourceDirectory.toFile());
         Map<String, String> environment = pb.environment();
         addJavaAgents(environment);
         environment.putAll(envVar);
@@ -184,7 +191,7 @@ public class KubernetesTestUtils {
         logOutput(process.getErrorStream());
     
         // log ballerina-internal.log content
-        Path ballerinaInternalLog = Paths.get(sourceDirectory, "ballerina-internal.log");
+        Path ballerinaInternalLog = sourceDirectory.resolve("ballerina-internal.log");
         if (exitCode == 1 && Files.exists(ballerinaInternalLog)) {
             log.error("ballerina-internal.log file found. content: ");
             log.error(FileUtils.readFileToString(ballerinaInternalLog.toFile()));
@@ -201,7 +208,7 @@ public class KubernetesTestUtils {
      * @throws InterruptedException if an error occurs while compiling
      * @throws IOException          if an error occurs while writing file
      */
-    public static int compileBallerinaFile(String sourceDirectory, String fileName) throws InterruptedException,
+    public static int compileBallerinaFile(Path sourceDirectory, String fileName) throws InterruptedException,
             IOException {
         return compileBallerinaFile(sourceDirectory, fileName, new HashMap<>());
     }
@@ -214,22 +221,21 @@ public class KubernetesTestUtils {
      * @throws InterruptedException if an error occurs while compiling
      * @throws IOException          if an error occurs while writing file
      */
-    public static int compileBallerinaProject(String sourceDirectory) throws InterruptedException,
+    public static int compileBallerinaProject(Path sourceDirectory) throws InterruptedException,
             IOException {
         ProcessBuilder pb = new ProcessBuilder(BALLERINA_COMMAND, "init");
         log.info(COMPILING + sourceDirectory);
         log.debug(EXECUTING_COMMAND + pb.command());
-        pb.directory(new File(sourceDirectory));
+        pb.directory(sourceDirectory.toFile());
         Process process = pb.start();
         int exitCode = process.waitFor();
         log.info(EXIT_CODE + exitCode);
         logOutput(process.getInputStream());
         logOutput(process.getErrorStream());
 
-        pb = new ProcessBuilder
-                (BALLERINA_COMMAND, BUILD);
+        pb = new ProcessBuilder(BALLERINA_COMMAND, BUILD);
         log.debug(EXECUTING_COMMAND + pb.command());
-        pb.directory(new File(sourceDirectory));
+        pb.directory(sourceDirectory.toFile());
         Map<String, String> environment = pb.environment();
         addJavaAgents(environment);
         
@@ -239,18 +245,6 @@ public class KubernetesTestUtils {
         logOutput(process.getInputStream());
         logOutput(process.getErrorStream());
         return exitCode;
-    }
-    
-    /**
-     * Compile a ballerina project in a given directory
-     *
-     * @param sourceDirectory Ballerina source directory
-     * @return Exit code
-     * @throws InterruptedException if an error occurs while compiling
-     * @throws IOException          if an error occurs while writing file
-     */
-    public static int compileBallerinaProject(Path sourceDirectory) throws InterruptedException, IOException {
-        return compileBallerinaProject(sourceDirectory.toAbsolutePath().toString());
     }
     
     private static synchronized void addJavaAgents(Map<String, String> envProperties) {

@@ -23,7 +23,6 @@ import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.openshift.api.model.BuildConfig;
 import io.fabric8.openshift.api.model.ImageStream;
-import org.apache.commons.io.FileUtils;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
@@ -43,17 +42,16 @@ import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
  * Test cases for @kubernetes:OpenShiftBuildConfig{} annotation generated artifacts.
  */
 public class OpenShiftBuildConfigTest {
-    private final String balDirectory = Paths.get("src").resolve("test").resolve("resources").resolve("openshift")
-            .resolve("build-config").toAbsolutePath().toString();
-    private final String targetPath = Paths.get(balDirectory).resolve(KUBERNETES).toString();
+    private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "openshift", "build-config");
+    private static final Path TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
     
     /**
      * Test case openshift build config annotation with default values.
      */
     @Test(groups = {"openshift"})
     public void simpleBuildConfigTest() throws IOException, InterruptedException, KubernetesPluginException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "simple_bc.bal"), 0);
-        File yamlFile = new File(targetPath + File.separator + "simple_bc.yaml");
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "simple_bc.bal"), 0);
+        File yamlFile = new File(TARGET_PATH + File.separator + "simple_bc.yaml");
         Assert.assertTrue(yamlFile.exists());
         KubernetesClient client = new DefaultKubernetesClient();
         List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
@@ -107,12 +105,12 @@ public class OpenShiftBuildConfigTest {
                     Assert.assertNull(is.getSpec());
                     break;
                 default:
-                    Assert.fail("Unknown k8s resource found: " + data.getKind());
+                    Assert.fail("Unexpected k8s resource found: " + data.getKind());
                     break;
             }
         }
     
-        KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
     }
     
     /**
@@ -120,8 +118,8 @@ public class OpenShiftBuildConfigTest {
      */
     @Test(groups = {"openshift"})
     public void withNoNamespaceTest() throws IOException, InterruptedException {
-        KubernetesTestUtils.compileBallerinaFile(balDirectory, "no_namespace.bal");
-        File yamlFile = new File(targetPath + File.separator + "no_namespace.yaml");
+        KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "no_namespace.bal");
+        File yamlFile = new File(TARGET_PATH + File.separator + "no_namespace.yaml");
         Assert.assertFalse(yamlFile.exists());
     }
     
@@ -130,8 +128,8 @@ public class OpenShiftBuildConfigTest {
      */
     @Test(groups = {"openshift"})
     public void withNoRegistryTest() throws IOException, InterruptedException {
-        KubernetesTestUtils.compileBallerinaFile(balDirectory, "no_registry.bal");
-        File yamlFile = new File(targetPath + File.separator + "no_registry.yaml");
+        KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "no_registry.bal");
+        File yamlFile = new File(TARGET_PATH + File.separator + "no_registry.yaml");
         Assert.assertFalse(yamlFile.exists());
     }
     
@@ -140,7 +138,7 @@ public class OpenShiftBuildConfigTest {
      */
     @Test(groups = {"openshift"})
     public void multipleBuildAnnotations() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "multiple_build_annotations.bal"),
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "multiple_build_annotations.bal"),
                 0);
     }
     
@@ -149,8 +147,8 @@ public class OpenShiftBuildConfigTest {
      */
     @Test(groups = {"openshift"})
     public void mainFunctionTest() throws IOException, InterruptedException, KubernetesPluginException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "main_function.bal"), 0);
-        File yamlFile = new File(targetPath + File.separator + "main_function.yaml");
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "main_function.bal"), 0);
+        File yamlFile = new File(TARGET_PATH + File.separator + "main_function.yaml");
         Assert.assertTrue(yamlFile.exists());
         KubernetesClient client = new DefaultKubernetesClient();
         List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
@@ -204,12 +202,12 @@ public class OpenShiftBuildConfigTest {
                     Assert.assertNull(is.getSpec());
                     break;
                 default:
-                    Assert.fail("Unknown k8s resource found: " + data.getKind());
+                    Assert.fail("Unexpected k8s resource found: " + data.getKind());
                     break;
             }
         }
         
-        KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
     }
     
     /**
@@ -217,8 +215,8 @@ public class OpenShiftBuildConfigTest {
      */
     @Test(groups = {"openshift"})
     public void noCacheAndForcePullTest() throws IOException, InterruptedException, KubernetesPluginException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "cache_and_force_pull.bal"), 0);
-        File yamlFile = new File(targetPath + File.separator + "cache_and_force_pull.yaml");
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "cache_and_force_pull.bal"), 0);
+        File yamlFile = new File(TARGET_PATH + File.separator + "cache_and_force_pull.yaml");
         Assert.assertTrue(yamlFile.exists());
         KubernetesClient client = new DefaultKubernetesClient();
         List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
@@ -272,12 +270,12 @@ public class OpenShiftBuildConfigTest {
                     Assert.assertNull(is.getSpec());
                     break;
                 default:
-                    Assert.fail("Unknown k8s resource found: " + data.getKind());
+                    Assert.fail("Unexpected k8s resource found: " + data.getKind());
                     break;
             }
         }
         
-        KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
     }
     
     /**
@@ -285,8 +283,8 @@ public class OpenShiftBuildConfigTest {
      */
     @Test(groups = {"openshift"})
     public void serviceAnnotationTest() throws IOException, InterruptedException, KubernetesPluginException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "annotation_on_service.bal"), 0);
-        File yamlFile = new File(targetPath + File.separator + "annotation_on_service.yaml");
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "annotation_on_service.bal"), 0);
+        File yamlFile = new File(TARGET_PATH + File.separator + "annotation_on_service.yaml");
         Assert.assertTrue(yamlFile.exists());
         KubernetesClient client = new DefaultKubernetesClient();
         List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
@@ -340,12 +338,12 @@ public class OpenShiftBuildConfigTest {
                     Assert.assertNull(is.getSpec());
                     break;
                 default:
-                    Assert.fail("Unknown k8s resource found: " + data.getKind());
+                    Assert.fail("Unexpected k8s resource found: " + data.getKind());
                     break;
             }
         }
         
-        KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
     }
     
     /**
@@ -353,14 +351,11 @@ public class OpenShiftBuildConfigTest {
      */
     @Test(groups = {"openshift"})
     public void buildProject() throws IOException, InterruptedException, KubernetesPluginException {
-        Path projectPath = Paths.get(balDirectory).resolve("print-project");
+        Path projectPath = BAL_DIRECTORY.resolve("print-project");
         Path targetPath = projectPath.resolve("target");
-        Path projectTarget = targetPath.resolve("kubernetes").resolve("printer");
-        
-        FileUtils.deleteQuietly(targetPath.toFile());
-    
+        Path moduleArtifacts = targetPath.resolve(KUBERNETES).resolve("printer");
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaProject(projectPath.toAbsolutePath()), 0);
-        File yamlFile = targetPath.resolve(projectTarget).resolve("printer.yaml").toAbsolutePath().toFile();
+        File yamlFile = moduleArtifacts.resolve("printer.yaml").toAbsolutePath().toFile();
         Assert.assertTrue(yamlFile.exists());
         KubernetesClient client = new DefaultKubernetesClient();
         List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
@@ -414,7 +409,7 @@ public class OpenShiftBuildConfigTest {
                     Assert.assertNull(is.getSpec());
                     break;
                 default:
-                    Assert.fail("Unknown k8s resource found: " + data.getKind());
+                    Assert.fail("Unexpected k8s resource found: " + data.getKind());
                     break;
             }
         }

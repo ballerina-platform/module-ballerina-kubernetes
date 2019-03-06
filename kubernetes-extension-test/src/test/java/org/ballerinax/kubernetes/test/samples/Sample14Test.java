@@ -35,6 +35,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
@@ -43,21 +44,20 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
 
 
 public class Sample14Test implements SampleTest {
-
-    private final String sourceDirPath = SAMPLE_DIR + File.separator + "sample14";
-    private final String targetPath = sourceDirPath + File.separator + KUBERNETES;
-    private final String dockerImage = "hello_world_k8s_namespace:latest";
-    private final String selectorApp = "hello_world_k8s_namespace";
-    private final String namespace = "ballerina";
+    private static final Path SOURCE_DIR_PATH = SAMPLE_DIR.resolve("sample14");
+    private static final Path TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
+    private static final String DOCKER_IMAGE = "hello_world_k8s_namespace:latest";
+    private static final String SELECTOR_APP = "hello_world_k8s_namespace";
+    private static final String NAMESPACE = "ballerina";
     private Deployment deployment;
     private Service service;
     private Ingress ingress;
 
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(sourceDirPath, "hello_world_k8s_namespace.bal"),
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "hello_world_k8s_namespace.bal"),
                 0);
-        File yamlFile = new File(targetPath + File.separator + "hello_world_k8s_namespace.yaml");
+        File yamlFile = TARGET_PATH.resolve("hello_world_k8s_namespace.yaml").toFile();
         Assert.assertTrue(yamlFile.exists());
         List<HasMetadata> k8sItems = KubernetesTestUtils.loadYaml(yamlFile);
         for (HasMetadata data : k8sItems) {
@@ -80,65 +80,66 @@ public class Sample14Test implements SampleTest {
     @Test
     public void validateDeployment() {
         Assert.assertNotNull(deployment);
-        Assert.assertEquals("hello-world-k8s-namespace-deployment", deployment.getMetadata().getName());
-        Assert.assertEquals(namespace, deployment.getMetadata().getNamespace());
-        Assert.assertEquals(1, deployment.getSpec().getReplicas().intValue());
-        Assert.assertEquals(selectorApp, deployment.getMetadata().getLabels().get(KubernetesConstants
-                .KUBERNETES_SELECTOR_KEY));
-        Assert.assertEquals(1, deployment.getSpec().getTemplate().getSpec().getContainers().size());
+        Assert.assertEquals(deployment.getMetadata().getName(), "hello-world-k8s-namespace-deployment");
+        Assert.assertEquals(deployment.getMetadata().getNamespace(), NAMESPACE);
+        Assert.assertEquals(deployment.getSpec().getReplicas().intValue(), 1);
+        Assert.assertEquals(deployment.getMetadata().getLabels().get(KubernetesConstants
+                .KUBERNETES_SELECTOR_KEY), SELECTOR_APP);
+        Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getContainers().size(), 1);
+        
         Container container = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);
-        Assert.assertEquals(dockerImage, container.getImage());
-        Assert.assertEquals(KubernetesConstants.ImagePullPolicy.IfNotPresent.name(), container.getImagePullPolicy());
-        Assert.assertEquals(1, container.getPorts().size());
-        Assert.assertEquals(0, container.getEnv().size());
+        Assert.assertEquals(container.getImage(), DOCKER_IMAGE);
+        Assert.assertEquals(container.getImagePullPolicy(), KubernetesConstants.ImagePullPolicy.IfNotPresent.name());
+        Assert.assertEquals(container.getPorts().size(), 1);
+        Assert.assertEquals(container.getEnv().size(), 0);
     }
 
     @Test
     public void validateK8SService() {
         Assert.assertNotNull(service);
-        Assert.assertEquals("hello", service.getMetadata().getName());
-        Assert.assertEquals(namespace, service.getMetadata().getNamespace());
-        Assert.assertEquals(selectorApp, service.getMetadata().getLabels().get(KubernetesConstants
-                .KUBERNETES_SELECTOR_KEY));
-        Assert.assertEquals(KubernetesConstants.ServiceType.ClusterIP.name(), service.getSpec().getType());
-        Assert.assertEquals(1, service.getSpec().getPorts().size());
-        Assert.assertEquals(9090, service.getSpec().getPorts().get(0).getPort().intValue());
+        Assert.assertEquals(service.getMetadata().getName(), "hello");
+        Assert.assertEquals(service.getMetadata().getNamespace(), NAMESPACE);
+        Assert.assertEquals(service.getMetadata().getLabels().get(KubernetesConstants
+                .KUBERNETES_SELECTOR_KEY), SELECTOR_APP);
+        Assert.assertEquals(service.getSpec().getType(), KubernetesConstants.ServiceType.ClusterIP.name());
+        Assert.assertEquals(service.getSpec().getPorts().size(), 1);
+        Assert.assertEquals(service.getSpec().getPorts().get(0).getPort().intValue(), 9090);
     }
 
     @Test(dependsOnMethods = {"validateK8SService"})
     public void validateIngress() {
         Assert.assertNotNull(ingress);
-        Assert.assertEquals("helloep-ingress", ingress.getMetadata().getName());
-        Assert.assertEquals(namespace, ingress.getMetadata().getNamespace());
-        Assert.assertEquals(selectorApp, ingress.getMetadata().getLabels().get(KubernetesConstants
-                .KUBERNETES_SELECTOR_KEY));
-        Assert.assertEquals("abc.com", ingress.getSpec().getRules().get(0).getHost());
-        Assert.assertEquals("/", ingress.getSpec().getRules().get(0).getHttp().getPaths().get(0).getPath());
+        Assert.assertEquals(ingress.getMetadata().getName(), "helloep-ingress");
+        Assert.assertEquals(ingress.getMetadata().getNamespace(), NAMESPACE);
+        Assert.assertEquals(ingress.getMetadata().getLabels().get(KubernetesConstants
+                .KUBERNETES_SELECTOR_KEY), SELECTOR_APP);
+        Assert.assertEquals(ingress.getSpec().getRules().get(0).getHost(), "abc.com");
+        Assert.assertEquals(ingress.getSpec().getRules().get(0).getHttp().getPaths().get(0).getPath(), "/");
         Assert.assertEquals(service.getMetadata().getName(), ingress.getSpec().getRules().get(0).getHttp().getPaths()
                 .get(0).getBackend()
                 .getServiceName());
         Assert.assertEquals(service.getSpec().getPorts().get(0).getPort().intValue(), ingress.getSpec().getRules()
                 .get(0).getHttp().getPaths().get(0).getBackend()
                 .getServicePort().getIntVal().intValue());
-        Assert.assertEquals(2, ingress.getMetadata().getAnnotations().size());
+        Assert.assertEquals(ingress.getMetadata().getAnnotations().size(), 2);
     }
 
     @Test
     public void validateDockerfile() {
-        File dockerFile = new File(targetPath + File.separator + DOCKER + File.separator + "Dockerfile");
+        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
 
     @Test
     public void validateDockerImage() throws DockerTestException, InterruptedException {
-        List<String> ports = getExposedPorts(this.dockerImage);
+        List<String> ports = getExposedPorts(DOCKER_IMAGE);
         Assert.assertEquals(ports.size(), 1);
         Assert.assertEquals(ports.get(0), "9090/tcp");
     }
 
     @AfterClass
     public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
 }

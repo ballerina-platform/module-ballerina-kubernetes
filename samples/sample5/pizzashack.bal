@@ -22,8 +22,7 @@ listener http:Listener pizzaEPSecured = new(9095, config = {
 
 
 @kubernetes:Deployment {
-    image: "ballerina.com/pizzashack:2.1.0",
-    singleYAML: false
+    image: "ballerina.com/pizzashack:2.1.0"
 }
 @kubernetes:HPA {}
 @http:ServiceConfig {

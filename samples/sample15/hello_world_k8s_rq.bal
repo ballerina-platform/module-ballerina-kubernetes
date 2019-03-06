@@ -4,8 +4,7 @@ import ballerinax/kubernetes;
 @kubernetes:Deployment {
     livenessProbe: true,
     namespace: "ballerina",
-    replicas: 2,
-    singleYAML: false
+    replicas: 2
 }
 @kubernetes:Ingress {
     hostname: "abc.com"

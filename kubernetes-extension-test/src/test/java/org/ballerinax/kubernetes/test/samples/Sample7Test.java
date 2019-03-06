@@ -22,6 +22,8 @@ import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Secret;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
+import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClient;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
@@ -33,7 +35,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
@@ -42,91 +46,101 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
 
 public class Sample7Test implements SampleTest {
 
-    private final String sourceDirPath = SAMPLE_DIR + File.separator + "sample7";
-    private final String targetPath = sourceDirPath + File.separator + KUBERNETES;
-    private final String dockerImage = "hello_world_secret_mount_k8s:latest";
-
+    private static final Path SOURCE_DIR_PATH = SAMPLE_DIR.resolve("sample7");
+    private static final Path TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
+    private static final String DOCKER_IMAGE = "hello_world_secret_mount_k8s:latest";
+    private Deployment deployment;
+    private Secret sslSecret;
+    private Secret privateSecret;
+    private Secret publicSecret;
+    
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(sourceDirPath, "hello_world_secret_mount_k8s" +
-                ".bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(SOURCE_DIR_PATH,
+                "hello_world_secret_mount_k8s.bal"), 0);
+        File artifactYaml = TARGET_PATH.resolve("hello_world_secret_mount_k8s.yaml").toFile();
+        Assert.assertTrue(artifactYaml.exists());
+        KubernetesClient client = new DefaultKubernetesClient();
+        List<HasMetadata> k8sItems = client.load(new FileInputStream(artifactYaml)).get();
+        for (HasMetadata data : k8sItems) {
+            switch (data.getKind()) {
+                case "Deployment":
+                    deployment = (Deployment) data;
+                    break;
+                case "Secret":
+                    switch (data.getMetadata().getName()) {
+                        case "helloworldep-secure-socket":
+                            sslSecret = (Secret) data;
+                            break;
+                        case "private":
+                            privateSecret = (Secret) data;
+                            break;
+                        case "public":
+                            publicSecret = (Secret) data;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case "Service":
+                case "Ingress":
+                    break;
+                default:
+                    Assert.fail("Unexpected k8s resource found: " + data.getKind());
+                    break;
+            }
+        }
     }
 
+    @Test
+    public void validateDeployment() {
+        Assert.assertNotNull(deployment);
+        Assert.assertEquals(deployment.getMetadata().getName(), "hello-world-secret-mount-k8s-deployment");
+        Assert.assertEquals(deployment.getSpec().getReplicas().intValue(), 1);
+        Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getVolumes().size(), 3);
+        Assert.assertEquals(deployment.getMetadata().getLabels().get(KubernetesConstants
+                .KUBERNETES_SELECTOR_KEY), "hello_world_secret_mount_k8s");
+        Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getContainers().size(), 1);
+
+        // Assert Containers
+        Container container = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);
+        Assert.assertEquals(container.getVolumeMounts().size(), 3);
+        Assert.assertEquals(container.getImage(), DOCKER_IMAGE);
+        Assert.assertEquals(container.getImagePullPolicy(), KubernetesConstants.ImagePullPolicy.IfNotPresent.name());
+        Assert.assertEquals(container.getPorts().size(), 1);
+    }
+
+    @Test
+    public void validateSecret() {
+        // Assert SSL CERTs
+        Assert.assertNotNull(sslSecret);
+        Assert.assertEquals(sslSecret.getData().size(), 2);
+
+        // Assert private secrets
+        Assert.assertNotNull(privateSecret);
+        Assert.assertEquals(privateSecret.getData().size(), 1);
+
+        // Assert public secrets
+        Assert.assertNotNull(publicSecret);
+        Assert.assertEquals(publicSecret.getData().size(), 2);
+    }
+    
     @Test
     public void validateDockerfile() {
-        File dockerFile = new File(targetPath + File.separator + DOCKER + File.separator + "Dockerfile");
+        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
-
+    
     @Test
     public void validateDockerImage() throws DockerTestException, InterruptedException {
-        List<String> ports = getExposedPorts(this.dockerImage);
+        List<String> ports = getExposedPorts(DOCKER_IMAGE);
         Assert.assertEquals(ports.size(), 1);
         Assert.assertEquals(ports.get(0), "9090/tcp");
     }
 
-    @Test
-    public void validateDeployment() throws IOException {
-        File deploymentYAML = new File(targetPath + File.separator + "hello_world_secret_mount_k8s_deployment.yaml");
-        Assert.assertTrue(deploymentYAML.exists());
-        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
-        // Assert Deployment
-        Assert.assertEquals("hello-world-secret-mount-k8s-deployment", deployment.getMetadata().getName());
-        Assert.assertEquals(1, deployment.getSpec().getReplicas().intValue());
-        Assert.assertEquals(3, deployment.getSpec().getTemplate().getSpec().getVolumes().size());
-        Assert.assertEquals("hello_world_secret_mount_k8s", deployment.getMetadata().getLabels().get(KubernetesConstants
-                .KUBERNETES_SELECTOR_KEY));
-        Assert.assertEquals(1, deployment.getSpec().getTemplate().getSpec().getContainers().size());
-
-        // Assert Containers
-        Container container = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);
-        Assert.assertEquals(3, container.getVolumeMounts().size());
-        Assert.assertEquals(dockerImage, container.getImage());
-        Assert.assertEquals(KubernetesConstants.ImagePullPolicy.IfNotPresent.name(), container.getImagePullPolicy());
-        Assert.assertEquals(1, container.getPorts().size());
-    }
-
-    @Test
-    public void validateSecret() throws IOException {
-        File secretYAML = new File(targetPath + File.separator + "hello_world_secret_mount_k8s_secret.yaml");
-        Assert.assertTrue(secretYAML.exists());
-        List<HasMetadata> k8sItems = KubernetesTestUtils.loadYaml(secretYAML);
-        Assert.assertEquals(3, k8sItems.size());
-        Secret sslSecret = null;
-        Secret privateSecret = null;
-        Secret publicSecret = null;
-        for (HasMetadata data : k8sItems) {
-            switch (data.getMetadata().getName()) {
-                case "helloworldep-secure-socket":
-                    sslSecret = (Secret) data;
-                    break;
-                case "private":
-                    privateSecret = (Secret) data;
-                    break;
-                case "public":
-                    publicSecret = (Secret) data;
-                    break;
-                default:
-                    break;
-            }
-        }
-        // Assert SSL CERTs
-        Assert.assertNotNull(sslSecret);
-        Assert.assertEquals(2, sslSecret.getData().size());
-
-        // Assert private secrets
-        Assert.assertNotNull(privateSecret);
-        Assert.assertEquals(1, privateSecret.getData().size());
-
-        // Assert public secrets
-        Assert.assertNotNull(publicSecret);
-        Assert.assertEquals(2, publicSecret.getData().size());
-    }
-
     @AfterClass
     public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
-
 }
