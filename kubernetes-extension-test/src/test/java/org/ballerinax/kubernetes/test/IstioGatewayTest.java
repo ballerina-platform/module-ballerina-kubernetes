@@ -30,6 +30,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
@@ -45,10 +46,9 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
  */
 public class IstioGatewayTest {
     
-    private final String balDirectory = Paths.get("src").resolve("test").resolve("resources").resolve("istio")
-            .resolve("gateway").toAbsolutePath().toString();
-    private final String targetPath = Paths.get(balDirectory).resolve(KUBERNETES).toString();
-    private final String dockerImage = "pizza-shop:latest";
+    private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "istio", "gateway");
+    private static final Path TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
+    private static final String DOCKER_IMAGE = "pizza-shop:latest";
     
     /**
      * Build bal file with istio gateway annotations.
@@ -60,14 +60,14 @@ public class IstioGatewayTest {
     @Test(groups = {"istio"})
     public void allFieldsTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "all_fields.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "all_fields.bal"), 0);
 
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
 
         // Validate gateway yaml
-        File gatewayFile = Paths.get(targetPath).resolve("all_fields_istio_gateway.yaml").toFile();
+        File gatewayFile = TARGET_PATH.resolve("all_fields_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
@@ -105,8 +105,8 @@ public class IstioGatewayTest {
         Map<String, Object> tls = (Map<String, Object>) server.get("tls");
         Assert.assertEquals(tls.get("httpsRedirect"), true, "Invalid tls httpsRedirect value");
 
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -117,7 +117,7 @@ public class IstioGatewayTest {
      */
     @Test(enabled = false, groups = {"istio"})
     public void invalidPortTest() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "invalid_port.bal"), 1);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "invalid_port.bal"), 1);
     }
     
     /**
@@ -130,14 +130,14 @@ public class IstioGatewayTest {
     @Test(groups = {"istio"})
     public void multipleServersTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "multiple_servers.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "multiple_servers.bal"), 0);
 
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
 
         // Validate gateway yaml
-        File gatewayFile = Paths.get(targetPath).resolve("multiple_servers_istio_gateway.yaml").toFile();
+        File gatewayFile = TARGET_PATH.resolve("multiple_servers_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
@@ -179,8 +179,8 @@ public class IstioGatewayTest {
         Map<String, Object> tls2 = (Map<String, Object>) server2.get("tls");
         Assert.assertEquals(tls2.get("httpsRedirect"), false, "Invalid tls httpsRedirect value");
 
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -192,14 +192,14 @@ public class IstioGatewayTest {
     @Test(groups = {"istio"})
     public void noSelectorTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "no_selector.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "no_selector.bal"), 0);
     
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
     
         // Validate gateway yaml
-        File gatewayFile = Paths.get(targetPath).resolve("no_selector_istio_gateway.yaml").toFile();
+        File gatewayFile = TARGET_PATH.resolve("no_selector_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Yaml yamlProcessor = new Yaml();
         
@@ -210,8 +210,8 @@ public class IstioGatewayTest {
         Assert.assertEquals(selector.get(KubernetesConstants.ISTIO_GATEWAY_SELECTOR), "ingressgateway",
                 "Invalid selector.");
     
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -224,14 +224,14 @@ public class IstioGatewayTest {
     @Test(groups = {"istio"})
     public void noTLSHttpRedirect() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "no_tls_https_redirect.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "no_tls_https_redirect.bal"), 0);
 
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
 
         // Validate gateway yaml
-        File gatewayFile = Paths.get(targetPath).resolve("no_tls_https_redirect_istio_gateway.yaml").toFile();
+        File gatewayFile = TARGET_PATH.resolve("no_tls_https_redirect_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
@@ -259,8 +259,8 @@ public class IstioGatewayTest {
 
         Assert.assertNull(server.get("tls"), "tls options should not be available");
 
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -273,14 +273,14 @@ public class IstioGatewayTest {
     @Test(groups = {"istio"})
     public void tlsMutualTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tls_mutual.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "tls_mutual.bal"), 0);
 
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
 
         // Validate gateway yaml
-        File gatewayFile = Paths.get(targetPath).resolve("tls_mutual_istio_gateway.yaml").toFile();
+        File gatewayFile = TARGET_PATH.resolve("tls_mutual_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
@@ -315,8 +315,8 @@ public class IstioGatewayTest {
         Assert.assertEquals(tls1.get("caCertificates"), "/etc/istio/ingressgateway-ca-certs/ca-chain.cert.pem",
                 "Invalid tls caCertificates value");
 
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -327,7 +327,7 @@ public class IstioGatewayTest {
      */
     @Test(enabled = false, groups = {"istio"})
     public void invalidTlsMutualTest() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tls_mutual_invalid.bal"), 1);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "tls_mutual_invalid.bal"), 1);
     }
     
     /**
@@ -340,14 +340,14 @@ public class IstioGatewayTest {
     @Test(groups = {"istio"})
     public void tlsSimpleTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tls_simple.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "tls_simple.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate gateway yaml
-        File gatewayFile = Paths.get(targetPath).resolve("tls_simple_istio_gateway.yaml").toFile();
+        File gatewayFile = TARGET_PATH.resolve("tls_simple_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
@@ -380,8 +380,8 @@ public class IstioGatewayTest {
         Assert.assertEquals(tls1.get("privateKey"), "/etc/istio/ingressgateway-certs/tls.key",
                 "Invalid tls privateKey value");
         
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -394,14 +394,14 @@ public class IstioGatewayTest {
     @Test(groups = {"istio"})
     public void emptyAnnoForEndpointTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "empty_annotation_ep.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "empty_annotation_ep.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate gateway yaml
-        File gatewayFile = Paths.get(targetPath).resolve("empty_annotation_ep_istio_gateway.yaml").toFile();
+        File gatewayFile = TARGET_PATH.resolve("empty_annotation_ep_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
@@ -425,8 +425,8 @@ public class IstioGatewayTest {
         List<String> hosts = (List<String>) server.get("hosts");
         Assert.assertTrue(hosts.contains("*"), "* host not included");
         
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -439,14 +439,14 @@ public class IstioGatewayTest {
     @Test(groups = {"istio"})
     public void emptyAnnotationForSvcTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "empty_annotation_svc.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "empty_annotation_svc.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate gateway yaml
-        File gatewayFile = Paths.get(targetPath).resolve("empty_annotation_svc_istio_gateway.yaml").toFile();
+        File gatewayFile = TARGET_PATH.resolve("empty_annotation_svc_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
@@ -470,8 +470,8 @@ public class IstioGatewayTest {
         List<String> hosts = (List<String>) server.get("hosts");
         Assert.assertTrue(hosts.contains("*"), "* host not included");
         
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -482,14 +482,14 @@ public class IstioGatewayTest {
      */
     @Test(enabled = false, groups = {"istio"})
     public void invalidTlsSimpleTest() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tls_simple_invalid.bal"), 1);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "tls_simple_invalid.bal"), 1);
     }
     
     /**
      * Validate if Dockerfile is created.
      */
     public void validateDockerfile() {
-        File dockerFile = new File(targetPath + File.separator + DOCKER + File.separator + "Dockerfile");
+        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
     
@@ -497,7 +497,7 @@ public class IstioGatewayTest {
      * Validate contents of the Dockerfile.
      */
     public void validateDockerImage() throws DockerTestException, InterruptedException {
-        List<String> ports = getExposedPorts(this.dockerImage);
+        List<String> ports = getExposedPorts(DOCKER_IMAGE);
         Assert.assertEquals(ports.size(), 1);
         Assert.assertEquals(ports.get(0), "9090/tcp");
     }

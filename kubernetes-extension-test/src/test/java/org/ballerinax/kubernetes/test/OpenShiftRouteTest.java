@@ -31,6 +31,7 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -40,9 +41,8 @@ import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
  * Test cases for @kubernetes:OpenShiftRoute{} annotation generated artifacts.
  */
 public class OpenShiftRouteTest {
-    private final String balDirectory = Paths.get("src").resolve("test").resolve("resources").resolve("openshift")
-            .resolve("route").toAbsolutePath().toString();
-    private final String targetPath = Paths.get(balDirectory).resolve(KUBERNETES).toString();
+    private final Path balDirectory = Paths.get("src", "test", "resources", "openshift", "route");
+    private final Path targetPath = balDirectory.resolve(KUBERNETES);
     
     /**
      * Test case openshift route with host domain.
@@ -81,7 +81,7 @@ public class OpenShiftRouteTest {
                     
                     break;
                 default:
-                    Assert.fail("Unknown k8s resource found: " + data.getKind());
+                    Assert.fail("Unexpected k8s resource found: " + data.getKind());
                     break;
             }
         }
@@ -124,7 +124,7 @@ public class OpenShiftRouteTest {
                     
                     break;
                 default:
-                    Assert.fail("Unknown k8s resource found: " + data.getKind());
+                    Assert.fail("Unexpected k8s resource found: " + data.getKind());
                     break;
             }
         }

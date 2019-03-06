@@ -91,8 +91,8 @@ public class KubernetesUtilsTest {
         Assert.assertTrue(file.createNewFile());
         File directory = tempDirectory.resolve("subFolder").toFile();
         Assert.assertTrue(directory.mkdirs());
-        KubernetesUtils.deleteDirectory(file.getPath());
-        KubernetesUtils.deleteDirectory(directory.getPath());
+        KubernetesUtils.deleteDirectory(file.toPath());
+        KubernetesUtils.deleteDirectory(directory.toPath());
     }
 
     @Test

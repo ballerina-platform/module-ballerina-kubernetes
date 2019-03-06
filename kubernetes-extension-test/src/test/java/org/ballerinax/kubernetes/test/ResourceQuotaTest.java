@@ -28,6 +28,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -39,10 +40,9 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
  * Test creating resource quotas.
  */
 public class ResourceQuotaTest {
-    private final String balDirectory = Paths.get("src").resolve("test").resolve("resources").resolve("resource-quotas")
-            .toAbsolutePath().toString();
-    private final String targetPath = Paths.get(balDirectory).resolve(KUBERNETES).toString();
-    private final String dockerImage = "pizza-shop:latest";
+    private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "resource-quotas");
+    private static final Path TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
+    private static final String DOCKER_IMAGE = "pizza-shop:latest";
     
     /**
      * Build bal file with resource quotas.
@@ -53,14 +53,14 @@ public class ResourceQuotaTest {
     @Test
     public void simpleQuotaTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "simple_quota.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "simple_quota.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
     
         // Validate deployment yaml
-        File deploymentYAML = Paths.get(targetPath).resolve("simple_quota_resource_quota.yaml").toFile();
+        File deploymentYAML = TARGET_PATH.resolve("simple_quota_resource_quota.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         ResourceQuota resourceQuota = KubernetesTestUtils.loadYaml(deploymentYAML);
         Assert.assertEquals(resourceQuota.getMetadata().getName(), "compute-resources");
@@ -82,8 +82,8 @@ public class ResourceQuotaTest {
     
         Assert.assertEquals(resourceQuota.getSpec().getScopes().size(), 0, "Unexpected number of scopes.");
     
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -95,14 +95,14 @@ public class ResourceQuotaTest {
     @Test
     public void quotaWithScopeTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "quota_with_scope.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "quota_with_scope.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = Paths.get(targetPath).resolve("quota_with_scope_resource_quota.yaml").toFile();
+        File deploymentYAML = TARGET_PATH.resolve("quota_with_scope_resource_quota.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         ResourceQuota resourceQuota = KubernetesTestUtils.loadYaml(deploymentYAML);
         Assert.assertEquals(resourceQuota.getMetadata().getName(), "compute-resources");
@@ -121,8 +121,8 @@ public class ResourceQuotaTest {
         Assert.assertEquals(resourceQuota.getSpec().getScopes().size(), 1, "Unexpected number of scopes.");
         Assert.assertEquals(resourceQuota.getSpec().getScopes().get(0), "BestEffort", "Invalid scope found.");
         
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -134,14 +134,14 @@ public class ResourceQuotaTest {
     @Test
     public void multipleQuotaTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "multiple_quotas.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "multiple_quotas.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = Paths.get(targetPath).resolve("multiple_quotas_resource_quota.yaml").toFile();
+        File deploymentYAML = TARGET_PATH.resolve("multiple_quotas_resource_quota.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         List<ResourceQuota> resourceQuotas = KubernetesTestUtils.loadYaml(deploymentYAML);
     
@@ -164,8 +164,8 @@ public class ResourceQuotaTest {
         Assert.assertEquals(resourceQuotas.get(1).getSpec().getHard().get("pods").getAmount(), "1",
                 "Invalid number of pods.");
 
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -176,15 +176,15 @@ public class ResourceQuotaTest {
      */
     @Test
     public void invalidTest() throws IOException, InterruptedException, KubernetesPluginException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "quota-with-invalid-scope.bal"), 1);
-        KubernetesUtils.deleteDirectory(targetPath);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "quota-with-invalid-scope.bal"), 1);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
     }
     
     /**
      * Validate if Dockerfile is created.
      */
     public void validateDockerfile() {
-        File dockerFile = new File(targetPath + File.separator + DOCKER + File.separator + "Dockerfile");
+        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
     
@@ -192,7 +192,7 @@ public class ResourceQuotaTest {
      * Validate contents of the Dockerfile.
      */
     public void validateDockerImage() throws DockerTestException, InterruptedException {
-        List<String> ports = getExposedPorts(this.dockerImage);
+        List<String> ports = getExposedPorts(DOCKER_IMAGE);
         Assert.assertEquals(ports.size(), 1);
         Assert.assertEquals(ports.get(0), "9099/tcp");
     }

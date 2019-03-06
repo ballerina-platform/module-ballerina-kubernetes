@@ -29,6 +29,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
@@ -44,10 +45,9 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
  */
 public class IstioVirtualServiceTest {
     
-    private final String balDirectory = Paths.get("src").resolve("test").resolve("resources").resolve("istio")
-            .resolve("virtual-service").toAbsolutePath().toString();
-    private final String targetPath = Paths.get(balDirectory).resolve(KUBERNETES).toString();
-    private final String dockerImage = "pizza-shop:latest";
+    private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "istio", "virtual-service");
+    private static final Path TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
+    private static final String DOCKER_IMAGE = "pizza-shop:latest";
     
     /**
      * Build bal file with istio virtual service annotation with http route.
@@ -59,14 +59,14 @@ public class IstioVirtualServiceTest {
     @Test(groups = {"istio"})
     public void httpRouteTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "http_route.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "http_route.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = Paths.get(targetPath).resolve("http_route_istio_virtual_service.yaml").toFile();
+        File vsFile = TARGET_PATH.resolve("http_route_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
@@ -111,8 +111,8 @@ public class IstioVirtualServiceTest {
                 "Invalid route destination host");
         Assert.assertEquals(route2.get(0).get("destination").get("subset"), "v1", "Invalid route destination subset");
         
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -125,14 +125,14 @@ public class IstioVirtualServiceTest {
     @Test(groups = {"istio"})
     public void httpMatchRequestTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "http_match_request.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "http_match_request.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = Paths.get(targetPath).resolve("http_match_request_istio_virtual_service.yaml").toFile();
+        File vsFile = TARGET_PATH.resolve("http_match_request_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
@@ -161,8 +161,8 @@ public class IstioVirtualServiceTest {
         Assert.assertEquals(route.get(0).get("destination").get("host"), "ratings.prod.svc.cluster.local",
                 "Invalid route destination host");
         
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -175,14 +175,14 @@ public class IstioVirtualServiceTest {
     @Test(groups = {"istio"})
     public void destinationWeightTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "destination_weight.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "destination_weight.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = Paths.get(targetPath).resolve("destination_weight_istio_virtual_service.yaml").toFile();
+        File vsFile = TARGET_PATH.resolve("destination_weight_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
@@ -212,8 +212,8 @@ public class IstioVirtualServiceTest {
         Assert.assertEquals(destination2.get("subset"), "v1", "Invalid route destination subset");
         Assert.assertEquals(route.get(1).get("weight"), 75, "Invalid route weight");
         
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -226,14 +226,14 @@ public class IstioVirtualServiceTest {
     @Test(groups = {"istio"})
     public void destinationTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "destination.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "destination.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = Paths.get(targetPath).resolve("destination_istio_virtual_service.yaml").toFile();
+        File vsFile = TARGET_PATH.resolve("destination_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
@@ -257,8 +257,8 @@ public class IstioVirtualServiceTest {
         Assert.assertEquals(destination1.get("host"), "reviews.prod.svc.cluster.local",
                 "Invalid route destination host");
         
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -271,14 +271,14 @@ public class IstioVirtualServiceTest {
     @Test(groups = {"istio"})
     public void httpRedirectTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "http_redirect.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "http_redirect.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = Paths.get(targetPath).resolve("http_redirect_istio_virtual_service.yaml").toFile();
+        File vsFile = TARGET_PATH.resolve("http_redirect_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
@@ -304,8 +304,8 @@ public class IstioVirtualServiceTest {
         Assert.assertEquals(redirect.get("authority"), "newratings.default.svc.cluster.local",
                 "Invalid redirect authority");
         
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -318,14 +318,14 @@ public class IstioVirtualServiceTest {
     @Test(groups = {"istio"})
     public void httpRetryTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "http_retry.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "http_retry.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = Paths.get(targetPath).resolve("http_retry_istio_virtual_service.yaml").toFile();
+        File vsFile = TARGET_PATH.resolve("http_retry_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
@@ -352,8 +352,8 @@ public class IstioVirtualServiceTest {
         Assert.assertEquals(retries.get("attempts"), 3, "Invalid number of retry attempts");
         Assert.assertEquals(retries.get("perTryTimeout"), "2s", "Invalid number of retry timeout try");
         
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -366,14 +366,14 @@ public class IstioVirtualServiceTest {
     @Test(groups = {"istio"})
     public void httpFaultInjectionTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "http_fault_injection.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "http_fault_injection.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = Paths.get(targetPath).resolve("http_fault_injection_istio_virtual_service.yaml").toFile();
+        File vsFile = TARGET_PATH.resolve("http_fault_injection_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
@@ -400,8 +400,8 @@ public class IstioVirtualServiceTest {
         Assert.assertEquals(fault.get("abort").get("percent"), 10, "Invalid fault abort percent");
         Assert.assertEquals(fault.get("abort").get("httpStatus"), 400, "Invalid fault abort http status code");
         
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -414,14 +414,14 @@ public class IstioVirtualServiceTest {
     @Test(groups = {"istio"})
     public void corsPolicyTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "cors_policy.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "cors_policy.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = Paths.get(targetPath).resolve("cors_policy_istio_virtual_service.yaml").toFile();
+        File vsFile = TARGET_PATH.resolve("cors_policy_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
@@ -454,8 +454,8 @@ public class IstioVirtualServiceTest {
         Assert.assertEquals(((List<String>) corsPolicy.get("allowHeaders")).get(0), "X-Foo-Bar",
                 "Invalid cors allowHeaders");
         
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -468,14 +468,14 @@ public class IstioVirtualServiceTest {
     @Test(groups = {"istio"})
     public void tlsRouteTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tls_route.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "tls_route.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = Paths.get(targetPath).resolve("tls_route_istio_virtual_service.yaml").toFile();
+        File vsFile = TARGET_PATH.resolve("tls_route_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
@@ -514,8 +514,8 @@ public class IstioVirtualServiceTest {
         Assert.assertEquals(route2.get(0).get("destination").get("host"), "reviews.prod.svc.cluster.local",
                 "Invalid route destination host");
         
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -528,14 +528,14 @@ public class IstioVirtualServiceTest {
     @Test(groups = {"istio"})
     public void tcpRouteTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "tcp_route.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "tcp_route.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = Paths.get(targetPath).resolve("tcp_route_istio_virtual_service.yaml").toFile();
+        File vsFile = TARGET_PATH.resolve("tcp_route_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
@@ -563,8 +563,8 @@ public class IstioVirtualServiceTest {
         Assert.assertEquals(((Map<String, Object>) destination.get("port")).get("number"), 5555,
                 "Invalid destination port");
         
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -577,14 +577,14 @@ public class IstioVirtualServiceTest {
     @Test(groups = {"istio"})
     public void emptyAnnotationTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "empty_annotation.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "empty_annotation.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = Paths.get(targetPath).resolve("empty_annotation_istio_virtual_service.yaml").toFile();
+        File vsFile = TARGET_PATH.resolve("empty_annotation_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
@@ -610,8 +610,8 @@ public class IstioVirtualServiceTest {
         Map<String, Object> port = (Map<String, Object>) destination.get("port");
         Assert.assertEquals(port.get("number"), 9090, "Invalid port found");
     
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -624,14 +624,14 @@ public class IstioVirtualServiceTest {
     @Test(groups = {"istio"})
     public void useServiceAnnotationPortTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "svc_port.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "svc_port.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate virtual service yaml
-        File gatewayFile = Paths.get(targetPath).resolve("svc_port_istio_virtual_service.yaml").toFile();
+        File gatewayFile = TARGET_PATH.resolve("svc_port_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
@@ -657,15 +657,15 @@ public class IstioVirtualServiceTest {
         Map<String, Object> port = (Map<String, Object>) destination.get("port");
         Assert.assertEquals(port.get("number"), 8080, "Invalid port found");
         
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
      * Validate if Dockerfile is created.
      */
     public void validateDockerfile() {
-        File dockerFile = new File(targetPath + File.separator + DOCKER + File.separator + "Dockerfile");
+        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
     
@@ -673,7 +673,7 @@ public class IstioVirtualServiceTest {
      * Validate contents of the Dockerfile.
      */
     public void validateDockerImage() throws DockerTestException, InterruptedException {
-        List<String> ports = getExposedPorts(this.dockerImage);
+        List<String> ports = getExposedPorts(DOCKER_IMAGE);
         Assert.assertEquals(ports.size(), 1);
         Assert.assertEquals(ports.get(0), "9090/tcp");
     }

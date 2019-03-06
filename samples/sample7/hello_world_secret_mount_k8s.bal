@@ -34,9 +34,7 @@ listener http:Listener helloWorldEP = new(9090, config = {
     ]
 }
 
-@kubernetes:Deployment {
-    singleYAML: false
-}
+@kubernetes:Deployment {}
 @http:ServiceConfig {
     basePath: "/helloWorld"
 }

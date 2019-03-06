@@ -15,8 +15,7 @@ listener http:Listener pizzaEP = new(9099);
     env: { "location": "SL", "city": "COLOMBO" },
     livenessProbe: {
         port: 9099
-    },
-    singleYAML: false
+    }
 }
 @http:ServiceConfig {
     basePath: "/pizza"

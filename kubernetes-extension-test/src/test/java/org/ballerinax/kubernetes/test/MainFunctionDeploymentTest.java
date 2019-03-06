@@ -30,6 +30,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
@@ -40,10 +41,9 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDocker
  * Test case for creating a deployment using a main function.
  */
 public class MainFunctionDeploymentTest {
-    private final String balDirectory = Paths.get("src").resolve("test").resolve("resources").resolve("deployment")
-            .toAbsolutePath().toString();
-    private final String targetPath = Paths.get(balDirectory).resolve(KUBERNETES).toString();
-    private final String dockerImage = "main_function:latest";
+    private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "deployment");
+    private static final Path TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
+    private static final String DOCKER_IMAGE = "main_function:latest";
     
     /**
      * Build bal file with deployment attached to a main function.
@@ -54,14 +54,14 @@ public class MainFunctionDeploymentTest {
     @Test
     public void mainFuncDeploymentTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "main_function.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "main_function.bal"), 0);
         
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = Paths.get(targetPath).resolve("main_function_deployment.yaml").toFile();
+        File deploymentYAML = TARGET_PATH.resolve("main_function_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         Assert.assertEquals(deployment.getMetadata().getLabels().size(), 2, "Invalid number of labels found.");
@@ -69,15 +69,15 @@ public class MainFunctionDeploymentTest {
                 "main_function", "Invalid label found.");
         Assert.assertEquals(deployment.getMetadata().getLabels().get("task_type"), "printer", "Invalid label found.");
         
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
      * Validate if Dockerfile is created.
      */
     public void validateDockerfile() {
-        File dockerFile = new File(targetPath + File.separator + DOCKER + File.separator + "Dockerfile");
+        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
     
@@ -85,7 +85,7 @@ public class MainFunctionDeploymentTest {
      * Validate contents of the Dockerfile.
      */
     public void validateDockerImage() throws DockerTestException, InterruptedException {
-        ImageInfo dockerImage = getDockerImage(this.dockerImage);
+        ImageInfo dockerImage = getDockerImage(DOCKER_IMAGE);
         Assert.assertNotNull(dockerImage, "Image not found");
     }
 }

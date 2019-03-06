@@ -32,6 +32,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
@@ -39,32 +40,34 @@ import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDockerImage;
 
 public class JobTest {
-    private final String sourceDirPath = Paths.get("src").resolve("test").resolve("resources").resolve("job")
-            .toAbsolutePath().toString();
-    private final String targetPath = sourceDirPath + File.separator + KUBERNETES;
-    private final String dockerImage = "my-ballerina-job:1.0";
+    private static final Path SOURCE_DIR_PATH = Paths.get("src", "test", "resources", "job");
+    private static final Path TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
+    private static final String DOCKER_IMAGE = "my-ballerina-job:1.0";
 
     @Test
     public void testKubernetesJobGeneration() throws IOException, InterruptedException, DockerTestException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(sourceDirPath, "ballerina_job.bal"), 0);
-        File dockerFile = new File(targetPath + File.separator + DOCKER + File.separator + "Dockerfile");
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "ballerina_job.bal"), 0);
+        
+        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
-        ImageInfo imageInspect = getDockerImage(dockerImage);
+        ImageInfo imageInspect = getDockerImage(DOCKER_IMAGE);
         Assert.assertNotNull(imageInspect.config());
-        File jobYAML = new File(targetPath + File.separator + "ballerina_job_job.yaml");
+        
+        File jobYAML = TARGET_PATH.resolve("ballerina_job_job.yaml").toFile();
         Job job = KubernetesTestUtils.loadYaml(jobYAML);
-        Assert.assertEquals("ballerina-job-job", job.getMetadata().getName());
-        Assert.assertEquals(1, job.getSpec().getTemplate().getSpec().getContainers().size());
+        Assert.assertEquals(job.getMetadata().getName(), "ballerina-job-job");
+        Assert.assertEquals(job.getSpec().getTemplate().getSpec().getContainers().size(), 1);
+        
         Container container = job.getSpec().getTemplate().getSpec().getContainers().get(0);
-        Assert.assertEquals(dockerImage, container.getImage());
-        Assert.assertEquals(KubernetesConstants.ImagePullPolicy.IfNotPresent.name(), container.getImagePullPolicy());
-        Assert.assertEquals(KubernetesConstants.RestartPolicy.Never.name(), job.getSpec().getTemplate().getSpec()
-                .getRestartPolicy());
+        Assert.assertEquals(container.getImage(), DOCKER_IMAGE);
+        Assert.assertEquals(container.getImagePullPolicy(), KubernetesConstants.ImagePullPolicy.IfNotPresent.name());
+        Assert.assertEquals(job.getSpec().getTemplate().getSpec()
+                .getRestartPolicy(), KubernetesConstants.RestartPolicy.Never.name());
     }
 
     @AfterClass
     public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
 }

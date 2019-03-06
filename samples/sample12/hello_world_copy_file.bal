@@ -25,8 +25,7 @@ listener http:Listener helloWorldEP = new(9090, config = {
             target: "/home/ballerina/data/data.txt",
             source: "./data/data.txt"
         }
-    ],
-    singleYAML: false
+    ]
 }
 @http:ServiceConfig {
     basePath: "/helloWorld"
