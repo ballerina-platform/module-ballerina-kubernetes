@@ -41,16 +41,16 @@ import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
  * Test cases for @kubernetes:OpenShiftRoute{} annotation generated artifacts.
  */
 public class OpenShiftRouteTest {
-    private final Path balDirectory = Paths.get("src", "test", "resources", "openshift", "route");
-    private final Path targetPath = balDirectory.resolve(KUBERNETES);
+    private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "openshift", "route");
+    private static final Path TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
     
     /**
      * Test case openshift route with host domain.
      */
     @Test(groups = {"openshift"})
     public void noDomainTest() throws IOException, InterruptedException, KubernetesPluginException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "with_domain.bal"), 0);
-        File yamlFile = new File(targetPath + File.separator + "with_domain.yaml");
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "with_domain.bal"), 0);
+        File yamlFile = TARGET_PATH.resolve("with_domain.yaml").toFile();
         Assert.assertTrue(yamlFile.exists());
         KubernetesClient client = new DefaultKubernetesClient();
         List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
@@ -86,7 +86,8 @@ public class OpenShiftRouteTest {
             }
         }
         
-        KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage("with_domain:latest");
     }
     
     /**
@@ -94,8 +95,8 @@ public class OpenShiftRouteTest {
      */
     @Test(groups = {"openshift"})
     public void simpleRoute() throws IOException, InterruptedException, KubernetesPluginException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "simple_route.bal"), 0);
-        File yamlFile = new File(targetPath + File.separator + "simple_route.yaml");
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "simple_route.bal"), 0);
+        File yamlFile = new File(TARGET_PATH + File.separator + "simple_route.yaml");
         Assert.assertTrue(yamlFile.exists());
         KubernetesClient client = new DefaultKubernetesClient();
         List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
@@ -129,16 +130,20 @@ public class OpenShiftRouteTest {
             }
         }
         
-        KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage("simple_route:latest");
     }
     
     /**
      * Test case to check that namespace is required.
      */
     @Test(groups = {"openshift"})
-    public void noNamespace() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "domain_with_no_namespace.bal"), 0);
-        File yamlFile = new File(targetPath + File.separator + "domain_with_no_namespace.yaml");
+    public void noNamespace() throws IOException, InterruptedException, KubernetesPluginException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "domain_with_no_namespace.bal"), 0);
+        File yamlFile = TARGET_PATH.resolve("domain_with_no_namespace.yaml").toFile();
         Assert.assertFalse(yamlFile.exists());
+        
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage("domain_with_no_namespace:latest");
     }
 }

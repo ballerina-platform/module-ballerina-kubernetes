@@ -18,7 +18,7 @@ jdbc:Client coolDrinkDB = new({
 });
 
 @kubernetes:ConfigMap {
-    ballerinaConf: "./cool_drink/ballerina.conf"
+    conf: "./cool_drink/ballerina.conf"
 }
 @kubernetes:Deployment {
     replicas: 2,

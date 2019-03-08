@@ -48,6 +48,10 @@ import ballerinax/kubernetes;
         }
     ]
 }
+public function prINT(int a) {
+    io:println(a);
+}
+
 public function main(string... args) {
     io:println("hello world");
 }

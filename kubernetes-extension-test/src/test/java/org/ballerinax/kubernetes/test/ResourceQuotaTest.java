@@ -19,6 +19,7 @@
 package org.ballerinax.kubernetes.test;
 
 import io.fabric8.kubernetes.api.model.ResourceQuota;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
@@ -34,6 +35,7 @@ import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDockerImage;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 
 /**
@@ -46,8 +48,9 @@ public class ResourceQuotaTest {
     
     /**
      * Build bal file with resource quotas.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
@@ -59,10 +62,11 @@ public class ResourceQuotaTest {
         validateDockerfile();
         validateDockerImage();
     
-        // Validate deployment yaml
-        File deploymentYAML = TARGET_PATH.resolve("simple_quota_resource_quota.yaml").toFile();
-        Assert.assertTrue(deploymentYAML.exists());
-        ResourceQuota resourceQuota = KubernetesTestUtils.loadYaml(deploymentYAML);
+        // Validate resource quota yaml
+        File resourceQuotaYaml = TARGET_PATH.resolve("simple_quota_resource_quota.yaml").toFile();
+        Assert.assertTrue(resourceQuotaYaml.exists());
+        
+        ResourceQuota resourceQuota = KubernetesTestUtils.loadYaml(resourceQuotaYaml);
         Assert.assertEquals(resourceQuota.getMetadata().getName(), "compute-resources");
         
         Assert.assertEquals(resourceQuota.getMetadata().getLabels().size(), 1, "Invalid number of labels.");
@@ -88,8 +92,9 @@ public class ResourceQuotaTest {
     
     /**
      * Build bal file with resource quota having a scope.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
@@ -101,10 +106,10 @@ public class ResourceQuotaTest {
         validateDockerfile();
         validateDockerImage();
         
-        // Validate deployment yaml
-        File deploymentYAML = TARGET_PATH.resolve("quota_with_scope_resource_quota.yaml").toFile();
-        Assert.assertTrue(deploymentYAML.exists());
-        ResourceQuota resourceQuota = KubernetesTestUtils.loadYaml(deploymentYAML);
+        // Validate resource quota yaml
+        File resourceQuotaYaml = TARGET_PATH.resolve("quota_with_scope_resource_quota.yaml").toFile();
+        Assert.assertTrue(resourceQuotaYaml.exists());
+        ResourceQuota resourceQuota = KubernetesTestUtils.loadYaml(resourceQuotaYaml);
         Assert.assertEquals(resourceQuota.getMetadata().getName(), "compute-resources");
         
         Assert.assertEquals(resourceQuota.getSpec().getHard().size(), 5, "Invalid number of hard limits.");
@@ -127,8 +132,9 @@ public class ResourceQuotaTest {
     
     /**
      * Build bal file having multiple resource quotas.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
@@ -140,10 +146,10 @@ public class ResourceQuotaTest {
         validateDockerfile();
         validateDockerImage();
         
-        // Validate deployment yaml
-        File deploymentYAML = TARGET_PATH.resolve("multiple_quotas_resource_quota.yaml").toFile();
-        Assert.assertTrue(deploymentYAML.exists());
-        List<ResourceQuota> resourceQuotas = KubernetesTestUtils.loadYaml(deploymentYAML);
+        // Validate resource quota yaml
+        File resourceQuotaYaml = TARGET_PATH.resolve("multiple_quotas_resource_quota.yaml").toFile();
+        Assert.assertTrue(resourceQuotaYaml.exists());
+        List<ResourceQuota> resourceQuotas = KubernetesTestUtils.loadYaml(resourceQuotaYaml);
     
         Assert.assertEquals(resourceQuotas.get(0).getMetadata().getName(), "compute-resources");
         Assert.assertEquals(resourceQuotas.get(0).getSpec().getHard().size(), 5, "Invalid number of hard limits.");
@@ -169,15 +175,65 @@ public class ResourceQuotaTest {
     }
     
     /**
-     * Build bal file with deployment having invalid environment variables. This should fail.
-     * @throws IOException Error when loading the generated yaml.
-     * @throws InterruptedException Error when compiling the ballerina file.
+     * Build bal file with resource quota having invalid scope. This should fail.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
     @Test
     public void invalidTest() throws IOException, InterruptedException, KubernetesPluginException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "quota-with-invalid-scope.bal"), 1);
         KubernetesUtils.deleteDirectory(TARGET_PATH);
+    }
+    
+    /**
+     * Build bal file with resource quotas on a main function.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
+     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
+     */
+    @Test
+    public void quotaOnMainFunctionTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "on_main_function.bal"), 0);
+        
+        // Check if docker image exists and correct
+        validateDockerfile();
+        Assert.assertNotNull(getDockerImage(DOCKER_IMAGE));
+    
+        // Validate deployment yaml
+        File deploymentYAML = TARGET_PATH.resolve("on_main_function_deployment.yaml").toFile();
+        Assert.assertTrue(deploymentYAML.exists());
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
+        Assert.assertEquals("simple-quota", deployment.getMetadata().getName());
+        
+        // Validate resource quota yaml
+        File resourceQuotaYaml = TARGET_PATH.resolve("on_main_function_resource_quota.yaml").toFile();
+        Assert.assertTrue(resourceQuotaYaml.exists());
+        ResourceQuota resourceQuota = KubernetesTestUtils.loadYaml(resourceQuotaYaml);
+        Assert.assertEquals(resourceQuota.getMetadata().getName(), "compute-resources");
+        
+        Assert.assertEquals(resourceQuota.getMetadata().getLabels().size(), 1, "Invalid number of labels.");
+        Assert.assertEquals(resourceQuota.getMetadata().getLabels().get("priority"), "high",
+                "Invalid label value found.");
+        
+        Assert.assertEquals(resourceQuota.getSpec().getHard().size(), 5, "Invalid number of hard limits.");
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("pods").getAmount(), "4", "Invalid number of pods.");
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.cpu").getAmount(), "1",
+                "Invalid number of cpu requests.");
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.memory").getAmount(), "1Gi",
+                "Invalid number of memory requests.");
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.cpu").getAmount(), "2",
+                "Invalid number of cpu limits");
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.memory").getAmount(), "2Gi",
+                "Invalid number of memory limits.");
+        
+        Assert.assertEquals(resourceQuota.getSpec().getScopes().size(), 0, "Unexpected number of scopes.");
+        
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**

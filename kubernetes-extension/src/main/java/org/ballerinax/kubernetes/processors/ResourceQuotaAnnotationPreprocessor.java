@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getArray;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
@@ -59,7 +60,9 @@ public class ResourceQuotaAnnotationPreprocessor extends AbstractAnnotationProce
     @Override
     public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException {
-        processResourceQuotaAnnotation((BLangAnnotationAttachment) attachmentNode);
+        if (MAIN_FUNCTION_NAME.equals(functionNode.getName().getValue())) {
+            processResourceQuotaAnnotation((BLangAnnotationAttachment) attachmentNode);
+        }
     }
     
     private void processResourceQuotaAnnotation(BLangAnnotationAttachment attachmentNode)
