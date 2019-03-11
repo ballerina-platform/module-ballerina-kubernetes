@@ -62,9 +62,12 @@ public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
     @Override
     public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
-        if (MAIN_FUNCTION_NAME.equals(functionNode.getName().getValue())) {
-            processSecret(functionNode.getName(), attachmentNode);
+        if (!MAIN_FUNCTION_NAME.equals(functionNode.getName().getValue())) {
+            throw new KubernetesPluginException("@kubernetes:Secret{} annotation cannot be attached to a non main " +
+                                                "function.");
         }
+        
+        processSecret(functionNode.getName(), attachmentNode);
     }
     
     private void processSecret(IdentifierNode nodeID, AnnotationAttachmentNode attachmentNode) throws

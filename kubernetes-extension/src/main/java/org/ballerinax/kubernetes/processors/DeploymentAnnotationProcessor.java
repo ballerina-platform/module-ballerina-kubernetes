@@ -70,9 +70,12 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
     @Override
     public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
-        if (MAIN_FUNCTION_NAME.equals(functionNode.getName().getValue())) {
-            processDeployment(attachmentNode);
+        if (!MAIN_FUNCTION_NAME.equals(functionNode.getName().getValue())) {
+            throw new KubernetesPluginException("@kubernetes:Deployment{} annotation cannot be attached to a non " +
+                                                "main function.");
         }
+    
+        processDeployment(attachmentNode);
     }
     
     private void processDeployment(AnnotationAttachmentNode attachmentNode) throws KubernetesPluginException {

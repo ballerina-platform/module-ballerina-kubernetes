@@ -65,9 +65,12 @@ public class VolumeClaimAnnotationProcessor extends AbstractAnnotationProcessor 
     @Override
     public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
-        if (MAIN_FUNCTION_NAME.equals(functionNode.getName().getValue())) {
-            processVolumeClaims(attachmentNode);
+        if (!MAIN_FUNCTION_NAME.equals(functionNode.getName().getValue())) {
+            throw new KubernetesPluginException("@kubernetes:PersistentVolumeClaim annotation cannot be attached to " +
+                                                "a non main function.");
         }
+        
+        processVolumeClaims(attachmentNode);
     }
     
     /**

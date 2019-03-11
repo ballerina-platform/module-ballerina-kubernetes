@@ -43,6 +43,7 @@ public class HPAHandler extends AbstractArtifactHandler {
 
     private void generate(PodAutoscalerModel podAutoscalerModel) throws KubernetesPluginException {
         MetricSpec metricSpec = new MetricSpecBuilder()
+                .withType("Resource")
                 .withNewResource()
                 .withName("cpu")
                 .withTargetAverageUtilization(podAutoscalerModel.getCpuPercentage())

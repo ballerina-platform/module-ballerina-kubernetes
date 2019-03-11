@@ -115,6 +115,17 @@ public class MainFunctionDeploymentTest {
     }
     
     /**
+     * Build bal file with non-main function and annotations.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
+     */
+    @Test
+    public void nonMainFuncTest() throws IOException, InterruptedException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "non_main_function.bal"), 1);
+    }
+    
+    /**
      * Validate if Dockerfile is created.
      */
     public void validateDockerfile() {

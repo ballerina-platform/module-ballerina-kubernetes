@@ -48,9 +48,12 @@ public class HPAAnnotationProcessor extends AbstractAnnotationProcessor {
     @Override
     public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
-        if (MAIN_FUNCTION_NAME.equals(functionNode.getName().getValue())) {
-            processHPA(attachmentNode);
+        if (!MAIN_FUNCTION_NAME.equals(functionNode.getName().getValue())) {
+            throw new KubernetesPluginException("@kubernetes:HPA{} annotation cannot be attached to a non main " +
+                                                "function.");
         }
+        
+        processHPA(attachmentNode);
     }
     
     private void processHPA(AnnotationAttachmentNode attachmentNode) throws KubernetesPluginException {

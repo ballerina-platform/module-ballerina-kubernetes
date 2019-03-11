@@ -60,9 +60,12 @@ public class ResourceQuotaAnnotationPreprocessor extends AbstractAnnotationProce
     @Override
     public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException {
-        if (MAIN_FUNCTION_NAME.equals(functionNode.getName().getValue())) {
-            processResourceQuotaAnnotation((BLangAnnotationAttachment) attachmentNode);
+        if (!MAIN_FUNCTION_NAME.equals(functionNode.getName().getValue())) {
+            throw new KubernetesPluginException("@kubernetes:ResourceQuota{} annotation cannot be attached to a non " +
+                                                "main function.");
         }
+        
+        processResourceQuotaAnnotation((BLangAnnotationAttachment) attachmentNode);
     }
     
     private void processResourceQuotaAnnotation(BLangAnnotationAttachment attachmentNode)
