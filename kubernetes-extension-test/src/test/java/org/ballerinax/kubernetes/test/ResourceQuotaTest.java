@@ -62,7 +62,7 @@ public class ResourceQuotaTest {
         validateDockerfile();
         validateDockerImage();
     
-        // Validate resource quota yaml
+        // Validate resource quota yaml.
         File resourceQuotaYaml = TARGET_PATH.resolve("simple_quota_resource_quota.yaml").toFile();
         Assert.assertTrue(resourceQuotaYaml.exists());
         
