@@ -82,7 +82,7 @@ public class MainFunctionDeploymentTest {
         Assert.assertEquals(volumeClaim.getMetadata().getName(), "local-pv-2");
         Assert.assertEquals(volumeClaim.getSpec().getAccessModes().size(), 1);
     
-        // Validate secret
+        // Validate secret.
         File secretYaml = TARGET_PATH.resolve("main_function_secret.yaml").toFile();
         Assert.assertTrue(secretYaml.exists());
         Secret privateSecret = KubernetesTestUtils.loadYaml(secretYaml);
