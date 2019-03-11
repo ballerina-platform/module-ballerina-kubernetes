@@ -89,7 +89,7 @@ public class MainFunctionDeploymentTest {
         Assert.assertNotNull(privateSecret);
         Assert.assertEquals(privateSecret.getData().size(), 1);
     
-        // Validate horizontal pod scalar
+        // Validate horizontal pod scalar.
         File hpaYaml = TARGET_PATH.resolve("main_function_hpa.yaml").toFile();
         Assert.assertTrue(hpaYaml.exists());
         HorizontalPodAutoscaler podAutoscaler = KubernetesTestUtils.loadYaml(hpaYaml);
