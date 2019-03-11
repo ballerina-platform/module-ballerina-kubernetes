@@ -20,7 +20,7 @@ listener http:Listener hotDrinkEP = new(9090);
 
 
 @kubernetes:ConfigMap {
-    ballerinaConf: "./hot_drink/ballerina.conf"
+    conf: "./hot_drink/ballerina.conf"
 }
 @kubernetes:Deployment {
     copyFiles: [{ 

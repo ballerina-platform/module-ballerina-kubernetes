@@ -252,7 +252,7 @@ public type PodAutoscalerConfig record {
 };
 
 # @kubernetes:HPA annotation to configure horizontal pod autoscaler yaml.
-public annotation<service> HPA PodAutoscalerConfig;
+public annotation<service, function> HPA PodAutoscalerConfig;
 
 # Kubernetes secret volume mount.
 #
@@ -276,7 +276,7 @@ public type SecretMount record {
 };
 
 # @kubernetes:Secret annotation to configure secrets.
-public annotation<service> Secret SecretMount;
+public annotation<service, function> Secret SecretMount;
 
 # Kubernetes Config Map volume mount.
 #
@@ -302,7 +302,7 @@ public type ConfigMapMount record {
 };
 
 # @kubernetes:ConfigMap annotation to configure config maps.
-public annotation<service> ConfigMap ConfigMapMount;
+public annotation<service, function> ConfigMap ConfigMapMount;
 
 # Kubernetes Persistent Volume Claim.
 #
@@ -328,7 +328,7 @@ public type PersistentVolumeClaims record {
 };
 
 # @kubernetes:PersistentVolumeClaim annotation to configure Persistent Volume Claims.
-public annotation<service> PersistentVolumeClaim PersistentVolumeClaims;
+public annotation<service, function> PersistentVolumeClaim PersistentVolumeClaims;
 
 # Scopes for kubernetes resource quotas
 public type ResourceQuotaScope "Terminating"|"NotTerminating"|"BestEffort"|"NotBestEffort";
@@ -353,7 +353,7 @@ public type ResourceQuotas record {
 };
 
 # @kubernetes:ResourcesQuotas annotation to configure Resource Quotas.
-public annotation<service, function, listener> ResourceQuota ResourceQuotas;
+public annotation<service, function> ResourceQuota ResourceQuotas;
 
 public const string RESTART_POLICY_ON_FAILURE = "OnFailure";
 public const string RESTART_POLICY_ALWAYS = "Always";

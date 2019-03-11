@@ -19,6 +19,7 @@
 package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
+import org.ballerinalang.model.tree.FunctionNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
@@ -32,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
@@ -40,14 +42,44 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
  * Persistent volume claim annotation processor.
  */
 public class VolumeClaimAnnotationProcessor extends AbstractAnnotationProcessor {
-
+    
     /**
-     * Process PersistentVolumeClaim annotations.
+     * Process PersistentVolumeClaim annotations for services.
      *
+     * @param serviceNode The service node.
      * @param attachmentNode Attachment Node
+     * @throws KubernetesPluginException When error occurs while parsing the annotations.
      */
     public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
+        processVolumeClaims(attachmentNode);
+    }
+    
+    /**
+     * Process PersistentVolumeClaim annotations for functions.
+     *
+     * @param functionNode   The function node.
+     * @param attachmentNode Matching annotation.
+     * @throws KubernetesPluginException When error occurs while parsing the annotations.
+     */
+    @Override
+    public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode) throws
+            KubernetesPluginException {
+        if (!MAIN_FUNCTION_NAME.equals(functionNode.getName().getValue())) {
+            throw new KubernetesPluginException("@kubernetes:PersistentVolumeClaim annotation cannot be attached to " +
+                                                "a non main function.");
+        }
+        
+        processVolumeClaims(attachmentNode);
+    }
+    
+    /**
+     * Process PersistentVolumeClaim annotations.
+     *
+     * @param attachmentNode Annotation node.
+     * @throws KubernetesPluginException When error occurs while parsing the annotations.
+     */
+    private void processVolumeClaims(AnnotationAttachmentNode attachmentNode) throws KubernetesPluginException {
         Set<PersistentVolumeClaimModel> volumeClaimModels = new HashSet<>();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();

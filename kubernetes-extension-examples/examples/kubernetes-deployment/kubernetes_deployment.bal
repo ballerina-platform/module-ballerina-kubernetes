@@ -32,7 +32,7 @@ listener http:Listener helloWorldEP = new(9090, config = {
 @kubernetes:ConfigMap {
     //Path to the ballerina.conf file.
     //If a releative path is provided, the path should be releative to where the `ballerina build` command is executed.
-    ballerinaConf: "./ballerina.conf"
+    conf: "./ballerina.conf"
 }
 //Add `@kubernetes:Deployment` annotation to a Ballerna service to generate Kuberenetes Deployment for a Ballerina module.
 @kubernetes:Deployment {

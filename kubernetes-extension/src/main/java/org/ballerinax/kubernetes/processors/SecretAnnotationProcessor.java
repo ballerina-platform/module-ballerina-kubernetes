@@ -20,6 +20,8 @@ package org.ballerinax.kubernetes.processors;
 
 import org.apache.commons.codec.binary.Base64;
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
+import org.ballerinalang.model.tree.FunctionNode;
+import org.ballerinalang.model.tree.IdentifierNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
@@ -39,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
 import static org.ballerinax.kubernetes.KubernetesConstants.SECRET_POSTFIX;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
@@ -52,6 +55,22 @@ public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
 
     @Override
     public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode) throws
+            KubernetesPluginException {
+        processSecret(serviceNode.getName(), attachmentNode);
+    }
+    
+    @Override
+    public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode) throws
+            KubernetesPluginException {
+        if (!MAIN_FUNCTION_NAME.equals(functionNode.getName().getValue())) {
+            throw new KubernetesPluginException("@kubernetes:Secret{} annotation cannot be attached to a non main " +
+                                                "function.");
+        }
+        
+        processSecret(functionNode.getName(), attachmentNode);
+    }
+    
+    private void processSecret(IdentifierNode nodeID, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         Set<SecretModel> secrets = new HashSet<>();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
@@ -91,7 +110,7 @@ public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
                     }
                 }
                 if (isBlank(secretModel.getName())) {
-                    secretModel.setName(getValidName(serviceNode.getName().getValue()) + SECRET_POSTFIX);
+                    secretModel.setName(getValidName(nodeID.getValue()) + SECRET_POSTFIX);
                 }
                 secrets.add(secretModel);
             }

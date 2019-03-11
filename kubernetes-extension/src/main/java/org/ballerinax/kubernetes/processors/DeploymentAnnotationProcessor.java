@@ -38,6 +38,7 @@ import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_CERT_PATH;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_HOST;
+import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getBooleanValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getEnvVarMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getExternalFileMap;
@@ -69,6 +70,11 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
     @Override
     public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
+        if (!MAIN_FUNCTION_NAME.equals(functionNode.getName().getValue())) {
+            throw new KubernetesPluginException("@kubernetes:Deployment{} annotation cannot be attached to a non " +
+                                                "main function.");
+        }
+    
         processDeployment(attachmentNode);
     }
     

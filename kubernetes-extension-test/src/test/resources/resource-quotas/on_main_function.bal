@@ -1,4 +1,4 @@
-// Copyright (c) 2018 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+// Copyright (c) 2019 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 //
 // WSO2 Inc. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -18,33 +18,24 @@ import ballerina/io;
 import ballerinax/kubernetes;
 
 @kubernetes:Deployment {
-    name: "pizzashack",
-    labels: {
-        "task_type": "printer"
-    },
+    name: "simple-quota",
+    image: "pizza-shop:latest",
     singleYAML: false
 }
-@kubernetes:ConfigMap {
-    conf: "./artifacts/conf/ballerina.conf"
-}
-@kubernetes:HPA {}
-@kubernetes:Secret {
-    secrets: [
+@kubernetes:ResourceQuota {
+    resourceQuotas: [
         {
-            name: "private",
-            mountPath: "/home/ballerina/private",
-            data: ["./artifacts/secrets/MySecret1.txt"]
-        }
-    ]
-}
-@kubernetes:PersistentVolumeClaim {
-    volumeClaims: [
-        {
-            name: "local-pv-2",
-            mountPath: "/home/ballerina/tmp",
-            readOnly: false,
-            accessMode: "ReadWriteOnce",
-            volumeClaimSize: "1Gi"
+            name: "compute-resources",
+            labels: {
+                priority: "high"
+            },
+            hard: {
+                "pods": "4",
+                "requests.cpu": "1",
+                "requests.memory": "1Gi",
+                "limits.cpu": "2",
+                "limits.memory": "2Gi"
+            }
         }
     ]
 }
