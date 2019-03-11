@@ -74,7 +74,7 @@ public class MainFunctionDeploymentTest {
                 "main_function", "Invalid label found.");
         Assert.assertEquals(deployment.getMetadata().getLabels().get("task_type"), "printer", "Invalid label found.");
     
-        // Validate volume claim yaml
+        // Validate volume claim yaml.
         File volumeClaimYaml = TARGET_PATH.resolve("main_function_volume_claim.yaml").toFile();
         Assert.assertTrue(volumeClaimYaml.exists());
         PersistentVolumeClaim volumeClaim = KubernetesTestUtils.loadYaml(volumeClaimYaml);
