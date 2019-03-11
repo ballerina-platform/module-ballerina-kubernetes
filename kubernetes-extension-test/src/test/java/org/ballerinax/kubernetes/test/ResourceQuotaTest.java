@@ -209,7 +209,7 @@ public class ResourceQuotaTest {
         Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         Assert.assertEquals("simple-quota", deployment.getMetadata().getName());
         
-        // Validate resource quota yaml
+        // Validate resource quota yaml.
         File resourceQuotaYaml = TARGET_PATH.resolve("on_main_function_resource_quota.yaml").toFile();
         Assert.assertTrue(resourceQuotaYaml.exists());
         ResourceQuota resourceQuota = KubernetesTestUtils.loadYaml(resourceQuotaYaml);
