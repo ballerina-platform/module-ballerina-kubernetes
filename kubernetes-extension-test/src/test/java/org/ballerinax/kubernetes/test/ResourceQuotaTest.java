@@ -203,7 +203,7 @@ public class ResourceQuotaTest {
         validateDockerfile();
         Assert.assertNotNull(getDockerImage(DOCKER_IMAGE));
     
-        // Validate deployment yaml
+        // Validate deployment yaml.
         File deploymentYAML = TARGET_PATH.resolve("on_main_function_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
