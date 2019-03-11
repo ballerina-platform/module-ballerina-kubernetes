@@ -146,7 +146,7 @@ public class ResourceQuotaTest {
         validateDockerfile();
         validateDockerImage();
         
-        // Validate resource quota yaml
+        // Validate resource quota yaml.
         File resourceQuotaYaml = TARGET_PATH.resolve("multiple_quotas_resource_quota.yaml").toFile();
         Assert.assertTrue(resourceQuotaYaml.exists());
         List<ResourceQuota> resourceQuotas = KubernetesTestUtils.loadYaml(resourceQuotaYaml);
