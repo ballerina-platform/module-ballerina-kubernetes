@@ -29,6 +29,8 @@ import org.ballerinax.kubernetes.models.istio.IstioDestination;
 import org.ballerinax.kubernetes.models.istio.IstioDestinationWeight;
 import org.ballerinax.kubernetes.models.istio.IstioHttpRedirect;
 import org.ballerinax.kubernetes.models.istio.IstioHttpRoute;
+import org.ballerinax.kubernetes.models.istio.IstioTLSMatchAttributes;
+import org.ballerinax.kubernetes.models.istio.IstioTLSRoute;
 import org.ballerinax.kubernetes.models.istio.IstioVirtualServiceModel;
 import org.ballerinax.kubernetes.processors.AbstractAnnotationProcessor;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
@@ -44,6 +46,7 @@ import java.util.Map;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.ISTIO_VIRTUAL_SERVICE_POSTFIX;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getArray;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getIntValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
@@ -141,7 +144,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                     break;
                 case tls:
                     BLangArrayLiteral tlsFields = (BLangArrayLiteral) vsField.getValue();
-                    List<Object> tlsModels = (List<Object>) processAnnotation(tlsFields);
+                    List<IstioTLSRoute> tlsModels = processTLSRouteAnnotation(tlsFields);
                     vsModel.setTls(tlsModels);
                     break;
                 case tcp:
@@ -155,6 +158,70 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
             }
         }
         return vsModel;
+    }
+    
+    private List<IstioTLSRoute> processTLSRouteAnnotation(BLangArrayLiteral tlsFields) throws
+            KubernetesPluginException {
+        List<IstioTLSRoute> istioTLSRoutes = new LinkedList<>();
+        for (ExpressionNode routeExpr : tlsFields.getExpressions()) {
+            IstioTLSRoute istioTLSRoute = new IstioTLSRoute();
+            BLangRecordLiteral tlsRouteFields = (BLangRecordLiteral) routeExpr;
+            for (BLangRecordLiteral.BLangRecordKeyValue tlsRouteField : tlsRouteFields.getKeyValuePairs()) {
+                switch (tlsRouteField.getKey().toString()) {
+                    case "match":
+                        BLangArrayLiteral matchFields = (BLangArrayLiteral)  tlsRouteField.getValue();
+                        istioTLSRoute.setIstioTLSMatchAttributes(processTLSMatchAttribute(matchFields));
+                        break;
+                    case "route":
+                        BLangArrayLiteral routeFields = (BLangArrayLiteral)  tlsRouteField.getValue();
+                        istioTLSRoute.setRoute(processRoutesAnnotation(routeFields));
+                        break;
+                    default:
+                        throw new KubernetesPluginException("unknown TLSRoute field found in " +
+                                                            "@kubernetes:IstioVirtualService{} annotation.");
+                }
+            }
+            istioTLSRoutes.add(istioTLSRoute);
+        }
+        return istioTLSRoutes;
+    }
+    
+    private List<IstioTLSMatchAttributes> processTLSMatchAttribute(BLangArrayLiteral matchFields) throws
+            KubernetesPluginException {
+        List<IstioTLSMatchAttributes> istioTLSMatchAttributes = new LinkedList<>();
+        for (ExpressionNode matchExpr : matchFields.getExpressions()) {
+            IstioTLSMatchAttributes attributes = new IstioTLSMatchAttributes();
+            BLangRecordLiteral attributeFields = (BLangRecordLiteral) matchExpr;
+            for (BLangRecordLiteral.BLangRecordKeyValue attributeField : attributeFields.getKeyValuePairs()) {
+                switch (attributeField.getKey().toString()) {
+                    case "sniHosts":
+                        BLangArrayLiteral sniHosts = (BLangArrayLiteral)  attributeField.getValue();
+                        attributes.setSniHosts(getArray(sniHosts));
+                        break;
+                    case "destinationSubnets":
+                        BLangArrayLiteral destinationSubnets = (BLangArrayLiteral)  attributeField.getValue();
+                        attributes.setDestinationSubnets(getArray(destinationSubnets));
+                        break;
+                    case "port":
+                        attributes.setPort(getIntValue(attributeField.getValue()));
+                        break;
+                    case "sourceLabels":
+                        attributes.setSourceLabels(getMap(((BLangRecordLiteral) attributeField.valueExpr)
+                                .keyValuePairs));
+                    case "gateways":
+                        BLangArrayLiteral gateways = (BLangArrayLiteral)  attributeField.getValue();
+                        attributes.setGateways(getArray(gateways));
+                        break;
+                    default:
+                        throw new KubernetesPluginException("unknown TLSMatchAttribute field found in " +
+                                                                "@kubernetes:IstioVirtualService{} annotation.");
+                        
+                }
+                
+            }
+            istioTLSMatchAttributes.add(attributes);
+        }
+        return istioTLSMatchAttributes;
     }
     
     /**

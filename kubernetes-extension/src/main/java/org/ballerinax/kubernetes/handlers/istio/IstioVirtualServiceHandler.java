@@ -20,6 +20,17 @@ package org.ballerinax.kubernetes.handlers.istio;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import me.snowdrop.istio.api.networking.v1alpha3.DestinationBuilder;
+import me.snowdrop.istio.api.networking.v1alpha3.DestinationWeight;
+import me.snowdrop.istio.api.networking.v1alpha3.DestinationWeightBuilder;
+import me.snowdrop.istio.api.networking.v1alpha3.PortSelector;
+import me.snowdrop.istio.api.networking.v1alpha3.PortSelectorBuilder;
+import me.snowdrop.istio.api.networking.v1alpha3.TLSMatchAttributes;
+import me.snowdrop.istio.api.networking.v1alpha3.TLSMatchAttributesBuilder;
+import me.snowdrop.istio.api.networking.v1alpha3.TLSRoute;
+import me.snowdrop.istio.api.networking.v1alpha3.TLSRouteBuilder;
+import me.snowdrop.istio.api.networking.v1alpha3.VirtualService;
+import me.snowdrop.istio.api.networking.v1alpha3.VirtualServiceBuilder;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.AbstractArtifactHandler;
 import org.ballerinax.kubernetes.models.KubernetesContext;
@@ -29,15 +40,19 @@ import org.ballerinax.kubernetes.models.istio.IstioDestinationWeight;
 import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
 import org.ballerinax.kubernetes.models.istio.IstioHttpRedirect;
 import org.ballerinax.kubernetes.models.istio.IstioHttpRoute;
+import org.ballerinax.kubernetes.models.istio.IstioTLSMatchAttributes;
+import org.ballerinax.kubernetes.models.istio.IstioTLSRoute;
 import org.ballerinax.kubernetes.models.istio.IstioVirtualServiceModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.yaml.snakeyaml.DumperOptions;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.ISTIO_VIRTUAL_SERVICE_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
@@ -60,6 +75,25 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
         int count = 0;
         for (Map.Entry<String, IstioVirtualServiceModel> vsModel : istioVSModels.entrySet()) {
             count++;
+    
+            IstioGatewayModel gwModel =
+                    KubernetesContext.getInstance().getDataHolder().getIstioGatewayModel(vsModel.getKey());
+            if ((null == vsModel.getValue().getGateways() || vsModel.getValue().getGateways().size() == 0) &&
+                                                                                                    null != gwModel) {
+                if (null == vsModel.getValue().getGateways()) {
+                    vsModel.getValue().setGateways(new LinkedList<>());
+                }
+        
+                if (vsModel.getValue().getGateways().size() == 0) {
+                    vsModel.getValue().getGateways().add(gwModel.getName());
+                } else if (vsModel.getValue().getHosts().size() == 1 && vsModel.getValue().getHosts().contains("*")) {
+                    throw new KubernetesPluginException("unable to resolve a gateway for '" + vsModel + "' " +
+                                                        "virtual service. Add @kubernetes:IstioGateway{} annotation" +
+                                                        " to your listener or service, else explicitly state to " +
+                                                        "use the 'mesh' gateway.");
+                }
+            }
+            
             generate(vsModel.getKey(), vsModel.getValue());
             OUT.print("\t@kubernetes:IstioVirtualService \t - complete " + count + "/" + size + "\r");
         }
@@ -74,6 +108,24 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
      */
     private void generate(String serviceName, IstioVirtualServiceModel vsModel) throws KubernetesPluginException {
         try {
+            VirtualService virtualService = new VirtualServiceBuilder()
+                    .withNewMetadata()
+                    .withName(vsModel.getName())
+                    .withNamespace(dataHolder.getNamespace())
+                    .withLabels(vsModel.getLabels())
+                    .withAnnotations(vsModel.getAnnotations())
+                    .endMetadata()
+                    .withNewSpec()
+                    .withHosts(vsModel.getHosts())
+                    .withGateways(vsModel.getGateways())
+                    .withTls(populateTLS(vsModel.getTls()))
+                    .withHttp(populateRouteList())
+                    
+                    
+                    
+                    
+                    
+                    
             Map<String, Object> vsYamlModel = new LinkedHashMap<>();
             vsYamlModel.put("apiVersion", "networking.istio.io/v1alpha3");
             vsYamlModel.put("kind", "VirtualService");
@@ -98,22 +150,6 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
                 spec.put("hosts", vsModel.getHosts());
             }
     
-            IstioGatewayModel gwModel =
-                    KubernetesContext.getInstance().getDataHolder().getIstioGatewayModel(serviceName);
-            if ((null == vsModel.getGateways() || vsModel.getGateways().size() == 0) && null != gwModel) {
-                if (null == vsModel.getGateways()) {
-                    vsModel.setGateways(new LinkedList<>());
-                }
-                
-                if (vsModel.getGateways().size() == 0) {
-                    vsModel.getGateways().add(gwModel.getName());
-                } else if (vsModel.getHosts().size() == 1 && vsModel.getHosts().contains("*")) {
-                    throw new KubernetesPluginException("unable to resolve a gateway for '" + vsModel + "' " +
-                                                        "virtual service. Add @kubernetes:IstioGateway annotation" +
-                                                        " to your listener or service, else explicitly state to " +
-                                                        "use the 'mesh' gateway.");
-                }
-            }
     
             spec.put("gateways", vsModel.getGateways());
     
@@ -127,7 +163,7 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
     
             // parse and add default values for http list if tls and tcp are not set
             if (null == vsModel.getTls() && null == vsModel.getTcp()) {
-                spec.put("http", parseHttpRouteList(serviceName, vsModel.getHttp()));
+                spec.put("http", populateHttpRouteList(serviceName, vsModel.getHttp()));
             }
     
             vsYamlModel.put("spec", spec);
@@ -145,6 +181,53 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
         }
     }
     
+    private List<TLSRoute> populateTLS(List<IstioTLSRoute> tlsRouteModels) {
+        if (null == tlsRouteModels) {
+            return null;
+        }
+        
+        List<TLSRoute> tlsRoutes = new LinkedList<>();
+        for (IstioTLSRoute tlsRouteModel : tlsRouteModels) {
+            List<TLSMatchAttributes> matches = new LinkedList<>();
+            for (IstioTLSMatchAttributes istioTLSMatchAttribute : tlsRouteModel.getIstioTLSMatchAttributes()) {
+                TLSMatchAttributes tlsMatchAttributes = new TLSMatchAttributesBuilder()
+                        .withSniHosts(new ArrayList<>(istioTLSMatchAttribute.getSniHosts()))
+                        .withDestinationSubnets(new ArrayList<>(istioTLSMatchAttribute.getDestinationSubnets()))
+                        .withPort(istioTLSMatchAttribute.getPort())
+                        .withSourceLabels(istioTLSMatchAttribute.getSourceLabels())
+                        .withGateways(new ArrayList<>(istioTLSMatchAttribute.getGateways()))
+                        .build();
+                
+                matches.add(tlsMatchAttributes);
+            }
+    
+            List<DestinationWeight> destinationWeights = new LinkedList<>();
+            for (IstioDestinationWeight istioDestinationWeight : tlsRouteModel.getRoute()) {
+                DestinationWeight destinationWeight = new DestinationWeightBuilder()
+                    .withDestination(new DestinationBuilder()
+                        .withHost(istioDestinationWeight.getDestination().getHost())
+                        .withSubset(istioDestinationWeight.getDestination().getSubset())
+                        .withPort(new PortSelectorBuilder()
+                            .withNewNumberPort(istioDestinationWeight.getDestination().getPort()
+                            ).build()
+                        ).build()
+                    ).withWeight(istioDestinationWeight.getWeight())
+                    .build();
+    
+                destinationWeights.add(destinationWeight);
+            }
+
+            TLSRoute tlsRoute = new TLSRouteBuilder()
+                    .withMatch(matches)
+                    .withRoute(destinationWeights)
+                    .build();
+    
+            tlsRoutes.add(tlsRoute);
+        }
+        
+        return tlsRoutes;
+    }
+    
     /**
      * Parsing a list of http routes to yaml maps.
      *
@@ -152,7 +235,7 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
      * @param http        The list of http routes.
      * @return A list of yaml maps.
      */
-    private Object parseHttpRouteList(String serviceName, List<IstioHttpRoute> http) {
+    private Object populateHttpRouteList(String serviceName, List<IstioHttpRoute> http) {
         if (null == http) {
             http = new LinkedList<>();
         }
@@ -171,7 +254,7 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
                 httpMap.put("rewrite", httpRoute.getRewrite());
             }
             if (null != httpRoute.getRedirect()) {
-                httpMap.put("redirect", parseRedirect(httpRoute.getRedirect()));
+                httpMap.put("redirect", populateRedirect(httpRoute.getRedirect()));
             }
             if (null != httpRoute.getTimeout()) {
                 httpMap.put("timeout", httpRoute.getTimeout());
@@ -195,7 +278,7 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
             // route and redirect cannot exists together.
             if (null == httpRoute.getRedirect()) {
                 // route is mandatory, no need to null check
-                httpMap.put("route", parseRouteList(serviceName, httpRoute.getRoute()));
+                httpMap.put("route", populateRouteList(serviceName, httpRoute.getRoute()));
             }
     
             httpList.add(httpMap);
@@ -210,7 +293,7 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
      * @param redirect The redirect object.
      * @return A yaml map.
      */
-    private Map<String, String> parseRedirect(IstioHttpRedirect redirect) {
+    private Map<String, String> populateRedirect(IstioHttpRedirect redirect) {
         Map<String, String> redirectMap = new LinkedHashMap<>();
         if (null != redirect.getUri()) {
             redirectMap.put("uri", redirect.getUri());
@@ -228,7 +311,7 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
      * @param route       The list of destination weights
      * @return A list of yaml maps.
      */
-    private Object parseRouteList(String serviceName, List<IstioDestinationWeight> route) {
+    private Object populateRouteList(String serviceName, List<IstioDestinationWeight> route) {
         if (route == null) {
             route = new LinkedList<>();
         }
@@ -244,7 +327,7 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
                 destinationWeightMap.put("weight", destinationWeight.getWeight());
             }
     
-            destinationWeightMap.put("destination", parseDestination(serviceName, destinationWeight.getDestination()));
+            destinationWeightMap.put("destination", populateDestination(serviceName, destinationWeight.getDestination()));
             destinationWeightList.add(destinationWeightMap);
         }
         return destinationWeightList;
@@ -257,7 +340,7 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
      * @param destination The destination object.
      * @return A yaml map.
      */
-    private Map<String, Object> parseDestination(String serviceName, IstioDestination destination) {
+    private Map<String, Object> populateDestination(String serviceName, IstioDestination destination) {
         if (null == destination) {
             destination = new IstioDestination();
         }

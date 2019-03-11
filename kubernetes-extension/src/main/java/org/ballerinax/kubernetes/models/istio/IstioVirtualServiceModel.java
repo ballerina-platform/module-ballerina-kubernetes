@@ -31,7 +31,7 @@ public class IstioVirtualServiceModel extends KubernetesModel {
     private List<String> hosts;
     private List<String> gateways;
     private List<IstioHttpRoute> http;
-    private List<Object> tls;
+    private List<IstioTLSRoute> tls;
     private List<Object> tcp;
     
     public List<String> getHosts() {
@@ -58,11 +58,11 @@ public class IstioVirtualServiceModel extends KubernetesModel {
         this.http = http;
     }
     
-    public List<Object> getTls() {
+    public List<IstioTLSRoute> getTls() {
         return tls;
     }
     
-    public void setTls(List<Object> tls) {
+    public void setTls(List<IstioTLSRoute> tls) {
         this.tls = tls;
     }
     
@@ -73,4 +73,6 @@ public class IstioVirtualServiceModel extends KubernetesModel {
     public void setTcp(List<Object> tcp) {
         this.tcp = tcp;
     }
+    
+    
 }

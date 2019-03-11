@@ -70,7 +70,7 @@ public class IstioGatewayHandler extends AbstractArtifactHandler {
             if (null == gatewayModel.getSelector() || gatewayModel.getSelector().size() == 0) {
                 Map<String, String> selectors = new LinkedHashMap<>();
                 selectors.put(KubernetesConstants.ISTIO_GATEWAY_SELECTOR, "ingressgateway");
-                gatewayModel.setSelector(selectors);;
+                gatewayModel.setSelector(selectors);
             }
             
             // Validate number of servers.
