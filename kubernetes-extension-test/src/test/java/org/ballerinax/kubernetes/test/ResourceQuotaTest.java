@@ -199,7 +199,7 @@ public class ResourceQuotaTest {
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "on_main_function.bal"), 0);
         
-        // Check if docker image exists and correct
+        // Check if docker image exists and correct.
         validateDockerfile();
         Assert.assertNotNull(getDockerImage(DOCKER_IMAGE));
     
