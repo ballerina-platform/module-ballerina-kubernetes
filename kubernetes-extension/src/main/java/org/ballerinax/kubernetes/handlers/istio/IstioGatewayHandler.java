@@ -137,7 +137,7 @@ public class IstioGatewayHandler extends AbstractArtifactHandler {
             String gatewayContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(gateway);
             KubernetesUtils.writeToFile(gatewayContent, ISTIO_GATEWAY_FILE_POSTFIX + YAML);
         } catch (IOException e) {
-            String errorMessage = "Error while generating yaml file for istio gateway: " + gatewayModel.getName();
+            String errorMessage = "error while generating yaml file for istio gateway: " + gatewayModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
     }

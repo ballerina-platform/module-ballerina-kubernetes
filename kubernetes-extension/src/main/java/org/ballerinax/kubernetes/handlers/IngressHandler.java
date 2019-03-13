@@ -117,7 +117,7 @@ public class IngressHandler extends AbstractArtifactHandler {
             ingressYAML = SerializationUtils.dumpWithoutRuntimeStateAsYaml(ingress);
             KubernetesUtils.writeToFile(ingressYAML, INGRESS_FILE_POSTFIX + YAML);
         } catch (IOException e) {
-            String errorMessage = "Error while generating yaml file for ingress: " + ingressModel.getName();
+            String errorMessage = "error while generating yaml file for ingress: " + ingressModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
     }

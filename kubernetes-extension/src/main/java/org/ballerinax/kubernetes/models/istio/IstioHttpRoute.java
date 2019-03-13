@@ -27,24 +27,9 @@ import java.util.Map;
  * @since 0.985.0
  */
 public class IstioHttpRoute {
-    private List<Object> match;
     private List<IstioDestinationWeight> route;
-    private IstioHttpRedirect redirect;
-    private Object rewrite;
     private String timeout;
-    private Object retries;
-    private Object fault;
-    private Object mirror;
-    private Object corsPolicy;
     private Map<String, String> appendHeaders;
-    
-    public List<Object> getMatch() {
-        return match;
-    }
-    
-    public void setMatch(List<Object> match) {
-        this.match = match;
-    }
     
     public List<IstioDestinationWeight> getRoute() {
         return route;
@@ -53,61 +38,13 @@ public class IstioHttpRoute {
     public void setRoute(List<IstioDestinationWeight> route) {
         this.route = route;
     }
-    
-    public IstioHttpRedirect getRedirect() {
-        return redirect;
-    }
-    
-    public void setRedirect(IstioHttpRedirect redirect) {
-        this.redirect = redirect;
-    }
-    
-    public Object getRewrite() {
-        return rewrite;
-    }
-    
-    public void setRewrite(Object rewrite) {
-        this.rewrite = rewrite;
-    }
-    
+
     public String getTimeout() {
         return timeout;
     }
     
     public void setTimeout(String timeout) {
         this.timeout = timeout;
-    }
-    
-    public Object getRetries() {
-        return retries;
-    }
-    
-    public void setRetries(Object retries) {
-        this.retries = retries;
-    }
-    
-    public Object getFault() {
-        return fault;
-    }
-    
-    public void setFault(Object fault) {
-        this.fault = fault;
-    }
-    
-    public Object getMirror() {
-        return mirror;
-    }
-    
-    public void setMirror(Object mirror) {
-        this.mirror = mirror;
-    }
-    
-    public Object getCorsPolicy() {
-        return corsPolicy;
-    }
-    
-    public void setCorsPolicy(Object corsPolicy) {
-        this.corsPolicy = corsPolicy;
     }
     
     public Map<String, String> getAppendHeaders() {

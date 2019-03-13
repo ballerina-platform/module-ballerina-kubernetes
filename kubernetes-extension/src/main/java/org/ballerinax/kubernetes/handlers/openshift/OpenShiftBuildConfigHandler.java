@@ -110,7 +110,7 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
             
             // Modify instructions
         } catch (IOException e) {
-            String errorMessage = "Error while generating OpenShift Build Config yaml file: " +
+            String errorMessage = "error while generating OpenShift Build Config yaml file: " +
                                   buildConfigModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }

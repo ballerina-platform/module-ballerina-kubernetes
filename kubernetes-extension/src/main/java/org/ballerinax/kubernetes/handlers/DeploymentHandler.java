@@ -268,7 +268,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
             String deploymentContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(deployment);
             KubernetesUtils.writeToFile(deploymentContent, DEPLOYMENT_FILE_POSTFIX + YAML);
         } catch (IOException e) {
-            String errorMessage = "Error while generating yaml file for deployment: " + deploymentModel.getName();
+            String errorMessage = "error while generating yaml file for deployment: " + deploymentModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
     }
