@@ -67,7 +67,7 @@ public class ServiceHandler extends AbstractArtifactHandler {
             String serviceYAML = SerializationUtils.dumpWithoutRuntimeStateAsYaml(service);
             KubernetesUtils.writeToFile(serviceYAML, SVC_FILE_POSTFIX + YAML);
         } catch (IOException e) {
-            String errorMessage = "Error while generating yaml file for service: " + serviceModel.getName();
+            String errorMessage = "error while generating yaml file for service: " + serviceModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
 

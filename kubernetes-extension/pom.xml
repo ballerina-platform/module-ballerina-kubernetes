@@ -71,6 +71,10 @@
             <artifactId>docker-client</artifactId>
         </dependency>
         <dependency>
+            <groupId>me.snowdrop</groupId>
+            <artifactId>istio-model</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <scope>test</scope>
@@ -262,6 +266,9 @@
                                     <inculde>javax.annotation:javax.annotation-api</inculde>
                                     <include>javax.validation:validation-api</include>
                                     <include>javax.ws.rs:javax.ws.rs-api</include>
+                                    <include>joda-time:joda-time</include>
+                                    <include>me.snowdrop:istio-common</include>
+                                    <include>me.snowdrop:istio-model</include>
                                     <include>org.apache.commons:commons-compress</include>
                                     <include>org.apache.httpcomponents:httpclient</include>
                                     <include>org.apache.httpcomponents:httpcore</include>

@@ -18,6 +18,8 @@
 
 package org.ballerinax.kubernetes.test;
 
+import me.snowdrop.istio.api.networking.v1alpha3.NumberPort;
+import me.snowdrop.istio.api.networking.v1alpha3.VirtualService;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
@@ -56,7 +58,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test(groups = {"istio"})
+    @Test(groups = {"istio"}, enabled = false, description = "disabled as its not supported yet.")
     public void httpRouteTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "http_route.bal"), 0);
@@ -122,7 +124,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test(groups = {"istio"})
+    @Test(groups = {"istio"}, enabled = false, description = "disabled as its not supported yet.")
     public void httpMatchRequestTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "http_match_request.bal"), 0);
@@ -184,33 +186,32 @@ public class IstioVirtualServiceTest {
         // Validate virtual service yaml
         File vsFile = TARGET_PATH.resolve("destination_weight_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
-        Yaml yamlProcessor = new Yaml();
-        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
-        Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
+        VirtualService virtualService = KubernetesTestUtils.loadYaml(vsFile);
         
-        Map<String, Object> metadata = (Map<String, Object>) virtualSvc.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "reviews-route", "Invalid virtual service name");
+        Assert.assertNotNull(virtualService.getMetadata());
+        Assert.assertEquals(virtualService.getMetadata().getName(), "reviews-route", "Invalid virtual service name");
+    
+        Assert.assertNotNull(virtualService.getSpec());
+        Assert.assertEquals(virtualService.getSpec().getHosts().size(), 1);
+        Assert.assertEquals(virtualService.getSpec().getHosts().get(0), "reviews.prod.svc.cluster.local",
+                "Invalid host value.");
         
-        Map<String, Object> spec = (Map<String, Object>) virtualSvc.get("spec");
-        List<String> hosts = (List<String>) spec.get("hosts");
-        Assert.assertEquals(hosts.get(0), "reviews.prod.svc.cluster.local", "Invalid host value.");
+        Assert.assertEquals(virtualService.getSpec().getHttp().size(), 1, "Invalid number of http items");
+        Assert.assertNotNull(virtualService.getSpec().getHttp().get(0).getRoute());
+        Assert.assertEquals(virtualService.getSpec().getHttp().get(0).getRoute().size(), 2);
+        Assert.assertEquals(virtualService.getSpec().getHttp().get(0).getRoute().get(0).getDestination().getHost(),
+                "reviews.prod.svc.cluster.local", "Invalid route destination host");
+        Assert.assertEquals(virtualService.getSpec().getHttp().get(0).getRoute().get(0).getDestination().getSubset(),
+                "v2", "Invalid route destination subset");
+        Assert.assertEquals(virtualService.getSpec().getHttp().get(0).getRoute().get(0).getWeight().intValue(), 25,
+                "Invalid route weight");
     
-        List<Map<String, Object>> http = (List<Map<String, Object>>) spec.get("http");
-        Assert.assertEquals(http.size(), 1, "Invalid number of http items");
-    
-        List<Map<String, Object>> route = (List<Map<String, Object>>) http.get(0).get("route");
-        Map<String, Object> destination1 = (Map<String, Object>) route.get(0).get("destination");
-        Assert.assertEquals(destination1.get("host"), "reviews.prod.svc.cluster.local",
-                "Invalid route destination host");
-        Assert.assertEquals(destination1.get("subset"), "v2", "Invalid route destination subset");
-        Assert.assertEquals(route.get(0).get("weight"), 25, "Invalid route weight");
-    
-        Map<String, Object> destination2 = (Map<String, Object>) route.get(1).get("destination");
-        Assert.assertEquals(destination2.get("host"), "reviews.prod.svc.cluster.local",
-                "Invalid route destination host");
-        Assert.assertEquals(destination2.get("subset"), "v1", "Invalid route destination subset");
-        Assert.assertEquals(route.get(1).get("weight"), 75, "Invalid route weight");
+        Assert.assertEquals(virtualService.getSpec().getHttp().get(0).getRoute().get(1).getDestination().getHost(),
+                "reviews.prod.svc.cluster.local", "Invalid route destination host");
+        Assert.assertEquals(virtualService.getSpec().getHttp().get(0).getRoute().get(1).getDestination().getSubset(),
+                "v1", "Invalid route destination subset");
+        Assert.assertEquals(virtualService.getSpec().getHttp().get(0).getRoute().get(1).getWeight().intValue(), 75,
+                "Invalid route weight");
         
         KubernetesUtils.deleteDirectory(TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
@@ -235,27 +236,24 @@ public class IstioVirtualServiceTest {
         // Validate virtual service yaml
         File vsFile = TARGET_PATH.resolve("destination_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
-        Yaml yamlProcessor = new Yaml();
-        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
-        Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
+        VirtualService virtualService = KubernetesTestUtils.loadYaml(vsFile);
         
-        Map<String, Object> metadata = (Map<String, Object>) virtualSvc.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "reviews-route", "Invalid virtual service name");
+        Assert.assertNotNull(virtualService.getMetadata());
+        Assert.assertEquals(virtualService.getMetadata().getName(), "reviews-route", "Invalid virtual service name");
         
-        Map<String, Object> spec = (Map<String, Object>) virtualSvc.get("spec");
-        List<String> hosts = (List<String>) spec.get("hosts");
-        Assert.assertEquals(hosts.get(0), "reviews.prod.svc.cluster.local", "Invalid host value.");
-        
-        List<Map<String, Object>> http = (List<Map<String, Object>>) spec.get("http");
-        Assert.assertEquals(http.size(), 1, "Invalid number of http items");
+        Assert.assertNotNull(virtualService.getSpec());
+        Assert.assertEquals(virtualService.getSpec().getHosts().size(), 1);
+        Assert.assertEquals(virtualService.getSpec().getHosts().get(0), "reviews.prod.svc.cluster.local",
+                "Invalid host value.");
     
-        Assert.assertEquals(http.get(0).get("timeout"), "5s", "Invalid timeout value");
-        
-        List<Map<String, Object>> route = (List<Map<String, Object>>) http.get(0).get("route");
-        Map<String, Object> destination1 = (Map<String, Object>) route.get(0).get("destination");
-        Assert.assertEquals(destination1.get("host"), "reviews.prod.svc.cluster.local",
-                "Invalid route destination host");
+        Assert.assertEquals(virtualService.getSpec().getHttp().size(), 1, "Invalid number of http items");
+        Assert.assertEquals(virtualService.getSpec().getHttp().get(0).getTimeout().getSeconds().longValue(), 5L,
+                "Invalid timeout value");
+    
+        Assert.assertNotNull(virtualService.getSpec().getHttp().get(0).getRoute());
+        Assert.assertEquals(virtualService.getSpec().getHttp().get(0).getRoute().size(), 1);
+        Assert.assertEquals(virtualService.getSpec().getHttp().get(0).getRoute().get(0).getDestination().getHost(),
+                "reviews.prod.svc.cluster.local", "Invalid route destination host");
         
         KubernetesUtils.deleteDirectory(TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
@@ -268,7 +266,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test(groups = {"istio"})
+    @Test(groups = {"istio"}, enabled = false, description = "disabled as its not supported yet.")
     public void httpRedirectTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "http_redirect.bal"), 0);
@@ -315,7 +313,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test(groups = {"istio"})
+    @Test(groups = {"istio"}, enabled = false, description = "disabled as its not supported yet.")
     public void httpRetryTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "http_retry.bal"), 0);
@@ -363,7 +361,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test(groups = {"istio"})
+    @Test(groups = {"istio"}, enabled = false, description = "disabled as its not supported yet.")
     public void httpFaultInjectionTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "http_fault_injection.bal"), 0);
@@ -411,7 +409,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test(groups = {"istio"})
+    @Test(groups = {"istio"}, enabled = false, description = "disabled as its not supported yet.")
     public void corsPolicyTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "cors_policy.bal"), 0);
@@ -465,7 +463,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test(groups = {"istio"})
+    @Test(groups = {"istio"}, enabled = false, description = "disabled as its not supported yet.")
     public void tlsRouteTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "tls_route.bal"), 0);
@@ -525,7 +523,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test(groups = {"istio"})
+    @Test(groups = {"istio"}, enabled = false, description = "disabled as its not supported yet.")
     public void tcpRouteTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "tcp_route.bal"), 0);
@@ -586,29 +584,26 @@ public class IstioVirtualServiceTest {
         // Validate virtual service yaml
         File vsFile = TARGET_PATH.resolve("empty_annotation_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
-        Yaml yamlProcessor = new Yaml();
-        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
-        Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
-        
-        Map<String, Object> metadata = (Map<String, Object>) virtualSvc.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "helloep-istio-vs", "Invalid virtual service name");
-        
-        Map<String, Object> spec = (Map<String, Object>) virtualSvc.get("spec");
-        List<String> hosts = (List<String>) spec.get("hosts");
-        Assert.assertEquals(hosts.get(0), "*", "Invalid host value.");
-        
-        List<Map<String, Object>> https = (List<Map<String, Object>>) spec.get("http");
-        Assert.assertEquals(https.size(), 1, "Invalid number of http items");
-        
-        Map<String, Object> http = https.get(0);
+        VirtualService virtualService = KubernetesTestUtils.loadYaml(vsFile);
     
-        List<Map<String, Object>> route1 = (List<Map<String, Object>>) http.get("route");
-        Map<String, Object> destination = (Map<String, Object>) route1.get(0).get("destination");
-        Assert.assertEquals(destination.get("host"), "hello",
-                "Invalid route destination host");
-        Map<String, Object> port = (Map<String, Object>) destination.get("port");
-        Assert.assertEquals(port.get("number"), 9090, "Invalid port found");
+        Assert.assertNotNull(virtualService.getMetadata());
+        Assert.assertEquals(virtualService.getMetadata().getName(), "helloep-istio-vs", "Invalid virtual service name");
+    
+        Assert.assertNotNull(virtualService.getSpec());
+        Assert.assertEquals(virtualService.getSpec().getHosts().size(), 1);
+        Assert.assertEquals(virtualService.getSpec().getHosts().get(0), "*", "Invalid host value.");
+    
+        Assert.assertEquals(virtualService.getSpec().getHttp().size(), 1, "Invalid number of http items");
+        Assert.assertNotNull(virtualService.getSpec().getHttp().get(0).getRoute());
+        Assert.assertEquals(virtualService.getSpec().getHttp().get(0).getRoute().size(), 1);
+        Assert.assertEquals(virtualService.getSpec().getHttp().get(0).getRoute().get(0).getDestination().getHost(),
+                "hello", "Invalid route destination host");
+        Assert.assertTrue(virtualService.getSpec().getHttp().get(0).getRoute().get(0).getDestination().getPort()
+                .getPort() instanceof NumberPort);
+        NumberPort numberPort =
+                (NumberPort) virtualService.getSpec().getHttp().get(0).getRoute().get(0).getDestination().getPort()
+                        .getPort();
+        Assert.assertEquals(numberPort.getNumber().intValue(), 9090, "Invalid port found");
     
         KubernetesUtils.deleteDirectory(TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
@@ -631,31 +626,28 @@ public class IstioVirtualServiceTest {
         validateDockerImage();
         
         // Validate virtual service yaml
-        File gatewayFile = TARGET_PATH.resolve("svc_port_istio_virtual_service.yaml").toFile();
-        Assert.assertTrue(gatewayFile.exists());
-        Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
-        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(gateway.get("kind"), "VirtualService", "Invalid kind.");
-        
-        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "helloep-istio-vs", "Invalid virtual service name");
-        
-        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
-        List<String> hosts = (List<String>) spec.get("hosts");
-        Assert.assertEquals(hosts.get(0), "*", "Invalid host value.");
-        
-        List<Map<String, Object>> https = (List<Map<String, Object>>) spec.get("http");
-        Assert.assertEquals(https.size(), 1, "Invalid number of http items");
-        
-        Map<String, Object> http = https.get(0);
-        
-        List<Map<String, Object>> route1 = (List<Map<String, Object>>) http.get("route");
-        Map<String, Object> destination = (Map<String, Object>) route1.get(0).get("destination");
-        Assert.assertEquals(destination.get("host"), "hello",
-                "Invalid route destination host");
-        Map<String, Object> port = (Map<String, Object>) destination.get("port");
-        Assert.assertEquals(port.get("number"), 8080, "Invalid port found");
+        File vsFile = TARGET_PATH.resolve("svc_port_istio_virtual_service.yaml").toFile();
+        Assert.assertTrue(vsFile.exists());
+        VirtualService virtualService = KubernetesTestUtils.loadYaml(vsFile);
+    
+        Assert.assertNotNull(virtualService.getMetadata());
+        Assert.assertEquals(virtualService.getMetadata().getName(), "helloep-istio-vs", "Invalid virtual service name");
+    
+        Assert.assertNotNull(virtualService.getSpec());
+        Assert.assertEquals(virtualService.getSpec().getHosts().size(), 1);
+        Assert.assertEquals(virtualService.getSpec().getHosts().get(0), "*", "Invalid host value.");
+    
+        Assert.assertEquals(virtualService.getSpec().getHttp().size(), 1, "Invalid number of http items");
+        Assert.assertNotNull(virtualService.getSpec().getHttp().get(0).getRoute());
+        Assert.assertEquals(virtualService.getSpec().getHttp().get(0).getRoute().size(), 1);
+        Assert.assertEquals(virtualService.getSpec().getHttp().get(0).getRoute().get(0).getDestination().getHost(),
+                "hello", "Invalid route destination host");
+        Assert.assertTrue(virtualService.getSpec().getHttp().get(0).getRoute().get(0).getDestination().getPort()
+                .getPort() instanceof NumberPort);
+        NumberPort numberPort =
+                (NumberPort) virtualService.getSpec().getHttp().get(0).getRoute().get(0).getDestination().getPort()
+                        .getPort();
+        Assert.assertEquals(numberPort.getNumber().intValue(), 8080, "Invalid port found");
         
         KubernetesUtils.deleteDirectory(TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);

@@ -176,6 +176,12 @@ public class KubernetesTestUtils {
     public static int compileBallerinaFile(Path sourceDirectory, String fileName, Map<String, String> envVar)
             throws InterruptedException,
             IOException {
+        Path ballerinaInternalLog = Paths.get(sourceDirectory.toAbsolutePath().toString(), "ballerina-internal.log");
+        if (ballerinaInternalLog.toFile().exists()) {
+            log.warn("Deleting already existing ballerina-internal.log file.");
+            FileUtils.deleteQuietly(ballerinaInternalLog.toFile());
+        }
+        
         ProcessBuilder pb = new ProcessBuilder(BALLERINA_COMMAND, BUILD, fileName);
         log.info(COMPILING + sourceDirectory + File.separator + fileName);
         log.debug(EXECUTING_COMMAND + pb.command());
@@ -191,8 +197,7 @@ public class KubernetesTestUtils {
         logOutput(process.getErrorStream());
     
         // log ballerina-internal.log content
-        Path ballerinaInternalLog = sourceDirectory.resolve("ballerina-internal.log");
-        if (exitCode == 1 && Files.exists(ballerinaInternalLog)) {
+        if (Files.exists(ballerinaInternalLog)) {
             log.error("ballerina-internal.log file found. content: ");
             log.error(FileUtils.readFileToString(ballerinaInternalLog.toFile()));
         }
@@ -223,6 +228,12 @@ public class KubernetesTestUtils {
      */
     public static int compileBallerinaProject(Path sourceDirectory) throws InterruptedException,
             IOException {
+        Path ballerinaInternalLog = Paths.get(sourceDirectory.toAbsolutePath().toString(), "ballerina-internal.log");
+        if (ballerinaInternalLog.toFile().exists()) {
+            log.warn("Deleting already existing ballerina-internal.log file.");
+            FileUtils.deleteQuietly(ballerinaInternalLog.toFile());
+        }
+        
         ProcessBuilder pb = new ProcessBuilder(BALLERINA_COMMAND, "init");
         log.info(COMPILING + sourceDirectory);
         log.debug(EXECUTING_COMMAND + pb.command());
@@ -244,6 +255,13 @@ public class KubernetesTestUtils {
         log.info(EXIT_CODE + exitCode);
         logOutput(process.getInputStream());
         logOutput(process.getErrorStream());
+    
+        // log ballerina-internal.log content
+        if (Files.exists(ballerinaInternalLog)) {
+            log.info("ballerina-internal.log file found. content: ");
+            log.info(FileUtils.readFileToString(ballerinaInternalLog.toFile()));
+        }
+        
         return exitCode;
     }
     

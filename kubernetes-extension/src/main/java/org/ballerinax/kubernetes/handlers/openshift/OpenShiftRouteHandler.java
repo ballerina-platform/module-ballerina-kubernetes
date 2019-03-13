@@ -107,7 +107,7 @@ public class OpenShiftRouteHandler extends AbstractArtifactHandler {
             KubernetesUtils.writeToFile(dataHolder.getArtifactOutputPath().resolve(OPENSHIFT), resourceQuotaContent,
                     OPENSHIFT_ROUTE_FILE_POSTFIX + YAML);
         } catch (IOException e) {
-            String errorMessage = "Error while generating OpenShift Route yaml file: " +
+            String errorMessage = "error while generating OpenShift Route yaml file: " +
                                   routeModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }

@@ -60,7 +60,7 @@ public class JobHandler extends AbstractArtifactHandler {
             }
             KubernetesUtils.writeToFile(jobContent, JOB_FILE_POSTFIX + YAML);
         } catch (IOException e) {
-            String errorMessage = "Error while generating yaml file for job " + jobModel.getName();
+            String errorMessage = "error while generating yaml file for job " + jobModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
 

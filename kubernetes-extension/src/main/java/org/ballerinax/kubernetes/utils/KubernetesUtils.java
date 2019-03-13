@@ -348,6 +348,10 @@ public class KubernetesUtils {
         return Boolean.parseBoolean(getStringValue(expr));
     }
     
+    public static long getLongValue(BLangExpression expr) throws KubernetesPluginException {
+        return Long.parseLong(getStringValue(expr));
+    }
+    
     public static int getIntValue(BLangExpression expr) throws KubernetesPluginException {
         return Integer.parseInt(getStringValue(expr));
     }

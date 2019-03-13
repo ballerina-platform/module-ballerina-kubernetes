@@ -50,7 +50,7 @@ public class SecretHandler extends AbstractArtifactHandler {
             KubernetesUtils.writeToFile(secretContent, SECRET_FILE_POSTFIX +
                     YAML);
         } catch (IOException e) {
-            String errorMessage = "Error while generating yaml file for secret: " + secretModel.getName();
+            String errorMessage = "error while generating yaml file for secret: " + secretModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
     }

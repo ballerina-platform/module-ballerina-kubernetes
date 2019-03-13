@@ -18,8 +18,18 @@
 
 package org.ballerinax.kubernetes.handlers.istio;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.fabric8.kubernetes.client.internal.SerializationUtils;
+import me.snowdrop.istio.api.Duration;
+import me.snowdrop.istio.api.DurationBuilder;
+import me.snowdrop.istio.api.networking.v1alpha3.Destination;
+import me.snowdrop.istio.api.networking.v1alpha3.DestinationBuilder;
+import me.snowdrop.istio.api.networking.v1alpha3.DestinationWeight;
+import me.snowdrop.istio.api.networking.v1alpha3.DestinationWeightBuilder;
+import me.snowdrop.istio.api.networking.v1alpha3.HTTPRoute;
+import me.snowdrop.istio.api.networking.v1alpha3.HTTPRouteBuilder;
+import me.snowdrop.istio.api.networking.v1alpha3.PortSelectorBuilder;
+import me.snowdrop.istio.api.networking.v1alpha3.VirtualService;
+import me.snowdrop.istio.api.networking.v1alpha3.VirtualServiceBuilder;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.AbstractArtifactHandler;
 import org.ballerinax.kubernetes.models.KubernetesContext;
@@ -27,14 +37,11 @@ import org.ballerinax.kubernetes.models.ServiceModel;
 import org.ballerinax.kubernetes.models.istio.IstioDestination;
 import org.ballerinax.kubernetes.models.istio.IstioDestinationWeight;
 import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
-import org.ballerinax.kubernetes.models.istio.IstioHttpRedirect;
 import org.ballerinax.kubernetes.models.istio.IstioHttpRoute;
 import org.ballerinax.kubernetes.models.istio.IstioVirtualServiceModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
-import org.yaml.snakeyaml.DumperOptions;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +67,25 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
         int count = 0;
         for (Map.Entry<String, IstioVirtualServiceModel> vsModel : istioVSModels.entrySet()) {
             count++;
+    
+            IstioGatewayModel gwModel =
+                    KubernetesContext.getInstance().getDataHolder().getIstioGatewayModel(vsModel.getKey());
+            if ((null == vsModel.getValue().getGateways() || vsModel.getValue().getGateways().size() == 0) &&
+                                                                                                    null != gwModel) {
+                if (null == vsModel.getValue().getGateways()) {
+                    vsModel.getValue().setGateways(new LinkedList<>());
+                }
+        
+                if (vsModel.getValue().getGateways().size() == 0) {
+                    vsModel.getValue().getGateways().add(gwModel.getName());
+                } else if (vsModel.getValue().getHosts().size() == 1 && vsModel.getValue().getHosts().contains("*")) {
+                    throw new KubernetesPluginException("unable to resolve a gateway for '" + vsModel + "' " +
+                                                        "virtual service. Add @kubernetes:IstioGateway{} annotation" +
+                                                        " to your listener or service, else explicitly state to " +
+                                                        "use the 'mesh' gateway.");
+                }
+            }
+            
             generate(vsModel.getKey(), vsModel.getValue());
             OUT.print("\t@kubernetes:IstioVirtualService \t - complete " + count + "/" + size + "\r");
         }
@@ -74,73 +100,24 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
      */
     private void generate(String serviceName, IstioVirtualServiceModel vsModel) throws KubernetesPluginException {
         try {
-            Map<String, Object> vsYamlModel = new LinkedHashMap<>();
-            vsYamlModel.put("apiVersion", "networking.istio.io/v1alpha3");
-            vsYamlModel.put("kind", "VirtualService");
-        
-            // metadata
-            Map<String, Object> metadata = new LinkedHashMap<>();
-            metadata.put("name", vsModel.getName());
-            if (null != dataHolder.getNamespace()) {
-                metadata.put("namespace", dataHolder.getNamespace());
-            }
-            if (null != vsModel.getLabels() && vsModel.getLabels().size() > 0) {
-                metadata.put("labels", vsModel.getLabels());
-            }
-            if (null != vsModel.getAnnotations() && vsModel.getAnnotations().size() > 0) {
-                metadata.put("annotations", vsModel.getAnnotations());
-            }
-            vsYamlModel.put("metadata", metadata);
-        
-            // spec
-            Map<String, Object> spec = new LinkedHashMap<>();
-            if (null != vsModel.getHosts() && vsModel.getHosts().size() > 0) {
-                spec.put("hosts", vsModel.getHosts());
-            }
+            VirtualService virtualService = new VirtualServiceBuilder()
+                    .withNewMetadata()
+                    .withName(vsModel.getName())
+                    .withNamespace(dataHolder.getNamespace())
+                    .withLabels(vsModel.getLabels())
+                    .withAnnotations(vsModel.getAnnotations())
+                    .endMetadata()
+                    .withNewSpec()
+                    .withHosts(vsModel.getHosts())
+                    .withGateways(vsModel.getGateways())
+                    .withHttp(populateHttp(serviceName, vsModel.getHttp()))
+                    .endSpec()
+                    .build();
     
-            IstioGatewayModel gwModel =
-                    KubernetesContext.getInstance().getDataHolder().getIstioGatewayModel(serviceName);
-            if ((null == vsModel.getGateways() || vsModel.getGateways().size() == 0) && null != gwModel) {
-                if (null == vsModel.getGateways()) {
-                    vsModel.setGateways(new LinkedList<>());
-                }
-                
-                if (vsModel.getGateways().size() == 0) {
-                    vsModel.getGateways().add(gwModel.getName());
-                } else if (vsModel.getHosts().size() == 1 && vsModel.getHosts().contains("*")) {
-                    throw new KubernetesPluginException("unable to resolve a gateway for '" + vsModel + "' " +
-                                                        "virtual service. Add @kubernetes:IstioGateway annotation" +
-                                                        " to your listener or service, else explicitly state to " +
-                                                        "use the 'mesh' gateway.");
-                }
-            }
-    
-            spec.put("gateways", vsModel.getGateways());
-    
-            if (null != vsModel.getTls() && vsModel.getTls().size() > 0) {
-                spec.put("tls", vsModel.getTls());
-            }
-    
-            if (null != vsModel.getTcp() && vsModel.getTcp().size() > 0) {
-                spec.put("tcp", vsModel.getTcp());
-            }
-    
-            // parse and add default values for http list if tls and tcp are not set
-            if (null == vsModel.getTls() && null == vsModel.getTcp()) {
-                spec.put("http", parseHttpRouteList(serviceName, vsModel.getHttp()));
-            }
-    
-            vsYamlModel.put("spec", spec);
-        
-            DumperOptions options = new DumperOptions();
-            options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-    
-            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-            String vsYamlString = mapper.writeValueAsString(vsYamlModel);
-            
-            KubernetesUtils.writeToFile(vsYamlString, ISTIO_VIRTUAL_SERVICE_FILE_POSTFIX + YAML);
+            String gatewayContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(virtualService);
+            KubernetesUtils.writeToFile(gatewayContent, ISTIO_VIRTUAL_SERVICE_FILE_POSTFIX + YAML);
         } catch (IOException e) {
-            String errorMessage = "Error while generating yaml file for istio virtual service: " + vsModel.getName();
+            String errorMessage = "error while generating yaml file for istio virtual service: " + vsModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
     }
@@ -149,103 +126,64 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
      * Parsing a list of http routes to yaml maps.
      *
      * @param serviceName The name of the service where to route to.
-     * @param http        The list of http routes.
+     * @param httpRouteModels        The list of http routes.
      * @return A list of yaml maps.
      */
-    private Object parseHttpRouteList(String serviceName, List<IstioHttpRoute> http) {
-        if (null == http) {
-            http = new LinkedList<>();
+    private List<HTTPRoute> populateHttp(String serviceName, List<IstioHttpRoute> httpRouteModels) {
+        if (null == httpRouteModels) {
+            httpRouteModels = new LinkedList<>();
         }
         
-        if (http.size() == 0) {
-            http.add(new IstioHttpRoute());
+        if (httpRouteModels.size() == 0) {
+            httpRouteModels.add(new IstioHttpRoute());
         }
         
-        List<Map<String, Object>> httpList = new LinkedList<>();
-        for (IstioHttpRoute httpRoute : http) {
-            Map<String, Object> httpMap = new LinkedHashMap<>();
-            if (null != httpRoute.getMatch()) {
-                httpMap.put("match", httpRoute.getMatch());
-            }
-            if (null != httpRoute.getRewrite()) {
-                httpMap.put("rewrite", httpRoute.getRewrite());
-            }
-            if (null != httpRoute.getRedirect()) {
-                httpMap.put("redirect", parseRedirect(httpRoute.getRedirect()));
-            }
-            if (null != httpRoute.getTimeout()) {
-                httpMap.put("timeout", httpRoute.getTimeout());
-            }
-            if (null != httpRoute.getRetries()) {
-                httpMap.put("retries", httpRoute.getRetries());
-            }
-            if (null != httpRoute.getFault()) {
-                httpMap.put("fault", httpRoute.getFault());
-            }
-            if (null != httpRoute.getMirror()) {
-                httpMap.put("mirror", httpRoute.getMirror());
-            }
-            if (null != httpRoute.getCorsPolicy()) {
-                httpMap.put("corsPolicy", httpRoute.getCorsPolicy());
-            }
-            if (null != httpRoute.getAppendHeaders()) {
-                httpMap.put("appendHeaders", httpRoute.getAppendHeaders());
-            }
+        List<HTTPRoute> httpRoutes = new LinkedList<>();
+        for (IstioHttpRoute httpRouteModel : httpRouteModels) {
+            Duration timoutDuration = null;
     
-            // route and redirect cannot exists together.
-            if (null == httpRoute.getRedirect()) {
-                // route is mandatory, no need to null check
-                httpMap.put("route", parseRouteList(serviceName, httpRoute.getRoute()));
+            if (-1 != httpRouteModel.getTimeout()) {
+                timoutDuration = new DurationBuilder()
+                        .withSeconds(httpRouteModel.getTimeout())
+                        .build();
             }
+            
+            HTTPRoute httpRoute = new HTTPRouteBuilder()
+                    .withRoute(populateRouteList(serviceName, httpRouteModel.getRoute()))
+                    .withTimeout(timoutDuration)
+                    .withAppendHeaders(httpRouteModel.getAppendHeaders())
+                    .build();
     
-            httpList.add(httpMap);
+            httpRoutes.add(httpRoute);
         }
         
-        return httpList;
-    }
-    
-    /**
-     * Parse an http redirect object to yaml maps.
-     *
-     * @param redirect The redirect object.
-     * @return A yaml map.
-     */
-    private Map<String, String> parseRedirect(IstioHttpRedirect redirect) {
-        Map<String, String> redirectMap = new LinkedHashMap<>();
-        if (null != redirect.getUri()) {
-            redirectMap.put("uri", redirect.getUri());
-        }
-        if (null != redirect.getAuthority()) {
-            redirectMap.put("authority", redirect.getAuthority());
-        }
-        return redirectMap;
+        return httpRoutes;
     }
     
     /**
      * Parse an route list to a yaml map.
      *
      * @param serviceName The name of the service.
-     * @param route       The list of destination weights
+     * @param routeModels       The list of destination weights
      * @return A list of yaml maps.
      */
-    private Object parseRouteList(String serviceName, List<IstioDestinationWeight> route) {
-        if (route == null) {
-            route = new LinkedList<>();
+    private List<DestinationWeight> populateRouteList(String serviceName, List<IstioDestinationWeight> routeModels) {
+        if (routeModels == null) {
+            routeModels = new LinkedList<>();
         }
         
-        if (route.size() == 0) {
-            route.add(new IstioDestinationWeight());
+        if (routeModels.size() == 0) {
+            routeModels.add(new IstioDestinationWeight());
         }
         
-        List<Map<String, Object>> destinationWeightList = new LinkedList<>();
-        for (IstioDestinationWeight destinationWeight : route) {
-            Map<String, Object> destinationWeightMap = new LinkedHashMap<>();
-            if (destinationWeight.getWeight() != -1) {
-                destinationWeightMap.put("weight", destinationWeight.getWeight());
-            }
-    
-            destinationWeightMap.put("destination", parseDestination(serviceName, destinationWeight.getDestination()));
-            destinationWeightList.add(destinationWeightMap);
+        List<DestinationWeight> destinationWeightList = new LinkedList<>();
+        for (IstioDestinationWeight destinationWeightModel : routeModels) {
+            DestinationWeight destinationWeight = new DestinationWeightBuilder()
+                    .withWeight(destinationWeightModel.getWeight())
+                    .withDestination(populateDestination(serviceName, destinationWeightModel.getDestination()))
+                    .build();
+                    
+            destinationWeightList.add(destinationWeight);
         }
         return destinationWeightList;
     }
@@ -257,7 +195,7 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
      * @param destination The destination object.
      * @return A yaml map.
      */
-    private Map<String, Object> parseDestination(String serviceName, IstioDestination destination) {
+    private Destination populateDestination(String serviceName, IstioDestination destination) {
         if (null == destination) {
             destination = new IstioDestination();
         }
@@ -271,19 +209,12 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
             destination.setPort(serviceModel.getPort());
         }
         
-        Map<String, Object> destinationMap = new LinkedHashMap<>();
-    
-        // host is mandatory, no need to check null as defaults are set.
-        destinationMap.put("host", destination.getHost());
-        
-        if (null != destination.getSubset()) {
-            destinationMap.put("subset", destination.getSubset());
-        }
-        
-        // port and it's number is mandatory, no need to null check as defaults are set.
-        Map<String, Integer> port = new LinkedHashMap<>();
-        port.put("number", serviceModel.getPort());
-        destinationMap.put("port", port);
-        return destinationMap;
+        return new DestinationBuilder()
+                .withHost(destination.getHost())
+                .withSubset(destination.getSubset())
+                .withPort(new PortSelectorBuilder()
+                    .withNewNumberPort(serviceModel.getPort())
+                    .build())
+                .build();
     }
 }

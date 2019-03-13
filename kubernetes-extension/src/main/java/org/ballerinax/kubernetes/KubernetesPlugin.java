@@ -124,7 +124,6 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                 dlog.logDiagnostic(Diagnostic.Kind.ERROR, functionNode.getPosition(), e.getMessage());
             }
         }
-
     }
 
     @Override

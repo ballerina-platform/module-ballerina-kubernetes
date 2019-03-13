@@ -67,7 +67,7 @@ public class HPAHandler extends AbstractArtifactHandler {
             String serviceContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(horizontalPodAutoscaler);
             KubernetesUtils.writeToFile(serviceContent, HPA_FILE_POSTFIX + YAML);
         } catch (IOException e) {
-            String errorMessage = "Error while generating yaml file for autoscaler: " + podAutoscalerModel.getName();
+            String errorMessage = "error while generating yaml file for autoscaler: " + podAutoscalerModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
     }

@@ -22,28 +22,25 @@ import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
-import org.ballerinalang.model.types.TypeKind;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.istio.IstioDestination;
 import org.ballerinax.kubernetes.models.istio.IstioDestinationWeight;
-import org.ballerinax.kubernetes.models.istio.IstioHttpRedirect;
 import org.ballerinax.kubernetes.models.istio.IstioHttpRoute;
 import org.ballerinax.kubernetes.models.istio.IstioVirtualServiceModel;
 import org.ballerinax.kubernetes.processors.AbstractAnnotationProcessor;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
-import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.ISTIO_VIRTUAL_SERVICE_POSTFIX;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getArray;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getIntValue;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getLongValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
@@ -139,16 +136,6 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                     List<IstioHttpRoute> httpModels = processHttpAnnotation(httpFields);
                     vsModel.setHttp(httpModels);
                     break;
-                case tls:
-                    BLangArrayLiteral tlsFields = (BLangArrayLiteral) vsField.getValue();
-                    List<Object> tlsModels = (List<Object>) processAnnotation(tlsFields);
-                    vsModel.setTls(tlsModels);
-                    break;
-                case tcp:
-                    BLangArrayLiteral tcpFields = (BLangArrayLiteral) vsField.getValue();
-                    List<Object> tcpModels = (List<Object>) processAnnotation(tcpFields);
-                    vsModel.setTcp(tcpModels);
-                    break;
                 default:
                     throw new KubernetesPluginException("unknown field found for istio virtual service: " +
                                                         vsField.getKey().toString());
@@ -171,50 +158,12 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
             IstioHttpRoute httpRoute = new IstioHttpRoute();
             for (BLangRecordLiteral.BLangRecordKeyValue httpField : httpFields.getKeyValuePairs()) {
                 switch (IstioHttpRouteConfig.valueOf(httpField.getKey().toString())) {
-                    case match:
-                        List<Object> matches = (List<Object>) processAnnotation(httpField.getValue());
-                        httpRoute.setMatch(matches);
-                        break;
                     case route:
                         BLangArrayLiteral routeFields = (BLangArrayLiteral)  httpField.getValue();
                         httpRoute.setRoute(processRoutesAnnotation(routeFields));
                         break;
-                    case redirect:
-                        BLangRecordLiteral redirectFields = (BLangRecordLiteral) httpField.getValue();
-                        IstioHttpRedirect httpRedirect = new IstioHttpRedirect();
-                        for (BLangRecordLiteral.BLangRecordKeyValue redirectField : redirectFields.getKeyValuePairs()) {
-                            switch (redirectField.getKey().toString()) {
-                                case "uri":
-                                    httpRedirect.setUri(resolveValue((redirectField).getValue().toString()));
-                                    break;
-                                case "authority":
-                                    httpRedirect.setAuthority(resolveValue((redirectField).getValue().toString()));
-                                    break;
-                                default:
-                                    throw new KubernetesPluginException(
-                                            "unknown field found for istio virtual service: " +
-                                            redirectField.getKey().toString());
-                            }
-                        }
-                        httpRoute.setRedirect(httpRedirect);
-                        break;
-                    case rewrite:
-                        httpRoute.setRewrite(processAnnotation(httpField.getValue()));
-                        break;
                     case timeout:
-                        httpRoute.setTimeout(resolveValue((httpField).getValue().toString()));
-                        break;
-                    case retries:
-                        httpRoute.setRetries(processAnnotation(httpField.getValue()));
-                        break;
-                    case fault:
-                        httpRoute.setFault(processAnnotation(httpField.getValue()));
-                        break;
-                    case mirror:
-                        httpRoute.setMirror(processAnnotation(httpField.getValue()));
-                        break;
-                    case corsPolicy:
-                        httpRoute.setCorsPolicy(processAnnotation(httpField.getValue()));
+                        httpRoute.setTimeout(getLongValue(httpField.getValue()));
                         break;
                     case appendHeaders:
                         httpRoute.setAppendHeaders(getMap(((BLangRecordLiteral) httpField.valueExpr).keyValuePairs));
@@ -282,9 +231,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                     destination.setSubset(resolveValue((destinationField).getValue().toString()));
                     break;
                 case port:
-                    BLangRecordLiteral portFields = (BLangRecordLiteral) destinationField.getValue();
-                    BLangRecordLiteral.BLangRecordKeyValue portField = portFields.getKeyValuePairs().get(0);
-                    destination.setPort(Integer.parseInt(portField.getValue().toString()));
+                    destination.setPort(getIntValue(destinationField.getValue()));
                     break;
                 default:
                     throw new KubernetesPluginException("unknown field found for istio virtual service.");
@@ -292,44 +239,6 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
         }
         
         return destination;
-    }
-    
-    /**
-     * Converts an array, a record or a literal to simple models.
-     *
-     * @param value The value to convert to.
-     * @return A model application to the type received.
-     * @throws KubernetesPluginException When an unknown type of value is found.
-     */
-    private Object processAnnotation(ExpressionNode value) throws KubernetesPluginException {
-        if (value instanceof BLangArrayLiteral) {
-            BLangArrayLiteral arrayValue = (BLangArrayLiteral) value;
-            List<Object> arrayModels = new LinkedList<>();
-            for (ExpressionNode expression : arrayValue.getExpressions()) {
-                arrayModels.add(processAnnotation(expression));
-            }
-            return arrayModels;
-        } else if (value instanceof BLangRecordLiteral) {
-            BLangRecordLiteral serverFieldRecord = (BLangRecordLiteral) value;
-            Map<String, Object> mapModels = new LinkedHashMap<>();
-            for (BLangRecordLiteral.BLangRecordKeyValue keyValuePair : serverFieldRecord.getKeyValuePairs()) {
-                mapModels.put(keyValuePair.getKey().toString(), processAnnotation(keyValuePair.getValue()));
-            }
-            return mapModels;
-        } else if (value instanceof BLangLiteral) {
-            BLangLiteral literal = (BLangLiteral) value;
-            if (literal.type.getKind() == TypeKind.INT) {
-                return Integer.parseInt((literal).getValue().toString());
-            } else if (literal.type.getKind() == TypeKind.BOOLEAN) {
-                return Boolean.parseBoolean((literal).getValue().toString());
-            } else if (literal.type.getKind() == TypeKind.FLOAT) {
-                return Float.parseFloat((literal).getValue().toString());
-            } else {
-                return resolveValue((literal).getValue().toString());
-            }
-        } else {
-            throw new KubernetesPluginException("unable to resolve annotation values.");
-        }
     }
     
     private enum IstioDestinationConfig {
@@ -344,15 +253,8 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
     }
     
     private enum IstioHttpRouteConfig {
-        match,
         route,
-        redirect,
-        rewrite,
         timeout,
-        retries,
-        fault,
-        mirror,
-        corsPolicy,
         appendHeaders
     }
     
@@ -363,7 +265,5 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
         hosts,
         gateways,
         http,
-        tls,
-        tcp
     }
 }

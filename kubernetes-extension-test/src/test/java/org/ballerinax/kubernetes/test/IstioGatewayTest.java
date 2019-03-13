@@ -18,6 +18,7 @@
 
 package org.ballerinax.kubernetes.test;
 
+import me.snowdrop.istio.api.networking.v1alpha3.Gateway;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
@@ -25,15 +26,12 @@ import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.wso2.andes.util.FileUtils;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
@@ -69,41 +67,44 @@ public class IstioGatewayTest {
         // Validate gateway yaml
         File gatewayFile = TARGET_PATH.resolve("all_fields_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
-        Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
-        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(gateway.get("kind"), "Gateway", "Invalid kind.");
+        Gateway gateway = KubernetesTestUtils.loadYaml(gatewayFile);
 
-        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "my-gateway", "Invalid gateway name");
-        Assert.assertEquals(metadata.get("namespace"), "ballerina", "Invalid gateway name");
-
-        Map<String, String> labels = (Map<String, String>) metadata.get("labels");
-        Assert.assertEquals(labels.get("label1"), "label1", "Invalid label");
-        Assert.assertEquals(labels.get("label2"), "label2", "Invalid label");
-
-        Map<String, String> annotations = (Map<String, String>) metadata.get("annotations");
-        Assert.assertEquals(annotations.get("anno1"), "anno1Val", "Invalid annotation value");
-        Assert.assertEquals(annotations.get("anno2"), "anno2Val", "Invalid annotation value");
-
-        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
-        Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
-        Assert.assertEquals(selector.get(KubernetesConstants.KUBERNETES_SELECTOR_KEY), "my-gateway-controller",
-                "Invalid selector.");
-
-        List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
-        Map<String, Object> server = servers.get(0);
-        Map<String, Object> port = (Map<String, Object>) server.get("port");
-        Assert.assertEquals(port.get("number"), 80, "Invalid port number.");
-        Assert.assertEquals(port.get("name"), "http", "Invalid port name.");
-        Assert.assertEquals(port.get("protocol"), "HTTP", "Invalid port protocol.");
-
-        List<String> hosts = (List<String>) server.get("hosts");
-        Assert.assertTrue(hosts.contains("uk.bookinfo.com"), "uk.bookinfo.com host not included");
-        Assert.assertTrue(hosts.contains("eu.bookinfo.com"), "eu.bookinfo.com host not included");
-
-        Map<String, Object> tls = (Map<String, Object>) server.get("tls");
-        Assert.assertEquals(tls.get("httpsRedirect"), true, "Invalid tls httpsRedirect value");
+        Assert.assertNotNull(gateway.getMetadata());
+        Assert.assertEquals(gateway.getMetadata().getName(), "my-gateway", "Invalid gateway name");
+        Assert.assertEquals(gateway.getMetadata().getNamespace(), "ballerina", "Invalid gateway namespace");
+        
+        Assert.assertEquals(gateway.getMetadata().getLabels().size(), 2);
+        Assert.assertEquals(gateway.getMetadata().getLabels().get("label1"), "label1", "Invalid label");
+        Assert.assertEquals(gateway.getMetadata().getLabels().get("label2"), "label2", "Invalid label");
+    
+        Assert.assertEquals(gateway.getMetadata().getAnnotations().size(), 2);
+        Assert.assertEquals(gateway.getMetadata().getAnnotations().get("anno1"), "anno1Val",
+                "Invalid annotation value");
+        Assert.assertEquals(gateway.getMetadata().getAnnotations().get("anno2"), "anno2Val",
+                "Invalid annotation value");
+    
+        Assert.assertNotNull(gateway.getSpec());
+        Assert.assertEquals(gateway.getSpec().getSelector().get(KubernetesConstants.KUBERNETES_SELECTOR_KEY),
+                "my-gateway-controller", "Invalid selector.");
+    
+        Assert.assertNotNull(gateway.getSpec().getServers());
+        Assert.assertEquals(gateway.getSpec().getServers().size(), 1);
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getNumber().intValue(), 80,
+                "Invalid port number.");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getName(), "http", "Invalid port name.");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getProtocol(), "HTTP",
+                "Invalid port protocol.");
+    
+        Assert.assertNotNull(gateway.getSpec().getServers().get(0).getHosts());
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getHosts().size(), 2);
+        Assert.assertTrue(gateway.getSpec().getServers().get(0).getHosts().contains("uk.bookinfo.com"),
+                "uk.bookinfo.com host not included");
+        Assert.assertTrue(gateway.getSpec().getServers().get(0).getHosts().contains("eu.bookinfo.com"),
+                "eu.bookinfo.com host not included");
+    
+        Assert.assertNotNull(gateway.getSpec().getServers().get(0).getTls());
+        Assert.assertTrue(gateway.getSpec().getServers().get(0).getTls().getHttpsRedirect(),
+                "Invalid tls httpsRedirect value");
 
         KubernetesUtils.deleteDirectory(TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
@@ -139,45 +140,51 @@ public class IstioGatewayTest {
         // Validate gateway yaml
         File gatewayFile = TARGET_PATH.resolve("multiple_servers_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
-        Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
-        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(gateway.get("kind"), "Gateway", "Invalid kind.");
-
-        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "my-gateway", "Invalid gateway name");
-
-        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
-        Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
-        Assert.assertEquals(selector.get(KubernetesConstants.KUBERNETES_SELECTOR_KEY), "my-gateway-controller",
-                "Invalid selector.");
-
-        List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
-        Map<String, Object> server1 = servers.get(0);
-        Map<String, Object> port1 = (Map<String, Object>) server1.get("port");
-        Assert.assertEquals(port1.get("number"), 80, "Invalid port number.");
-        Assert.assertEquals(port1.get("name"), "http", "Invalid port name.");
-        Assert.assertEquals(port1.get("protocol"), "HTTP", "Invalid port protocol.");
-
-        List<String> hosts1 = (List<String>) server1.get("hosts");
-        Assert.assertTrue(hosts1.contains("uk.bookinfo.com"), "uk.bookinfo.com host not included");
-        Assert.assertTrue(hosts1.contains("eu.bookinfo.com"), "eu.bookinfo.com host not included");
-
-        Map<String, Object> tls1 = (Map<String, Object>) server1.get("tls");
-        Assert.assertEquals(tls1.get("httpsRedirect"), true, "Invalid tls httpsRedirect value");
-
-        Map<String, Object> server2 = servers.get(1);
-        Map<String, Object> port2 = (Map<String, Object>) server2.get("port");
-        Assert.assertEquals(port2.get("number"), 443, "Invalid port number.");
-        Assert.assertEquals(port2.get("name"), "https", "Invalid port name.");
-        Assert.assertEquals(port2.get("protocol"), "HTTPS", "Invalid port protocol.");
-
-        List<String> hosts2 = (List<String>) server2.get("hosts");
-        Assert.assertTrue(hosts2.contains("uk.bookinfo.com"), "uk.bookinfo.com host not included");
-        Assert.assertTrue(hosts2.contains("eu.bookinfo.com"), "eu.bookinfo.com host not included");
-
-        Map<String, Object> tls2 = (Map<String, Object>) server2.get("tls");
-        Assert.assertEquals(tls2.get("httpsRedirect"), false, "Invalid tls httpsRedirect value");
+        Gateway gateway = KubernetesTestUtils.loadYaml(gatewayFile);
+    
+        Assert.assertNotNull(gateway.getMetadata());
+        Assert.assertEquals(gateway.getMetadata().getName(), "my-gateway", "Invalid gateway name");
+        
+        Assert.assertNotNull(gateway.getSpec());
+        Assert.assertEquals(gateway.getSpec().getSelector().get(KubernetesConstants.KUBERNETES_SELECTOR_KEY),
+                "my-gateway-controller", "Invalid selector.");
+    
+        Assert.assertNotNull(gateway.getSpec().getServers());
+        Assert.assertEquals(gateway.getSpec().getServers().size(), 2);
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getNumber().intValue(), 80,
+                "Invalid port number.");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getName(), "http", "Invalid port name.");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getProtocol(), "HTTP",
+                "Invalid port protocol.");
+    
+        Assert.assertNotNull(gateway.getSpec().getServers().get(0).getHosts());
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getHosts().size(), 2);
+        Assert.assertTrue(gateway.getSpec().getServers().get(0).getHosts().contains("uk.bookinfo.com"),
+                "uk.bookinfo.com host not included");
+        Assert.assertTrue(gateway.getSpec().getServers().get(0).getHosts().contains("eu.bookinfo.com"),
+                "eu.bookinfo.com host not included");
+    
+        Assert.assertNotNull(gateway.getSpec().getServers().get(0).getTls());
+        Assert.assertTrue(gateway.getSpec().getServers().get(0).getTls().getHttpsRedirect(),
+                "Invalid tls httpsRedirect value");
+    
+        Assert.assertEquals(gateway.getSpec().getServers().get(1).getPort().getNumber().intValue(), 443,
+                "Invalid port number.");
+        Assert.assertEquals(gateway.getSpec().getServers().get(1).getPort().getName(), "https",
+                "Invalid port name.");
+        Assert.assertEquals(gateway.getSpec().getServers().get(1).getPort().getProtocol(), "HTTPS",
+                "Invalid port protocol.");
+    
+        Assert.assertNotNull(gateway.getSpec().getServers().get(1).getHosts());
+        Assert.assertEquals(gateway.getSpec().getServers().get(1).getHosts().size(), 2);
+        Assert.assertTrue(gateway.getSpec().getServers().get(1).getHosts().contains("uk.bookinfo.com"),
+                "uk.bookinfo.com host not included");
+        Assert.assertTrue(gateway.getSpec().getServers().get(1).getHosts().contains("eu.bookinfo.com"),
+                "eu.bookinfo.com host not included");
+    
+        Assert.assertNotNull(gateway.getSpec().getServers().get(1).getTls());
+        Assert.assertFalse(gateway.getSpec().getServers().get(1).getTls().getHttpsRedirect(),
+                "Invalid tls httpsRedirect value");
 
         KubernetesUtils.deleteDirectory(TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
@@ -201,14 +208,12 @@ public class IstioGatewayTest {
         // Validate gateway yaml
         File gatewayFile = TARGET_PATH.resolve("no_selector_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
-        Yaml yamlProcessor = new Yaml();
-        
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
+        Gateway gateway = KubernetesTestUtils.loadYaml(gatewayFile);
     
-        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
-        Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
-        Assert.assertEquals(selector.get(KubernetesConstants.ISTIO_GATEWAY_SELECTOR), "ingressgateway",
-                "Invalid selector.");
+        Assert.assertNotNull(gateway.getSpec());
+        Assert.assertNotNull(gateway.getSpec().getSelector());
+        Assert.assertEquals(gateway.getSpec().getSelector().get(KubernetesConstants.ISTIO_GATEWAY_SELECTOR),
+                "ingressgateway", "Invalid selector.");
     
         KubernetesUtils.deleteDirectory(TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
@@ -233,31 +238,31 @@ public class IstioGatewayTest {
         // Validate gateway yaml
         File gatewayFile = TARGET_PATH.resolve("no_tls_https_redirect_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
-        Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
-        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(gateway.get("kind"), "Gateway", "Invalid kind.");
-
-        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "my-gateway", "Invalid gateway name");
-
-        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
-        Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
-        Assert.assertEquals(selector.get(KubernetesConstants.KUBERNETES_SELECTOR_KEY), "my-gateway-controller",
-                "Invalid selector.");
-
-        List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
-        Map<String, Object> server = servers.get(0);
-        Map<String, Object> port = (Map<String, Object>) server.get("port");
-        Assert.assertEquals(port.get("number"), 80, "Invalid port number.");
-        Assert.assertEquals(port.get("name"), "http", "Invalid port name.");
-        Assert.assertEquals(port.get("protocol"), "HTTP", "Invalid port protocol.");
-
-        List<String> hosts = (List<String>) server.get("hosts");
-        Assert.assertTrue(hosts.contains("uk.bookinfo.com"), "uk.bookinfo.com host not included");
-        Assert.assertTrue(hosts.contains("eu.bookinfo.com"), "eu.bookinfo.com host not included");
-
-        Assert.assertNull(server.get("tls"), "tls options should not be available");
+        Gateway gateway = KubernetesTestUtils.loadYaml(gatewayFile);
+    
+        Assert.assertNotNull(gateway.getMetadata());
+        Assert.assertEquals(gateway.getMetadata().getName(), "my-gateway", "Invalid gateway name");
+    
+        Assert.assertNotNull(gateway.getSpec());
+        Assert.assertEquals(gateway.getSpec().getSelector().get(KubernetesConstants.KUBERNETES_SELECTOR_KEY),
+                "my-gateway-controller", "Invalid selector.");
+    
+        Assert.assertNotNull(gateway.getSpec().getServers());
+        Assert.assertEquals(gateway.getSpec().getServers().size(), 1);
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getNumber().intValue(), 80,
+                "Invalid port number.");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getName(), "http", "Invalid port name.");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getProtocol(), "HTTP",
+                "Invalid port protocol.");
+    
+        Assert.assertNotNull(gateway.getSpec().getServers().get(0).getHosts());
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getHosts().size(), 2);
+        Assert.assertTrue(gateway.getSpec().getServers().get(0).getHosts().contains("uk.bookinfo.com"),
+                "uk.bookinfo.com host not included");
+        Assert.assertTrue(gateway.getSpec().getServers().get(0).getHosts().contains("eu.bookinfo.com"),
+                "eu.bookinfo.com host not included");
+    
+        Assert.assertNull(gateway.getSpec().getServers().get(0).getTls(), "tls options should not be available");
 
         KubernetesUtils.deleteDirectory(TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
@@ -282,39 +287,41 @@ public class IstioGatewayTest {
         // Validate gateway yaml
         File gatewayFile = TARGET_PATH.resolve("tls_mutual_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
-        Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
-        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(gateway.get("kind"), "Gateway", "Invalid kind.");
-
-        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "my-gateway", "Invalid gateway name");
-
-        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
-        Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
-        Assert.assertEquals(selector.get(KubernetesConstants.KUBERNETES_SELECTOR_KEY), "my-gateway-controller",
-                "Invalid selector.");
-
-        List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
-        Map<String, Object> server1 = servers.get(0);
-        Map<String, Object> port1 = (Map<String, Object>) server1.get("port");
-        Assert.assertEquals(port1.get("number"), 443, "Invalid port number.");
-        Assert.assertEquals(port1.get("name"), "https", "Invalid port name.");
-        Assert.assertEquals(port1.get("protocol"), "HTTPS", "Invalid port protocol.");
-
-        List<String> hosts1 = (List<String>) server1.get("hosts");
-        Assert.assertTrue(hosts1.contains("httpbin.example.com"), "httpbin.example.com host not included");
-
-        Map<String, Object> tls1 = (Map<String, Object>) server1.get("tls");
-        Assert.assertEquals(tls1.get("httpsRedirect"), false, "Invalid tls httpsRedirect value");
-        Assert.assertEquals(tls1.get("mode"), "MUTUAL", "Invalid tls mode value");
-        Assert.assertEquals(tls1.get("serverCertificate"), "/etc/istio/ingressgateway-certs/tls.crt",
-                "Invalid tls serverCertificate value");
-        Assert.assertEquals(tls1.get("privateKey"), "/etc/istio/ingressgateway-certs/tls.key",
-                "Invalid tls privateKey value");
-        Assert.assertEquals(tls1.get("caCertificates"), "/etc/istio/ingressgateway-ca-certs/ca-chain.cert.pem",
-                "Invalid tls caCertificates value");
-
+        Gateway gateway = KubernetesTestUtils.loadYaml(gatewayFile);
+    
+        Assert.assertNotNull(gateway.getMetadata());
+        Assert.assertEquals(gateway.getMetadata().getName(), "my-gateway", "Invalid gateway name");
+    
+        Assert.assertNotNull(gateway.getSpec());
+        Assert.assertEquals(gateway.getSpec().getSelector().get(KubernetesConstants.KUBERNETES_SELECTOR_KEY),
+                "my-gateway-controller", "Invalid selector.");
+    
+        Assert.assertNotNull(gateway.getSpec().getServers());
+        Assert.assertEquals(gateway.getSpec().getServers().size(), 1);
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getNumber().intValue(), 443,
+                "Invalid port number.");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getName(), "https",
+                "Invalid port name.");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getProtocol(), "HTTPS",
+                "Invalid port protocol.");
+    
+        Assert.assertNotNull(gateway.getSpec().getServers().get(0).getHosts());
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getHosts().size(), 1);
+        Assert.assertTrue(gateway.getSpec().getServers().get(0).getHosts().contains("httpbin.example.com"),
+                "httpbin.example.com host not included");
+    
+        Assert.assertNotNull(gateway.getSpec().getServers().get(0).getTls());
+        Assert.assertFalse(gateway.getSpec().getServers().get(0).getTls().getHttpsRedirect(),
+                "Invalid tls httpsRedirect value");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getTls().getMode().name(), "MUTUAL",
+                "Invalid tls mode value");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getTls().getServerCertificate(),
+                "/etc/istio/ingressgateway-certs/tls.crt", "Invalid tls serverCertificate value");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getTls().getPrivateKey(),
+                "/etc/istio/ingressgateway-certs/tls.key", "Invalid tls privateKey value");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getTls().getCaCertificates(),
+                "/etc/istio/ingressgateway-ca-certs/ca-chain.cert.pem", "Invalid tls caCertificates value");
+        
         KubernetesUtils.deleteDirectory(TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
@@ -349,36 +356,40 @@ public class IstioGatewayTest {
         // Validate gateway yaml
         File gatewayFile = TARGET_PATH.resolve("tls_simple_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
-        Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
-        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(gateway.get("kind"), "Gateway", "Invalid kind.");
-        
-        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "my-gateway", "Invalid gateway name");
-        
-        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
-        Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
-        Assert.assertEquals(selector.get(KubernetesConstants.KUBERNETES_SELECTOR_KEY), "my-gateway-controller",
-                "Invalid selector.");
-        
-        List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
-        Map<String, Object> server1 = servers.get(0);
-        Map<String, Object> port1 = (Map<String, Object>) server1.get("port");
-        Assert.assertEquals(port1.get("number"), 443, "Invalid port number.");
-        Assert.assertEquals(port1.get("name"), "https", "Invalid port name.");
-        Assert.assertEquals(port1.get("protocol"), "HTTPS", "Invalid port protocol.");
-        
-        List<String> hosts1 = (List<String>) server1.get("hosts");
-        Assert.assertTrue(hosts1.contains("httpbin.example.com"), "httpbin.example.com host not included");
-        
-        Map<String, Object> tls1 = (Map<String, Object>) server1.get("tls");
-        Assert.assertEquals(tls1.get("httpsRedirect"), false, "Invalid tls httpsRedirect value");
-        Assert.assertEquals(tls1.get("mode"), "SIMPLE", "Invalid tls mode value");
-        Assert.assertEquals(tls1.get("serverCertificate"), "/etc/istio/ingressgateway-certs/tls.crt",
-                "Invalid tls serverCertificate value");
-        Assert.assertEquals(tls1.get("privateKey"), "/etc/istio/ingressgateway-certs/tls.key",
-                "Invalid tls privateKey value");
+        Gateway gateway = KubernetesTestUtils.loadYaml(gatewayFile);
+    
+        Assert.assertNotNull(gateway.getMetadata());
+        Assert.assertEquals(gateway.getMetadata().getName(), "my-gateway", "Invalid gateway name");
+    
+        Assert.assertNotNull(gateway.getSpec());
+        Assert.assertEquals(gateway.getSpec().getSelector().get(KubernetesConstants.KUBERNETES_SELECTOR_KEY),
+                "my-gateway-controller", "Invalid selector.");
+    
+        Assert.assertNotNull(gateway.getSpec().getServers());
+        Assert.assertEquals(gateway.getSpec().getServers().size(), 1);
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getNumber().intValue(), 443,
+                "Invalid port number.");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getName(), "https",
+                "Invalid port name.");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getProtocol(), "HTTPS",
+                "Invalid port protocol.");
+    
+        Assert.assertNotNull(gateway.getSpec().getServers().get(0).getHosts());
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getHosts().size(), 1);
+        Assert.assertTrue(gateway.getSpec().getServers().get(0).getHosts().contains("httpbin.example.com"),
+                "httpbin.example.com host not included");
+    
+        Assert.assertNotNull(gateway.getSpec().getServers().get(0).getTls());
+        Assert.assertFalse(gateway.getSpec().getServers().get(0).getTls().getHttpsRedirect(),
+                "Invalid tls httpsRedirect value");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getTls().getMode().name(), "SIMPLE",
+                "Invalid tls mode value");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getTls().getServerCertificate(),
+                "/etc/istio/ingressgateway-certs/tls.crt", "Invalid tls serverCertificate value");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getTls().getPrivateKey(),
+                "/etc/istio/ingressgateway-certs/tls.key", "Invalid tls privateKey value");
+        Assert.assertNull(gateway.getSpec().getServers().get(0).getTls().getCaCertificates(),
+                "Unexpected tls caCertificates value found.");
         
         KubernetesUtils.deleteDirectory(TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
@@ -403,27 +414,27 @@ public class IstioGatewayTest {
         // Validate gateway yaml
         File gatewayFile = TARGET_PATH.resolve("empty_annotation_ep_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
-        Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
-        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(gateway.get("kind"), "Gateway", "Invalid kind.");
-        
-        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "helloep-istio-gw", "Invalid gateway name");
-        
-        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
-        Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
-        Assert.assertEquals(selector.get(KubernetesConstants.ISTIO_GATEWAY_SELECTOR), "ingressgateway",
-                "Invalid selector.");
-        
-        List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
-        Map<String, Object> server = servers.get(0);
-        Map<String, Object> port = (Map<String, Object>) server.get("port");
-        Assert.assertEquals(port.get("number"), 80, "Invalid port number.");
-        Assert.assertEquals(port.get("protocol"), "HTTP", "Invalid port protocol.");
-        
-        List<String> hosts = (List<String>) server.get("hosts");
-        Assert.assertTrue(hosts.contains("*"), "* host not included");
+        Gateway gateway = KubernetesTestUtils.loadYaml(gatewayFile);
+    
+        Assert.assertNotNull(gateway.getMetadata());
+        Assert.assertEquals(gateway.getMetadata().getName(), "helloep-istio-gw", "Invalid gateway name");
+    
+        Assert.assertNotNull(gateway.getSpec());
+        Assert.assertEquals(gateway.getSpec().getSelector().get(KubernetesConstants.ISTIO_GATEWAY_SELECTOR),
+                "ingressgateway", "Invalid selector.");
+    
+        Assert.assertNotNull(gateway.getSpec().getServers());
+        Assert.assertEquals(gateway.getSpec().getServers().size(), 1);
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getNumber().intValue(), 80,
+                "Invalid port number.");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getName(), "http", "Invalid port name.");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getProtocol(), "HTTP",
+                "Invalid port protocol.");
+    
+        Assert.assertNotNull(gateway.getSpec().getServers().get(0).getHosts());
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getHosts().size(), 1);
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getHosts().get(0), "*",
+                "* host not included");
         
         KubernetesUtils.deleteDirectory(TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
@@ -448,27 +459,27 @@ public class IstioGatewayTest {
         // Validate gateway yaml
         File gatewayFile = TARGET_PATH.resolve("empty_annotation_svc_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
-        Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayFile));
-        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(gateway.get("kind"), "Gateway", "Invalid kind.");
-        
-        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "helloworld-istio-gw", "Invalid gateway name");
-        
-        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
-        Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
-        Assert.assertEquals(selector.get(KubernetesConstants.ISTIO_GATEWAY_SELECTOR), "ingressgateway",
-                "Invalid selector.");
-        
-        List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
-        Map<String, Object> server = servers.get(0);
-        Map<String, Object> port = (Map<String, Object>) server.get("port");
-        Assert.assertEquals(port.get("number"), 80, "Invalid port number.");
-        Assert.assertEquals(port.get("protocol"), "HTTP", "Invalid port protocol.");
-        
-        List<String> hosts = (List<String>) server.get("hosts");
-        Assert.assertTrue(hosts.contains("*"), "* host not included");
+        Gateway gateway = KubernetesTestUtils.loadYaml(gatewayFile);
+    
+        Assert.assertNotNull(gateway.getMetadata());
+        Assert.assertEquals(gateway.getMetadata().getName(), "helloworld-istio-gw", "Invalid gateway name");
+    
+        Assert.assertNotNull(gateway.getSpec());
+        Assert.assertEquals(gateway.getSpec().getSelector().get(KubernetesConstants.ISTIO_GATEWAY_SELECTOR),
+                "ingressgateway", "Invalid selector.");
+    
+        Assert.assertNotNull(gateway.getSpec().getServers());
+        Assert.assertEquals(gateway.getSpec().getServers().size(), 1);
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getNumber().intValue(), 80,
+                "Invalid port number.");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getName(), "http", "Invalid port name.");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getProtocol(), "HTTP",
+                "Invalid port protocol.");
+    
+        Assert.assertNotNull(gateway.getSpec().getServers().get(0).getHosts());
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getHosts().size(), 1);
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getHosts().get(0), "*",
+                "* host not included");
         
         KubernetesUtils.deleteDirectory(TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);

@@ -64,7 +64,7 @@ public class PersistentVolumeClaimHandler extends AbstractArtifactHandler {
             KubernetesUtils.writeToFile(claimContent,
                     VOLUME_CLAIM_FILE_POSTFIX + YAML);
         } catch (IOException e) {
-            String errorMessage = "Error while generating yaml file for volume claim: " + volumeClaimModel.getName();
+            String errorMessage = "error while generating yaml file for volume claim: " + volumeClaimModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
     }

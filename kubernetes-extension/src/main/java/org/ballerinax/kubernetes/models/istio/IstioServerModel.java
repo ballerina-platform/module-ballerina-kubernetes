@@ -18,6 +18,7 @@
 
 package org.ballerinax.kubernetes.models.istio;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -61,11 +62,11 @@ public class IstioServerModel {
      */
     public static class TLSOptions {
         private boolean httpsRedirect = false;
-        private String mode;
+        private String mode = "PASSTHROUGH";
         private String serverCertificate;
         private String privateKey;
         private String caCertificates;
-        private Set<String> subjectAltNames;
+        private Set<String> subjectAltNames = new LinkedHashSet<>();
     
         public boolean isHttpsRedirect() {
             return httpsRedirect;
