@@ -29,13 +29,15 @@ import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_CERT_PATH;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_HOST;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getBooleanValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getEnvVarMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getExternalFileMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getImagePullSecrets;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getIntValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
  * Job Annotation processor.
@@ -52,66 +54,65 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
                     JobConfiguration.valueOf(keyValue.getKey().toString());
             switch (jobConfiguration) {
                 case name:
-                    jobModel.setName(getValidName(resolveValue(keyValue.getValue().toString())));
+                    jobModel.setName(getValidName(getStringValue(keyValue.getValue())));
                     break;
                 case namespace:
-                    KubernetesContext.getInstance().getDataHolder().setNamespace(resolveValue(
-                            keyValue.getValue().toString()));
+                    KubernetesContext.getInstance().getDataHolder().setNamespace(getStringValue(keyValue.getValue()));
                     break;
                 case labels:
-                    jobModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    jobModel.setLabels(getMap(keyValue.getValue()));
                     break;
                 case annotations:
-                    jobModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    jobModel.setAnnotations(getMap(keyValue.getValue()));
                     break;
                 case restartPolicy:
-                    jobModel.setRestartPolicy(KubernetesConstants.RestartPolicy.valueOf(resolveValue(
-                            keyValue.getValue().toString())).name());
+                    jobModel.setRestartPolicy(KubernetesConstants.RestartPolicy.valueOf(
+                            getStringValue(keyValue.getValue())).name());
                     break;
                 case backoffLimit:
-                    jobModel.setBackoffLimit(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
+                    jobModel.setBackoffLimit(getIntValue(keyValue.getValue()));
                     break;
                 case activeDeadlineSeconds:
-                    jobModel.setActiveDeadlineSeconds(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
+                    jobModel.setActiveDeadlineSeconds(getIntValue(keyValue.getValue()));
                     break;
                 case schedule:
-                    jobModel.setSchedule(resolveValue(keyValue.getValue().toString()));
+                    jobModel.setSchedule(getStringValue(keyValue.getValue()));
                     break;
                 case username:
-                    jobModel.setUsername(resolveValue(keyValue.getValue().toString()));
+                    jobModel.setUsername(getStringValue(keyValue.getValue()));
                     break;
                 case env:
                     jobModel.setEnv(getEnvVarMap(keyValue.getValue()));
                     break;
                 case password:
-                    jobModel.setPassword(resolveValue(keyValue.getValue().toString()));
+                    jobModel.setPassword(getStringValue(keyValue.getValue()));
                     break;
                 case baseImage:
-                    jobModel.setBaseImage(resolveValue(keyValue.getValue().toString()));
+                    jobModel.setBaseImage(getStringValue(keyValue.getValue()));
                     break;
                 case push:
-                    jobModel.setPush(Boolean.valueOf(resolveValue(keyValue.getValue().toString())));
+                    jobModel.setPush(getBooleanValue(keyValue.getValue()));
                     break;
                 case buildImage:
-                    jobModel.setBuildImage(Boolean.valueOf(resolveValue(keyValue.getValue().toString())));
+                    jobModel.setBuildImage(getBooleanValue(keyValue.getValue()));
                     break;
                 case image:
-                    jobModel.setImage(resolveValue(keyValue.getValue().toString()));
+                    jobModel.setImage(getStringValue(keyValue.getValue()));
                     break;
                 case dockerHost:
-                    jobModel.setDockerHost(resolveValue(keyValue.getValue().toString()));
+                    jobModel.setDockerHost(getStringValue(keyValue.getValue()));
                     break;
                 case dockerCertPath:
-                    jobModel.setDockerCertPath(resolveValue(keyValue.getValue().toString()));
+                    jobModel.setDockerCertPath(getStringValue(keyValue.getValue()));
                     break;
                 case imagePullPolicy:
-                    jobModel.setImagePullPolicy(resolveValue(keyValue.getValue().toString()));
+                    jobModel.setImagePullPolicy(getStringValue(keyValue.getValue()));
                     break;
                 case copyFiles:
                     jobModel.setCopyFiles(getExternalFileMap(keyValue));
                     break;
                 case singleYAML:
-                    jobModel.setSingleYAML(Boolean.valueOf(resolveValue(keyValue.getValue().toString())));
+                    jobModel.setSingleYAML(getBooleanValue(keyValue.getValue()));
                     break;
                 case imagePullSecrets:
                     jobModel.setImagePullSecrets(getImagePullSecrets(keyValue));

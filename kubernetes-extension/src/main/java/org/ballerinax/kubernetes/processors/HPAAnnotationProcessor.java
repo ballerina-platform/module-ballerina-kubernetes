@@ -30,9 +30,10 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getIntValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
  * HPA annotation processor.
@@ -65,22 +66,22 @@ public class HPAAnnotationProcessor extends AbstractAnnotationProcessor {
                     PodAutoscalerConfiguration.valueOf(keyValue.getKey().toString());
             switch (podAutoscalerConfiguration) {
                 case name:
-                    podAutoscalerModel.setName(getValidName(resolveValue(keyValue.getValue().toString())));
+                    podAutoscalerModel.setName(getValidName(getStringValue(keyValue.getValue())));
                     break;
                 case labels:
-                    podAutoscalerModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    podAutoscalerModel.setLabels(getMap(keyValue.getValue()));
                     break;
                 case annotations:
-                    podAutoscalerModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    podAutoscalerModel.setAnnotations(getMap(keyValue.getValue()));
                     break;
                 case cpuPercentage:
-                    podAutoscalerModel.setCpuPercentage(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
+                    podAutoscalerModel.setCpuPercentage(getIntValue(keyValue.getValue()));
                     break;
                 case minReplicas:
-                    podAutoscalerModel.setMinReplicas(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
+                    podAutoscalerModel.setMinReplicas(getIntValue(keyValue.getValue()));
                     break;
                 case maxReplicas:
-                    podAutoscalerModel.setMaxReplicas(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
+                    podAutoscalerModel.setMaxReplicas(getIntValue(keyValue.getValue()));
                     break;
                 default:
                     break;

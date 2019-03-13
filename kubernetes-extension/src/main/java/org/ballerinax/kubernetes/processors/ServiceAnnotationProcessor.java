@@ -36,10 +36,11 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangTypeInit;
 import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.SVC_POSTFIX;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getIntValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
  * Service annotation processor.
@@ -117,23 +118,23 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
                     ServiceConfiguration.valueOf(keyValue.getKey().toString());
             switch (serviceConfiguration) {
                 case name:
-                    serviceModel.setName(getValidName(resolveValue(keyValue.getValue().toString())));
+                    serviceModel.setName(getValidName(getStringValue(keyValue.getValue())));
                     break;
                 case labels:
-                    serviceModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    serviceModel.setLabels(getMap(keyValue.getValue()));
                     break;
                 case annotations:
-                    serviceModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    serviceModel.setAnnotations(getMap(keyValue.getValue()));
                     break;
                 case serviceType:
-                    serviceModel.setServiceType(KubernetesConstants.ServiceType.valueOf(resolveValue(
-                            keyValue.getValue().toString())).name());
+                    serviceModel.setServiceType(KubernetesConstants.ServiceType.valueOf(
+                            getStringValue(keyValue.getValue())).name());
                     break;
                 case port:
-                    serviceModel.setPort(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
+                    serviceModel.setPort(getIntValue(keyValue.getValue()));
                     break;
                 case sessionAffinity:
-                    serviceModel.setSessionAffinity(resolveValue(keyValue.getValue().toString()));
+                    serviceModel.setSessionAffinity(getStringValue(keyValue.getValue()));
                     break;
                 default:
                     break;

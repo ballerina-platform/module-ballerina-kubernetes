@@ -24,7 +24,7 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
 import java.util.List;
 
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getBooleanValue;
 
 /**
  * Record processor for OpenShift Build Extension.
@@ -44,12 +44,10 @@ public class OpenShiftBuildExtensionProcessor {
         for (BLangRecordLiteral.BLangRecordKeyValue bcField : bcFields) {
             switch (OpenShiftBuildExtensionFields.valueOf(bcField.getKey().toString())) {
                 case forcePullDockerImage:
-                    buildExtension.setForcePullDockerImage(Boolean.valueOf(
-                            resolveValue(bcField.getValue().toString())));
+                    buildExtension.setForcePullDockerImage(getBooleanValue(bcField.getValue()));
                     break;
                 case buildDockerWithNoCache:
-                    buildExtension.setBuildDockerWithNoCache(Boolean.valueOf(
-                            resolveValue(bcField.getValue().toString())));
+                    buildExtension.setBuildDockerWithNoCache(getBooleanValue(bcField.getValue()));
                     break;
                 default:
                     throw new KubernetesPluginException("unknown field found for OpenShift Build extension .");

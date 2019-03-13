@@ -34,11 +34,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.ISTIO_GATEWAY_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
@@ -67,7 +65,7 @@ public class IstioGatewayGeneratorTests {
         portModel.setProtocol("HTTP");
         portModel.setName("http");
         serverModel.setPort(portModel);
-        Set<String> hostModels = new LinkedHashSet<>();
+        List<String> hostModels = new LinkedList<>();
         hostModels.add("uk.bookinfo.com");
         hostModels.add("eu.bookinfo.com");
         serverModel.setHosts(hostModels);

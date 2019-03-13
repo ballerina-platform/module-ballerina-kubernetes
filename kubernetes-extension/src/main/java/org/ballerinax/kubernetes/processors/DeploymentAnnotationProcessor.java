@@ -45,10 +45,10 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.getExternalFileMap
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getImagePullSecrets;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getIntValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.parseBuildExtension;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
  * Deployment Annotation processor.
@@ -87,20 +87,19 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                     DeploymentConfiguration.valueOf(keyValue.getKey().toString());
             switch (deploymentConfiguration) {
                 case name:
-                    deploymentModel.setName(getValidName(resolveValue(keyValue.getValue().toString())));
+                    deploymentModel.setName(getValidName(getStringValue(keyValue.getValue())));
                     break;
                 case namespace:
-                    KubernetesContext.getInstance().getDataHolder().setNamespace(resolveValue(
-                            keyValue.getValue().toString()));
+                    KubernetesContext.getInstance().getDataHolder().setNamespace(getStringValue(keyValue.getValue()));
                     break;
                 case labels:
-                    deploymentModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    deploymentModel.setLabels(getMap(keyValue.getValue()));
                     break;
                 case annotations:
-                    deploymentModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    deploymentModel.setAnnotations(getMap(keyValue.getValue()));
                     break;
                 case podAnnotations:
-                    deploymentModel.setPodAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    deploymentModel.setPodAnnotations(getMap(keyValue.getValue()));
                     break;
                 case livenessProbe:
                     deploymentModel.setLivenessProbe(parseProbeConfiguration(keyValue.getValue()));
@@ -109,43 +108,43 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                     deploymentModel.setReadinessProbe(parseProbeConfiguration(keyValue.getValue()));
                     break;
                 case username:
-                    deploymentModel.setUsername(resolveValue(keyValue.getValue().toString()));
+                    deploymentModel.setUsername(getStringValue(keyValue.getValue()));
                     break;
                 case env:
                     deploymentModel.setEnv(getEnvVarMap(keyValue.getValue()));
                     break;
                 case password:
-                    deploymentModel.setPassword(resolveValue(keyValue.getValue().toString()));
+                    deploymentModel.setPassword(getStringValue(keyValue.getValue()));
                     break;
                 case baseImage:
-                    deploymentModel.setBaseImage(resolveValue(keyValue.getValue().toString()));
+                    deploymentModel.setBaseImage(getStringValue(keyValue.getValue()));
                     break;
                 case push:
-                    deploymentModel.setPush(Boolean.valueOf(resolveValue(keyValue.getValue().toString())));
+                    deploymentModel.setPush(getBooleanValue(keyValue.getValue()));
                     break;
                 case buildImage:
-                    deploymentModel.setBuildImage(Boolean.valueOf(resolveValue(keyValue.getValue().toString())));
+                    deploymentModel.setBuildImage(getBooleanValue(keyValue.getValue()));
                     break;
                 case image:
-                    deploymentModel.setImage(resolveValue(keyValue.getValue().toString()));
+                    deploymentModel.setImage(getStringValue(keyValue.getValue()));
                     break;
                 case dockerHost:
-                    deploymentModel.setDockerHost(resolveValue(keyValue.getValue().toString()));
+                    deploymentModel.setDockerHost(getStringValue(keyValue.getValue()));
                     break;
                 case dockerCertPath:
-                    deploymentModel.setDockerCertPath(resolveValue(keyValue.getValue().toString()));
+                    deploymentModel.setDockerCertPath(getStringValue(keyValue.getValue()));
                     break;
                 case imagePullPolicy:
-                    deploymentModel.setImagePullPolicy(resolveValue(keyValue.getValue().toString()));
+                    deploymentModel.setImagePullPolicy(getStringValue(keyValue.getValue()));
                     break;
                 case replicas:
-                    deploymentModel.setReplicas(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
+                    deploymentModel.setReplicas(getIntValue(keyValue.getValue()));
                     break;
                 case copyFiles:
                     deploymentModel.setCopyFiles(getExternalFileMap(keyValue));
                     break;
                 case singleYAML:
-                    deploymentModel.setSingleYAML(Boolean.valueOf(resolveValue(keyValue.getValue().toString())));
+                    deploymentModel.setSingleYAML(getBooleanValue(keyValue.getValue()));
                     break;
                 case dependsOn:
                     deploymentModel.setDependsOn(getDependsOn(keyValue));
@@ -154,7 +153,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                     deploymentModel.setImagePullSecrets(getImagePullSecrets(keyValue));
                     break;
                 case registry:
-                    deploymentModel.setRegistry(resolveValue(keyValue.getValue().toString()));
+                    deploymentModel.setRegistry(getStringValue(keyValue.getValue()));
                     break;
                 case buildExtension:
                     deploymentModel.setBuildExtension(parseBuildExtension(keyValue.getValue()));
