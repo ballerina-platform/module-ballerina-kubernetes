@@ -40,6 +40,7 @@ import java.util.List;
 import static org.ballerinax.kubernetes.KubernetesConstants.ISTIO_VIRTUAL_SERVICE_POSTFIX;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getArray;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getIntValue;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getLongValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
@@ -162,7 +163,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                         httpRoute.setRoute(processRoutesAnnotation(routeFields));
                         break;
                     case timeout:
-                        httpRoute.setTimeout(resolveValue((httpField).getValue().toString()));
+                        httpRoute.setTimeout(getLongValue(httpField.getValue()));
                         break;
                     case appendHeaders:
                         httpRoute.setAppendHeaders(getMap(((BLangRecordLiteral) httpField.valueExpr).keyValuePairs));

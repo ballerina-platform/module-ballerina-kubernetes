@@ -56,7 +56,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test(groups = {"istio"})
+    @Test(groups = {"istio"}, enabled = false, description = "disabled as its not supported yet.")
     public void httpRouteTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "http_route.bal"), 0);
@@ -122,7 +122,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test(groups = {"istio"})
+    @Test(groups = {"istio"}, enabled = false, description = "disabled as its not supported yet.")
     public void httpMatchRequestTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "http_match_request.bal"), 0);
@@ -268,7 +268,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test(groups = {"istio"})
+    @Test(groups = {"istio"}, enabled = false, description = "disabled as its not supported yet.")
     public void httpRedirectTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "http_redirect.bal"), 0);
@@ -315,7 +315,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test(groups = {"istio"})
+    @Test(groups = {"istio"}, enabled = false, description = "disabled as its not supported yet.")
     public void httpRetryTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "http_retry.bal"), 0);
@@ -363,7 +363,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test(groups = {"istio"})
+    @Test(groups = {"istio"}, enabled = false, description = "disabled as its not supported yet.")
     public void httpFaultInjectionTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "http_fault_injection.bal"), 0);
@@ -411,7 +411,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test(groups = {"istio"})
+    @Test(groups = {"istio"}, enabled = false, description = "disabled as its not supported yet.")
     public void corsPolicyTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "cors_policy.bal"), 0);
@@ -465,7 +465,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test(groups = {"istio"})
+    @Test(groups = {"istio"}, enabled = false, description = "disabled as its not supported yet.")
     public void tlsRouteTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "tls_route.bal"), 0);
@@ -525,7 +525,7 @@ public class IstioVirtualServiceTest {
      * @throws InterruptedException      Error when compiling the ballerina file.
      * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
      */
-    @Test(groups = {"istio"})
+    @Test(groups = {"istio"}, enabled = false, description = "disabled as its not supported yet.")
     public void tcpRouteTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "tcp_route.bal"), 0);

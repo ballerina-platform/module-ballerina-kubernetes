@@ -19,6 +19,7 @@
 package org.ballerinax.kubernetes.handlers.istio;
 
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
+import me.snowdrop.istio.api.Duration;
 import me.snowdrop.istio.api.DurationBuilder;
 import me.snowdrop.istio.api.networking.v1alpha3.Destination;
 import me.snowdrop.istio.api.networking.v1alpha3.DestinationBuilder;
@@ -139,11 +140,17 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
         
         List<HTTPRoute> httpRoutes = new LinkedList<>();
         for (IstioHttpRoute httpRouteModel : httpRouteModels) {
+            Duration timoutDuration = null;
+    
+            if (-1 != httpRouteModel.getTimeout()) {
+                timoutDuration = new DurationBuilder()
+                        .withSeconds(httpRouteModel.getTimeout())
+                        .build();
+            }
+            
             HTTPRoute httpRoute = new HTTPRouteBuilder()
                     .withRoute(populateRouteList(serviceName, httpRouteModel.getRoute()))
-                    .withTimeout(new DurationBuilder()
-                        .withNewSeconds(httpRouteModel.getTimeout())
-                        .build())
+                    .withTimeout(timoutDuration)
                     .withAppendHeaders(httpRouteModel.getAppendHeaders())
                     .build();
     

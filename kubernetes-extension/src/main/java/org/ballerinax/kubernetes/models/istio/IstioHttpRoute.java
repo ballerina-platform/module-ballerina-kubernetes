@@ -18,6 +18,7 @@
 
 package org.ballerinax.kubernetes.models.istio;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,8 +29,8 @@ import java.util.Map;
  */
 public class IstioHttpRoute {
     private List<IstioDestinationWeight> route;
-    private String timeout;
-    private Map<String, String> appendHeaders;
+    private long timeout = -1;
+    private Map<String, String> appendHeaders = new LinkedHashMap<>();
     
     public List<IstioDestinationWeight> getRoute() {
         return route;
@@ -39,11 +40,11 @@ public class IstioHttpRoute {
         this.route = route;
     }
 
-    public String getTimeout() {
+    public long getTimeout() {
         return timeout;
     }
     
-    public void setTimeout(String timeout) {
+    public void setTimeout(long timeout) {
         this.timeout = timeout;
     }
     

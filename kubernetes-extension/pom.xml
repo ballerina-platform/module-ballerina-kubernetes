@@ -266,6 +266,7 @@
                                     <inculde>javax.annotation:javax.annotation-api</inculde>
                                     <include>javax.validation:validation-api</include>
                                     <include>javax.ws.rs:javax.ws.rs-api</include>
+                                    <include>joda-time:joda-time</include>
                                     <include>me.snowdrop:istio-common</include>
                                     <include>me.snowdrop:istio-model</include>
                                     <include>org.apache.commons:commons-compress</include>

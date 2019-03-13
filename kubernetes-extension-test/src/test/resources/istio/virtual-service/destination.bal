@@ -24,7 +24,7 @@ import ballerinax/kubernetes;
     ],
     http: [
         {
-            ^"timeout": "5s",
+            ^"timeout": 5,
             route: [
                 {
                     destination: {

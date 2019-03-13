@@ -499,7 +499,7 @@ public type DestinationWeightConfig record {
 # + appendHeaders - Additional header to add before forwarding/directing.
 public type HTTPRouteConfig record {
     DestinationWeightConfig[] route?;
-    string ^"timeout"?;
+    int ^"timeout"?;
     map<string> appendHeaders?;
     !...;
 };
@@ -509,8 +509,6 @@ public type HTTPRouteConfig record {
 # + hosts - Destination which traffic should be sent.
 # + gateways - Names of the gateways which the service should listen to.
 # + http - Route rules for HTTP traffic.
-# + tls - Route rules for TLS and HTTPS traffic.
-# + tcp - Route rules for TCP traffic.
 public type IstioVirtualServiceConfig record {
     *Metadata;
     string[] hosts?;
