@@ -37,8 +37,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.ISTIO_VIRTUAL_SERVICE_POSTFIX;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.getArray;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getIntValue;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getList;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getLongValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
@@ -119,10 +119,10 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                     vsModel.setAnnotations(getMap(vsField.getValue()));
                     break;
                 case hosts:
-                    vsModel.setHosts(getArray(vsField.getValue()));
+                    vsModel.setHosts(getList(vsField.getValue()));
                     break;
                 case gateways:
-                    vsModel.setGateways(getArray(vsField.getValue()));
+                    vsModel.setGateways(getList(vsField.getValue()));
                     break;
                 case http:
                     BLangArrayLiteral httpFields = (BLangArrayLiteral) vsField.getValue();

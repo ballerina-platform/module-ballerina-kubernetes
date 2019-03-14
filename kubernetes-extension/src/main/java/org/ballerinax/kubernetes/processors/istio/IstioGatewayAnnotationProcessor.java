@@ -36,7 +36,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.ISTIO_GATEWAY_POSTFIX;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.getArray;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getList;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
@@ -161,7 +161,7 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
                             processIstioGatewayPortAnnotation(server, portRecord.getKeyValuePairs());
                             break;
                         case hosts:
-                            server.setHosts(getArray(serverField.getValue()));
+                            server.setHosts(getList(serverField.getValue()));
                             break;
                         case tls:
                             BLangRecordLiteral tlsRecord = (BLangRecordLiteral) serverField.getValue();
@@ -235,7 +235,7 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
                     tlsOptions.setCaCertificates(tlsField.getValue().toString());
                     break;
                 case subjectAltNames:
-                    tlsOptions.setSubjectAltNames(getArray(tlsField.getValue()));
+                    tlsOptions.setSubjectAltNames(getList(tlsField.getValue()));
                     break;
                 default:
                     throw new KubernetesPluginException("unknown field found for istio gateway server tls options.");

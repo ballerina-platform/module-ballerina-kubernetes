@@ -20,6 +20,7 @@ package org.ballerinax.kubernetes.processors.openshift;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.IdentifierNode;
+import org.ballerinalang.model.tree.NodeKind;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -79,7 +80,7 @@ public class OpenShiftRouteProcessor extends AbstractAnnotationProcessor {
                     openShiftRoute.setAnnotations(getMap(bcField.getValue()));
                     break;
                 case host:
-                    if (bcField.getValue() instanceof BLangRecordLiteral) {
+                    if (bcField.getValue().getKind() == NodeKind.RECORD_LITERAL_EXPR) {
                         BLangRecordLiteral hostRecord = (BLangRecordLiteral) bcField.getValue();
                         openShiftRoute.setDomain(getStringValue(hostRecord.getKeyValuePairs().get(0).getValue()));
                     } else {

@@ -135,7 +135,7 @@ public class JobHandler extends AbstractArtifactHandler {
             //generate dockerfile and docker image
             dataHolder.setDockerModel(getDockerModel(jobModel));
             OUT.println();
-            OUT.println("\t@kubernetes:Job \t\t\t - complete 1/1");
+            OUT.print("\t@kubernetes:Job \t\t\t - complete 1/1");
         } catch (DockerGenException e) {
             throw new KubernetesPluginException("error occurred creating docker image.", e);
         }

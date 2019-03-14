@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.getArray;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getList;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
@@ -96,7 +96,7 @@ public class ResourceQuotaAnnotationPreprocessor extends AbstractAnnotationProce
                             resourceQuotaModel.setHard(getMap(annotation.getValue()));
                             break;
                         case scopes:
-                            resourceQuotaModel.setScopes(new HashSet<>(getArray(annotation.getValue())));
+                            resourceQuotaModel.setScopes(new HashSet<>(getList(annotation.getValue())));
                             break;
                         default:
                             break;

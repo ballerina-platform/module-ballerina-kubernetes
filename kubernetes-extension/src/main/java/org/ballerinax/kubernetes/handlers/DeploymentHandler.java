@@ -292,7 +292,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
             }
             generate(deploymentModel);
             OUT.println();
-            OUT.println("\t@kubernetes:Deployment \t\t\t - complete 1/1");
+            OUT.print("\t@kubernetes:Deployment \t\t\t - complete 1/1");
             dataHolder.setDockerModel(getDockerModel(deploymentModel));
         } catch (DockerGenException e) {
             throw new KubernetesPluginException("error occurred creating docker image.", e);

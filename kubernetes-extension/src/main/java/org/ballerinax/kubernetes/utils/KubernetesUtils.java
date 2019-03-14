@@ -306,16 +306,16 @@ public class KubernetesUtils {
      * @param expr Array literal.
      * @return Convert string.
      */
-    public static List<String> getArray(BLangExpression expr) throws KubernetesPluginException {
-        if (expr instanceof BLangArrayLiteral) {
+    public static List<String> getList(BLangExpression expr) throws KubernetesPluginException {
+        if (expr.getKind() != NodeKind.ARRAY_LITERAL_EXPR) {
+            throw new KubernetesPluginException("unable to parse value: " + expr.toString());
+        } else {
             BLangArrayLiteral array = (BLangArrayLiteral) expr;
             List<String> scopeSet = new LinkedList<>();
             for (ExpressionNode bLangExpression : array.getExpressions()) {
                 scopeSet.add(getStringValue((BLangExpression) bLangExpression));
             }
             return scopeSet;
-        } else {
-            throw new KubernetesPluginException("unable to parse value: " + expr.toString());
         }
     }
     
@@ -327,15 +327,15 @@ public class KubernetesUtils {
      * @throws KubernetesPluginException When the expression cannot be parsed.
      */
     public static Map<String, String> getMap(BLangExpression expr) throws KubernetesPluginException {
-        if (expr instanceof BLangRecordLiteral) {
+        if (expr.getKind() != NodeKind.RECORD_LITERAL_EXPR) {
+            throw new KubernetesPluginException("unable to parse value: " + expr.toString());
+        } else {
             BLangRecordLiteral fields = (BLangRecordLiteral) expr;
             Map<String, String> map = new LinkedHashMap<>();
             for (BLangRecordLiteral.BLangRecordKeyValue keyValue : fields.getKeyValuePairs()) {
                 map.put(keyValue.getKey().toString(), getStringValue(keyValue.getValue()));
             }
             return map;
-        } else {
-            throw new KubernetesPluginException("unable to parse value: " + expr.toString());
         }
     }
     
@@ -392,6 +392,16 @@ public class KubernetesUtils {
         }
         throw new KubernetesPluginException("unable to parse value: " + expr.toString());
     }
+
+    /**
+     * Returns valid kubernetes name.
+     *
+     * @param name actual value
+     * @return valid name
+     */
+    public static String getValidName(String name) {
+        return name.toLowerCase(Locale.getDefault()).replace("_", "-").replace(".", "-");
+    }
     
     /**
      * Parse build extension of @kubernetes:Deployment annotation.
@@ -402,32 +412,21 @@ public class KubernetesUtils {
      */
     public static DeploymentBuildExtension parseBuildExtension(BLangExpression buildExtensionValue)
             throws KubernetesPluginException {
-        if (buildExtensionValue instanceof BLangSimpleVarRef || buildExtensionValue instanceof BLangLiteral) {
+        if (buildExtensionValue.getKind() == NodeKind.SIMPLE_VARIABLE_REF ||
+                                                                    buildExtensionValue.getKind() == NodeKind.LITERAL) {
             if ("openshift".equals(getStringValue(buildExtensionValue))) {
                 return new OpenShiftBuildExtensionModel();
             }
-        } else {
-            if (buildExtensionValue instanceof BLangRecordLiteral) {
-                List<BLangRecordLiteral.BLangRecordKeyValue> buildExtensionRecord =
-                        ((BLangRecordLiteral) buildExtensionValue).keyValuePairs;
-                BLangExpression buildExtensionType = buildExtensionRecord.get(0).getKey();
-                if ("openshift".equals(buildExtensionType.toString())) {
-                    BLangRecordLiteral openShiftField = (BLangRecordLiteral) buildExtensionRecord.get(0).getValue();
-                    return OpenShiftBuildExtensionProcessor.processBuildExtension(openShiftField.getKeyValuePairs());
-                }
+        } else if (buildExtensionValue.getKind() == NodeKind.RECORD_LITERAL_EXPR) {
+            List<BLangRecordLiteral.BLangRecordKeyValue> buildExtensionRecord =
+                    ((BLangRecordLiteral) buildExtensionValue).keyValuePairs;
+            BLangExpression buildExtensionType = buildExtensionRecord.get(0).getKey();
+            if ("openshift".equals(buildExtensionType.toString())) {
+                BLangRecordLiteral openShiftField = (BLangRecordLiteral) buildExtensionRecord.get(0).getValue();
+                return OpenShiftBuildExtensionProcessor.processBuildExtension(openShiftField.getKeyValuePairs());
             }
         }
         throw new KubernetesPluginException("unknown build extension found");
-    }
-
-    /**
-     * Returns valid kubernetes name.
-     *
-     * @param name actual value
-     * @return valid name
-     */
-    public static String getValidName(String name) {
-        return name.toLowerCase(Locale.getDefault()).replace("_", "-").replace(".", "-");
     }
 
     /**
@@ -439,7 +438,7 @@ public class KubernetesUtils {
     public static Map<String, EnvVarValueModel> getEnvVarMap(BLangExpression envVarValues)
             throws KubernetesPluginException {
         Map<String, EnvVarValueModel> envVarMap = new LinkedHashMap<>();
-        if (envVarValues.getKind() == NodeKind.RECORD_LITERAL_EXPR && envVarValues instanceof BLangRecordLiteral) {
+        if (envVarValues.getKind() == NodeKind.RECORD_LITERAL_EXPR) {
             for (BLangRecordLiteral.BLangRecordKeyValue envVar : ((BLangRecordLiteral) envVarValues).keyValuePairs) {
                 String envVarName = envVar.getKey().toString();
                 EnvVarValueModel envVarValue = null;
