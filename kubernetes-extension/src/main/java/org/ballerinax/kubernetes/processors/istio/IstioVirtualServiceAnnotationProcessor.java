@@ -33,18 +33,17 @@ import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.ISTIO_VIRTUAL_SERVICE_POSTFIX;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.getArray;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getIntValue;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getList;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getLongValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
  * Istio virtual service annotation processor.
@@ -111,25 +110,19 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
         for (BLangRecordLiteral.BLangRecordKeyValue vsField : vsFields) {
             switch (IstioVSConfig.valueOf(vsField.getKey().toString())) {
                 case name:
-                    vsModel.setName(resolveValue(vsField.getValue().toString()));
+                    vsModel.setName(getValidName(getStringValue(vsField.getValue())));
                     break;
                 case labels:
-                    BLangRecordLiteral labelsField = (BLangRecordLiteral) vsField.getValue();
-                    vsModel.setLabels(getMap(labelsField.getKeyValuePairs()));
+                    vsModel.setLabels(getMap(vsField.getValue()));
                     break;
                 case annotations:
-                    BLangRecordLiteral annotationsField = (BLangRecordLiteral) vsField.getValue();
-                    vsModel.setAnnotations(getMap(annotationsField.getKeyValuePairs()));
+                    vsModel.setAnnotations(getMap(vsField.getValue()));
                     break;
                 case hosts:
-                    BLangArrayLiteral hostsField = (BLangArrayLiteral) vsField.getValue();
-                    List<String> hostsList = new ArrayList<>(getArray(hostsField));
-                    vsModel.setHosts(hostsList);
+                    vsModel.setHosts(getList(vsField.getValue()));
                     break;
                 case gateways:
-                    BLangArrayLiteral gatewaysField = (BLangArrayLiteral)  vsField.getValue();
-                    List<String> gatewayList = new ArrayList<>(getArray(gatewaysField));
-                    vsModel.setGateways(gatewayList);
+                    vsModel.setGateways(getList(vsField.getValue()));
                     break;
                 case http:
                     BLangArrayLiteral httpFields = (BLangArrayLiteral) vsField.getValue();
@@ -166,7 +159,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                         httpRoute.setTimeout(getLongValue(httpField.getValue()));
                         break;
                     case appendHeaders:
-                        httpRoute.setAppendHeaders(getMap(((BLangRecordLiteral) httpField.valueExpr).keyValuePairs));
+                        httpRoute.setAppendHeaders(getMap(httpField.getValue()));
                         break;
                     default:
                         throw new KubernetesPluginException("unknown field found for istio virtual service: " +
@@ -199,7 +192,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                         destinationWeight.setDestination(destination);
                         break;
                     case weight:
-                        destinationWeight.setWeight(Integer.parseInt((routeField).getValue().toString()));
+                        destinationWeight.setWeight(getIntValue(routeField.getValue()));
                         break;
                     default:
                         throw new KubernetesPluginException("unknown field found for istio virtual service: " +
@@ -225,10 +218,10 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
         for (BLangRecordLiteral.BLangRecordKeyValue destinationField : destinationFields.getKeyValuePairs()) {
             switch (IstioDestinationConfig.valueOf(destinationField.getKey().toString())) {
                 case host:
-                    destination.setHost(resolveValue((destinationField).getValue().toString()));
+                    destination.setHost(getStringValue(destinationField.getValue()));
                     break;
                 case subset:
-                    destination.setSubset(resolveValue((destinationField).getValue().toString()));
+                    destination.setSubset(getStringValue(destinationField.getValue()));
                     break;
                 case port:
                     destination.setPort(getIntValue(destinationField.getValue()));

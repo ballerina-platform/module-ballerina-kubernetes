@@ -20,6 +20,7 @@ package org.ballerinax.kubernetes.processors.openshift;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.IdentifierNode;
+import org.ballerinalang.model.tree.NodeKind;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -33,9 +34,9 @@ import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT_ROUTE_POSTFIX;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
  * Annotation processor for OpenShift's Route.
@@ -70,23 +71,20 @@ public class OpenShiftRouteProcessor extends AbstractAnnotationProcessor {
         for (BLangRecordLiteral.BLangRecordKeyValue bcField : bcFields) {
             switch (OpenShiftRouteFields.valueOf(bcField.getKey().toString())) {
                 case name:
-                    openShiftRoute.setName(resolveValue(bcField.getValue().toString()));
+                    openShiftRoute.setName(getValidName(getStringValue(bcField.getValue())));
                     break;
                 case labels:
-                    BLangRecordLiteral labelsField = (BLangRecordLiteral) bcField.getValue();
-                    openShiftRoute.setLabels(getMap(labelsField.getKeyValuePairs()));
+                    openShiftRoute.setLabels(getMap(bcField.getValue()));
                     break;
                 case annotations:
-                    BLangRecordLiteral annotationsField = (BLangRecordLiteral) bcField.getValue();
-                    openShiftRoute.setAnnotations(getMap(annotationsField.getKeyValuePairs()));
+                    openShiftRoute.setAnnotations(getMap(bcField.getValue()));
                     break;
                 case host:
-                    if (bcField.getValue() instanceof BLangRecordLiteral) {
+                    if (bcField.getValue().getKind() == NodeKind.RECORD_LITERAL_EXPR) {
                         BLangRecordLiteral hostRecord = (BLangRecordLiteral) bcField.getValue();
-                        String domainValue = hostRecord.getKeyValuePairs().get(0).getValue().toString();
-                        openShiftRoute.setDomain(resolveValue(domainValue));
+                        openShiftRoute.setDomain(getStringValue(hostRecord.getKeyValuePairs().get(0).getValue()));
                     } else {
-                        openShiftRoute.setHost(resolveValue(bcField.getValue().toString()));
+                        openShiftRoute.setHost(getStringValue(bcField.getValue()));
                     }
                     break;
                 default:

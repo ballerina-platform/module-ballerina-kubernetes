@@ -48,10 +48,11 @@ import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_RUNTIME;
 import static org.ballerinax.kubernetes.KubernetesConstants.INGRESS_HOSTNAME_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.INGRESS_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.LISTENER_PATH_VARIABLE;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getBooleanValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
  * Ingress annotation processor.
@@ -184,29 +185,28 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
                     IngressConfiguration.valueOf(keyValue.getKey().toString());
             switch (ingressConfiguration) {
                 case name:
-                    ingressModel.setName(getValidName(resolveValue(keyValue.getValue().toString())));
+                    ingressModel.setName(getValidName(getStringValue(keyValue.getValue())));
                     break;
                 case labels:
-                    ingressModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    ingressModel.setLabels(getMap(keyValue.getValue()));
                     break;
                 case annotations:
-                    ingressModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr)
-                            .keyValuePairs));
+                    ingressModel.setAnnotations(getMap(keyValue.getValue()));
                     break;
                 case hostname:
-                    ingressModel.setHostname(resolveValue(keyValue.getValue().toString()));
+                    ingressModel.setHostname(getStringValue(keyValue.getValue()));
                     break;
                 case path:
-                    ingressModel.setPath(resolveValue(keyValue.getValue().toString()));
+                    ingressModel.setPath(getStringValue(keyValue.getValue()));
                     break;
                 case targetPath:
-                    ingressModel.setTargetPath(resolveValue(keyValue.getValue().toString()));
+                    ingressModel.setTargetPath(getStringValue(keyValue.getValue()));
                     break;
                 case ingressClass:
-                    ingressModel.setIngressClass(resolveValue(keyValue.getValue().toString()));
+                    ingressModel.setIngressClass(getStringValue(keyValue.getValue()));
                     break;
                 case enableTLS:
-                    ingressModel.setEnableTLS(Boolean.parseBoolean(resolveValue(keyValue.getValue().toString())));
+                    ingressModel.setEnableTLS(getBooleanValue(keyValue.getValue()));
                     break;
                 default:
                     break;

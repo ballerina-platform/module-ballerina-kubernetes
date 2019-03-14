@@ -47,10 +47,11 @@ import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_HOME;
 import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_RUNTIME;
 import static org.ballerinax.kubernetes.KubernetesConstants.CONFIG_MAP_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getBooleanValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
  * ConfigMap annotation processor.
@@ -93,20 +94,17 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
                                     ConfigMapMountConfig.valueOf(annotation.getKey().toString());
                             switch (volumeMountConfig) {
                                 case name:
-                                    configMapModel.setName(getValidName(resolveValue(
-                                            annotation.getValue().toString())));
+                                    configMapModel.setName(getValidName(getStringValue(annotation.getValue())));
                                     break;
                                 case labels:
-                                    configMapModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr)
-                                            .keyValuePairs));
+                                    configMapModel.setLabels(getMap(keyValue.getValue()));
                                     break;
                                 case annotations:
-                                    configMapModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr)
-                                            .keyValuePairs));
+                                    configMapModel.setAnnotations(getMap(keyValue.getValue()));
                                     break;
                                 case mountPath:
                                     // validate mount path is not set to ballerina home or ballerina runtime
-                                    final Path mountPath = Paths.get(resolveValue(annotation.getValue().toString()));
+                                    final Path mountPath = Paths.get(getStringValue(annotation.getValue()));
                                     final Path homePath = Paths.get(BALLERINA_HOME);
                                     final Path runtimePath = Paths.get(BALLERINA_RUNTIME);
                                     final Path confPath = Paths.get(BALLERINA_CONF_MOUNT_PATH);
@@ -125,15 +123,14 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
                                                                             "cannot be ballerina conf file mount " +
                                                                             "path: " + BALLERINA_CONF_MOUNT_PATH);
                                     }
-                                    configMapModel.setMountPath(resolveValue(annotation.getValue().toString()));
+                                    configMapModel.setMountPath(getStringValue(annotation.getValue()));
                                     break;
                                 case data:
                                     List<BLangExpression> data = ((BLangArrayLiteral) annotation.valueExpr).exprs;
                                     configMapModel.setData(getDataForConfigMap(data));
                                     break;
                                 case readOnly:
-                                    configMapModel.setReadOnly(Boolean.parseBoolean(resolveValue(
-                                            annotation.getValue().toString())));
+                                    configMapModel.setReadOnly(getBooleanValue(annotation.getValue()));
                                     break;
                                 default:
                                     break;

@@ -36,8 +36,9 @@ public class DockerHandler extends AbstractArtifactHandler {
             // Generate docker artifacts
             Path dockerOutputDir = dataHolder.getArtifactOutputPath().resolve(DOCKER);
             DockerArtifactHandler dockerArtifactHandler = new DockerArtifactHandler(dataHolder.getDockerModel());
-            dockerArtifactHandler.createArtifacts(OUT, "\t@kubernetes:Docker \t\t\t", dataHolder
-                    .getBalxFilePath().toString(), dockerOutputDir);
+            OUT.println();
+            dockerArtifactHandler.createArtifacts(OUT, "\t@kubernetes:Docker \t\t\t",
+                    dataHolder.getBalxFilePath().toString(), dockerOutputDir);
         } catch (DockerGenException e) {
             throw new KubernetesPluginException(e.getMessage(), e);
         }

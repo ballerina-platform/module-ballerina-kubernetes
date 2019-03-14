@@ -32,17 +32,15 @@ import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.ISTIO_GATEWAY_POSTFIX;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.getArray;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getList;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
  * Istio gateway annotation processor.
@@ -98,7 +96,7 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
             serverModel.setPort(portModel);
             
             if (null == serverModel.getHosts() || serverModel.getHosts().size() == 0) {
-                Set<String> hosts = new LinkedHashSet<>();
+                List<String> hosts = new LinkedList<>();
                 hosts.add("*");
                 serverModel.setHosts(hosts);
             }
@@ -120,19 +118,16 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
         for (BLangRecordLiteral.BLangRecordKeyValue gatewayField : gatewayFields) {
             switch (IstioGatewayConfig.valueOf(gatewayField.getKey().toString())) {
                 case name:
-                    gatewayModel.setName(resolveValue(gatewayField.getValue().toString()));
+                    gatewayModel.setName(getValidName(getStringValue(gatewayField.getValue())));
                     break;
                 case labels:
-                    BLangRecordLiteral labelsField = (BLangRecordLiteral) gatewayField.getValue();
-                    gatewayModel.setLabels(getMap(labelsField.getKeyValuePairs()));
+                    gatewayModel.setLabels(getMap(gatewayField.getValue()));
                     break;
                 case annotations:
-                    BLangRecordLiteral annotationsField = (BLangRecordLiteral) gatewayField.getValue();
-                    gatewayModel.setAnnotations(getMap(annotationsField.getKeyValuePairs()));
+                    gatewayModel.setAnnotations(getMap(gatewayField.getValue()));
                     break;
                 case selector:
-                    BLangRecordLiteral selectorsField = (BLangRecordLiteral) gatewayField.getValue();
-                    gatewayModel.setSelector(getMap(selectorsField.getKeyValuePairs()));
+                    gatewayModel.setSelector(getMap(gatewayField.getValue()));
                     break;
                 case servers:
                     processIstioGatewayServerAnnotation(gatewayModel, (BLangArrayLiteral) gatewayField.getValue());
@@ -166,8 +161,7 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
                             processIstioGatewayPortAnnotation(server, portRecord.getKeyValuePairs());
                             break;
                         case hosts:
-                            BLangArrayLiteral hosts = (BLangArrayLiteral) serverField.getValue();
-                            server.setHosts(getArray(hosts));
+                            server.setHosts(getList(serverField.getValue()));
                             break;
                         case tls:
                             BLangRecordLiteral tlsRecord = (BLangRecordLiteral) serverField.getValue();
@@ -241,8 +235,7 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
                     tlsOptions.setCaCertificates(tlsField.getValue().toString());
                     break;
                 case subjectAltNames:
-                    BLangArrayLiteral subjectAltNames = (BLangArrayLiteral) tlsField.getValue();
-                    tlsOptions.setSubjectAltNames(getArray(subjectAltNames));
+                    tlsOptions.setSubjectAltNames(getList(tlsField.getValue()));
                     break;
                 default:
                     throw new KubernetesPluginException("unknown field found for istio gateway server tls options.");

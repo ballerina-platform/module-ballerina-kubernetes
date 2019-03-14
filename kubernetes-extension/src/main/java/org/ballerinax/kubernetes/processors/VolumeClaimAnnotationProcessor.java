@@ -34,9 +34,10 @@ import java.util.List;
 import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getBooleanValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
  * Persistent volume claim annotation processor.
@@ -94,26 +95,25 @@ public class VolumeClaimAnnotationProcessor extends AbstractAnnotationProcessor 
                             VolumeClaimConfig.valueOf(annotation.getKey().toString());
                     switch (volumeMountConfig) {
                         case name:
-                            claimModel.setName(getValidName(resolveValue(annotation.getValue().toString())));
+                            claimModel.setName(getValidName(getStringValue(annotation.getValue())));
                             break;
                         case labels:
-                            claimModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                            claimModel.setLabels(getMap(keyValue.getValue()));
                             break;
                         case annotations:
-                            claimModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                            claimModel.setAnnotations(getMap(keyValue.getValue()));
                             break;
                         case mountPath:
-                            claimModel.setMountPath(resolveValue(annotation.getValue().toString()));
+                            claimModel.setMountPath(getStringValue(annotation.getValue()));
                             break;
                         case accessMode:
-                            claimModel.setAccessMode(resolveValue(annotation.getValue().toString()));
+                            claimModel.setAccessMode(getStringValue(annotation.getValue()));
                             break;
                         case volumeClaimSize:
-                            claimModel.setVolumeClaimSize(resolveValue(annotation.getValue().toString()));
+                            claimModel.setVolumeClaimSize(getStringValue(annotation.getValue()));
                             break;
                         case readOnly:
-                            claimModel.setReadOnly(Boolean.parseBoolean(resolveValue(
-                                    annotation.getValue().toString())));
+                            claimModel.setReadOnly(getBooleanValue(annotation.getValue()));
                             break;
                         default:
                             break;

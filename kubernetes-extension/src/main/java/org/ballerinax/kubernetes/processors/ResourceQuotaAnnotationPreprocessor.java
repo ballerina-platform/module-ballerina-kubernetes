@@ -35,10 +35,10 @@ import java.util.List;
 import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.getArray;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getList;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
  * Resource quota annotation processor.
@@ -84,22 +84,19 @@ public class ResourceQuotaAnnotationPreprocessor extends AbstractAnnotationProce
                             ResourceQuotaConfig.valueOf(annotation.getKey().toString());
                     switch (resourceQuotaConfig) {
                         case name:
-                            resourceQuotaModel.setName(getValidName(resolveValue(annotation.getValue().toString())));
+                            resourceQuotaModel.setName(getValidName(getStringValue(annotation.getValue())));
                             break;
                         case labels:
-                            BLangRecordLiteral labelValues = (BLangRecordLiteral) annotation.getValue();
-                            resourceQuotaModel.setLabels(getMap(labelValues.getKeyValuePairs()));
+                            resourceQuotaModel.setLabels(getMap(annotation.getValue()));
                             break;
                         case annotations:
-                            BLangRecordLiteral annoValues = (BLangRecordLiteral) annotation.getValue();
-                            resourceQuotaModel.setAnnotations(getMap(annoValues.getKeyValuePairs()));
+                            resourceQuotaModel.setAnnotations(getMap(annotation.getValue()));
                             break;
                         case hard:
-                            BLangRecordLiteral hardValueRecord = (BLangRecordLiteral) annotation.getValue();
-                            resourceQuotaModel.setHard(getMap(hardValueRecord.getKeyValuePairs()));
+                            resourceQuotaModel.setHard(getMap(annotation.getValue()));
                             break;
                         case scopes:
-                            resourceQuotaModel.setScopes(getArray((BLangArrayLiteral) annotation.getValue()));
+                            resourceQuotaModel.setScopes(new HashSet<>(getList(annotation.getValue())));
                             break;
                         default:
                             break;
