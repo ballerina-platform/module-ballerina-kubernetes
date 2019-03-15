@@ -278,26 +278,25 @@ public class KubernetesUtils {
     }
 
     /**
-     * Resolve variable value from environment variable if $env{} is used. Else return the value.
+     * Resolve the given value by processing $env{} place-holders.
      *
-     * @param variable variable value
-     * @return Resolved variable
+     * @param value The user provided value
+     * @return The resolved value
      */
-    public static String resolveValue(String variable) throws KubernetesPluginException {
-        if (variable.contains("$env{")) {
-            //remove white spaces
-            variable = variable.replace(" ", "");
-            //extract variable name
-            final String envVariable = variable.substring(variable.lastIndexOf("$env{") + 5,
-                    variable.lastIndexOf("}"));
-            //resolve value
-            String value = Optional.ofNullable(System.getenv(envVariable)).orElseThrow(
-                    () -> new KubernetesPluginException("error resolving value: " + envVariable + " is not set in " +
-                            "the environment."));
-            // substitute value
-            return variable.replace("$env{" + envVariable + "}", value);
+    public static String resolveValue(String value) throws KubernetesPluginException {
+        int startIndex;
+        if ((startIndex = value.indexOf("$env{")) >= 0) {
+            int endIndex = value.indexOf("}", startIndex);
+            if (endIndex > 0) {
+                String varName = value.substring(startIndex + 5, endIndex).trim();
+                String resolvedVar = Optional.ofNullable(System.getenv(varName)).orElseThrow(() -> 
+                    new KubernetesPluginException("error resolving value: " + varName + 
+                            " is not set in the environment."));
+                String rest = (value.length() > endIndex + 1) ? resolveValue(value.substring(endIndex + 1)) : "";
+                return value.substring(0, startIndex) + resolvedVar + rest;
+            }
         }
-        return variable;
+        return value;
     }
     
     /**
