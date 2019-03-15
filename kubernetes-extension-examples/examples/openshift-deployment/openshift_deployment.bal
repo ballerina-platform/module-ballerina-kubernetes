@@ -28,13 +28,7 @@ listener http:Listener helloWorldEP = new(9090, config = {
     }
 });
 
-//Add `@kubernetes:ConfigMap` annotation to a Ballerina service to mount configs to the container.
-@kubernetes:ConfigMap {
-    //Path to the ballerina.conf file.
-    //If a releative path is provided, the path should be releative to where the `ballerina build` command is executed.
-    conf: "./ballerina.conf"
-}
-//Add `@kubernetes:Deployment` annotation to a Ballerna service to generate Kuberenetes Deployment for a Ballerina module.
+//Add `@kubernetes:Deployment` annotation to a Ballerina service to generate Kuberenetes Deployment for a Ballerina module.
 @kubernetes:Deployment {
     //Enable Kubernetes liveness probe to this service.
     livenessProbe: true,
