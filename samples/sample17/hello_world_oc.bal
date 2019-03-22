@@ -22,15 +22,15 @@ import ballerinax/kubernetes;
         domain: "<MINISHIFT_IP>.nip.io"
     }
 }
+@kubernetes:Service { }
+listener http:Listener helloEP = new(9090);
+
 @kubernetes:Deployment {
     namespace: "bal-oc",
     registry: "<MINISHIFT_DOCKER_REGISTRY_IP>",
     buildImage: false,   // We do not want to create the docker image when building as the OpenShift Build Configs takes care of it.
     buildExtension: "openshift"
 }
-@kubernetes:Service { }
-listener http:Listener helloEP = new(9090);
-
 @http:ServiceConfig {
     basePath: "/helloWorld"
 }
