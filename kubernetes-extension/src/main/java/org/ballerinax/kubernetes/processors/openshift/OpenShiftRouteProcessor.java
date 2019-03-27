@@ -55,7 +55,7 @@ public class OpenShiftRouteProcessor extends AbstractAnnotationProcessor {
     }
     
     /**
-     * Process @kubernetes:OpenShiftRoute annotation.
+     * Process @openshift:Route annotation.
      *
      * @param identifierNode Node of which the annotation was attached to.
      * @param attachmentNode The annotation node.

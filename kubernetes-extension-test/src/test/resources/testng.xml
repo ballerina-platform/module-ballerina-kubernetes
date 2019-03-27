@@ -35,6 +35,7 @@
             <class name="org.ballerinax.kubernetes.test.samples.Sample14Test"/>
             <class name="org.ballerinax.kubernetes.test.samples.Sample15Test"/>
             <class name="org.ballerinax.kubernetes.test.samples.Sample16Test"/>
+            <class name="org.ballerinax.kubernetes.test.samples.Sample17Test"/>
         </classes>
     </test>
 

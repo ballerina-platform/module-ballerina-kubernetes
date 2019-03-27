@@ -56,7 +56,7 @@ public class AnnotationProcessorFactory {
                 return new IstioGatewayAnnotationProcessor();
             case IstioVirtualService:
                 return new IstioVirtualServiceAnnotationProcessor();
-            case OpenShiftRoute:
+            case Route:
                 return new OpenShiftRouteProcessor();
             default:
                 KubernetesContext.getInstance().getDataHolder().setCanProcess(false);
@@ -76,6 +76,6 @@ public class AnnotationProcessorFactory {
         ResourceQuota,
         IstioGateway,
         IstioVirtualService,
-        OpenShiftRoute
+        Route
     }
 }

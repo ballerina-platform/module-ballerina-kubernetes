@@ -17,8 +17,9 @@
 import ballerina/http;
 import ballerina/log;
 import ballerinax/kubernetes;
+import ballerinax/openshift;
 
-@kubernetes:OpenShiftRoute {
+@openshift:Route {
     host: {
         domain: "<MINISHIFT_IP>.nip.io"
     }

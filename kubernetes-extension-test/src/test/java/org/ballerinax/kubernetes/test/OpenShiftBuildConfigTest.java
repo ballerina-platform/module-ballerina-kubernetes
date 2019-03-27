@@ -39,7 +39,7 @@ import java.util.List;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 
 /**
- * Test cases for @kubernetes:OpenShiftBuildConfig{} annotation generated artifacts.
+ * Test cases for OpenShift BuildConfig generated artifacts.
  */
 public class OpenShiftBuildConfigTest {
     private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "openshift", "build-config");

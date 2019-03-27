@@ -495,21 +495,3 @@ public type OpenShiftBuildConfigConfiguration record {|
     boolean forcePullDockerImage = false;
     boolean buildDockerWithNoCache = false;
 |};
-
-# Domain for OpenShift Route configuration.
-#
-# + domain - The domain of the hostname.
-public type OpenShiftRouteDomainConfig record {|
-    string domain;
-|};
-
-# Route configuration for @kubernetes:OpenShiftRoute.
-#
-# + host - The host of the route.
-public type OpenShiftRouteConfiguration record {|
-    *Metadata;
-    string|OpenShiftRouteDomainConfig host;
-|};
-
-# @kubernetes:OpenShiftRoute annotation to generate openshift routes.
-public annotation<service, listener> OpenShiftRoute OpenShiftRouteConfiguration;

@@ -38,7 +38,7 @@ import java.util.List;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 
 /**
- * Test cases for @kubernetes:OpenShiftRoute{} annotation generated artifacts.
+ * Test cases for @openshift:Route{} annotation generated artifacts.
  */
 public class OpenShiftRouteTest {
     private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "openshift", "route");
