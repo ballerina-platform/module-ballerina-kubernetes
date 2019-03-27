@@ -21,19 +21,17 @@ public const string BUILD_EXTENSION_OPENSHIFT = "openshift";
 # Domain for OpenShift Route configuration.
 #
 # + domain - The domain of the hostname.
-public type RouteDomainConfig record {
+public type RouteDomainConfig record {|
     string domain;
-    !...;
-};
+|};
 
 # Route configuration for @kubernetes:OpenShiftRoute.
 #
 # + host - The host of the route.
-public type RouteConfiguration record {
+public type RouteConfiguration record {|
     *kubernetes:Metadata;
     string|RouteDomainConfig host;
-    !...;
-};
+|};
 
 # @kubernetes:OpenShiftRoute annotation to generate openshift routes.
 public annotation<service, listener> Route RouteConfiguration;
