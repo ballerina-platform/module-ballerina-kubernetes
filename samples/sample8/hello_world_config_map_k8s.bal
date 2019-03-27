@@ -60,7 +60,7 @@ service helloWorld on helloWorldEP {
 
 function getConfigValue(string instanceId, string property) returns (string) {
     string key = untaint instanceId + "." + untaint property;
-    return config:getAsString(key, default = "Invalid User");
+    return config:getAsString(key, defaultValue = "Invalid User");
 }
 
 function readFile(string filePath) returns (string) {
