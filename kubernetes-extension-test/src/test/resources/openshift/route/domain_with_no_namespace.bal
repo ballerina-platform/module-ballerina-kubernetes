@@ -16,8 +16,9 @@
 
 import ballerina/http;
 import ballerinax/kubernetes;
+import ballerinax/openshift;
 
-@kubernetes:OpenShiftRoute {
+@openshift:Route {
     host: {
         domain: "abc.com"
     }

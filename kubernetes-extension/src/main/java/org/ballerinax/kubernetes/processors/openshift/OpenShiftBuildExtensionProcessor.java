@@ -50,7 +50,8 @@ public class OpenShiftBuildExtensionProcessor {
                     buildExtension.setBuildDockerWithNoCache(getBooleanValue(bcField.getValue()));
                     break;
                 default:
-                    throw new KubernetesPluginException("unknown field found for OpenShift Build extension .");
+                    throw new KubernetesPluginException("unknown field found for OpenShift Build extension: " +
+                                                        bcField.getKey().toString());
             }
         }
         

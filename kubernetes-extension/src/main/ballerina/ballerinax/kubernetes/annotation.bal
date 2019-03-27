@@ -103,8 +103,6 @@ public const string IMAGE_PULL_POLICY_NEVER = "Never";
 # Image pull policy type field for kubernetes deployment and jobs.
 public type ImagePullPolicy "IfNotPresent"|"Always"|"Never";
 
-public const string BUILD_EXTENSION_OPENSHIFT = "openshift";
-
 # Extend building of the docker image.
 #
 # + openshift - Openshift build config.
@@ -161,7 +159,7 @@ public type DeploymentConfiguration record {|
     string registry?;
     string username?;
     string password?;
-    BuildExtension|BUILD_EXTENSION_OPENSHIFT buildExtension?;
+    BuildExtension|string buildExtension?;
     string baseImage?;
     boolean push?;
     string dockerCertPath?;

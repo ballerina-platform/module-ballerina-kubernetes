@@ -16,6 +16,8 @@
 
 import kubernetes;
 
+public const string BUILD_EXTENSION_OPENSHIFT = "openshift";
+
 # Domain for OpenShift Route configuration.
 #
 # + domain - The domain of the hostname.

@@ -45,8 +45,8 @@ import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
 import org.ballerinax.kubernetes.processors.openshift.OpenShiftBuildExtensionProcessor;
+import org.wso2.ballerinalang.compiler.semantics.model.symbols.BConstantSymbol;
 import org.wso2.ballerinalang.compiler.semantics.model.types.BFiniteType;
-import org.wso2.ballerinalang.compiler.semantics.model.types.BType;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
@@ -379,12 +379,17 @@ public class KubernetesUtils {
      * @throws KubernetesPluginException When the expression cannot be parsed.
      */
     public static String getStringValue(BLangExpression expr) throws KubernetesPluginException {
-        BType exprType = expr.type;
-        if (expr instanceof BLangSimpleVarRef && exprType instanceof BFiniteType) {
-            // Parse compile time constant
-            BFiniteType compileConst = (BFiniteType) exprType;
-            if (compileConst.valueSpace.size() > 0) {
-                return resolveValue(compileConst.valueSpace.iterator().next().toString());
+        if (expr instanceof BLangSimpleVarRef) {
+            BLangSimpleVarRef varRef = (BLangSimpleVarRef) expr;
+            if (varRef.symbol instanceof BConstantSymbol) {
+                BConstantSymbol constantSymbol = (BConstantSymbol) varRef.symbol;
+                if (constantSymbol.type instanceof BFiniteType) {
+                    // Parse compile time constant
+                    BFiniteType compileConst = (BFiniteType) constantSymbol.type;
+                    if (compileConst.valueSpace.size() > 0) {
+                        return resolveValue(compileConst.valueSpace.iterator().next().toString());
+                    }
+                }
             }
         } else if (expr instanceof BLangLiteral) {
             return resolveValue(expr.toString());
