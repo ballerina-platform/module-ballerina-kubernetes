@@ -57,10 +57,9 @@ service cooldrinkAPI on coolDrinkEP {
     }
 }
 
-type CoolDrink record {
+type CoolDrink record {|
     int id;
     string name;
     string description;
     float price;
-    !...;
-};
+|};

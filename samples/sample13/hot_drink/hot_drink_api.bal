@@ -57,10 +57,9 @@ service HotDrinksAPI on hotDrinkEP {
     }
 }
 
-type HotDrink record {
+type HotDrink record {|
     int id;
     string name;
     string description;
     float price;
-    !...;
-};
+|};
