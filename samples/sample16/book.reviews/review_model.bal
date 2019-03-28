@@ -2,8 +2,7 @@
 #
 # + id - ID of a book
 # + content - Review content
-type Review record {
+type Review record {|
     string id;
     string content;
-    !...;
-};
+|};

@@ -1,4 +1,5 @@
 import ballerina/http;
+import ballerina/log;
 import ballerinax/kubernetes;
 
 @kubernetes:Ingress {
@@ -36,6 +37,9 @@ service Customer on pizzaEP, pizzaEPSecured {
     resource function getCustomer(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         response.setTextPayload("Get Customer resource !!!!\n");
-        _ = outboundEP->respond(response);
+        var responseResult = outboundEP->respond(response);
+        if (responseResult is error) {
+            log:printError("error responding back to client.", err = responseResult);
+        }
     }
 }

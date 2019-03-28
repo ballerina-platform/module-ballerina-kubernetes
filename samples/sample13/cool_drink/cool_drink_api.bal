@@ -53,14 +53,16 @@ service cooldrinkAPI on coolDrinkEP {
             response.setTextPayload("Error in reading results");
         }
 
-        _ = outboundEP->respond(response);
+        var responseResult = outboundEP->respond(response);
+        if (responseResult is error) {
+            log:printError("error responding back to client.", err = responseResult);
+        }
     }
 }
 
-type CoolDrink record {
+type CoolDrink record {|
     int id;
     string name;
     string description;
     float price;
-    !...;
-};
+|};

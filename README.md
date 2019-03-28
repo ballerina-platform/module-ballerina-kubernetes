@@ -164,25 +164,31 @@ Annotation based kubernetes extension implementation for ballerina.
 
 ```ballerina
 import ballerina/http;
+import ballerina/log;
 import ballerinax/kubernetes;
 
 @kubernetes:Ingress{
-    hostname:"abc.com"
+    hostname: "abc.com"
 }
-@kubernetes:Service{name:"hello"}
+@kubernetes:Service {
+    name:"hello"
+}
 listener http:Listener helloEP = new(9090);
 
-@kubernetes:Deployment{
+@kubernetes:Deployment {
     livenessProbe: true
 }
 @http:ServiceConfig {
-    basePath:"/helloWorld"
+    basePath: "/helloWorld"
 }
 service helloWorld on helloEP {
-    resource functino sayHello (http:Caller outboundEP, http:Request request) {
+    resource function sayHello(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         response.setTextPayload("Hello, World from service helloWorld ! ");
-        _ = outboundEP -> respond(response);
+        var responseResult = outboundEP -> respond(response);
+        if (responseResult is error) {
+            log:printError("error responding back to client.", err = responseResult);
+        }
     }
 }
 ```
