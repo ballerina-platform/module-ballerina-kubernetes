@@ -1,6 +1,7 @@
 import ballerina/http;
-import ballerinax/kubernetes;
+import ballerina/log;
 import ballerina/io;
+import ballerinax/kubernetes;
 
 @kubernetes:Service {}
 @kubernetes:Ingress {
@@ -47,7 +48,10 @@ service helloWorld on helloWorldEP {
         http:Response response = new;
         string payload = readFile("./private/MySecret1.txt");
         response.setTextPayload("Secret1 resource: " + untaint payload + "\n");
-        _ = outboundEP->respond(response);
+        var responseResult = outboundEP->respond(response);
+        if (responseResult is error) {
+            log:printError("error responding back to client.", err = responseResult);
+        }
     }
 
     @http:ResourceConfig {
@@ -58,7 +62,10 @@ service helloWorld on helloWorldEP {
         http:Response response = new;
         string payload = readFile("./public/MySecret2.txt");
         response.setTextPayload("Secret2 resource: " + untaint payload + "\n");
-        _ = outboundEP->respond(response);
+        var responseResult = outboundEP->respond(response);
+        if (responseResult is error) {
+            log:printError("error responding back to client.", err = responseResult);
+        }
     }
 
     @http:ResourceConfig {
@@ -69,7 +76,10 @@ service helloWorld on helloWorldEP {
         http:Response response = new;
         string payload = readFile("./public/MySecret3.txt");
         response.setTextPayload("Secret3 resource: " + untaint payload + "\n");
-        _ = outboundEP->respond(response);
+        var responseResult = outboundEP->respond(response);
+        if (responseResult is error) {
+            log:printError("error responding back to client.", err = responseResult);
+        }
     }
 }
 

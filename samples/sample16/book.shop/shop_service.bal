@@ -1,4 +1,5 @@
 import ballerina/http;
+import ballerina/log;
 import ballerinax/kubernetes;
 
 @kubernetes:Service {}
@@ -36,39 +37,57 @@ service shopService on bookShopEP {
                             };
                             http:Response bookResponse = new;
                             bookResponse.setJsonPayload(untaint bookInfo, contentType = "application/json");
-                            _ = caller -> respond(bookResponse);
+                            var responseResult = caller->respond(bookResponse);
+                            if (responseResult is error) {
+                                log:printError("error responding back to client.", err = responseResult);
+                            }
                         } else {
                             http:Response errResponse = new;
                             json serverErr = { message: "unexpected response from review service" };
                             errResponse.setJsonPayload(serverErr, contentType = "application/json");
                             errResponse.statusCode = 404;
-                            _ = caller -> respond(errResponse);
+                            var responseResult = caller->respond(errResponse);
+                            if (responseResult is error) {
+                                log:printError("error responding back to client.", err = responseResult);
+                            }
                         }
                     } else {
                         http:Response errResponse = new;
                         json serverErr = { message: "book reviews service is not accessible" };
                         errResponse.setJsonPayload(serverErr, contentType = "application/json");
-                        _ = caller -> respond(errResponse);
+                        var responseResult = caller->respond(errResponse);
+                        if (responseResult is error) {
+                            log:printError("error responding back to client.", err = responseResult);
+                        }
                     }
                 } else {
                     http:Response errResponse = new;
                     json serverErr = { message: "unexpected response from detail service" };
                     errResponse.setJsonPayload(serverErr, contentType = "application/json");
                     errResponse.statusCode = 404;
-                    _ = caller -> respond(errResponse);
+                    var responseResult = caller->respond(errResponse);
+                    if (responseResult is error) {
+                        log:printError("error responding back to client.", err = responseResult);
+                    }
                 }
             } else {
                 http:Response errResponse = new;
                 json serverErr = { message: string `book not found: {{untaint id}}` };
                 errResponse.setJsonPayload(serverErr, contentType = "application/json");
                 errResponse.statusCode = 404;
-                _ = caller -> respond(errResponse);
+                var responseResult = caller->respond(errResponse);
+                if (responseResult is error) {
+                    log:printError("error responding back to client.", err = responseResult);
+                }
             }
         } else {
             http:Response errResponse = new;
             json serverErr = { message: "book details service is not accessible" };
             errResponse.setJsonPayload(serverErr, contentType = "application/json");
-            _ = caller -> respond(errResponse);
+            var responseResult = caller->respond(errResponse);
+            if (responseResult is error) {
+                log:printError("error responding back to client.", err = responseResult);
+            }
         }
     }
 }
