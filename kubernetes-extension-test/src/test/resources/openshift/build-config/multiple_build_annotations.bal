@@ -33,7 +33,7 @@ service helloWorld on helloEP {
     resource function sayHello(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         response.setTextPayload("Hello, World from service helloWorld ! \n");
-        checkpanic = outboundEP->respond(response);
+        checkpanic outboundEP->respond(response);
     }
 }
 
@@ -54,6 +54,6 @@ service helloWorld2 on helloEP2 {
     resource function sayHello2(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         response.setTextPayload("Hello, World from service helloWorld2 ! \n");
-        checkpanic = outboundEP->respond(response);
+        checkpanic outboundEP->respond(response);
     }
 }

@@ -33,6 +33,6 @@ service funcs on printEP {
     resource function print(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         response.setTextPayload("Hello, World from service helloWorld ! \n");
-        checkpanic = outboundEP->respond(response);
+        checkpanic outboundEP->respond(response);
     }
 }
