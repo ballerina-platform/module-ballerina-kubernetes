@@ -50,6 +50,6 @@ service PizzaAPI on pizzaEP {
     resource function getPizzaMenu(http:Caller outboundEP, http:Request req) {
         http:Response response = new;
         response.setTextPayload("Pizza menu \n");
-        checkpanic responseResult = outboundEP->respond(response);
+        checkpanic outboundEP->respond(response);
     }
 }
