@@ -16,11 +16,12 @@
 
 import ballerina/http;
 import ballerinax/kubernetes;
+import ballerinax/openshift;
 
 @kubernetes:Deployment {
     namespace: "bal-oc-test",
     buildImage: false,
-    buildExtension: kubernetes:BUILD_EXTENSION_OPENSHIFT
+    buildExtension: openshift:BUILD_EXTENSION_OPENSHIFT
 }
 @kubernetes:Service {}
 listener http:Listener helloEP = new(9090);

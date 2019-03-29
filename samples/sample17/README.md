@@ -1,8 +1,6 @@
 ## Sample17: OpenShift Build Configs and Routes
 
 - This sample demonstrates how to build and deploy a ballerina service in OpenShift.
-- `@kubernetes:OpenShiftBuildConfig` annotation generates a build config which allows to build docker images of the 
-service.
 - `@kubernetes:OpenShiftRoute` annotation generates a route to the generated kubernetes service.
 - This sample uses minikube and minishift for demonstration purposes. Hence make sure they are started up.
 - The `hello_world_oc.bal` file has placeholders that needs to be filled prior building.
@@ -10,8 +8,7 @@ service.
 from the value.
 - Use the value from `minishift openshift registry` to fill in the `MINISHIFT_DOCKER_REGISTRY_IP` placeholder. This 
 refers to the IP and port of the docker registry which OpenShift uses. 
-- Namespace value of `@kubernetes:OpenShiftBuildConfig` and `@kubernetes:OpenShiftRoute` refers to the OpenShift 
-project.
+- Namespace value of `@kubernetes:Deployment` refers to the OpenShift project name.
 - Remove the nginx artifacts added in setting up of the tutorial. Run `kubectl delete -f 
 nginx-ingress/namespaces/nginx-ingress.yaml -Rf nginx-ingress` from the `samples` folder.
 - Following files will be generated from building this sample.

@@ -57,7 +57,7 @@ public class OpenShiftRouteHandler extends AbstractArtifactHandler {
             count++;
             ServiceModel serviceModel = dataHolder.getServiceModel(routeModel.getKey());
             generate(routeModel.getValue(), serviceModel);
-            OUT.print("\t@kubernetes:OpenShiftRoute \t\t - complete " + count + "/" + size + "\r");
+            OUT.print("\t@openshift:Route \t\t\t - complete " + count + "/" + size + "\r");
         }
     }
     
@@ -77,7 +77,7 @@ public class OpenShiftRouteHandler extends AbstractArtifactHandler {
                 if (null == dataHolder.getNamespace() || "".equals(dataHolder.getNamespace().trim())) {
                     throw new KubernetesPluginException("'namespace' field in @kubernetes:Deployment{} is required " +
                                                         "when using 'domain' field for setting the host of the " +
-                                                        "@kubernetes:OpenShiftRoute{} annotation. use the OpenShift " +
+                                                        "@openshift:Route{} annotation. use the OpenShift " +
                                                         "project name as the value for 'namespace' field.");
                 }
                 routeHost = routeModel.getName() + "-" + dataHolder.getNamespace() + "." + routeModel.getDomain();

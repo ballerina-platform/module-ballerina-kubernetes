@@ -47,7 +47,7 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
         if (null != buildConfigModel) {
             generate(buildConfigModel);
             OUT.println();
-            OUT.print("\t@kubernetes:OpenShiftBuildConfig \t - complete 1/1");
+            OUT.print("\t@openshift:BuildConfig \t\t\t - complete 1/1");
     
             Map<String, String> instructions = ArtifactManager.getInstructions();
             instructions.put("\tRun the following command to deploy the OpenShift artifacts: ",
