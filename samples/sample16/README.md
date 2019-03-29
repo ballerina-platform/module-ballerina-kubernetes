@@ -96,7 +96,7 @@ Generating executables
 	@kubernetes:Deployment 			 - complete 1/1
 	@kubernetes:Docker 			 - complete 3/3
 	@kubernetes:Helm 			 - complete 1/1
-	@istio:GatewayModel 		 - complete 1/1
+	@istio:Gateway   		 - complete 1/1
 	@istio:VirtualService 	 - complete 1/1
 
 	Run the following command to deploy the Kubernetes artifacts:
