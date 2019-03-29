@@ -16,8 +16,9 @@
 
 import ballerina/http;
 import ballerinax/kubernetes;
+import ballerinax/istio;
 
-@kubernetes:IstioGateway {
+@istio:Gateway {
     name: "my-gateway",
     servers: [
         {

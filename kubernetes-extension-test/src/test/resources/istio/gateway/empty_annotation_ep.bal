@@ -16,8 +16,9 @@
 
 import ballerina/http;
 import ballerinax/kubernetes;
+import ballerinax/istio;
 
-@kubernetes:IstioGateway {}
+@istio:Gateway {}
 @kubernetes:Deployment {
     name: "empty_annotation",
     image: "pizza-shop:latest",

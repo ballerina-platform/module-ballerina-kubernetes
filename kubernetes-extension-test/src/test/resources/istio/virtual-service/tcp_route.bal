@@ -16,8 +16,9 @@
 
 import ballerina/http;
 import ballerinax/kubernetes;
+import ballerinax/istio;
 
-@kubernetes:IstioVirtualService {
+@istio:VirtualService {
     name: "bookinfo-mongo",
     hosts: ["mongo.prod.svc.cluster.local"],
     tcp: [

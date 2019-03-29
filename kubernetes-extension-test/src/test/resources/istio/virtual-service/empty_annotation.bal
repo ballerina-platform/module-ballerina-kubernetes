@@ -16,8 +16,9 @@
 
 import ballerina/http;
 import ballerinax/kubernetes;
+import ballerinax/istio;
 
-@kubernetes:IstioVirtualService {}
+@istio:VirtualService {}
 @kubernetes:Deployment {
     image: "pizza-shop:latest",
     singleYAML: false
