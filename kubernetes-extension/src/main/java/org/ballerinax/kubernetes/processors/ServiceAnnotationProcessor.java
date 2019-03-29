@@ -98,8 +98,7 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
                 , serviceModel);
     }
     
-    private int extractPort(BLangTypeInit bListener) throws
-            KubernetesPluginException {
+    private int extractPort(BLangTypeInit bListener) throws KubernetesPluginException {
         try {
             return Integer.parseInt(bListener.argsExpr.get(0).toString());
         } catch (NumberFormatException e) {

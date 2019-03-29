@@ -16,8 +16,9 @@
 
 import ballerina/http;
 import ballerinax/kubernetes;
+import ballerinax/istio;
 
-@kubernetes:IstioVirtualService {
+@istio:VirtualService {
     name: "reviews-route",
     hosts: [
         "reviews.prod.svc.cluster.local"

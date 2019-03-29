@@ -20,13 +20,13 @@ package org.ballerinax.kubernetes.test;
 
 import me.snowdrop.istio.api.networking.v1alpha3.NumberPort;
 import me.snowdrop.istio.api.networking.v1alpha3.VirtualService;
+import org.apache.commons.io.FileUtils;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.wso2.andes.util.FileUtils;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -71,7 +71,7 @@ public class IstioVirtualServiceTest {
         File vsFile = TARGET_PATH.resolve("http_route_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
+        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(vsFile));
         Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
         Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
         
@@ -137,7 +137,7 @@ public class IstioVirtualServiceTest {
         File vsFile = TARGET_PATH.resolve("http_match_request_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
+        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(vsFile));
         Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
         Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
         
@@ -279,7 +279,7 @@ public class IstioVirtualServiceTest {
         File vsFile = TARGET_PATH.resolve("http_redirect_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
+        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(vsFile));
         Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
         Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
         
@@ -326,7 +326,7 @@ public class IstioVirtualServiceTest {
         File vsFile = TARGET_PATH.resolve("http_retry_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
+        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(vsFile));
         Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
         Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
         
@@ -374,7 +374,7 @@ public class IstioVirtualServiceTest {
         File vsFile = TARGET_PATH.resolve("http_fault_injection_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
+        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(vsFile));
         Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
         Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
         
@@ -422,7 +422,7 @@ public class IstioVirtualServiceTest {
         File vsFile = TARGET_PATH.resolve("cors_policy_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
+        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(vsFile));
         Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
         Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
         
@@ -476,7 +476,7 @@ public class IstioVirtualServiceTest {
         File vsFile = TARGET_PATH.resolve("tls_route_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
+        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(vsFile));
         Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
         Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
         
@@ -536,7 +536,7 @@ public class IstioVirtualServiceTest {
         File vsFile = TARGET_PATH.resolve("tcp_route_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
+        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(vsFile));
         Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
         Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
         

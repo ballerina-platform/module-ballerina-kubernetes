@@ -1,8 +1,8 @@
 ## Sample16: Istio Gateway and Virtual Service generation
 
 - This sample uses 3 microservices implementing a book shop.
-- Traffic is managed through an istio gateway and virtual service which gets generated through @kubernetes:IstioGateway 
-and @kubernetes:IstioVirtualService annotations.
+- Traffic is managed through an istio gateway and virtual service which gets generated through @istio:Gateway 
+and @istio:VirtualService annotations.
 - Following are the microservices:  
     - `book.details` module has a service which gets details of a book. These details include the author and the price 
     of a book.
@@ -96,8 +96,8 @@ Generating executables
 	@kubernetes:Deployment 			 - complete 1/1
 	@kubernetes:Docker 			 - complete 3/3
 	@kubernetes:Helm 			 - complete 1/1
-	@kubernetes:IstioGatewayModel 		 - complete 1/1
-	@kubernetes:IstioVirtualService 	 - complete 1/1
+	@istio:Gateway   		 - complete 1/1
+	@istio:VirtualService 	 - complete 1/1
 
 	Run the following command to deploy the Kubernetes artifacts:
 	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/book.shop

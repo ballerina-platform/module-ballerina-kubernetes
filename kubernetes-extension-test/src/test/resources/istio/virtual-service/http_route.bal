@@ -16,8 +16,9 @@
 
 import ballerina/http;
 import ballerinax/kubernetes;
+import ballerinax/istio;
 
-@kubernetes:IstioVirtualService {
+@istio:VirtualService {
     name: "my-gateway",
     annotations: {
         anno1: "anno1Val",

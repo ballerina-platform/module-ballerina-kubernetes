@@ -20,6 +20,7 @@ package org.ballerinax.kubernetes.test.samples;
 
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
+import org.apache.commons.io.FileUtils;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
@@ -29,7 +30,6 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.andes.util.FileUtils;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -109,13 +109,13 @@ public class Sample16Test implements SampleTest {
     }
 
     @Test(enabled = false)
-    public void validateShopGateway() {
+    public void validateShopGateway() throws IOException {
         File gatewayYAML = new File(BOOK_SHOP_PKG_TARGET_PATH + File.separator + "book.shop_istio_gateway.yaml");
         Assert.assertTrue(gatewayYAML.exists(), "Cannot find istio gateway");
         // Validate gateway yaml
         
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayYAML));
+        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(gatewayYAML));
         Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
         Assert.assertEquals(gateway.get("kind"), "Gateway", "Invalid kind.");
     
@@ -139,11 +139,11 @@ public class Sample16Test implements SampleTest {
     }
     
     @Test(enabled = false)
-    public void validateShopVirtualService() {
+    public void validateShopVirtualService() throws IOException {
         File vsFile = new File(BOOK_SHOP_PKG_TARGET_PATH + File.separator + "book.shop_istio_virtual_service.yaml");
         Assert.assertTrue(vsFile.exists(), "Cannot find istio virtual service");
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
+        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(vsFile));
         Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
         Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
     

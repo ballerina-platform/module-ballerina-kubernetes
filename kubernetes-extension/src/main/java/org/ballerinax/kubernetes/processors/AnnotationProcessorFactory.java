@@ -52,9 +52,9 @@ public class AnnotationProcessorFactory {
                 return new JobAnnotationProcessor();
             case ResourceQuota:
                 return new ResourceQuotaAnnotationPreprocessor();
-            case IstioGateway:
+            case Gateway:
                 return new IstioGatewayAnnotationProcessor();
-            case IstioVirtualService:
+            case VirtualService:
                 return new IstioVirtualServiceAnnotationProcessor();
             case Route:
                 return new OpenShiftRouteProcessor();
@@ -74,8 +74,8 @@ public class AnnotationProcessorFactory {
         PersistentVolumeClaim,
         Job,
         ResourceQuota,
-        IstioGateway,
-        IstioVirtualService,
+        Gateway,
+        VirtualService,
         Route
     }
 }

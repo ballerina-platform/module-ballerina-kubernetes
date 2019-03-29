@@ -1,10 +1,11 @@
 import ballerina/http;
 import ballerina/log;
 import ballerinax/kubernetes;
+import ballerinax/istio;
 
 @kubernetes:Service {}
-@kubernetes:IstioGateway {}
-@kubernetes:IstioVirtualService {}
+@istio:Gateway {}
+@istio:VirtualService {}
 listener http:Listener bookShopEP = new(9080);
 
 http:Client bookDetailsEP = new("http://book-detail:8080");
