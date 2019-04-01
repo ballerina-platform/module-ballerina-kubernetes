@@ -193,6 +193,7 @@ public type ServiceType "NodePort"|"ClusterIP"|"LoadBalancer";
 public type ServiceConfiguration record {|
     *Metadata;
     int port?;
+    int targetPort?;
     SessionAffinity sessionAffinity = SESSION_AFFINITY_NONE;
     ServiceType serviceType = SERVICE_TYPE_CLUSTER_IP;
 |};
