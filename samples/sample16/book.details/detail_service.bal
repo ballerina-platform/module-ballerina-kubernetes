@@ -1,4 +1,5 @@
 import ballerina/http;
+import ballerina/log;
 import ballerinax/kubernetes;
 
 @kubernetes:Service {
@@ -46,6 +47,9 @@ service detailService on bookDetailEP {
             detailResponse.setJsonPayload(notFoundJson, contentType = "application/json");
             detailResponse.statusCode = 404;
         }
-        _ = caller -> respond(detailResponse);
+        var responseResult = caller -> respond(detailResponse);
+        if (responseResult is error) {
+            log:printError("error responding back to client.", err = responseResult);
+        }
     }
 }

@@ -1,6 +1,6 @@
 import ballerina/http;
+import ballerina/log;
 import ballerinax/kubernetes;
-
 
 @kubernetes:Ingress {
     hostname: "pizza.com",
@@ -16,9 +16,9 @@ listener http:Listener pizzaEP = new(9099);
     name: "foodstore",
     replicas: 3,
     labels: { "location": "SL", "city": "COLOMBO" },
-    enableLiveness: true,
-    livenessPort: 9099,
-    singleYAML: false
+    livenessProbe: {
+        port: 9099
+    }
 }
 
 @http:ServiceConfig {
@@ -32,7 +32,10 @@ service PizzaAPI on pizzaEP {
     resource function getPizzaMenu(http:Caller outboundEP, http:Request req) {
         http:Response response = new;
         response.setTextPayload("Pizza menu \n");
-        _ = outboundEP->respond(response);
+        var responseResult = outboundEP->respond(response);
+        if (responseResult is error) {
+            log:printError("error responding back to client.", err = responseResult);
+        }
     }
 }
 
@@ -56,6 +59,9 @@ service BurgerAPI on burgerEP {
     resource function getBurgerMenu(http:Caller outboundEP, http:Request req) {
         http:Response response = new;
         response.setTextPayload("Burger menu \n");
-        _ = outboundEP->respond(response);
+        var responseResult = outboundEP->respond(response);
+        if (responseResult is error) {
+            log:printError("error responding back to client.", err = responseResult);
+        }
     }
 }

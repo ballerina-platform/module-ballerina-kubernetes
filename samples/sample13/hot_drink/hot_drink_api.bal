@@ -20,7 +20,7 @@ listener http:Listener hotDrinkEP = new(9090);
 
 
 @kubernetes:ConfigMap {
-    ballerinaConf: "./hot_drink/ballerina.conf"
+    conf: "./hot_drink/ballerina.conf"
 }
 @kubernetes:Deployment {
     copyFiles: [{ 
@@ -53,14 +53,16 @@ service HotDrinksAPI on hotDrinkEP {
             response.setTextPayload("Error in reading results");
         }
 
-        _ = outboundEP->respond(response);
+        var responseResult = outboundEP->respond(response);
+        if (responseResult is error) {
+            log:printError("error responding back to client.", err = responseResult);
+        }
     }
 }
 
-type HotDrink record {
+type HotDrink record {|
     int id;
     string name;
     string description;
     float price;
-    !...;
-};
+|};

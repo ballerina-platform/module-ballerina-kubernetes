@@ -18,7 +18,8 @@
 
 package org.ballerinax.kubernetes.models.istio;
 
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Istio gateway server annotation model class.
@@ -27,7 +28,7 @@ import java.util.Set;
  */
 public class IstioServerModel {
     private IstioPortModel port;
-    private Set<String> hosts;
+    private List<String> hosts;
     private TLSOptions tls;
     
     public IstioPortModel getPort() {
@@ -46,11 +47,11 @@ public class IstioServerModel {
         this.tls = tls;
     }
     
-    public Set<String> getHosts() {
+    public List<String> getHosts() {
         return hosts;
     }
     
-    public void setHosts(Set<String> hosts) {
+    public void setHosts(List<String> hosts) {
         this.hosts = hosts;
     }
     
@@ -61,11 +62,11 @@ public class IstioServerModel {
      */
     public static class TLSOptions {
         private boolean httpsRedirect = false;
-        private String mode;
+        private String mode = "PASSTHROUGH";
         private String serverCertificate;
         private String privateKey;
         private String caCertificates;
-        private Set<String> subjectAltNames;
+        private List<String> subjectAltNames = new LinkedList<>();
     
         public boolean isHttpsRedirect() {
             return httpsRedirect;
@@ -107,11 +108,11 @@ public class IstioServerModel {
             this.caCertificates = caCertificates;
         }
     
-        public Set<String> getSubjectAltNames() {
+        public List<String> getSubjectAltNames() {
             return subjectAltNames;
         }
     
-        public void setSubjectAltNames(Set<String> subjectAltNames) {
+        public void setSubjectAltNames(List<String> subjectAltNames) {
             this.subjectAltNames = subjectAltNames;
         }
     }

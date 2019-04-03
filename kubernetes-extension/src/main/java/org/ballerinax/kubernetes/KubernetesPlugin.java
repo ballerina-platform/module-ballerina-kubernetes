@@ -41,7 +41,6 @@ import org.wso2.ballerinalang.compiler.SourceDirectory;
 import org.wso2.ballerinalang.compiler.tree.BLangPackage;
 import org.wso2.ballerinalang.compiler.util.CompilerContext;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +55,7 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
  * Compiler plugin to generate kubernetes artifacts.
  */
 @SupportedAnnotationPackages(
-        value = "ballerinax/kubernetes:0.0.0"
+        value = {"ballerinax/kubernetes:0.0.0", "ballerinax/istio:0.0.0", "ballerinax/openshift:0.0.0"}
 )
 public class KubernetesPlugin extends AbstractCompilerPlugin {
     private static final Logger pluginLog = LoggerFactory.getLogger(KubernetesPlugin.class);
@@ -95,7 +94,6 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
         }
     }
 
-
     @Override
     public void process(SimpleVariableNode variableNode, List<AnnotationAttachmentNode> annotations) {
         if (!variableNode.getFlags().contains(Flag.LISTENER)) {
@@ -126,36 +124,36 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                 dlog.logDiagnostic(Diagnostic.Kind.ERROR, functionNode.getPosition(), e.getMessage());
             }
         }
-
     }
 
-
     @Override
-    public void codeGenerated(PackageID packageID, Path binaryPath) {
-        KubernetesContext.getInstance().setCurrentPackage(packageID);
+    public void codeGenerated(PackageID moduleID, Path binaryPath) {
+        KubernetesContext.getInstance().setCurrentPackage(moduleID);
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
         if (dataHolder.isCanProcess()) {
-            String filePath = binaryPath.toAbsolutePath().toString();
-            String userDir = new File(filePath).getParentFile().getAbsolutePath();
-            String targetPath = userDir + File.separator + KUBERNETES + File.separator;
-            if (userDir.endsWith("target")) {
-                //Compiling package therefore append balx file name to docker artifact dir path
-                targetPath = userDir + File.separator + KUBERNETES + File.separator + extractBalxName(filePath);
+            binaryPath = binaryPath.toAbsolutePath();
+            boolean isProject = binaryPath.getParent().getParent().resolve(".ballerina").toFile().exists();
+            dataHolder.setProject(isProject);
+            Path balBuildOutputPath = binaryPath.getParent();
+            Path artifactOutputPath = balBuildOutputPath.resolve(KUBERNETES);
+            if (isProject) {
+                // Compiling package therefore append balx file name to docker artifact dir path
+                artifactOutputPath = balBuildOutputPath.resolve(KUBERNETES).resolve(extractBalxName(binaryPath));
             }
-            dataHolder.setBalxFilePath(filePath);
-            dataHolder.setOutputDir(targetPath);
-            ArtifactManager artifactManager = new ArtifactManager(targetPath);
+            dataHolder.setBalxFilePath(binaryPath);
+            dataHolder.setArtifactOutputPath(artifactOutputPath);
+            ArtifactManager artifactManager = new ArtifactManager();
             try {
-                KubernetesUtils.deleteDirectory(targetPath);
+                KubernetesUtils.deleteDirectory(artifactOutputPath);
                 artifactManager.populateDeploymentModel();
                 validateDeploymentDependencies();
                 artifactManager.createArtifacts();
             } catch (KubernetesPluginException e) {
-                String errorMessage = "package [" + packageID + "] " + e.getMessage();
+                String errorMessage = "module [" + moduleID + "] " + e.getMessage();
                 printError(errorMessage);
                 pluginLog.error(errorMessage, e);
                 try {
-                    KubernetesUtils.deleteDirectory(targetPath);
+                    KubernetesUtils.deleteDirectory(artifactOutputPath);
                 } catch (KubernetesPluginException ignored) {
                     //ignored
                 }
@@ -195,5 +193,4 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
             }
         }
     }
-
 }

@@ -32,12 +32,12 @@ listener http:Listener helloWorldEP = new(9090, config = {
 @kubernetes:ConfigMap {
     //Path to the ballerina.conf file.
     //If a releative path is provided, the path should be releative to where the `ballerina build` command is executed.
-    ballerinaConf: "./ballerina.conf"
+    conf: "./ballerina.conf"
 }
 //Add `@kubernetes:Deployment` annotation to a Ballerna service to generate Kuberenetes Deployment for a Ballerina module.
 @kubernetes:Deployment {
     //Enable Kubernetes liveness probe to this service.
-    enableLiveness: true,
+    livenessProbe: true,
     //Genrate Docker image with name `kubernetes:v1.0`.
     image: "kubernetes:v.1.0"
     //Uncomment and change the following values accordingly if you are using minikube.

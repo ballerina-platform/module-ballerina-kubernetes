@@ -18,14 +18,14 @@
 
 package org.ballerinax.kubernetes.handlers;
 
-import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Container;
-import io.fabric8.kubernetes.api.model.Job;
+import io.fabric8.kubernetes.api.model.batch.Job;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.EnvVarValueModel;
 import org.ballerinax.kubernetes.models.JobModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
+import org.ballerinax.kubernetes.utils.Utils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -74,7 +74,7 @@ public class KubernetesJobGeneratorTests {
     }
 
     private void assertGeneratedYAML(File yamlFile) throws IOException {
-        Job job = KubernetesHelper.loadYaml(yamlFile);
+        Job job = Utils.loadYaml(yamlFile);
         Assert.assertEquals(jobName, job.getMetadata().getName());
         Assert.assertEquals(1, job.getSpec().getTemplate().getSpec().getContainers().size());
         Container container = job.getSpec().getTemplate().getSpec().getContainers().get(0);

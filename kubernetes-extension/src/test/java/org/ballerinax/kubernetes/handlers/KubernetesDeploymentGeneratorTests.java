@@ -18,14 +18,15 @@
 
 package org.ballerinax.kubernetes.handlers;
 
-import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Container;
-import io.fabric8.kubernetes.api.model.extensions.Deployment;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.EnvVarValueModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
+import org.ballerinax.kubernetes.models.ProbeModel;
+import org.ballerinax.kubernetes.utils.Utils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -57,8 +58,9 @@ public class KubernetesDeploymentGeneratorTests {
         deploymentModel.setLabels(labels);
         deploymentModel.setImage(imageName);
         deploymentModel.setImagePullPolicy(imagePullPolicy);
-        deploymentModel.setEnableLiveness(true);
-        deploymentModel.setLivenessPort(9090);
+        ProbeModel probeModel = new ProbeModel();
+        probeModel.setPort(9090);
+        deploymentModel.setLivenessProbe(probeModel);
         deploymentModel.setSingleYAML(false);
         Map<String, EnvVarValueModel> env = new HashMap<>();
         EnvVarValueModel testEnvVar = new EnvVarValueModel("ENV");
@@ -81,7 +83,7 @@ public class KubernetesDeploymentGeneratorTests {
     }
 
     private void testGeneratedYAML(File yamlFile) throws IOException {
-        Deployment deployment = KubernetesHelper.loadYaml(yamlFile);
+        Deployment deployment = Utils.loadYaml(yamlFile);
         Assert.assertEquals(deploymentName, deployment.getMetadata().getName());
         Assert.assertEquals(selector, deployment.getMetadata().getLabels().get(KubernetesConstants
                 .KUBERNETES_SELECTOR_KEY));

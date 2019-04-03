@@ -19,6 +19,7 @@
 package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
+import org.ballerinalang.model.tree.FunctionNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
@@ -28,9 +29,11 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
 import java.util.List;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getIntValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
  * HPA annotation processor.
@@ -40,6 +43,21 @@ public class HPAAnnotationProcessor extends AbstractAnnotationProcessor {
     @Override
     public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
+        processHPA(attachmentNode);
+    }
+    
+    @Override
+    public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode) throws
+            KubernetesPluginException {
+        if (!MAIN_FUNCTION_NAME.equals(functionNode.getName().getValue())) {
+            throw new KubernetesPluginException("@kubernetes:HPA{} annotation cannot be attached to a non main " +
+                                                "function.");
+        }
+        
+        processHPA(attachmentNode);
+    }
+    
+    private void processHPA(AnnotationAttachmentNode attachmentNode) throws KubernetesPluginException {
         PodAutoscalerModel podAutoscalerModel = new PodAutoscalerModel();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
@@ -48,25 +66,22 @@ public class HPAAnnotationProcessor extends AbstractAnnotationProcessor {
                     PodAutoscalerConfiguration.valueOf(keyValue.getKey().toString());
             switch (podAutoscalerConfiguration) {
                 case name:
-                    podAutoscalerModel.setName(getValidName(resolveValue(keyValue.getValue().toString())));
-                    break;
-                case namespace:
-                    podAutoscalerModel.setNamespace(resolveValue(keyValue.getValue().toString()));
+                    podAutoscalerModel.setName(getValidName(getStringValue(keyValue.getValue())));
                     break;
                 case labels:
-                    podAutoscalerModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    podAutoscalerModel.setLabels(getMap(keyValue.getValue()));
                     break;
                 case annotations:
-                    podAutoscalerModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    podAutoscalerModel.setAnnotations(getMap(keyValue.getValue()));
                     break;
                 case cpuPercentage:
-                    podAutoscalerModel.setCpuPercentage(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
+                    podAutoscalerModel.setCpuPercentage(getIntValue(keyValue.getValue()));
                     break;
                 case minReplicas:
-                    podAutoscalerModel.setMinReplicas(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
+                    podAutoscalerModel.setMinReplicas(getIntValue(keyValue.getValue()));
                     break;
                 case maxReplicas:
-                    podAutoscalerModel.setMaxReplicas(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
+                    podAutoscalerModel.setMaxReplicas(getIntValue(keyValue.getValue()));
                     break;
                 default:
                     break;
@@ -80,7 +95,6 @@ public class HPAAnnotationProcessor extends AbstractAnnotationProcessor {
      */
     private enum PodAutoscalerConfiguration {
         name,
-        namespace,
         labels,
         annotations,
         minReplicas,

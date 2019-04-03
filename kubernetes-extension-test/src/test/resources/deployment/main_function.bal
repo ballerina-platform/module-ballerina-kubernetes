@@ -18,10 +18,35 @@ import ballerina/io;
 import ballerinax/kubernetes;
 
 @kubernetes:Deployment {
+    name: "pizzashack",
     labels: {
         "task_type": "printer"
     },
     singleYAML: false
+}
+@kubernetes:ConfigMap {
+    conf: "./artifacts/conf/ballerina.conf"
+}
+@kubernetes:HPA {}
+@kubernetes:Secret {
+    secrets: [
+        {
+            name: "private",
+            mountPath: "/home/ballerina/private",
+            data: ["./artifacts/secrets/MySecret1.txt"]
+        }
+    ]
+}
+@kubernetes:PersistentVolumeClaim {
+    volumeClaims: [
+        {
+            name: "local-pv-2",
+            mountPath: "/home/ballerina/tmp",
+            readOnly: false,
+            accessMode: "ReadWriteOnce",
+            volumeClaimSize: "1Gi"
+        }
+    ]
 }
 public function main(string... args) {
     io:println("hello world");

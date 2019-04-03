@@ -51,6 +51,7 @@ public class ResourceQuotaHandler extends AbstractArtifactHandler {
                 .withNewMetadata()
                 .withName(resourceQuotaModel.getName())
                 .withLabels(resourceQuotaModel.getLabels())
+                .withAnnotations(resourceQuotaModel.getAnnotations())
                 .endMetadata()
                 .withNewSpec()
                 .withHard(getHard(resourceQuotaModel.getHard()))
@@ -62,7 +63,7 @@ public class ResourceQuotaHandler extends AbstractArtifactHandler {
             String resourceQuotaContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(resourceQuota);
             KubernetesUtils.writeToFile(resourceQuotaContent, RESOURCE_QUOTA_FILE_POSTFIX + YAML);
         } catch (IOException e) {
-            String errorMessage = "Error while generating yaml file for resource quotas: " +
+            String errorMessage = "error while generating yaml file for resource quotas: " +
                                   resourceQuotaModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }

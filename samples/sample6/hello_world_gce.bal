@@ -1,4 +1,5 @@
 import ballerina/http;
+import ballerina/log;
 import ballerinax/kubernetes;
 
 @kubernetes:Ingress {
@@ -8,7 +9,7 @@ import ballerinax/kubernetes;
 listener http:Listener gceHelloWorldDEP = new(9090);
 
 @kubernetes:Deployment {
-    enableLiveness: true,
+    livenessProbe: true,
     push: true,
     image: "index.docker.io/$env{DOCKER_USERNAME}/gce-sample:1.0",
     username: "$env{DOCKER_USERNAME}",
@@ -22,6 +23,9 @@ service helloWorld on gceHelloWorldDEP {
     resource function sayHello(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         response.setTextPayload("Hello, World from service helloWorld! \n");
-        _ = outboundEP->respond(response);
+        var responseResult = outboundEP->respond(response);
+        if (responseResult is error) {
+            log:printError("error responding back to client.", err = responseResult);
+        }
     }
 }

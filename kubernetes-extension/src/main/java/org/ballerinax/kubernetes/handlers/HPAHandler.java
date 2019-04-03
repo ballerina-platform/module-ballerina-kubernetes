@@ -20,6 +20,8 @@ package org.ballerinax.kubernetes.handlers;
 
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscaler;
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscalerBuilder;
+import io.fabric8.kubernetes.api.model.MetricSpec;
+import io.fabric8.kubernetes.api.model.MetricSpecBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -40,6 +42,14 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 public class HPAHandler extends AbstractArtifactHandler {
 
     private void generate(PodAutoscalerModel podAutoscalerModel) throws KubernetesPluginException {
+        MetricSpec metricSpec = new MetricSpecBuilder()
+                .withType("Resource")
+                .withNewResource()
+                .withName("cpu")
+                .withTargetAverageUtilization(podAutoscalerModel.getCpuPercentage())
+                .endResource()
+                .build();
+        
         HorizontalPodAutoscaler horizontalPodAutoscaler = new HorizontalPodAutoscalerBuilder()
                 .withNewMetadata()
                 .withName(podAutoscalerModel.getName())
@@ -49,15 +59,15 @@ public class HPAHandler extends AbstractArtifactHandler {
                 .withNewSpec()
                 .withMaxReplicas(podAutoscalerModel.getMaxReplicas())
                 .withMinReplicas(podAutoscalerModel.getMinReplicas())
-                .withTargetCPUUtilizationPercentage(podAutoscalerModel.getCpuPercentage())
-                .withNewScaleTargetRef("extensions/v1beta1", "Deployment", podAutoscalerModel.getDeployment())
+                .withMetrics(metricSpec)
+                .withNewScaleTargetRef("apps/v1", "Deployment", podAutoscalerModel.getDeployment())
                 .endSpec()
                 .build();
         try {
             String serviceContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(horizontalPodAutoscaler);
             KubernetesUtils.writeToFile(serviceContent, HPA_FILE_POSTFIX + YAML);
         } catch (IOException e) {
-            String errorMessage = "Error while generating yaml file for autoscaler: " + podAutoscalerModel.getName();
+            String errorMessage = "error while generating yaml file for autoscaler: " + podAutoscalerModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
     }
@@ -82,6 +92,7 @@ public class HPAHandler extends AbstractArtifactHandler {
             podAutoscalerModel.setName(getValidName(balxFileName) + HPA_POSTFIX);
         }
         generate(podAutoscalerModel);
-        OUT.println("\t@kubernetes:HPA \t\t\t - complete 1/1");
+        OUT.println();
+        OUT.print("\t@kubernetes:HPA \t\t\t - complete 1/1");
     }
 }

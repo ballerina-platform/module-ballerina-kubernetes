@@ -17,7 +17,6 @@
 import ballerina/http;
 import ballerinax/kubernetes;
 
-
 @kubernetes:Ingress {
     hostname: "pizza.com",
     path: "/pizzastore",
@@ -51,6 +50,6 @@ service PizzaAPI on pizzaEP {
     resource function getPizzaMenu(http:Caller outboundEP, http:Request req) {
         http:Response response = new;
         response.setTextPayload("Pizza menu \n");
-        _ = outboundEP->respond(response);
+        checkpanic outboundEP->respond(response);
     }
 }

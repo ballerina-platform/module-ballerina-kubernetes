@@ -23,4 +23,16 @@
     <Match>
         <Bug pattern="DM_DEFAULT_ENCODING"/>
     </Match>
+    <Match>
+        <Class name="org.ballerinax.kubernetes.KubernetesPlugin"/>
+        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
+    </Match>
+    <Match>
+        <Class name="org.ballerinax.kubernetes.handlers.openshift.OpenShiftBuildConfigHandler"/>
+        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
+    </Match>
+    <Match>
+        <Class name="org.ballerinax.kubernetes.utils.KubernetesUtils"/>
+        <Bug pattern="BC_UNCONFIRMED_CAST"/>
+    </Match>
 </FindBugsFilter>

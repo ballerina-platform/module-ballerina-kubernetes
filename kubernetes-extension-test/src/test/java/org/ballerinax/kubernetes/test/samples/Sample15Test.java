@@ -18,7 +18,7 @@
 
 package org.ballerinax.kubernetes.test.samples;
 
-import io.fabric8.kubernetes.api.KubernetesHelper;
+import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.ResourceQuota;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
@@ -31,43 +31,35 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 
-
 public class Sample15Test implements SampleTest {
-    
-    private final String sourceDirPath = SAMPLE_DIR + File.separator + "sample15";
-    private final String targetPath = sourceDirPath + File.separator + KUBERNETES;
-    private final String dockerImage = "hello_world_k8s_rq:latest";
+    private static final Path SOURCE_DIR_PATH = SAMPLE_DIR.resolve("sample15");
+    private static final Path TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
+    private static final String DOCKER_IMAGE = "hello_world_k8s_rq:latest";
+    private ResourceQuota resourceQuota;
     
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(sourceDirPath, "hello_world_k8s_rq.bal"), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "hello_world_k8s_rq.bal"), 0);
+        File yamlFile = TARGET_PATH.resolve("hello_world_k8s_rq.yaml").toFile();
+        Assert.assertTrue(yamlFile.exists());
+        List<HasMetadata> k8sItems = KubernetesTestUtils.loadYaml(yamlFile);
+        for (HasMetadata data : k8sItems) {
+            if ("ResourceQuota".equals(data.getKind())) {
+                resourceQuota = (ResourceQuota) data;
+            }
+        }
     }
     
     @Test
-    public void validateDockerfile() {
-        File dockerFile = new File(targetPath + File.separator + DOCKER + File.separator + "Dockerfile");
-        Assert.assertTrue(dockerFile.exists());
-    }
-    
-    @Test
-    public void validateDockerImage() throws DockerTestException, InterruptedException {
-        List<String> ports = getExposedPorts(this.dockerImage);
-        Assert.assertEquals(ports.size(), 1);
-        Assert.assertEquals(ports.get(0), "9090/tcp");
-    }
-    
-    @Test
-    public void validateResourceQuota() throws IOException {
-        File resourceQuotaYAML = new File(targetPath + File.separator + "hello_world_k8s_rq_resource_quota.yaml");
-        Assert.assertTrue(resourceQuotaYAML.exists());
-        ResourceQuota resourceQuota = KubernetesHelper.loadYaml(resourceQuotaYAML);
-        // Assert Resource quota
+    public void validateResourceQuota() {
+        Assert.assertNotNull(resourceQuota);
         Assert.assertEquals("pod-limit", resourceQuota.getMetadata().getName());
         Assert.assertEquals(resourceQuota.getMetadata().getLabels().size(), 0, "Invalid number of labels.");
     
@@ -85,9 +77,22 @@ public class Sample15Test implements SampleTest {
         Assert.assertEquals(resourceQuota.getSpec().getScopes().size(), 0, "Unexpected number of scopes.");
     }
     
+    @Test
+    public void validateDockerfile() {
+        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
+        Assert.assertTrue(dockerFile.exists());
+    }
+    
+    @Test
+    public void validateDockerImage() throws DockerTestException, InterruptedException {
+        List<String> ports = getExposedPorts(DOCKER_IMAGE);
+        Assert.assertEquals(ports.size(), 1);
+        Assert.assertEquals(ports.get(0), "9090/tcp");
+    }
+    
     @AfterClass
     public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
 }

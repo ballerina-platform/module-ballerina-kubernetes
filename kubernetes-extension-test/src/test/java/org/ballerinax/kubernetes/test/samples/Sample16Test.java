@@ -18,9 +18,9 @@
 
 package org.ballerinax.kubernetes.test.samples;
 
-import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.Container;
-import io.fabric8.kubernetes.api.model.extensions.Deployment;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
+import org.apache.commons.io.FileUtils;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
@@ -30,11 +30,11 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.wso2.andes.util.FileUtils;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -44,57 +44,54 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
 
 public class Sample16Test implements SampleTest {
 
-    private final String sourceDirPath = SAMPLE_DIR + File.separator + "sample16";
-    private final String targetPath = sourceDirPath + File.separator + "target" + File.separator + KUBERNETES;
-    private final String bookDetailsPkgTargetPath = targetPath + File.separator + "book.details";
-    private final String bookReviewsPkgTargetPath = targetPath + File.separator + "book.reviews";
-    private final String bookShopPkgTargetPath = targetPath + File.separator + "book.shop";
-    private final String bookDetailsDockerImage = "book.details:latest";
-    private final String bookReviewsDockerImage = "book.reviews:latest";
-    private final String bookShopDockerImage = "book.shop:latest";
+    private static final Path SOURCE_DIR_PATH = SAMPLE_DIR.resolve("sample16");
+    private static final Path TARGET_PATH = SOURCE_DIR_PATH.resolve("target").resolve(KUBERNETES);
+    private static final Path BOOK_DETAILS_PKG_TARGET_PATH = TARGET_PATH.resolve("book.details");
+    private static final Path BOOK_REVIEWS_PKG_TARGET_PATH = TARGET_PATH.resolve("book.reviews");
+    private static final Path BOOK_SHOP_PKG_TARGET_PATH = TARGET_PATH.resolve("book.shop");
+    private static final String BOOK_DETAILS_DOCKER_IMAGE = "book.details:latest";
+    private static final String BOOK_REVIEWS_DOCKER_IMAGE = "book.reviews:latest";
+    private static final String BOOK_SHOP_DOCKER_IMAGE = "book.shop:latest";
 
 
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaProject((SAMPLE_DIR + File.separator + "sample16")), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaProject(SOURCE_DIR_PATH), 0);
     }
 
     @Test
     public void validateDockerfile() {
-        Assert.assertTrue(new File(bookDetailsPkgTargetPath + File.separator + DOCKER + File.separator + "Dockerfile")
-                .exists());
-        Assert.assertTrue(new File(bookReviewsPkgTargetPath + File.separator + DOCKER + File.separator + "Dockerfile")
-                .exists());
-        Assert.assertTrue(new File(bookShopPkgTargetPath + File.separator + DOCKER + File.separator + "Dockerfile")
-                .exists());
+        Assert.assertTrue(BOOK_DETAILS_PKG_TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile().exists());
+        Assert.assertTrue(BOOK_REVIEWS_PKG_TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile().exists());
+        Assert.assertTrue(BOOK_SHOP_PKG_TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile().exists());
     }
 
     @Test
     public void validateDockerImageBookDetails() throws DockerTestException, InterruptedException {
-        List<String> ports = getExposedPorts(bookDetailsDockerImage);
+        List<String> ports = getExposedPorts(BOOK_DETAILS_DOCKER_IMAGE);
         Assert.assertEquals(ports.size(), 1);
         Assert.assertEquals(ports.get(0), "8080/tcp");
     }
 
     @Test
     public void validateDockerImageBookReviews() throws DockerTestException, InterruptedException {
-        List<String> ports = getExposedPorts(bookReviewsDockerImage);
+        List<String> ports = getExposedPorts(BOOK_REVIEWS_DOCKER_IMAGE);
         Assert.assertEquals(ports.size(), 1);
         Assert.assertEquals(ports.get(0), "7070/tcp");
     }
     
     @Test
     public void validateDockerImageBookShop() throws DockerTestException, InterruptedException {
-        List<String> ports = getExposedPorts(bookShopDockerImage);
+        List<String> ports = getExposedPorts(BOOK_SHOP_DOCKER_IMAGE);
         Assert.assertEquals(ports.size(), 1);
         Assert.assertEquals(ports.get(0), "9080/tcp");
     }
 
     @Test(enabled = false)
     public void validateShopDeployment() throws IOException {
-        File deploymentYAML = new File(bookShopPkgTargetPath + File.separator + "book.shop_deployment.yaml");
+        File deploymentYAML = new File(BOOK_SHOP_PKG_TARGET_PATH + File.separator + "book.shop_deployment.yaml");
         Assert.assertTrue(deploymentYAML.exists(), "Cannot find deployment yaml");
-        Deployment deployment = KubernetesHelper.loadYaml(deploymentYAML);
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         // Assert Deployment
         Assert.assertEquals(deployment.getMetadata().getName(), "book-shop-deployment");
         Assert.assertEquals(deployment.getSpec().getReplicas().intValue(), 1, "Invalid replica value");
@@ -105,20 +102,20 @@ public class Sample16Test implements SampleTest {
 
         // Assert Containers
         Container container = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);
-        Assert.assertEquals(container.getImage(), bookShopDockerImage, "Invalid container image");
+        Assert.assertEquals(container.getImage(), BOOK_SHOP_DOCKER_IMAGE, "Invalid container image");
         Assert.assertEquals(container.getImagePullPolicy(), KubernetesConstants.ImagePullPolicy.IfNotPresent.name());
         Assert.assertEquals(container.getPorts().size(), 1, "Invalid number of container ports");
         Assert.assertEquals(container.getPorts().get(0).getContainerPort().intValue(), 9080, "Invalid container port");
     }
 
     @Test(enabled = false)
-    public void validateShopGateway() {
-        File gatewayYAML = new File(bookShopPkgTargetPath + File.separator + "book.shop_istio_gateway.yaml");
+    public void validateShopGateway() throws IOException {
+        File gatewayYAML = new File(BOOK_SHOP_PKG_TARGET_PATH + File.separator + "book.shop_istio_gateway.yaml");
         Assert.assertTrue(gatewayYAML.exists(), "Cannot find istio gateway");
         // Validate gateway yaml
         
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(gatewayYAML));
+        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(gatewayYAML));
         Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
         Assert.assertEquals(gateway.get("kind"), "Gateway", "Invalid kind.");
     
@@ -142,11 +139,11 @@ public class Sample16Test implements SampleTest {
     }
     
     @Test(enabled = false)
-    public void validateShopVirtualService() {
-        File vsFile = new File(bookShopPkgTargetPath + File.separator + "book.shop_istio_virtual_service.yaml");
+    public void validateShopVirtualService() throws IOException {
+        File vsFile = new File(BOOK_SHOP_PKG_TARGET_PATH + File.separator + "book.shop_istio_virtual_service.yaml");
         Assert.assertTrue(vsFile.exists(), "Cannot find istio virtual service");
         Yaml yamlProcessor = new Yaml();
-        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileAsString(vsFile));
+        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(vsFile));
         Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
         Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
     
@@ -172,9 +169,9 @@ public class Sample16Test implements SampleTest {
 
     @AfterClass
     public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(bookReviewsDockerImage);
-        KubernetesTestUtils.deleteDockerImage(bookDetailsDockerImage);
-        KubernetesTestUtils.deleteDockerImage(bookShopDockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(BOOK_REVIEWS_DOCKER_IMAGE);
+        KubernetesTestUtils.deleteDockerImage(BOOK_DETAILS_DOCKER_IMAGE);
+        KubernetesTestUtils.deleteDockerImage(BOOK_SHOP_DOCKER_IMAGE);
     }
 }

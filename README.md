@@ -4,6 +4,7 @@ Annotation based kubernetes extension implementation for ballerina.
 
 [![Build Status](https://wso2.org/jenkins/job/ballerinax/job/kubernetes/badge/icon)](https://wso2.org/jenkins/job/ballerinax/job/kubernetes/)
 [![Travis (.org)](https://img.shields.io/travis/ballerinax/kubernetes.svg?logo=travis)](https://travis-ci.org/ballerinax/kubernetes)
+[![codecov](https://codecov.io/gh/ballerinax/kubernetes/branch/master/graph/badge.svg)](https://codecov.io/gh/ballerinax/kubernetes)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 ## Features:
 - Kubernetes deployment support. 
@@ -36,10 +37,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |podAnnotations|Pod annotations|{}|
 |replicas|Number of replicas|1|
 |dependsOn|Listeners this deployment Depends on|null|
-|enableLiveness|Enable or disable liveness probe|false|
-|initialDelaySeconds|Initial delay in seconds before performing the first probe|10s|
-|periodSeconds|Liveness probe interval|5s|
-|livenessPort|Port which the Liveness probe check|\<ServicePort\>|
+|livenessProbe|Enable or disable liveness probe|false|
 |imagePullPolicy|Docker image pull policy|IfNotPresent|
 |image|Docker image with tag|<output file name>:latest|
 |env|List of environment variables|null|
@@ -166,25 +164,31 @@ Annotation based kubernetes extension implementation for ballerina.
 
 ```ballerina
 import ballerina/http;
+import ballerina/log;
 import ballerinax/kubernetes;
 
 @kubernetes:Ingress{
-    hostname:"abc.com"
+    hostname: "abc.com"
 }
-@kubernetes:Service{name:"hello"}
+@kubernetes:Service {
+    name:"hello"
+}
 listener http:Listener helloEP = new(9090);
 
-@kubernetes:Deployment{
-    enableLiveness:true
+@kubernetes:Deployment {
+    livenessProbe: true
 }
 @http:ServiceConfig {
-    basePath:"/helloWorld"
+    basePath: "/helloWorld"
 }
 service helloWorld on helloEP {
-    resource functino sayHello (http:Caller outboundEP, http:Request request) {
+    resource function sayHello(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         response.setTextPayload("Hello, World from service helloWorld ! ");
-        _ = outboundEP -> respond(response);
+        var responseResult = outboundEP -> respond(response);
+        if (responseResult is error) {
+            log:printError("error responding back to client.", err = responseResult);
+        }
     }
 }
 ```

@@ -16,8 +16,9 @@
 
 import ballerina/http;
 import ballerinax/kubernetes;
+import ballerinax/istio;
 
-@kubernetes:IstioGateway {}
+@istio:Gateway {}
 @kubernetes:Deployment {
     name: "empty_annotation",
     image: "pizza-shop:latest",
@@ -33,6 +34,6 @@ service helloWorld on helloEP {
     resource function sayHello(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         response.setTextPayload("Hello, World from service helloWorld ! \n");
-        _ = outboundEP->respond(response);
+        checkpanic outboundEP->respond(response);
     }
 }

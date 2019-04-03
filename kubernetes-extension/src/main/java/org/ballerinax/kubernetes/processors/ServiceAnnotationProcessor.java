@@ -36,10 +36,11 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangTypeInit;
 import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.SVC_POSTFIX;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getIntValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
  * Service annotation processor.
@@ -53,8 +54,8 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         for (BLangExpression attachedExpr : bService.getAttachedExprs()) {
             // If not anonymous endpoint throw error.
             if (attachedExpr instanceof BLangSimpleVarRef) {
-                throw new KubernetesPluginException("Adding @kubernetes:Service{} annotation to a service is only " +
-                                                    "supported when the has an anonymous listener");
+                throw new KubernetesPluginException("adding @kubernetes:Service{} annotation to a service is only " +
+                                                    "supported when the service has an anonymous listener");
             }
             
         }
@@ -71,7 +72,10 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         if (serviceModel.getPort() == -1) {
             serviceModel.setPort(extractPort(bListener));
         }
-        serviceModel.setTargetPort(extractPort(bListener));
+        
+        if (serviceModel.getTargetPort() == -1) {
+            serviceModel.setTargetPort(extractPort(bListener));
+        }
         KubernetesContext.getInstance().getDataHolder().addBListenerToK8sServiceMap(serviceNode.getName().getValue(),
                 serviceModel);
     }
@@ -92,17 +96,19 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         if (serviceModel.getPort() == -1) {
             serviceModel.setPort(extractPort(bListener));
         }
-        serviceModel.setTargetPort(extractPort(bListener));
+        
+        if (serviceModel.getTargetPort() == -1) {
+            serviceModel.setTargetPort(extractPort(bListener));
+        }
         KubernetesContext.getInstance().getDataHolder().addBListenerToK8sServiceMap(variableNode.getName().getValue()
                 , serviceModel);
     }
     
-    private int extractPort(BLangTypeInit bListener) throws
-            KubernetesPluginException {
+    private int extractPort(BLangTypeInit bListener) throws KubernetesPluginException {
         try {
             return Integer.parseInt(bListener.argsExpr.get(0).toString());
         } catch (NumberFormatException e) {
-            throw new KubernetesPluginException("Unable to parse port of the service: " +
+            throw new KubernetesPluginException("unable to parse port/targetPort for the service: " +
                                             bListener.argsExpr.get(0).toString());
         }
     }
@@ -117,26 +123,26 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
                     ServiceConfiguration.valueOf(keyValue.getKey().toString());
             switch (serviceConfiguration) {
                 case name:
-                    serviceModel.setName(getValidName(resolveValue(keyValue.getValue().toString())));
-                    break;
-                case namespace:
-                    serviceModel.setNamespace(resolveValue(keyValue.getValue().toString()));
+                    serviceModel.setName(getValidName(getStringValue(keyValue.getValue())));
                     break;
                 case labels:
-                    serviceModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    serviceModel.setLabels(getMap(keyValue.getValue()));
                     break;
                 case annotations:
-                    serviceModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    serviceModel.setAnnotations(getMap(keyValue.getValue()));
                     break;
                 case serviceType:
-                    serviceModel.setServiceType(KubernetesConstants.ServiceType.valueOf(resolveValue(
-                            keyValue.getValue().toString())).name());
+                    serviceModel.setServiceType(KubernetesConstants.ServiceType.valueOf(
+                            getStringValue(keyValue.getValue())).name());
                     break;
                 case port:
-                    serviceModel.setPort(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
+                    serviceModel.setPort(getIntValue(keyValue.getValue()));
+                    break;
+                case targetPort:
+                    serviceModel.setTargetPort(getIntValue(keyValue.getValue()));
                     break;
                 case sessionAffinity:
-                    serviceModel.setSessionAffinity(resolveValue(keyValue.getValue().toString()));
+                    serviceModel.setSessionAffinity(getStringValue(keyValue.getValue()));
                     break;
                 default:
                     break;
@@ -150,11 +156,11 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
      */
     private enum ServiceConfiguration {
         name,
-        namespace,
         labels,
         annotations,
         serviceType,
         port,
+        targetPort,
         sessionAffinity
     }
 }

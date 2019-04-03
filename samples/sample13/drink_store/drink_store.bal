@@ -26,7 +26,7 @@ http:Client coolDrinkBackend = new("http://cooldrink-backend:9090");
 http:Client weatherEP = new("http://api.openweathermap.org");
 
 @kubernetes:Deployment {
-    enableLiveness: true,
+    livenessProbe: true,
     dependsOn: ["cool_drink:coolDrinkEP", "hot_drink:hotDrinkEP"]
 }
 @http:ServiceConfig {
@@ -49,7 +49,10 @@ service DrinkStoreAPI on drinkStoreEP {
                 log:printError("Invalid response received from hot drink server", err = msg);
             }
             log:printInfo("GET request:");
-            _ = outboundEP->respond(response);
+            var responseResult = outboundEP->respond(response);
+            if (responseResult is error) {
+                log:printError("error responding back to client.", err = responseResult);
+            }
         } else if (response is error) {
             log:printError("Error when getting hot drink menu", err = response);
         }
@@ -70,7 +73,10 @@ service DrinkStoreAPI on drinkStoreEP {
                 log:printError("Invalid response received from cool drink server", err = msg);
             }
             log:printInfo("GET request: ");
-            _ = outboundEP->respond(response);
+            var responseResult = outboundEP->respond(response);
+            if (responseResult is error) {
+                log:printError("error responding back to client.", err = responseResult);
+            }
         } else if (response is error) {
             log:printError("Error getting cool drink menu", err = response);
         }
@@ -88,7 +94,10 @@ service DrinkStoreAPI on drinkStoreEP {
          } else {
              response.setTextPayload("Tempreture in San Francisco: " + celciusValue + " clecius. Cold."+"\n");
          }
-        _ = outboundEP->respond(response);
+        var responseResult = outboundEP->respond(response);
+        if (responseResult is error) {
+            log:printError("error responding back to client.", err = responseResult);
+        }
     }
 }
 

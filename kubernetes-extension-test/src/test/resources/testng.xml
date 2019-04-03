@@ -35,6 +35,7 @@
             <class name="org.ballerinax.kubernetes.test.samples.Sample14Test"/>
             <class name="org.ballerinax.kubernetes.test.samples.Sample15Test"/>
             <class name="org.ballerinax.kubernetes.test.samples.Sample16Test"/>
+            <class name="org.ballerinax.kubernetes.test.samples.Sample17Test"/>
         </classes>
     </test>
 
@@ -46,8 +47,12 @@
             <class name="org.ballerinax.kubernetes.test.MainFunctionDeploymentTest"/>
             <class name="org.ballerinax.kubernetes.test.ServiceTest"/>
             <class name="org.ballerinax.kubernetes.test.DeploymentTest"/>
+            <class name="org.ballerinax.kubernetes.test.LivenessProbeTest"/>
+            <class name="org.ballerinax.kubernetes.test.ReadinessProbeTest"/>
             <class name="org.ballerinax.kubernetes.test.IstioGatewayTest"/>
             <class name="org.ballerinax.kubernetes.test.IstioVirtualServiceTest"/>
+            <class name="org.ballerinax.kubernetes.test.OpenShiftBuildConfigTest"/>
+            <class name="org.ballerinax.kubernetes.test.OpenShiftRouteTest"/>
         </classes>
     </test>
 

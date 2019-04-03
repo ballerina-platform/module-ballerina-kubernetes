@@ -33,9 +33,10 @@ import io.fabric8.kubernetes.api.model.Volume;
 import io.fabric8.kubernetes.api.model.VolumeBuilder;
 import io.fabric8.kubernetes.api.model.VolumeMount;
 import io.fabric8.kubernetes.api.model.VolumeMountBuilder;
-import io.fabric8.kubernetes.api.model.extensions.Deployment;
-import io.fabric8.kubernetes.api.model.extensions.DeploymentBuilder;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
+import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
+import org.ballerinax.docker.generator.exceptions.DockerGenException;
 import org.ballerinax.docker.generator.models.DockerModel;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -43,7 +44,9 @@ import org.ballerinax.kubernetes.models.ConfigMapModel;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
+import org.ballerinax.kubernetes.models.ProbeModel;
 import org.ballerinax.kubernetes.models.SecretModel;
+import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
@@ -51,8 +54,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static org.ballerinax.docker.generator.DockerGenConstants.REGISTRY_SEPARATOR;
 import static org.ballerinax.kubernetes.KubernetesConstants.BALX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_FILE_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT_BUILD_CONFIG_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.populateEnvVar;
 
@@ -119,19 +125,51 @@ public class DeploymentHandler extends AbstractArtifactHandler {
         return initContainers;
     }
 
-    private Container generateContainer(DeploymentModel deploymentModel, List<ContainerPort>
-            containerPorts) {
+    private Container generateContainer(DeploymentModel deploymentModel, List<ContainerPort> containerPorts)
+            throws KubernetesPluginException {
+        String dockerRegistry = deploymentModel.getRegistry();
+        String deploymentImageName = deploymentModel.getImage();
+        if (null != dockerRegistry && !"".equals(dockerRegistry)) {
+            deploymentImageName = dockerRegistry + REGISTRY_SEPARATOR + deploymentImageName;
+        }
+        
+        if (deploymentModel.getBuildExtension() != null) {
+            if (deploymentModel.getBuildExtension() instanceof OpenShiftBuildExtensionModel) {
+                OpenShiftBuildExtensionModel openShiftBC =
+                        (OpenShiftBuildExtensionModel) deploymentModel.getBuildExtension();
+                openShiftBC.setName(deploymentModel.getName().replace(DEPLOYMENT_POSTFIX,
+                        OPENSHIFT_BUILD_CONFIG_POSTFIX));
+                dataHolder.setOpenShiftBuildExtensionModel(openShiftBC);
+        
+                dockerRegistry = deploymentModel.getRegistry();
+                if (dockerRegistry == null || "".equals(dockerRegistry.trim())) {
+                    throw new KubernetesPluginException("value for 'registry' field in @kubernetes:Deployment{} " +
+                                                        "annotation is required to generate OpenShift Build Configs.");
+                }
+        
+                String namespace = dataHolder.getNamespace();
+                if (namespace == null || "".equals(namespace.trim())) {
+                    throw new KubernetesPluginException("value for 'namespace' field in @kubernetes:Deployment{} " +
+                                                        "annotation is required to generate OpenShift Build Configs. " +
+                                                        "use the value of the OpenShift project name.");
+                }
+        
+                deploymentImageName = dockerRegistry + REGISTRY_SEPARATOR + namespace + REGISTRY_SEPARATOR +
+                                      deploymentModel.getImage();
+            }
+        }
+    
         return new ContainerBuilder()
                 .withName(deploymentModel.getName())
-                .withImage(deploymentModel.getImage())
+                .withImage(deploymentImageName)
                 .withImagePullPolicy(deploymentModel.getImagePullPolicy())
                 .withPorts(containerPorts)
                 .withEnv(populateEnvVar(deploymentModel.getEnv()))
                 .withVolumeMounts(populateVolumeMounts(deploymentModel))
-                .withLivenessProbe(generateLivenessProbe(deploymentModel))
+                .withLivenessProbe(generateProbe(deploymentModel.getLivenessProbe()))
+                .withReadinessProbe(generateProbe(deploymentModel.getReadinessProbe()))
                 .build();
     }
-
 
     private List<Volume> populateVolume(DeploymentModel deploymentModel) {
         List<Volume> volumes = new ArrayList<>();
@@ -165,16 +203,16 @@ public class DeploymentHandler extends AbstractArtifactHandler {
         return volumes;
     }
 
-    private Probe generateLivenessProbe(DeploymentModel deploymentModel) {
-        if (!deploymentModel.isEnableLiveness()) {
+    private Probe generateProbe(ProbeModel probeModel) {
+        if (null == probeModel) {
             return null;
         }
         TCPSocketAction tcpSocketAction = new TCPSocketActionBuilder()
-                .withNewPort(deploymentModel.getLivenessPort())
+                .withNewPort(probeModel.getPort())
                 .build();
         return new ProbeBuilder()
-                .withInitialDelaySeconds(deploymentModel.getInitialDelaySeconds())
-                .withPeriodSeconds(deploymentModel.getPeriodSeconds())
+                .withInitialDelaySeconds(probeModel.getInitialDelaySeconds())
+                .withPeriodSeconds(probeModel.getPeriodSeconds())
                 .withTcpSocket(tcpSocketAction)
                 .build();
     }
@@ -207,6 +245,9 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                 .withNamespace(dataHolder.getNamespace())
                 .endMetadata()
                 .withNewSpec()
+                .withNewSelector()
+                .withMatchLabels(deploymentModel.getLabels())
+                .endSelector()
                 .withReplicas(deploymentModel.getReplicas())
                 .withNewTemplate()
                 .withNewMetadata()
@@ -227,26 +268,35 @@ public class DeploymentHandler extends AbstractArtifactHandler {
             String deploymentContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(deployment);
             KubernetesUtils.writeToFile(deploymentContent, DEPLOYMENT_FILE_POSTFIX + YAML);
         } catch (IOException e) {
-            String errorMessage = "Error while generating yaml file for deployment: " + deploymentModel.getName();
+            String errorMessage = "error while generating yaml file for deployment: " + deploymentModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
     }
 
     @Override
     public void createArtifacts() throws KubernetesPluginException {
-        DeploymentModel deploymentModel = dataHolder.getDeploymentModel();
-        deploymentModel.setPodAutoscalerModel(dataHolder.getPodAutoscalerModel());
-        deploymentModel.setSecretModels(dataHolder.getSecretModelSet());
-        deploymentModel.setConfigMapModels(dataHolder.getConfigMapModelSet());
-        deploymentModel.setVolumeClaimModels(dataHolder.getVolumeClaimModelSet());
-        if (deploymentModel.isEnableLiveness() && deploymentModel.getLivenessPort() == 0) {
-            //set first port as liveness port
-            deploymentModel.setLivenessPort(deploymentModel.getPorts().iterator().next());
+        try {
+            DeploymentModel deploymentModel = dataHolder.getDeploymentModel();
+            deploymentModel.setPodAutoscalerModel(dataHolder.getPodAutoscalerModel());
+            deploymentModel.setSecretModels(dataHolder.getSecretModelSet());
+            deploymentModel.setConfigMapModels(dataHolder.getConfigMapModelSet());
+            deploymentModel.setVolumeClaimModels(dataHolder.getVolumeClaimModelSet());
+            if (null != deploymentModel.getLivenessProbe() && deploymentModel.getLivenessProbe().getPort() == 0) {
+                //set first port as liveness port
+                deploymentModel.getLivenessProbe().setPort(deploymentModel.getPorts().iterator().next());
+            }
+        
+            if (null != deploymentModel.getReadinessProbe() && deploymentModel.getReadinessProbe().getPort() == 0) {
+                //set first port as readiness port
+                deploymentModel.getReadinessProbe().setPort(deploymentModel.getPorts().iterator().next());
+            }
+            generate(deploymentModel);
+            OUT.println();
+            OUT.print("\t@kubernetes:Deployment \t\t\t - complete 1/1");
+            dataHolder.setDockerModel(getDockerModel(deploymentModel));
+        } catch (DockerGenException e) {
+            throw new KubernetesPluginException("error occurred creating docker image.", e);
         }
-        generate(deploymentModel);
-        OUT.println();
-        OUT.println("\t@kubernetes:Deployment \t\t\t - complete 1/1");
-        dataHolder.setDockerModel(getDockerModel(deploymentModel));
     }
 
 
@@ -255,7 +305,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
      *
      * @param deploymentModel Deployment model
      */
-    private DockerModel getDockerModel(DeploymentModel deploymentModel) {
+    private DockerModel getDockerModel(DeploymentModel deploymentModel) throws DockerGenException {
         DockerModel dockerModel = new DockerModel();
         String dockerImage = deploymentModel.getImage();
         String imageTag = dockerImage.substring(dockerImage.lastIndexOf(":") + 1);

@@ -1,7 +1,8 @@
 import ballerina/config;
 import ballerina/http;
-import ballerinax/kubernetes;
+import ballerina/log;
 import ballerina/io;
+import ballerinax/kubernetes;
 
 @kubernetes:Service {}
 @kubernetes:Ingress {
@@ -20,11 +21,9 @@ listener http:Listener helloWorldEP = new(9090, config = {
     }
 });
 
-@kubernetes: Deployment {
-    singleYAML: false
-}
+@kubernetes: Deployment {}
 @kubernetes:ConfigMap {
-    ballerinaConf: "./conf/ballerina.conf",
+    conf: "./conf/ballerina.conf",
     configMaps:[
         {
             mountPath: "/home/ballerina/data",
@@ -46,7 +45,10 @@ service helloWorld on helloWorldEP {
         string groups = getConfigValue(user, "groups");
         string payload = "{userId: " + userId + ", groups: " + groups + "}";
         response.setTextPayload(payload + "\n");
-        _ = outboundEP->respond(response);
+        var responseResult = outboundEP->respond(response);
+        if (responseResult is error) {
+            log:printError("error responding back to client.", err = responseResult);
+        }
     }
     @http:ResourceConfig {
         methods: ["GET"],
@@ -56,13 +58,16 @@ service helloWorld on helloWorldEP {
         http:Response response = new;
         string payload = readFile("./data/data.txt");
         response.setTextPayload("Data: " + untaint payload + "\n");
-        _ = outboundEP->respond(response);
+        var responseResult = outboundEP->respond(response);
+        if (responseResult is error) {
+            log:printError("error responding back to client.", err = responseResult);
+        }
     }
 }
 
 function getConfigValue(string instanceId, string property) returns (string) {
     string key = untaint instanceId + "." + untaint property;
-    return config:getAsString(key, default = "Invalid User");
+    return config:getAsString(key, defaultValue = "Invalid User");
 }
 
 function readFile(string filePath) returns (string) {

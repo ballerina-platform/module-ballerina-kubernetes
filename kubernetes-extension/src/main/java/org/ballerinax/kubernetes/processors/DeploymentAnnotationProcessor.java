@@ -24,10 +24,13 @@ import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
+import org.ballerinax.kubernetes.models.ProbeModel;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
 
 import java.util.HashSet;
 import java.util.List;
@@ -35,13 +38,17 @@ import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_CERT_PATH;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_HOST;
+import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getBooleanValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getEnvVarMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getExternalFileMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getImagePullSecrets;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getIntValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.parseBuildExtension;
 
 /**
  * Deployment Annotation processor.
@@ -63,6 +70,11 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
     @Override
     public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
+        if (!MAIN_FUNCTION_NAME.equals(functionNode.getName().getValue())) {
+            throw new KubernetesPluginException("@kubernetes:Deployment{} annotation cannot be attached to a non " +
+                                                "main function.");
+        }
+    
         processDeployment(attachmentNode);
     }
     
@@ -75,78 +87,76 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                     DeploymentConfiguration.valueOf(keyValue.getKey().toString());
             switch (deploymentConfiguration) {
                 case name:
-                    deploymentModel.setName(getValidName(resolveValue(keyValue.getValue().toString())));
+                    deploymentModel.setName(getValidName(getStringValue(keyValue.getValue())));
                     break;
                 case namespace:
-                    KubernetesContext.getInstance().getDataHolder().setNamespace(resolveValue(
-                            keyValue.getValue().toString()));
+                    KubernetesContext.getInstance().getDataHolder().setNamespace(getStringValue(keyValue.getValue()));
                     break;
                 case labels:
-                    deploymentModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    deploymentModel.setLabels(getMap(keyValue.getValue()));
                     break;
                 case annotations:
-                    deploymentModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    deploymentModel.setAnnotations(getMap(keyValue.getValue()));
                     break;
                 case podAnnotations:
-                    deploymentModel.setPodAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr).keyValuePairs));
+                    deploymentModel.setPodAnnotations(getMap(keyValue.getValue()));
                     break;
-                case enableLiveness:
-                    deploymentModel.setEnableLiveness(Boolean.valueOf(resolveValue(keyValue.getValue().toString())));
+                case livenessProbe:
+                    deploymentModel.setLivenessProbe(parseProbeConfiguration(keyValue.getValue()));
                     break;
-                case livenessPort:
-                    deploymentModel.setLivenessPort(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
-                    break;
-                case initialDelaySeconds:
-                    deploymentModel.setInitialDelaySeconds(Integer.parseInt(resolveValue(
-                            keyValue.getValue().toString())));
-                    break;
-                case periodSeconds:
-                    deploymentModel.setPeriodSeconds(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
+                case readinessProbe:
+                    deploymentModel.setReadinessProbe(parseProbeConfiguration(keyValue.getValue()));
                     break;
                 case username:
-                    deploymentModel.setUsername(resolveValue(keyValue.getValue().toString()));
+                    deploymentModel.setUsername(getStringValue(keyValue.getValue()));
                     break;
                 case env:
                     deploymentModel.setEnv(getEnvVarMap(keyValue.getValue()));
                     break;
                 case password:
-                    deploymentModel.setPassword(resolveValue(keyValue.getValue().toString()));
+                    deploymentModel.setPassword(getStringValue(keyValue.getValue()));
                     break;
                 case baseImage:
-                    deploymentModel.setBaseImage(resolveValue(keyValue.getValue().toString()));
+                    deploymentModel.setBaseImage(getStringValue(keyValue.getValue()));
                     break;
                 case push:
-                    deploymentModel.setPush(Boolean.valueOf(resolveValue(keyValue.getValue().toString())));
+                    deploymentModel.setPush(getBooleanValue(keyValue.getValue()));
                     break;
                 case buildImage:
-                    deploymentModel.setBuildImage(Boolean.valueOf(resolveValue(keyValue.getValue().toString())));
+                    deploymentModel.setBuildImage(getBooleanValue(keyValue.getValue()));
                     break;
                 case image:
-                    deploymentModel.setImage(resolveValue(keyValue.getValue().toString()));
+                    deploymentModel.setImage(getStringValue(keyValue.getValue()));
                     break;
                 case dockerHost:
-                    deploymentModel.setDockerHost(resolveValue(keyValue.getValue().toString()));
+                    deploymentModel.setDockerHost(getStringValue(keyValue.getValue()));
                     break;
                 case dockerCertPath:
-                    deploymentModel.setDockerCertPath(resolveValue(keyValue.getValue().toString()));
+                    deploymentModel.setDockerCertPath(getStringValue(keyValue.getValue()));
                     break;
                 case imagePullPolicy:
-                    deploymentModel.setImagePullPolicy(resolveValue(keyValue.getValue().toString()));
+                    deploymentModel.setImagePullPolicy(getStringValue(keyValue.getValue()));
                     break;
                 case replicas:
-                    deploymentModel.setReplicas(Integer.parseInt(resolveValue(keyValue.getValue().toString())));
+                    deploymentModel.setReplicas(getIntValue(keyValue.getValue()));
                     break;
                 case copyFiles:
                     deploymentModel.setCopyFiles(getExternalFileMap(keyValue));
                     break;
                 case singleYAML:
-                    deploymentModel.setSingleYAML(Boolean.valueOf(resolveValue(keyValue.getValue().toString())));
+                    deploymentModel.setSingleYAML(getBooleanValue(keyValue.getValue()));
                     break;
                 case dependsOn:
                     deploymentModel.setDependsOn(getDependsOn(keyValue));
                     break;
                 case imagePullSecrets:
                     deploymentModel.setImagePullSecrets(getImagePullSecrets(keyValue));
+                    break;
+                case registry:
+                    deploymentModel.setRegistry(getStringValue(keyValue.getValue()));
+                    break;
+                case buildExtension:
+                    deploymentModel.setBuildExtension(parseBuildExtension(keyValue.getValue()));
                     break;
                 default:
                     break;
@@ -162,6 +172,46 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
             deploymentModel.setDockerCertPath(dockerCertPath);
         }
         KubernetesContext.getInstance().getDataHolder().setDeploymentModel(deploymentModel);
+    }
+    
+    /**
+     * Parse probe configuration from a record.
+     *
+     * @param probeValue Probe configuration record.
+     * @return Parse probe model.
+     * @throws KubernetesPluginException When an unknown field is found.
+     */
+    private ProbeModel parseProbeConfiguration(BLangExpression probeValue) throws KubernetesPluginException {
+        if ((probeValue instanceof BLangSimpleVarRef || probeValue instanceof BLangLiteral) &&
+            getBooleanValue(probeValue)) {
+            return new ProbeModel();
+        } else {
+            if (probeValue instanceof BLangRecordLiteral) {
+                List<BLangRecordLiteral.BLangRecordKeyValue> buildExtensionRecord =
+                        ((BLangRecordLiteral) probeValue).keyValuePairs;
+                ProbeModel probeModel = new ProbeModel();
+                for (BLangRecordLiteral.BLangRecordKeyValue probeField : buildExtensionRecord) {
+                    ProbeConfiguration probeConfiguration =
+                            ProbeConfiguration.valueOf(probeField.getKey().toString());
+                    switch (probeConfiguration) {
+                        case port:
+                            probeModel.setPort(getIntValue(probeField.getValue()));
+                            break;
+                        case initialDelaySeconds:
+                            probeModel.setInitialDelaySeconds(getIntValue(probeField.getValue()));
+                            break;
+                        case periodSeconds:
+                            probeModel.setPeriodSeconds(getIntValue(probeField.getValue()));
+                            break;
+                        default:
+                            throw new KubernetesPluginException("unknown probe field found: " +
+                                                                probeField.getKey().toString());
+                    }
+                }
+                return probeModel;
+            }
+        }
+        return null;
     }
 
     private Set<String> getDependsOn(BLangRecordLiteral.BLangRecordKeyValue keyValue) {
@@ -184,15 +234,14 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         annotations,
         podAnnotations,
         replicas,
-        enableLiveness,
-        livenessPort,
-        initialDelaySeconds,
-        periodSeconds,
+        livenessProbe,
+        readinessProbe,
         imagePullPolicy,
         image,
         env,
         buildImage,
         dockerHost,
+        registry,
         username,
         password,
         baseImage,
@@ -201,6 +250,13 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         copyFiles,
         singleYAML,
         dependsOn,
-        imagePullSecrets
+        imagePullSecrets,
+        buildExtension
+    }
+    
+    private enum ProbeConfiguration {
+        port,
+        initialDelaySeconds,
+        periodSeconds
     }
 }

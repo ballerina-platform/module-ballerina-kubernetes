@@ -24,9 +24,11 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public interface SampleTest {
-    String SAMPLE_DIR = System.getProperty("sample.dir");
+    Path SAMPLE_DIR = Paths.get(System.getProperty("sample.dir"));
 
     @BeforeClass
     void compileSample() throws IOException, InterruptedException;

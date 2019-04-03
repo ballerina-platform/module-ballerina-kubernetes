@@ -17,6 +17,7 @@
  */
 package org.ballerinax.kubernetes.models;
 
+import com.spotify.docker.client.DockerHost;
 import org.ballerinax.docker.generator.models.CopyFileModel;
 import org.ballerinax.kubernetes.KubernetesConstants;
 
@@ -29,8 +30,6 @@ import java.util.Set;
 import static org.ballerinax.docker.generator.DockerGenConstants.BALLERINA_BASE_IMAGE;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_CERT_PATH;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_HOST;
-import static org.ballerinax.kubernetes.KubernetesConstants.UNIX_DEFAULT_DOCKER_HOST;
-import static org.ballerinax.kubernetes.KubernetesConstants.WINDOWS_DEFAULT_DOCKER_HOST;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 
 /**
@@ -39,10 +38,9 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 public class DeploymentModel extends KubernetesModel {
     private Map<String, String> podAnnotations;
     private int replicas;
-    private boolean enableLiveness;
-    private int livenessPort;
-    private int initialDelaySeconds;
-    private int periodSeconds;
+    private ProbeModel livenessProbe;
+    private ProbeModel readinessProbe;
+    private String namespace;
     private String imagePullPolicy;
     private String image;
     private boolean buildImage;
@@ -63,13 +61,12 @@ public class DeploymentModel extends KubernetesModel {
     private Set<String> imagePullSecrets;
     private String commandArgs;
     private boolean singleYAML;
-
+    private String registry;
+    private DeploymentBuildExtension buildExtension;
+    
     public DeploymentModel() {
         // Initialize with default values.
         this.replicas = 1;
-        this.enableLiveness = false;
-        this.periodSeconds = 5;
-        this.initialDelaySeconds = 10;
         this.buildImage = true;
         String baseImageVersion = getClass().getPackage().getImplementationVersion();
         this.baseImage = BALLERINA_BASE_IMAGE + ":" + baseImageVersion;
@@ -82,14 +79,14 @@ public class DeploymentModel extends KubernetesModel {
         // Configure Docker Host based on operating system.
         String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
         if (operatingSystem.contains("win")) {
-            this.dockerHost = WINDOWS_DEFAULT_DOCKER_HOST;
+            this.setDockerHost(DockerHost.defaultWindowsEndpoint());
         } else {
-            this.dockerHost = UNIX_DEFAULT_DOCKER_HOST;
+            this.setDockerHost(DockerHost.defaultUnixEndpoint());
         }
     
         String dockerHost = System.getenv(DOCKER_HOST);
         if (!isBlank(dockerHost)) {
-            this.dockerHost = dockerHost;
+            this.setDockerHost(dockerHost);
         }
         String dockerCertPath = System.getenv(DOCKER_CERT_PATH);
         if (!isBlank(dockerCertPath)) {
@@ -104,6 +101,7 @@ public class DeploymentModel extends KubernetesModel {
         this.imagePullSecrets = new HashSet<>();
         this.singleYAML = true;
         this.commandArgs = "";
+        this.registry = "";
     }
     
     public Map<String, String> getPodAnnotations() {
@@ -121,31 +119,45 @@ public class DeploymentModel extends KubernetesModel {
     public void setReplicas(int replicas) {
         this.replicas = replicas;
     }
-
-    public boolean isEnableLiveness() {
-        return enableLiveness;
+    
+    public ProbeModel getLivenessProbe() {
+        return livenessProbe;
     }
-
-    public void setEnableLiveness(boolean enableLiveness) {
-        this.enableLiveness = enableLiveness;
+    
+    public void setLivenessProbe(ProbeModel livenessProbe) {
+        this.livenessProbe = livenessProbe;
+        
+        // setting default values
+        if (null != this.livenessProbe) {
+            if (this.livenessProbe.getInitialDelaySeconds() == -1) {
+                this.livenessProbe.setInitialDelaySeconds(10);
+            }
+        
+            if (this.livenessProbe.getPeriodSeconds() == -1) {
+                this.livenessProbe.setPeriodSeconds(5);
+            }
+        }
     }
-
-    public int getInitialDelaySeconds() {
-        return initialDelaySeconds;
+    
+    public ProbeModel getReadinessProbe() {
+        return readinessProbe;
     }
-
-    public void setInitialDelaySeconds(int initialDelaySeconds) {
-        this.initialDelaySeconds = initialDelaySeconds;
+    
+    public void setReadinessProbe(ProbeModel readinessProbe) {
+        this.readinessProbe = readinessProbe;
+        
+        // setting default values
+        if (null != this.readinessProbe) {
+            if (this.readinessProbe.getInitialDelaySeconds() == -1) {
+                this.readinessProbe.setInitialDelaySeconds(3);
+            }
+        
+            if (this.readinessProbe.getPeriodSeconds() == -1) {
+                this.readinessProbe.setPeriodSeconds(1);
+            }
+        }
     }
-
-    public int getPeriodSeconds() {
-        return periodSeconds;
-    }
-
-    public void setPeriodSeconds(int periodSeconds) {
-        this.periodSeconds = periodSeconds;
-    }
-
+    
     public String getImagePullPolicy() {
         return imagePullPolicy;
     }
@@ -153,7 +165,15 @@ public class DeploymentModel extends KubernetesModel {
     public void setImagePullPolicy(String imagePullPolicy) {
         this.imagePullPolicy = imagePullPolicy;
     }
-
+    
+    public String getNamespace() {
+        return namespace;
+    }
+    
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+    
     public String getImage() {
         return image;
     }
@@ -176,14 +196,6 @@ public class DeploymentModel extends KubernetesModel {
 
     public void setEnv(Map<String, EnvVarValueModel> env) {
         this.env = env;
-    }
-
-    public int getLivenessPort() {
-        return livenessPort;
-    }
-
-    public void setLivenessPort(int livenessPort) {
-        this.livenessPort = livenessPort;
     }
 
     public String getUsername() {
@@ -241,30 +253,7 @@ public class DeploymentModel extends KubernetesModel {
     public void setPodAutoscalerModel(PodAutoscalerModel podAutoscalerModel) {
         this.podAutoscalerModel = podAutoscalerModel;
     }
-
-    @Override
-    public String toString() {
-        return "DeploymentModel{" +
-                "name='" + getName() + '\'' +
-                ", labels=" + labels +
-                ", replicas=" + replicas +
-                ", enableLiveness='" + enableLiveness + '\'' +
-                ", livenessPort=" + livenessPort +
-                ", initialDelaySeconds=" + initialDelaySeconds +
-                ", periodSeconds=" + periodSeconds +
-                ", imagePullPolicy='" + imagePullPolicy + '\'' +
-                ", image='" + image + '\'' +
-                ", buildImage=" + buildImage +
-                ", baseImage='" + baseImage + '\'' +
-                ", env=" + env +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", push=" + push +
-                ", ports=" + ports +
-                ", podAutoscalerModel=" + podAutoscalerModel +
-                '}';
-    }
-
+    
     public String getDockerHost() {
         return dockerHost;
     }
@@ -343,5 +332,57 @@ public class DeploymentModel extends KubernetesModel {
 
     public void setImagePullSecrets(Set<String> imagePullSecrets) {
         this.imagePullSecrets = imagePullSecrets;
+    }
+    
+    public void setRegistry(String registry) {
+        this.registry = registry;
+    }
+    
+    public String getRegistry() {
+        return registry;
+    }
+    
+    public void setPorts(Set<Integer> ports) {
+        this.ports = ports;
+    }
+    
+    public DeploymentBuildExtension getBuildExtension() {
+        return buildExtension;
+    }
+    
+    public void setBuildExtension(DeploymentBuildExtension buildExtension) {
+        this.buildExtension = buildExtension;
+    }
+    
+    @Override
+    public String toString() {
+        return "DeploymentModel{" +
+               "podAnnotations=" + podAnnotations +
+               ", replicas=" + replicas +
+               ", livenessProbe=" + livenessProbe +
+               ", namespace='" + namespace +
+               ", imagePullPolicy='" + imagePullPolicy +
+               ", image='" + image +
+               ", buildImage=" + buildImage +
+               ", baseImage='" + baseImage +
+               ", env=" + env +
+               ", username='" + username +
+               ", password='" + password +
+               ", push=" + push +
+               ", dockerHost='" + dockerHost +
+               ", dockerCertPath='" + dockerCertPath +
+               ", ports=" + ports +
+               ", podAutoscalerModel=" + podAutoscalerModel +
+               ", secretModels=" + secretModels +
+               ", configMapModels=" + configMapModels +
+               ", volumeClaimModels=" + volumeClaimModels +
+               ", copyFiles=" + copyFiles +
+               ", dependsOn=" + dependsOn +
+               ", imagePullSecrets=" + imagePullSecrets +
+               ", commandArgs='" + commandArgs +
+               ", singleYAML=" + singleYAML +
+               ", registry='" + registry +
+               ", buildExtension=" + buildExtension +
+               '}';
     }
 }

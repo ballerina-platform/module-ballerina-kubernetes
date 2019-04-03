@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,10 +49,11 @@ public class KubernetesUtilsTest {
 
     @Test
     public void extractBalxNameTest() {
-        String balxFilePath = "/Users/anuruddha/workspace/ballerinax/docker/samples/sample5/hello_config_file.balx";
+        Path balxFilePath =
+                Paths.get("/Users/anuruddha/workspace/ballerinax/docker/samples/sample5/hello_config_file.balx");
         String baxlFileName = "hello_config_file";
         Assert.assertEquals(KubernetesUtils.extractBalxName(balxFilePath), baxlFileName);
-        balxFilePath = "/Users/anuruddha/workspace/ballerinax/docker/samples/sample5/";
+        balxFilePath = Paths.get("/Users/anuruddha/workspace/ballerinax/docker/samples/sample5/");
         Assert.assertNull(KubernetesUtils.extractBalxName(balxFilePath));
     }
 
@@ -89,8 +91,8 @@ public class KubernetesUtilsTest {
         Assert.assertTrue(file.createNewFile());
         File directory = tempDirectory.resolve("subFolder").toFile();
         Assert.assertTrue(directory.mkdirs());
-        KubernetesUtils.deleteDirectory(file.getPath());
-        KubernetesUtils.deleteDirectory(directory.getPath());
+        KubernetesUtils.deleteDirectory(file.toPath());
+        KubernetesUtils.deleteDirectory(directory.toPath());
     }
 
     @Test

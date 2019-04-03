@@ -19,6 +19,8 @@
 package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
+import org.ballerinalang.model.tree.FunctionNode;
+import org.ballerinalang.model.tree.IdentifierNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.ConfigMapModel;
@@ -44,10 +46,12 @@ import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_CONF_MOUNT
 import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_HOME;
 import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_RUNTIME;
 import static org.ballerinax.kubernetes.KubernetesConstants.CONFIG_MAP_POSTFIX;
+import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getBooleanValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.resolveValue;
 
 /**
  * ConfigMap annotation processor.
@@ -56,6 +60,22 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
 
     @Override
     public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode) throws
+            KubernetesPluginException {
+        processConfigMaps(serviceNode.getName(), attachmentNode);
+    }
+    
+    @Override
+    public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode) throws
+            KubernetesPluginException {
+        if (!MAIN_FUNCTION_NAME.equals(functionNode.getName().getValue())) {
+            throw new KubernetesPluginException("@kubernetes:ConfigMap{} annotation cannot be attached to a non main " +
+                                                "function.");
+        }
+        
+        processConfigMaps(functionNode.getName(), attachmentNode);
+    }
+    
+    private void processConfigMaps(IdentifierNode nodeID, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         Set<ConfigMapModel> configMapModels = new HashSet<>();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
@@ -74,72 +94,63 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
                                     ConfigMapMountConfig.valueOf(annotation.getKey().toString());
                             switch (volumeMountConfig) {
                                 case name:
-                                    configMapModel.setName(getValidName(resolveValue(
-                                            annotation.getValue().toString())));
-                                    break;
-                                case namespace:
-                                    configMapModel.setNamespace(getValidName(resolveValue(
-                                            annotation.getValue().toString())));
+                                    configMapModel.setName(getValidName(getStringValue(annotation.getValue())));
                                     break;
                                 case labels:
-                                    configMapModel.setLabels(getMap(((BLangRecordLiteral) keyValue.valueExpr)
-                                            .keyValuePairs));
+                                    configMapModel.setLabels(getMap(keyValue.getValue()));
                                     break;
                                 case annotations:
-                                    configMapModel.setAnnotations(getMap(((BLangRecordLiteral) keyValue.valueExpr)
-                                            .keyValuePairs));
+                                    configMapModel.setAnnotations(getMap(keyValue.getValue()));
                                     break;
                                 case mountPath:
                                     // validate mount path is not set to ballerina home or ballerina runtime
-                                    final Path mountPath = Paths.get(resolveValue(annotation.getValue().toString()));
+                                    final Path mountPath = Paths.get(getStringValue(annotation.getValue()));
                                     final Path homePath = Paths.get(BALLERINA_HOME);
                                     final Path runtimePath = Paths.get(BALLERINA_RUNTIME);
                                     final Path confPath = Paths.get(BALLERINA_CONF_MOUNT_PATH);
                                     if (mountPath.equals(homePath)) {
-                                        throw new KubernetesPluginException("@kubernetes:ConfigMap{} Mount path " +
-                                                "cannot be" +
-                                                " ballerina home: " + BALLERINA_HOME);
+                                        throw new KubernetesPluginException("@kubernetes:ConfigMap{} mount path " +
+                                                                            "cannot be ballerina home: " +
+                                                                            BALLERINA_HOME);
                                     }
                                     if (mountPath.equals(runtimePath)) {
-                                        throw new KubernetesPluginException("@kubernetes:ConfigMap{} Mount path " +
-                                                "cannot be" +
-                                                " ballerina runtime: " + BALLERINA_RUNTIME);
+                                        throw new KubernetesPluginException("@kubernetes:ConfigMap{} mount path " +
+                                                                            "cannot be ballerina runtime: " +
+                                                                            BALLERINA_RUNTIME);
                                     }
                                     if (mountPath.equals(confPath)) {
-                                        throw new KubernetesPluginException("@kubernetes:ConfigMap{} Mount path " +
-                                                "cannot be" +
-                                                " ballerina conf file mount path: " + BALLERINA_CONF_MOUNT_PATH);
+                                        throw new KubernetesPluginException("@kubernetes:ConfigMap{} mount path " +
+                                                                            "cannot be ballerina conf file mount " +
+                                                                            "path: " + BALLERINA_CONF_MOUNT_PATH);
                                     }
-                                    configMapModel.setMountPath(resolveValue(annotation.getValue().toString()));
+                                    configMapModel.setMountPath(getStringValue(annotation.getValue()));
                                     break;
                                 case data:
                                     List<BLangExpression> data = ((BLangArrayLiteral) annotation.valueExpr).exprs;
                                     configMapModel.setData(getDataForConfigMap(data));
                                     break;
                                 case readOnly:
-                                    configMapModel.setReadOnly(Boolean.parseBoolean(resolveValue(
-                                            annotation.getValue().toString())));
+                                    configMapModel.setReadOnly(getBooleanValue(annotation.getValue()));
                                     break;
                                 default:
                                     break;
                             }
                         }
                         if (isBlank(configMapModel.getName())) {
-                            configMapModel.setName(getValidName(serviceNode.getName().getValue()) + CONFIG_MAP_POSTFIX);
+                            configMapModel.setName(getValidName(nodeID.getValue()) + CONFIG_MAP_POSTFIX);
                         }
                         if (configMapModel.getData() != null && configMapModel.getData().size() > 0) {
                             configMapModels.add(configMapModel);
                         }
                     }
                     break;
-                case "ballerinaConf":
+                case "conf":
                     //create a new config map model with ballerina conf and add it to data holder.
-                    configMapModels.add(getBallerinaConfConfigMap(keyValue.getValue().toString(), serviceNode.getName()
-                            .getValue()));
+                    configMapModels.add(getBallerinaConfConfigMap(keyValue.getValue().toString(), nodeID.getValue()));
                     break;
                 default:
                     break;
-
+            
             }
         }
         KubernetesContext.getInstance().getDataHolder().addConfigMaps(configMapModels);
@@ -167,7 +178,8 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
         configMapModel.setMountPath(BALLERINA_CONF_MOUNT_PATH);
         Path dataFilePath = Paths.get(configFilePath);
         if (!dataFilePath.isAbsolute()) {
-            dataFilePath = KubernetesContext.getInstance().getDataHolder().getSourceRoot().resolve(dataFilePath);
+            dataFilePath = KubernetesContext.getInstance().getDataHolder().getSourceRoot().resolve(dataFilePath)
+                    .normalize();
         }
         String content = new String(KubernetesUtils.readFileContent(dataFilePath), StandardCharsets.UTF_8);
         Map<String, String> dataMap = new HashMap<>();
@@ -183,7 +195,6 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
      */
     private enum ConfigMapMountConfig {
         name,
-        namespace,
         labels,
         annotations,
         mountPath,

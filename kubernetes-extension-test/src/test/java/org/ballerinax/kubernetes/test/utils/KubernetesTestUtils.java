@@ -19,45 +19,50 @@
 package org.ballerinax.kubernetes.test.utils;
 
 import com.google.common.base.Optional;
-import com.mchange.io.FileUtils;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerCertificates;
 import com.spotify.docker.client.DockerCertificatesStore;
 import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.DockerHost;
 import com.spotify.docker.client.exceptions.DockerCertificateException;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.ImageInfo;
+import io.fabric8.kubernetes.client.utils.Serialization;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.glassfish.jersey.internal.RuntimeDelegateImpl;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import javax.ws.rs.ext.RuntimeDelegate;
-
-import static org.ballerinax.docker.generator.DockerGenConstants.UNIX_DEFAULT_DOCKER_HOST;
-import static org.ballerinax.docker.generator.DockerGenConstants.WINDOWS_DEFAULT_DOCKER_HOST;
 
 /**
  * Kubernetes test utils.
  */
 public class KubernetesTestUtils {
-
     private static final Log log = LogFactory.getLog(KubernetesTestUtils.class);
     private static final String JAVA_OPTS = "JAVA_OPTS";
-    private static final String DISTRIBUTION_PATH = System.getProperty("ballerina.pack");
-    private static final String BALLERINA_COMMAND = DISTRIBUTION_PATH + File.separator + "ballerina";
+    private static final Path DISTRIBUTION_PATH = Paths.get(FilenameUtils.separatorsToSystem(
+            System.getProperty("ballerina.pack")));
+    private static final String COMMAND = System.getProperty("os.name").toLowerCase(Locale.getDefault()).contains("win")
+                                          ? "ballerina.bat" : "ballerina";
+    private static final String BALLERINA_COMMAND = DISTRIBUTION_PATH.resolve(COMMAND).toString();
     private static final String BUILD = "build";
     private static final String EXECUTING_COMMAND = "Executing command: ";
     private static final String COMPILING = "Compiling: ";
@@ -117,26 +122,31 @@ public class KubernetesTestUtils {
      *
      * @param imageName Docker image Name
      */
-    public static void deleteDockerImage(String imageName) throws DockerTestException, InterruptedException {
-        try {
-            DockerClient client = getDockerClient();
-            client.removeImage(imageName, true, false);
-        } catch (DockerException e) {
-            throw new DockerTestException(e);
-        }
+    public static void deleteDockerImage(String imageName) {
+        // using a thread to make tests run faster
+        CompletableFuture.runAsync(() -> {
+            try {
+                DockerClient client = getDockerClient();
+                client.removeImage(imageName, true, false);
+            } catch (DockerException | InterruptedException | DockerTestException e) {
+                log.error(e);
+            }
+        });
     }
     
     public static DockerClient getDockerClient() throws DockerTestException {
         RuntimeDelegate.setInstance(new RuntimeDelegateImpl());
         String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
-        String dockerHost = operatingSystem.contains("win") ? WINDOWS_DEFAULT_DOCKER_HOST : UNIX_DEFAULT_DOCKER_HOST;
+        String dockerHost = operatingSystem.contains("win") ? DockerHost.defaultWindowsEndpoint() :
+                            DockerHost.defaultUnixEndpoint();
         DockerClient dockerClient = DefaultDockerClient.builder().uri(dockerHost).build();
         try {
             String dockerCertPath = System.getenv("DOCKER_CERT_PATH");
             if (null != dockerCertPath && !"".equals(dockerCertPath)) {
                 if (null != System.getenv("DOCKER_HOST")) {
-                    dockerHost = System.getenv("DOCKER_HOST").replace("tcp", "https");
+                    dockerHost = System.getenv("DOCKER_HOST");
                 }
+                dockerHost = dockerHost.replace("tcp", "https");
                 Optional<DockerCertificatesStore> certOptional =
                         DockerCertificates.builder()
                                 .dockerCertPath(Paths.get(dockerCertPath))
@@ -163,13 +173,19 @@ public class KubernetesTestUtils {
      * @throws InterruptedException if an error occurs while compiling
      * @throws IOException          if an error occurs while writing file
      */
-    public static int compileBallerinaFile(String sourceDirectory, String fileName, Map<String, String> envVar)
+    public static int compileBallerinaFile(Path sourceDirectory, String fileName, Map<String, String> envVar)
             throws InterruptedException,
             IOException {
+        Path ballerinaInternalLog = Paths.get(sourceDirectory.toAbsolutePath().toString(), "ballerina-internal.log");
+        if (ballerinaInternalLog.toFile().exists()) {
+            log.warn("Deleting already existing ballerina-internal.log file.");
+            FileUtils.deleteQuietly(ballerinaInternalLog.toFile());
+        }
+        
         ProcessBuilder pb = new ProcessBuilder(BALLERINA_COMMAND, BUILD, fileName);
-        log.info(COMPILING + sourceDirectory + File.separator + fileName);
+        log.info(COMPILING + sourceDirectory.resolve(fileName).normalize());
         log.debug(EXECUTING_COMMAND + pb.command());
-        pb.directory(new File(sourceDirectory));
+        pb.directory(sourceDirectory.toFile());
         Map<String, String> environment = pb.environment();
         addJavaAgents(environment);
         environment.putAll(envVar);
@@ -181,9 +197,9 @@ public class KubernetesTestUtils {
         logOutput(process.getErrorStream());
     
         // log ballerina-internal.log content
-        Path ballerinaInternalLog = Paths.get(sourceDirectory, "ballerina-internal.log");
-        if (exitCode == 1 && Files.exists(ballerinaInternalLog)) {
-            log.info(FileUtils.getContentsAsString(ballerinaInternalLog.toFile()));
+        if (Files.exists(ballerinaInternalLog)) {
+            log.error("ballerina-internal.log file found. content: ");
+            log.error(FileUtils.readFileToString(ballerinaInternalLog.toFile()));
         }
         return exitCode;
     }
@@ -197,7 +213,7 @@ public class KubernetesTestUtils {
      * @throws InterruptedException if an error occurs while compiling
      * @throws IOException          if an error occurs while writing file
      */
-    public static int compileBallerinaFile(String sourceDirectory, String fileName) throws InterruptedException,
+    public static int compileBallerinaFile(Path sourceDirectory, String fileName) throws InterruptedException,
             IOException {
         return compileBallerinaFile(sourceDirectory, fileName, new HashMap<>());
     }
@@ -210,22 +226,27 @@ public class KubernetesTestUtils {
      * @throws InterruptedException if an error occurs while compiling
      * @throws IOException          if an error occurs while writing file
      */
-    public static int compileBallerinaProject(String sourceDirectory) throws InterruptedException,
+    public static int compileBallerinaProject(Path sourceDirectory) throws InterruptedException,
             IOException {
+        Path ballerinaInternalLog = Paths.get(sourceDirectory.toAbsolutePath().toString(), "ballerina-internal.log");
+        if (ballerinaInternalLog.toFile().exists()) {
+            log.warn("Deleting already existing ballerina-internal.log file.");
+            FileUtils.deleteQuietly(ballerinaInternalLog.toFile());
+        }
+        
         ProcessBuilder pb = new ProcessBuilder(BALLERINA_COMMAND, "init");
-        log.info(COMPILING + sourceDirectory);
+        log.info(COMPILING + sourceDirectory.normalize());
         log.debug(EXECUTING_COMMAND + pb.command());
-        pb.directory(new File(sourceDirectory));
+        pb.directory(sourceDirectory.toFile());
         Process process = pb.start();
         int exitCode = process.waitFor();
         log.info(EXIT_CODE + exitCode);
         logOutput(process.getInputStream());
         logOutput(process.getErrorStream());
 
-        pb = new ProcessBuilder
-                (BALLERINA_COMMAND, BUILD);
+        pb = new ProcessBuilder(BALLERINA_COMMAND, BUILD);
         log.debug(EXECUTING_COMMAND + pb.command());
-        pb.directory(new File(sourceDirectory));
+        pb.directory(sourceDirectory.toFile());
         Map<String, String> environment = pb.environment();
         addJavaAgents(environment);
         
@@ -234,6 +255,13 @@ public class KubernetesTestUtils {
         log.info(EXIT_CODE + exitCode);
         logOutput(process.getInputStream());
         logOutput(process.getErrorStream());
+    
+        // log ballerina-internal.log content
+        if (Files.exists(ballerinaInternalLog)) {
+            log.info("ballerina-internal.log file found. content: ");
+            log.info(FileUtils.readFileToString(ballerinaInternalLog.toFile()));
+        }
+        
         return exitCode;
     }
     
@@ -256,5 +284,18 @@ public class KubernetesTestUtils {
             return "";
         }
         return jacocoArgLine + " ";
+    }
+    
+    /**
+     * Load YAML files to kubernetes resource(s).
+     *
+     * @param file The path of the file.
+     * @param <T>  The type reference of the artifact.
+     * @return The refered type.
+     * @throws IOException When yaml file could not be loaded.
+     */
+    public static <T> T loadYaml(File file) throws IOException {
+        FileInputStream fileInputStream = FileUtils.openInputStream(file);
+        return Serialization.unmarshal(fileInputStream, Collections.emptyMap());
     }
 }

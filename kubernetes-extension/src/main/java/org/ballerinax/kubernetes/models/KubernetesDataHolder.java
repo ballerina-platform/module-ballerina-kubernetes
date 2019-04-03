@@ -21,6 +21,8 @@ package org.ballerinax.kubernetes.models;
 import org.ballerinax.docker.generator.models.DockerModel;
 import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
 import org.ballerinax.kubernetes.models.istio.IstioVirtualServiceModel;
+import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
+import org.ballerinax.kubernetes.models.openshift.OpenShiftRouteModel;
 
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -46,11 +48,14 @@ public class KubernetesDataHolder {
     private Set<ResourceQuotaModel> resourceQuotaModels;
     private Map<String, IstioGatewayModel> istioGatewayModels;
     private Map<String, IstioVirtualServiceModel> istioVirtualServiceModels;
+    private OpenShiftBuildExtensionModel openShiftBuildExtensionModel;
+    private Map<String, OpenShiftRouteModel> openShiftRouteModels;
     private JobModel jobModel;
-    private String balxFilePath;
-    private String outputDir;
+    private Path balxFilePath;
+    private Path artifactOutputPath;
     private String namespace;
     private Path sourceRoot;
+    private boolean isProject = false;
 
     KubernetesDataHolder(Path sourceRoot) {
         this.sourceRoot = sourceRoot;
@@ -64,10 +69,19 @@ public class KubernetesDataHolder {
         this.resourceQuotaModels = new HashSet<>();
         this.istioGatewayModels = new LinkedHashMap<>();
         this.istioVirtualServiceModels = new LinkedHashMap<>();
+        this.openShiftRouteModels = new LinkedHashMap<>();
     }
     
     public Path getSourceRoot() {
         return sourceRoot;
+    }
+    
+    public boolean isProject() {
+        return isProject;
+    }
+    
+    public void setProject(boolean project) {
+        isProject = project;
     }
     
     public DeploymentModel getDeploymentModel() {
@@ -162,20 +176,20 @@ public class KubernetesDataHolder {
         this.canProcess = canProcess;
     }
 
-    public String getBalxFilePath() {
+    public Path getBalxFilePath() {
         return balxFilePath;
     }
 
-    public void setBalxFilePath(String balxFilePath) {
+    public void setBalxFilePath(Path balxFilePath) {
         this.balxFilePath = balxFilePath;
     }
 
-    public String getOutputDir() {
-        return outputDir;
+    public Path getArtifactOutputPath() {
+        return artifactOutputPath;
     }
 
-    public void setOutputDir(String outputDir) {
-        this.outputDir = outputDir;
+    public void setArtifactOutputPath(Path artifactOutputPath) {
+        this.artifactOutputPath = artifactOutputPath;
     }
 
     public DockerModel getDockerModel() {
@@ -216,5 +230,21 @@ public class KubernetesDataHolder {
     
     public void addIstioVirtualServiceModel(String serviceName, IstioVirtualServiceModel istioVirtualServiceModel) {
         this.istioVirtualServiceModels.put(serviceName, istioVirtualServiceModel);
+    }
+    
+    public OpenShiftBuildExtensionModel getOpenShiftBuildExtensionModel() {
+        return openShiftBuildExtensionModel;
+    }
+    
+    public void setOpenShiftBuildExtensionModel(OpenShiftBuildExtensionModel openShiftBuildExtensionModel) {
+        this.openShiftBuildExtensionModel = openShiftBuildExtensionModel;
+    }
+    
+    public Map<String, OpenShiftRouteModel> getOpenShiftRouteModels() {
+        return this.openShiftRouteModels;
+    }
+    
+    public void addOpenShiftRouteModel(String serviceName, OpenShiftRouteModel openShiftRouteModel) {
+        this.openShiftRouteModels.put(serviceName, openShiftRouteModel);
     }
 }

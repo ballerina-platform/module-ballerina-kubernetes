@@ -27,8 +27,8 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
@@ -37,56 +37,53 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
 
 public class Sample13Test implements SampleTest {
 
-    private final String sourceDirPath = SAMPLE_DIR + File.separator + "sample13";
-    private final String targetPath = sourceDirPath + File.separator + "target" + File.separator + KUBERNETES;
-    private final String coolDrinkPkgTargetPath = targetPath + File.separator + "cool_drink";
-    private final String drinkStorePkgTargetPath = targetPath + File.separator + "drink_store";
-    private final String hotDrinkPkgTargetPath = targetPath + File.separator + "hot_drink";
-    private final String coolDrinkDockerImage = "cool_drink:latest";
-    private final String drinkStoreDockerImage = "drink_store:latest";
-    private final String hotDrinkDockerImage = "hot_drink:latest";
+    private static final Path SOURCE_DIR_PATH = SAMPLE_DIR.resolve("sample13");
+    private static final Path TARGET_PATH = SOURCE_DIR_PATH.resolve("target").resolve(KUBERNETES);
+    private static final Path COOL_DRINK_PKG_TARGET_PATH = TARGET_PATH.resolve("cool_drink");
+    private static final Path DRINK_STORE_PKG_TARGET_PATH = TARGET_PATH.resolve("drink_store");
+    private static final Path HOT_DRINK_PKG_TARGET_PATH = TARGET_PATH.resolve("hot_drink");
+    private static final String COOL_DRINK_DOCKER_IMAGE = "cool_drink:latest";
+    private static final String DRINK_STORE_DOCKER_IMAGE = "drink_store:latest";
+    private static final String HOT_DRINK_DOCKER_IMAGE = "hot_drink:latest";
 
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaProject((SAMPLE_DIR + File.separator + "sample13")), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaProject(SOURCE_DIR_PATH), 0);
     }
 
     @Test
     public void validateDockerfile() {
-        Assert.assertTrue(new File(coolDrinkPkgTargetPath + File.separator + DOCKER + File.separator + "Dockerfile")
-                .exists());
-        Assert.assertTrue(new File(drinkStorePkgTargetPath + File.separator + DOCKER + File.separator + "Dockerfile")
-                .exists());
-        Assert.assertTrue(new File(hotDrinkPkgTargetPath + File.separator + DOCKER + File.separator + "Dockerfile")
-                .exists());
+        Assert.assertTrue(COOL_DRINK_PKG_TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile().exists());
+        Assert.assertTrue(DRINK_STORE_PKG_TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile().exists());
+        Assert.assertTrue(HOT_DRINK_PKG_TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile().exists());
     }
 
     @Test
     public void validateDockerImageCoolDrink() throws DockerTestException, InterruptedException {
-        List<String> ports = getExposedPorts(coolDrinkDockerImage);
+        List<String> ports = getExposedPorts(COOL_DRINK_DOCKER_IMAGE);
         Assert.assertEquals(ports.size(), 1);
         Assert.assertEquals(ports.get(0), "9090/tcp");
     }
 
     @Test
     public void validateDockerImageDrinkStore() throws DockerTestException, InterruptedException {
-        List<String> ports = getExposedPorts(drinkStoreDockerImage);
+        List<String> ports = getExposedPorts(DRINK_STORE_DOCKER_IMAGE);
         Assert.assertEquals(ports.size(), 1);
         Assert.assertEquals(ports.get(0), "9091/tcp");
     }
     
     @Test
     public void validateDockerImageHotDrink() throws DockerTestException, InterruptedException {
-        List<String> ports = getExposedPorts(hotDrinkDockerImage);
+        List<String> ports = getExposedPorts(HOT_DRINK_DOCKER_IMAGE);
         Assert.assertEquals(ports.size(), 1);
         Assert.assertEquals(ports.get(0), "9090/tcp");
     }
 
     @AfterClass
     public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(drinkStoreDockerImage);
-        KubernetesTestUtils.deleteDockerImage(coolDrinkDockerImage);
-        KubernetesTestUtils.deleteDockerImage(hotDrinkDockerImage);
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DRINK_STORE_DOCKER_IMAGE);
+        KubernetesTestUtils.deleteDockerImage(COOL_DRINK_DOCKER_IMAGE);
+        KubernetesTestUtils.deleteDockerImage(HOT_DRINK_DOCKER_IMAGE);
     }
 }

@@ -17,6 +17,11 @@ language: java
 services:
   - docker
 
+install:
+  - mvn install -B -V
+
+script: echo "Done"
+
 cache:
   directories:
   - $HOME/.m2

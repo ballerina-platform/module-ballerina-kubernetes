@@ -18,7 +18,6 @@
 
 package org.ballerinax.kubernetes.handlers;
 
-import io.fabric8.kubernetes.api.KubernetesHelper;
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscaler;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -26,6 +25,8 @@ import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.EnvVarValueModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.PodAutoscalerModel;
+import org.ballerinax.kubernetes.models.ProbeModel;
+import org.ballerinax.kubernetes.utils.Utils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -57,8 +58,9 @@ public class KubernetesHPAGeneratorTests {
         deploymentModel.addPort(9091);
         deploymentModel.addPort(9092);
         deploymentModel.setLabels(labels);
-        deploymentModel.setEnableLiveness(true);
-        deploymentModel.setLivenessPort(9090);
+        ProbeModel probeModel = new ProbeModel();
+        probeModel.setPort(9090);
+        deploymentModel.setLivenessProbe(probeModel);
         deploymentModel.setSingleYAML(false);
         Map<String, EnvVarValueModel> env = new HashMap<>();
         EnvVarValueModel testEnvVar = new EnvVarValueModel("ENV");
@@ -89,13 +91,17 @@ public class KubernetesHPAGeneratorTests {
     }
 
     private void assertGeneratedYAML(File yamlFile) throws IOException {
-        HorizontalPodAutoscaler podAutoscaler = KubernetesHelper.loadYaml(yamlFile);
-        Assert.assertEquals(hpaName, podAutoscaler.getMetadata().getName());
-        Assert.assertEquals(selector, podAutoscaler.getMetadata().getLabels().get(KubernetesConstants
-                .KUBERNETES_SELECTOR_KEY));
-        Assert.assertEquals(maxReplicas, podAutoscaler.getSpec().getMaxReplicas().intValue());
-        Assert.assertEquals(minReplicas, podAutoscaler.getSpec().getMinReplicas().intValue());
-        Assert.assertEquals(cpuPercentage, podAutoscaler.getSpec().getTargetCPUUtilizationPercentage().intValue());
-        Assert.assertEquals(deploymentName, podAutoscaler.getSpec().getScaleTargetRef().getName());
+        HorizontalPodAutoscaler podAutoscaler = Utils.loadYaml(yamlFile);
+        Assert.assertEquals(podAutoscaler.getMetadata().getName(), hpaName);
+        Assert.assertEquals(podAutoscaler.getMetadata().getLabels().get(KubernetesConstants
+                .KUBERNETES_SELECTOR_KEY), selector);
+        Assert.assertEquals(podAutoscaler.getSpec().getMaxReplicas().intValue(), maxReplicas);
+        Assert.assertEquals(podAutoscaler.getSpec().getMinReplicas().intValue(), minReplicas);
+        Assert.assertEquals(podAutoscaler.getSpec().getMetrics().size(), 1, "CPU metric is missing.");
+        Assert.assertEquals(podAutoscaler.getSpec().getMetrics().get(0).getResource().getName(), "cpu",
+                "Invalid resource name.");
+        Assert.assertEquals(podAutoscaler.getSpec().getMetrics().get(0).getResource().getTargetAverageUtilization()
+                .intValue(), cpuPercentage);
+        Assert.assertEquals(podAutoscaler.getSpec().getScaleTargetRef().getName(), deploymentName);
     }
 }

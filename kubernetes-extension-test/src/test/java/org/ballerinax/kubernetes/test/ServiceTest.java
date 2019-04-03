@@ -29,13 +29,12 @@ import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -47,22 +46,19 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
  * Test generating service artifacts.
  */
 public class ServiceTest {
-    private final String balDirectory = Paths.get("src").resolve("test").resolve("resources").resolve("svc")
-            .toAbsolutePath().toString();
-    private final String targetPath = Paths.get(balDirectory).resolve(KUBERNETES).toString();
-    private final String dockerImage = "pizza-shop:latest";
+    private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "svc");
+    private static final Path TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
+    private static final String DOCKER_IMAGE = "pizza-shop:latest";
     
-    private final String selectorApp = "different_svc_ports";
-    private Service service;
-    private Ingress ingress;
-    
-    @BeforeClass
-    public void compileSample() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "different_svc_ports.bal"), 0);
-        File yamlFile = new File(targetPath + File.separator + "different_svc_ports.yaml");
+    @Test
+    public void differentSvcPortTest() throws IOException, InterruptedException, DockerTestException,
+            KubernetesPluginException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "different_svc_ports.bal"), 0);
+        File yamlFile = TARGET_PATH.resolve("different_svc_ports.yaml").toFile();
         Assert.assertTrue(yamlFile.exists());
-        KubernetesClient client = new DefaultKubernetesClient();
-        List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
+        List<HasMetadata> k8sItems = KubernetesTestUtils.loadYaml(yamlFile);
+        Service service = null;
+        Ingress ingress = null;
         for (HasMetadata data : k8sItems) {
             switch (data.getKind()) {
                 case "Service":
@@ -75,31 +71,22 @@ public class ServiceTest {
                     break;
             }
         }
-    }
     
-    /**
-     * Validate generated service yaml.
-     */
-    @Test
-    public void validateK8SService() {
+        validateDockerfile();
+        validateDockerImage(DOCKER_IMAGE);
+    
         Assert.assertNotNull(service);
         Assert.assertEquals("hello", service.getMetadata().getName());
-        Assert.assertEquals(selectorApp, service.getMetadata().getLabels().get(KubernetesConstants
+        Assert.assertEquals("different_svc_ports", service.getMetadata().getLabels().get(KubernetesConstants
                 .KUBERNETES_SELECTOR_KEY));
         Assert.assertEquals(KubernetesConstants.ServiceType.ClusterIP.name(), service.getSpec().getType());
         Assert.assertEquals(1, service.getSpec().getPorts().size());
         Assert.assertEquals(8080, service.getSpec().getPorts().get(0).getPort().intValue());
         Assert.assertEquals(9090, service.getSpec().getPorts().get(0).getTargetPort().getIntVal().intValue());
-    }
     
-    /**
-     * Validate generated ingress yaml.
-     */
-    @Test(dependsOnMethods = {"validateK8SService"})
-    public void validateIngress() {
         Assert.assertNotNull(ingress);
         Assert.assertEquals("helloep-ingress", ingress.getMetadata().getName());
-        Assert.assertEquals(selectorApp, ingress.getMetadata().getLabels().get(KubernetesConstants
+        Assert.assertEquals("different_svc_ports", ingress.getMetadata().getLabels().get(KubernetesConstants
                 .KUBERNETES_SELECTOR_KEY));
         Assert.assertEquals("abc.com", ingress.getSpec().getRules().get(0).getHost());
         Assert.assertEquals("/", ingress.getSpec().getRules().get(0).getHttp().getPaths().get(0).getPath());
@@ -110,19 +97,9 @@ public class ServiceTest {
                 .get(0).getHttp().getPaths().get(0).getBackend()
                 .getServicePort().getIntVal().intValue());
         Assert.assertEquals(2, ingress.getMetadata().getAnnotations().size());
-    }
     
-    @Test
-    public void validateDockerfile() {
-        File dockerFile = new File(targetPath + File.separator + DOCKER + File.separator + "Dockerfile");
-        Assert.assertTrue(dockerFile.exists());
-    }
-    
-    @Test
-    public void validateDockerImage() throws DockerTestException, InterruptedException {
-        List<String> ports = getExposedPorts(this.dockerImage);
-        Assert.assertEquals(ports.size(), 1);
-        Assert.assertEquals(ports.get(0), "9090/tcp");
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     /**
@@ -132,12 +109,46 @@ public class ServiceTest {
      */
     @Test
     public void serviceAnnotationOnNonAnonymousEndpointTest() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(balDirectory, "invalid_svc_annotation.bal"), 1);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "invalid_svc_annotation.bal"), 1);
     }
     
-    @AfterClass
-    public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
-        KubernetesUtils.deleteDirectory(targetPath);
-        KubernetesTestUtils.deleteDockerImage(dockerImage);
+    @Test
+    public void portAndTargetPortTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "port_and_target_port.bal"), 0);
+        File yamlFile = TARGET_PATH.resolve("port_and_target_port.yaml").toFile();
+        Assert.assertTrue(yamlFile.exists());
+        KubernetesClient client = new DefaultKubernetesClient();
+        List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
+        for (HasMetadata data : k8sItems) {
+            if ("Service".equals(data.getKind())) {
+                Service service = (Service) data;
+                Assert.assertNotNull(service);
+                Assert.assertEquals("hello", service.getMetadata().getName());
+                Assert.assertEquals("port_and_target_port", service.getMetadata().getLabels().get(KubernetesConstants
+                        .KUBERNETES_SELECTOR_KEY));
+                Assert.assertEquals(KubernetesConstants.ServiceType.ClusterIP.name(), service.getSpec().getType());
+                Assert.assertEquals(1, service.getSpec().getPorts().size());
+                Assert.assertEquals(8080, service.getSpec().getPorts().get(0).getPort().intValue());
+                Assert.assertEquals(9090, service.getSpec().getPorts().get(0).getTargetPort().getIntVal().intValue());
+            }
+        }
+    
+        validateDockerfile();
+        validateDockerImage(DOCKER_IMAGE);
+    
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
+    }
+    
+    public void validateDockerfile() {
+        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
+        Assert.assertTrue(dockerFile.exists());
+    }
+    
+    public void validateDockerImage(String dockerImage) throws DockerTestException, InterruptedException {
+        List<String> ports = getExposedPorts(dockerImage);
+        Assert.assertEquals(ports.size(), 1);
+        Assert.assertEquals(ports.get(0), "9090/tcp");
     }
 }

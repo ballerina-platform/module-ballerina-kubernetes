@@ -1,4 +1,5 @@
 import ballerina/http;
+import ballerina/log;
 import ballerinax/kubernetes;
 
 @kubernetes:Service {
@@ -34,6 +35,9 @@ service reviewService on bookReviewEP {
 
         http:Response reviewResponse = new;
         reviewResponse.setTextPayload(reviewContent);
-        _ = caller -> respond(reviewResponse);
+        var responseResult = caller -> respond(reviewResponse);
+        if (responseResult is error) {
+            log:printError("error responding back to client.", err = responseResult);
+        }
     }
 }

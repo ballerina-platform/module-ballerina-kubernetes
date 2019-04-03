@@ -16,15 +16,16 @@
 
 import ballerina/http;
 import ballerinax/kubernetes;
+import ballerinax/istio;
 
-@kubernetes:IstioVirtualService {
+@istio:VirtualService {
     name: "reviews-route",
     hosts: [
         "reviews.prod.svc.cluster.local"
     ],
     http: [
         {
-            ^"timeout": "5s",
+            ^"timeout": 5,
             route: [
                 {
                     destination: {
@@ -49,6 +50,6 @@ service helloWorld on helloEP {
     resource function sayHello(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         response.setTextPayload("Hello, World from service helloWorld ! \n");
-        _ = outboundEP->respond(response);
+        checkpanic outboundEP->respond(response);
     }
 }
