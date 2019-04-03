@@ -17,30 +17,20 @@
 import ballerina/http;
 import ballerinax/kubernetes;
 
-
-public type SampleListener object {
+public type ABC object {
 
     *AbstractListener;
 
-    public function __start() returns error? {
-        return ();
+    public function __start() returns error?{
+        error e = error("startError");
+        panic e;
     }
 
     public function __stop() returns error? {
         return ();
     }
 
-    public function __attach(service s, map<any> annotationData) returns error? {
-        return ();
-    }
-
-    public function __init() {}
-
-    public function initEndpoint() returns error? {
-        return ();
-    }
-
-    function register(service s, map<any> annotationData) returns error? {
+    public function __attach(service s, string? name = ()) returns error? {
         return ();
     }
 };
@@ -56,12 +46,12 @@ public type SampleListener object {
     port: 8080,
     targetPort: 9090
 }
-listener SampleListener helloEP = new();
+listener ABC ep = new;
 
 @http:ServiceConfig {
     basePath: "/helloWorld"
 }
-service helloWorld on helloEP {
+service helloWorld on ep {
     resource function sayHello(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         response.setTextPayload("Hello, World from service helloWorld ! \n");
