@@ -1,66 +1,81 @@
-# Create a `ballerina.conf` file with following content in the same directory as kubernetes_deployment.bal file.
-[john]
-userid="john@ballerina.com"
-groups="apim,esb"
-[jane]
-userid="jane3@ballerina.com"
-groups="esb"
-
-
 # Build the ballerina program
-$ ballerina build kubernetes_deployment.bal
+$ ballerina build openshift_deployment.bal
 Compiling source
-    kubernetes_deployment.bal
-
+    openshift_deployment.bal
 Generating executable
-    kubernetes_deployment.balx
-        @kubernetes:Service                      - complete 1/1
-        @kubernetes:Ingress                      - complete 1/1
-        @kubernetes:Secret                       - complete 1/1
-        @kubernetes:ConfigMap                    - complete 1/1
-        @kubernetes:Deployment                   - complete 1/1
-        @kubernetes:Docker                       - complete 3/3
+    openshift_deployment.balx
 
-        Run the following command to deploy the Kubernetes artifacts:
-        kubectl apply -f ./kubernetes
+	@kubernetes:Service 			 - complete 1/1
+	@kubernetes:Deployment 			 - complete 1/1
+	@kubernetes:Docker 			 - complete 3/3
+	@kubernetes:Helm 			 - complete 1/1
+	@openshift:BuildConfig 			 - complete 1/1
+	@openshift:ImageStream 			 - complete 1/1
+	@openshift:Route 			 - complete 1/1
 
-# Verify the docker image is generated
-$ docker images
-REPOSITORY  TAG      IMAGE ID            CREATED             SIZE
-kubernetes  v1.0   6c0a26a62545        2 seconds ago       127MB
+	Run the following command to deploy the OpenShift artifacts:
+	oc apply -f ./kubernetes/openshift
 
-# Run generated docker image
-$ kubectl apply -f ./kubernetes/
-service/helloworldep-svc created
-ingress.extensions/helloworldep-ingress created
-secret/helloworldep-secure-socket created
-configmap/helloworld-ballerina-conf-config-map created
-deployment.extensions/kubernetes-deployment-deployment created
+	Run the following command to start a build:
+	oc start-build bc/openshift-openshift-bc-openshift-bc --from-dir=. --follow
 
-# Verify the service, pods & config-maps are deployed
-$ kubectl get pods
-NAME                                     READY     STATUS   RESTARTS   AGE
-kubernetes-deployment-5858fd78d4-lnz8n   1/1       Running   0         20s
+	Run the following command to deploy the Kubernetes artifacts:
+	kubectl apply -f ./kubernetes
 
-$ kubectl get svc
-NAME                TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
-helloworldep-svc    NodePort    10.109.125.193   <none>        9090:32417/TCP   1m
+# Create a new OpenShift project
+$ oc new-project hello-api
 
-$ kubectl get cm
-NAME                                   DATA      AGE
-helloworld-ballerina-conf-config-map   1         5m
+# Deploy the OpenShift artifacts
+$ oc apply -f ./kubernetes/openshift
+buildconfig.build.openshift.io/openshift-openshift-bc-openshift-bc created
+imagestream.image.openshift.io/hello-service created
+route.route.openshift.io/helloep-openshift-route created
 
-# Access the service
-# Change the port <32417> to Nodeport of the service.
-$ curl https://localhost:<32417>/helloWorld/config/jane -k
-{userId: jane3@ballerina.com, groups: esb}
+# Trigger a build to create the docker image
+$ oc start-build bc/openshift-openshift-bc-openshift-bc --from-dir=. --follow
+Uploading directory "." as binary input for the build ...
 
-$ curl https://localhost:<32417>/helloWorld/config/john -k
-{userId: john@ballerina.com, groups: apim,esb}
+Uploading finished
+build.build.openshift.io/openshift-openshift-bc-openshift-bc-4 started
+Receiving source from STDIN as archive ...
+Step 1/7 : FROM ballerina/ballerina-runtime:0.990.4-SNAPSHOT
+ ---> 1a797b254523
+Step 2/7 : LABEL maintainer "dev@ballerina.io"
+ ---> Using cache
+ ---> 74344a06d91c
+Step 3/7 : COPY openshift_deployment.balx /home/ballerina
+ ---> dd86747d6de3
+Removing intermediate container 6de25c436216
+Step 4/7 : EXPOSE 9090
+ ---> Running in 6f28d0d89b6a
+ ---> abe0325ea301
+Removing intermediate container 6f28d0d89b6a
+Step 5/7 : CMD ballerina run  openshift_deployment.balx
+ ---> Running in 86b858a53fca
+ ---> 43014797f865
+Removing intermediate container 86b858a53fca
+Step 6/7 : ENV "OPENSHIFT_BUILD_NAME" "openshift-openshift-bc-openshift-bc-4" "OPENSHIFT_BUILD_NAMESPACE" "hello-api"
+ ---> Running in e82becaca413
+ ---> 933c04628d72
+Removing intermediate container e82becaca413
+Step 7/7 : LABEL "io.openshift.build.name" "openshift-openshift-bc-openshift-bc-4" "io.openshift.build.namespace" "hello-api"
+ ---> Running in c1ef500f8acc
+ ---> d4d7a09a9092
+Removing intermediate container c1ef500f8acc
+Successfully built d4d7a09a9092
+Pushing image 172.30.1.1:5000/hello-api/hello-service:v1.0 ...
+Push successful
 
-# If you are using minikube, IP address should be changed according to output of `minikube ip` command.
-$ minikube ip
-192.168.99.100
+# Deploy the Kubernetes artifacts
+$ kubectl apply -f ./kubernetes
+service/helloep-svc created
+deployment.apps/openshift-deployment-deployment created
 
-$ curl https://192.168.99.100:<32417>/helloWorld/config/jane -k
-{userId: jane3@ballerina.com, groups: esb}
+# Check if pods are running
+$ oc get pods
+NAME                                               READY     STATUS      RESTARTS   AGE
+openshift-deployment-deployment-865d564bc9-5rh78   1/1       Running     0          35m
+
+# Invoke the service. If you are using minikube, resolving www.oc-example.com to minikube IP. Use `minikube ip` command to find the IP.
+$ curl --resolve www.oc-example.com:80:192.168.99.101 http://www.oc-example.com/hello/john
+Hello john!

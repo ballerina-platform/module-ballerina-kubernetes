@@ -1,6 +1,5 @@
-//Ballerina supports generating kubernetes artifacts based on annotations.
-//A single Ballerina module is mapped to a single Kubernetes deployment.
-//Minikube or Docker for Mac/Windows should be configured and
-//Kubernetes should be enabled to run the example.
-//This example deploys https service which retrieve values from config file, to Kubernetes.
+//Ballerina supports generating OpenShift Route, BuildConfig and ImageStream artifacts based on annotations.
+//Docker image of the ballerina service is built using the BuildConfig which then can be used by the generated Kubernetes Deployment.
+//A generated OpenShift Route exposes the Kubernetes Service of the Ballerina Service.
+//This example deploys http service which responses "Hello" followed by a name.
 

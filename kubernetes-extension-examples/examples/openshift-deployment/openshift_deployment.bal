@@ -1,65 +1,43 @@
-import ballerina/config;
 import ballerina/http;
 import ballerina/log;
 import ballerinax/kubernetes;
+import ballerinax/openshift;
 
-//Add `@kubernetes:Service` to a listner endpoint to expose the endpoint as Kubernetes Service.
-@kubernetes:Service {
-    //Service type is `NodePort`.
-    serviceType: "NodePort"
+//Add `@kubernetes:Service` to a listener endpoint to expose the endpoint as Kubernetes Service.
+@kubernetes:Service {}
+//Add `@openshift:Route` to expose Kubernetes Service through an OpenShift Route.
+@openshift:Route {
+    host: "www.oc-example.com"
 }
-//Add `@kubernetes:Ingress` to a listner endpoint to expose the endpoint as Kubernetes Ingress.
-@kubernetes:Ingress {
-    //Hostname of the service is `abc.com`.
-    hostname: "abc.com"
-}
-listener http:Listener helloWorldEP = new(9090, config = {
-    //Ballerina automatically creates Kubernetes secrets for the keystore and truststore when `@kubernetes:Service`
-    //annotation is added to the endpoint.
-    secureSocket: {
-        keyStore: {
-            path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
-            password: "ballerina"
-        },
-        trustStore: {
-            path: "${ballerina.home}/bre/security/ballerinaTruststore.p12",
-            password: "ballerina"
-        }
-    }
-});
+listener http:Listener helloEP = new(9090);
 
 //Add `@kubernetes:Deployment` annotation to a Ballerina service to generate Kuberenetes Deployment for a Ballerina module.
 @kubernetes:Deployment {
-    //Enable Kubernetes liveness probe to this service.
-    livenessProbe: true,
-    //Genrate Docker image with name `kubernetes:v1.0`.
-    image: "kubernetes:v.1.0"
-    //Uncomment and change the following values accordingly if you are using minikube.
-    ////,dockerHost:"tcp://<minikube IP>:2376",
-    ////dockerCertPath:"<HOME_DIRECTORY>/.minikube/certs"
-
+    //OpenShift project name.
+    namespace: "hello-api",
+    //IP and port of the OpenShift docker registry. Use `minishift openshift registry` to find the docker registry if you are using minishift.
+    registry: "172.30.1.1:5000",
+    //Generate Docker image with name `172.30.1.1:5000/hello-api/hello-service:v1.0`.
+    image: "hello-service:v1.0",
+    //Disable building image by default so that OpenShift BuildConfig can build it.
+    buildImage: false,
+    //Generate the OpenShift BuildConfig for building the docker image.
+    buildExtension: openshift:BUILD_EXTENSION_OPENSHIFT
 }
 @http:ServiceConfig {
-    basePath: "/helloWorld"
+    basePath: "/hello"
 }
-service helloWorld on helloWorldEP {
+service hello on helloEP {
     @http:ResourceConfig {
         methods: ["GET"],
-        path: "/config/{user}"
+        path: "/{user}"
     }
-    resource function getConfig(http:Caller outboundEP, http:Request request, string user) {
-        string userId = getConfigValue(user, "userid");
-        string groups = getConfigValue(user, "groups");
-        string payload = "{userId: " + userId + ", groups: " + groups + "} \n";
-        var responseResult = outboundEP->respond(payload);
+    resource function sayHello(http:Caller caller, http:Request request, string user) {
+        string payload = string `Hello ${untaint user}!`;
+        var responseResult = caller->respond(payload);
         if (responseResult is error) {
             error err = responseResult;
             log:printError("Error sending response", err = err);
         }
     }
-}
-
-function getConfigValue(string instanceId, string property) returns (string) {
-    string key = untaint instanceId + "." + untaint property;
-    return config:getAsString(key, default = "Invalid User");
 }
