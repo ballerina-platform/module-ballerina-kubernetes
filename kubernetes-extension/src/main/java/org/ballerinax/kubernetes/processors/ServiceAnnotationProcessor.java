@@ -72,7 +72,10 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         if (serviceModel.getPort() == -1) {
             serviceModel.setPort(extractPort(bListener));
         }
-        serviceModel.setTargetPort(extractPort(bListener));
+        
+        if (serviceModel.getTargetPort() == -1) {
+            serviceModel.setTargetPort(extractPort(bListener));
+        }
         KubernetesContext.getInstance().getDataHolder().addBListenerToK8sServiceMap(serviceNode.getName().getValue(),
                 serviceModel);
     }
@@ -93,7 +96,10 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         if (serviceModel.getPort() == -1) {
             serviceModel.setPort(extractPort(bListener));
         }
-        serviceModel.setTargetPort(extractPort(bListener));
+        
+        if (serviceModel.getTargetPort() == -1) {
+            serviceModel.setTargetPort(extractPort(bListener));
+        }
         KubernetesContext.getInstance().getDataHolder().addBListenerToK8sServiceMap(variableNode.getName().getValue()
                 , serviceModel);
     }
@@ -102,7 +108,7 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         try {
             return Integer.parseInt(bListener.argsExpr.get(0).toString());
         } catch (NumberFormatException e) {
-            throw new KubernetesPluginException("unable to parse port of the service: " +
+            throw new KubernetesPluginException("unable to parse port/targetPort for the service: " +
                                             bListener.argsExpr.get(0).toString());
         }
     }
@@ -132,6 +138,9 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
                 case port:
                     serviceModel.setPort(getIntValue(keyValue.getValue()));
                     break;
+                case targetPort:
+                    serviceModel.setTargetPort(getIntValue(keyValue.getValue()));
+                    break;
                 case sessionAffinity:
                     serviceModel.setSessionAffinity(getStringValue(keyValue.getValue()));
                     break;
@@ -151,6 +160,7 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         annotations,
         serviceType,
         port,
+        targetPort,
         sessionAffinity
     }
 }

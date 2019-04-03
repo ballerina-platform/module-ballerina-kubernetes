@@ -188,11 +188,13 @@ public type ServiceType "NodePort"|"ClusterIP"|"LoadBalancer";
 # Kubernetes service configuration.
 #
 # + port - Service port
+# + targetPort - Port of the pods
 # + sessionAffinity - Session affinity for pods
 # + serviceType - Service type of the service
 public type ServiceConfiguration record {|
     *Metadata;
     int port?;
+    int targetPort?;
     SessionAffinity sessionAffinity = SESSION_AFFINITY_NONE;
     ServiceType serviceType = SERVICE_TYPE_CLUSTER_IP;
 |};
