@@ -14,8 +14,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import kubernetes;
-
 public const string BUILD_EXTENSION_OPENSHIFT = "openshift";
 
 # Domain for OpenShift Route configuration.
@@ -27,9 +25,14 @@ public type RouteDomainConfig record {|
 
 # Route configuration for @kubernetes:OpenShiftRoute.
 #
+# + name - Name of the resource
+# + labels - Map of labels for the resource
+# + annotations - Map of annotations for resource
 # + host - The host of the route.
 public type RouteConfiguration record {|
-    *kubernetes:Metadata;
+    string name?;
+    map<string> labels?;
+    map<string> annotations?;
     string|RouteDomainConfig host;
 |};
 

@@ -14,8 +14,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import kubernetes;
-
 # Types of protocols of a port.
 public type PortProtocol "HTTP"|"HTTPS"|"GRPC"|"HTTP2"|"MONGO"|"TCP"|"TLS";
 
@@ -63,10 +61,15 @@ public type ServerConfig record {|
 
 # Istio gateway annotation configuration.
 #
+# + name - Name of the resource
+# + labels - Map of labels for the resource
+# + annotations - Map of annotations for resource
 # + selector - Specific set of pods/VMs on which this gateway configuration should be applied.
 # + servers - List of servers to pass.
 public type GatewayConfig record {|
-    *kubernetes:Metadata;
+    string name?;
+    map<string> labels?;
+    map<string> annotations?;
     map<string> selector?;
     ServerConfig?[] servers?;
 |};
@@ -107,11 +110,16 @@ public type HTTPRouteConfig record {|
 
 # Virtual service configuration for @istio:VirtualService annotation.
 #
+# + name - Name of the resource
+# + labels - Map of labels for the resource
+# + annotations - Map of annotations for resource
 # + hosts - Destination which traffic should be sent.
 # + gateways - Names of the gateways which the service should listen to.
 # + http - Route rules for HTTP traffic.
 public type VirtualServiceConfig record {|
-    *kubernetes:Metadata;
+    string name?;
+    map<string> labels?;
+    map<string> annotations?;
     string[] hosts?;
     string[] gateways?;
     HTTPRouteConfig[] http?;
