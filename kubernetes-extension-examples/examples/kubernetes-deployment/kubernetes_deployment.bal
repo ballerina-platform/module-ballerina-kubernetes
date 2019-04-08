@@ -56,7 +56,10 @@ service helloWorld on helloWorldEP {
     resource function getConfig(http:Caller outboundEP, http:Request request, string user) {
         string userId = getConfigValue(user, "userid");
         string groups = getConfigValue(user, "groups");
-        string payload = "{userId: " + userId + ", groups: " + groups + "} \n";
+        json payload = {
+            userId: userId,
+            groups: groups
+        };
         var responseResult = outboundEP->respond(payload);
         if (responseResult is error) {
             error err = responseResult;
@@ -67,5 +70,5 @@ service helloWorld on helloWorldEP {
 
 function getConfigValue(string instanceId, string property) returns (string) {
     string key = untaint instanceId + "." + untaint property;
-    return config:getAsString(key, default = "Invalid User");
+    return config:getAsString(key, defaultValue = "Invalid User");
 }
