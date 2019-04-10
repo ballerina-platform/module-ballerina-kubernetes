@@ -28,7 +28,7 @@ listener http:Listener helloWorldEP = new(9090, config = {
     }
 });
 
-//Add `@kubernetes:ConfigMap` annotation to a Ballerna service to mount configs to the container.
+//Add `@kubernetes:ConfigMap` annotation to a Ballerina service to mount configs to the container.
 @kubernetes:ConfigMap {
     //Path to the ballerina.conf file.
     //If a releative path is provided, the path should be releative to where the `ballerina build` command is executed.
@@ -56,7 +56,10 @@ service helloWorld on helloWorldEP {
     resource function getConfig(http:Caller outboundEP, http:Request request, string user) {
         string userId = getConfigValue(user, "userid");
         string groups = getConfigValue(user, "groups");
-        string payload = "{userId: " + userId + ", groups: " + groups + "} \n";
+        json payload = {
+            userId: userId,
+            groups: groups
+        };
         var responseResult = outboundEP->respond(payload);
         if (responseResult is error) {
             error err = responseResult;
@@ -67,5 +70,5 @@ service helloWorld on helloWorldEP {
 
 function getConfigValue(string instanceId, string property) returns (string) {
     string key = untaint instanceId + "." + untaint property;
-    return config:getAsString(key, default = "Invalid User");
+    return config:getAsString(key, defaultValue = "Invalid User");
 }

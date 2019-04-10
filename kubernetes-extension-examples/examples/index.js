@@ -7,6 +7,10 @@
             {
                 "name": "Kubernetes Deployment",
                 "url": "kubernetes-deployment"
+            },
+            {
+                "name": "OpenShift Deployment",
+                "url": "openshift-deployment"
             }
         ]
     }
