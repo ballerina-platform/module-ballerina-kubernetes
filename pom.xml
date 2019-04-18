@@ -256,7 +256,7 @@
         <ballerina.source.directory>${project.build.directory}/../src/main/ballerina</ballerina.source.directory>
         <com.fasterxml.jackson.core.annotations.version>2.9.8</com.fasterxml.jackson.core.annotations.version>
         <com.fasterxml.jackson.dataformat.yaml.version>2.9.8</com.fasterxml.jackson.dataformat.yaml.version>
-        <docker.generator.version>0.990.4-SNAPSHOT</docker.generator.version>
+        <docker.generator.version>0.991.0</docker.generator.version>
         <fabric8.kubernetes.client.version>4.1.2</fabric8.kubernetes.client.version>
         <jackson.version>2.9.8</jackson.version>
         <maven.jacoco.plugin.version>0.8.3</maven.jacoco.plugin.version>
