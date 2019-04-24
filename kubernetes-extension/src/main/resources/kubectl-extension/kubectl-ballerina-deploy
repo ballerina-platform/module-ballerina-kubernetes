@@ -69,4 +69,4 @@ then
 fi
 
 echo "error: no ballerina source or module(s) provided to build"
-exit 1
+exit
