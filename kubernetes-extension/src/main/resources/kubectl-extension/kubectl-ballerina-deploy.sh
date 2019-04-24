@@ -15,14 +15,14 @@
 #  limitations under the License.
 
 trap ctrl_c INT
-trap on_exit ERR
+trap on_error ERR
 
 function ctrl_c() {
     echo "cancelling building/deploying"
     exit 2;
 }
 
-function on_exit() {
+function on_error() {
     echo "error occurred in building/deploying"
     exit 1;
  }
