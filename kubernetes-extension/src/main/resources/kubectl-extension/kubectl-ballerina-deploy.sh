@@ -23,7 +23,7 @@ function ctrl_c() {
 }
 
 function on_error() {
-    echo "error occurred in building/deploying"
+    echo "error: unable to build or deploy due to error"
     exit 1;
  }
 
@@ -46,20 +46,27 @@ then
     echo "${BAL_BUILD_OUTPUT}"
 
     if [[ $? -eq 0 ]]; then
+        HAS_COMMANDS=false
         echo "\n> deploying artifacts..."
 
-        while read -r line; do
-            if [[ $line == kubectl* ]] || [[ $line == oc* ]] ;
+        while read -r LINE; do
+            if [[ $LINE == kubectl* ]] || [[ $LINE == oc* ]] ;
             then
-                echo "\n$> $line"
-                ${line}
+                HAS_COMMANDS=true
+                echo "\n$> $LINE"
+                ${LINE}
             fi
         done <<< "$BAL_BUILD_OUTPUT"
+
+        if [[ "$HAS_COMMANDS" = false ]] ; then
+            echo "error: cannot find any artifacts to deploy"
+            exit 1
+        fi
 
         echo "\n> deployment complete!"
         exit 0
     fi
 fi
 
-echo "no ballerina source or module(s) provided to build"
+echo "error: no ballerina source or module(s) provided to build"
 exit 1
