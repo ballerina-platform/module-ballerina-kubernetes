@@ -42,7 +42,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 
-public class Sample5Test implements SampleTest {
+public class Sample5Test extends SampleTest {
     
     private static final Path SOURCE_DIR_PATH = SAMPLE_DIR.resolve("sample5");
     private static final Path TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);

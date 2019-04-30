@@ -39,7 +39,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDockerImage;
 
-public class JobTest {
+public class JobTest extends BaseTest {
     private static final Path SOURCE_DIR_PATH = Paths.get("src", "test", "resources", "job");
     private static final Path TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
     private static final String DOCKER_IMAGE = "my-ballerina-job:1.0";

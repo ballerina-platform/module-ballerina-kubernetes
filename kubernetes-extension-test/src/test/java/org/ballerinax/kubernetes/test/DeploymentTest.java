@@ -39,7 +39,7 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDocker
 /**
  * Test creating kubernetes deployment artifacts.
  */
-public class DeploymentTest {
+public class DeploymentTest extends BaseTest {
     private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "deployment");
     private static final Path TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
     private static final String DOCKER_IMAGE = "pizza-shop:latest";

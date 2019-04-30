@@ -39,7 +39,7 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDocker
 /**
  * Test cases for deployment readiness probes.
  */
-public class ReadinessProbeTest {
+public class ReadinessProbeTest extends BaseTest {
     private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "deployment", "readiness-probe");
     private static final Path TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
     private static final String DOCKER_IMAGE = "pizza-shop:latest";

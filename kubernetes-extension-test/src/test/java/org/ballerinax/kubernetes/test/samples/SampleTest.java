@@ -18,7 +18,9 @@
 
 package org.ballerinax.kubernetes.test.samples;
 
+import org.apache.commons.io.FilenameUtils;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.test.BaseTest;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -27,12 +29,17 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public interface SampleTest {
-    Path SAMPLE_DIR = Paths.get(System.getProperty("sample.dir"));
-
+public abstract class SampleTest extends BaseTest {
+    /**
+     * Location of the samples directory.
+     */
+    protected static final Path SAMPLE_DIR = Paths.get(FilenameUtils.separatorsToSystem(
+            System.getProperty("sample.dir")));
+    
     @BeforeClass
-    void compileSample() throws IOException, InterruptedException;
-
+    abstract void compileSample() throws IOException, InterruptedException;
+    
     @AfterClass
-    void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException;
+    abstract void cleanUp() throws KubernetesPluginException, InterruptedException, DockerTestException;
+    
 }
