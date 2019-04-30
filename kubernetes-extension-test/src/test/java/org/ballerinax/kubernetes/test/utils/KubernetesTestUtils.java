@@ -40,6 +40,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -60,9 +61,11 @@ public class KubernetesTestUtils {
     private static final String JAVA_OPTS = "JAVA_OPTS";
     private static final Path DISTRIBUTION_PATH = Paths.get(FilenameUtils.separatorsToSystem(
             System.getProperty("ballerina.pack")));
-    private static final String COMMAND = System.getProperty("os.name").toLowerCase(Locale.getDefault()).contains("win")
-                                          ? "ballerina.bat" : "ballerina";
-    private static final String BALLERINA_COMMAND = DISTRIBUTION_PATH.resolve(COMMAND).toString();
+    private static final String BALLERINA_COMMAND = DISTRIBUTION_PATH +
+                                                    File.separator + "bin" +
+                                                    File.separator +
+                                                    (System.getProperty("os.name").toLowerCase(Locale.getDefault())
+                                                             .contains("win") ? "ballerina.bat" : "ballerina");
     private static final String BUILD = "build";
     private static final String EXECUTING_COMMAND = "Executing command: ";
     private static final String COMPILING = "Compiling: ";
@@ -136,24 +139,19 @@ public class KubernetesTestUtils {
     
     public static DockerClient getDockerClient() throws DockerTestException {
         RuntimeDelegate.setInstance(new RuntimeDelegateImpl());
-        String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
-        String dockerHost = operatingSystem.contains("win") ? DockerHost.defaultWindowsEndpoint() :
-                            DockerHost.defaultUnixEndpoint();
-        DockerClient dockerClient = DefaultDockerClient.builder().uri(dockerHost).build();
+        URI dockerURI = DockerHost.fromEnv().uri();
+        DockerClient dockerClient = DefaultDockerClient.builder().uri(dockerURI).build();
+        
         try {
-            String dockerCertPath = System.getenv("DOCKER_CERT_PATH");
+            String dockerCertPath = DockerHost.fromEnv().dockerCertPath();
             if (null != dockerCertPath && !"".equals(dockerCertPath)) {
-                if (null != System.getenv("DOCKER_HOST")) {
-                    dockerHost = System.getenv("DOCKER_HOST");
-                }
-                dockerHost = dockerHost.replace("tcp", "https");
                 Optional<DockerCertificatesStore> certOptional =
                         DockerCertificates.builder()
                                 .dockerCertPath(Paths.get(dockerCertPath))
                                 .build();
                 if (certOptional.isPresent()) {
                     dockerClient = DefaultDockerClient.builder()
-                            .uri(dockerHost)
+                            .uri(dockerURI)
                             .dockerCertificates(certOptional.get())
                             .build();
                 }
@@ -161,6 +159,8 @@ public class KubernetesTestUtils {
         } catch (DockerCertificateException e) {
             throw new DockerTestException(e);
         }
+        
+        
         return dockerClient;
     }
 

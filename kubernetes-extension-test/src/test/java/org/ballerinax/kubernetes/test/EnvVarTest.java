@@ -42,7 +42,7 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
 /**
  * Test setting environment variables for deployments.
  */
-public class EnvVarTest {
+public class EnvVarTest extends BaseTest {
     private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "env-vars");
     private static final Path TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
     private static final String DOCKER_IMAGE = "pizza-shop:latest";

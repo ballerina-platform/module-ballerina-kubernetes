@@ -45,7 +45,7 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
 /**
  * Test generating service artifacts.
  */
-public class ServiceTest {
+public class ServiceTest extends BaseTest {
     private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "svc");
     private static final Path TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
     private static final String DOCKER_IMAGE = "pizza-shop:latest";

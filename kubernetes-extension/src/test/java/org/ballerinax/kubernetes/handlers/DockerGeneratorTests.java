@@ -30,7 +30,6 @@ import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.ballerinax.docker.generator.DockerGenConstants.BALLERINA_BASE_IMAGE;
 
 /**
  * Docker generator tests.
@@ -48,7 +47,7 @@ public class DockerGeneratorTests {
         dockerModel.setService(true);
         dockerModel.setBalxFileName("hello.balx");
         dockerModel.setEnableDebug(true);
-        dockerModel.setBaseImage(BALLERINA_BASE_IMAGE + ":latest");
+        dockerModel.setBaseImage("ballerina/ballerina-runtime" + ":latest");
         dockerModel.setDebugPort(5005);
         dockerModel.setBuildImage(false);
         KubernetesContext context = KubernetesContext.getInstance();
