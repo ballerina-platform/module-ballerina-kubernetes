@@ -18,12 +18,12 @@ trap ctrl_c INT
 trap on_error ERR
 
 function ctrl_c() {
-    echo "cancelling building/deploying"
+    printf "cancelling building/deploying\n"
     exit 2;
 }
 
 function on_error() {
-    echo "error: unable to build or deploy due to error"
+    printf "error: unable to build or deploy due to error\n"
     exit 1;
  }
 
@@ -41,32 +41,32 @@ then
         fi
     fi
 
-    echo "> building ballerina source..."
+    printf "> building ballerina source...\n"
     BAL_BUILD_OUTPUT="$(${BALLERINA_CMD} build $1)"
-    echo "${BAL_BUILD_OUTPUT}"
+    printf "${BAL_BUILD_OUTPUT}\n"
 
     if [[ $? -eq 0 ]]; then
         HAS_COMMANDS=false
-        echo "\n> deploying artifacts..."
+        printf "\n> deploying artifacts...\n"
 
         while read -r LINE; do
             if [[ $LINE == kubectl* ]] || [[ $LINE == oc* ]] ;
             then
                 HAS_COMMANDS=true
-                echo "\n$> $LINE"
+                printf "executing '$LINE'\n"
                 ${LINE}
             fi
         done <<< "$BAL_BUILD_OUTPUT"
 
         if [[ "$HAS_COMMANDS" = false ]] ; then
-            echo "error: cannot find any artifacts to deploy"
+            printf "error: cannot find any artifacts to deploy\n"
             exit 1
         fi
 
-        echo "\n> deployment complete!"
+        printf "\n> deployment complete!\n"
         exit 0
     fi
 fi
 
-echo "error: no ballerina source or module(s) provided to build"
-exit
+printf "error: no ballerina source or module(s) provided to build\n"
+exit 1

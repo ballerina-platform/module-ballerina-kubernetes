@@ -145,7 +145,9 @@ public class JobHandler extends AbstractArtifactHandler {
         DockerModel dockerModel = new DockerModel();
         String dockerImage = jobModel.getImage();
         String imageTag = dockerImage.substring(dockerImage.lastIndexOf(":") + 1);
+        dockerImage = dockerImage.substring(0, dockerImage.lastIndexOf(":"));
         dockerModel.setBaseImage(jobModel.getBaseImage());
+        dockerModel.setRegistry(jobModel.getRegistry());
         dockerModel.setName(dockerImage);
         dockerModel.setTag(imageTag);
         dockerModel.setUsername(jobModel.getUsername());

@@ -117,6 +117,9 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
                 case imagePullSecrets:
                     jobModel.setImagePullSecrets(getImagePullSecrets(keyValue));
                     break;
+                case registry:
+                    jobModel.setRegistry(getStringValue(keyValue.getValue()));
+                    break;
                 default:
                     break;
             }
@@ -158,6 +161,7 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
         copyFiles,
         singleYAML,
         dependsOn,
-        imagePullSecrets
+        imagePullSecrets,
+        registry
     }
 }

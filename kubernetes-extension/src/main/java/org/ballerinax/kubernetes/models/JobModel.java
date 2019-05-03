@@ -25,14 +25,10 @@ import org.ballerinax.kubernetes.KubernetesConstants;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import static org.ballerinax.docker.generator.DockerGenConstants.BALLERINA_BASE_IMAGE;
-import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_CERT_PATH;
-import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_HOST;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 
 /**
  * Job model class.
@@ -55,7 +51,8 @@ public class JobModel extends KubernetesModel {
     private Set<String> imagePullSecrets;
     private Set<CopyFileModel> copyFiles;
     private boolean singleYAML;
-
+    private String registry;
+    
     public JobModel() {
         this.labels = new HashMap<>();
         this.env = new LinkedHashMap<>();
@@ -68,21 +65,8 @@ public class JobModel extends KubernetesModel {
         this.labels = new HashMap<>();
         this.setEnv(new HashMap<>());
         this.setImagePullPolicy("IfNotPresent");
-        String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
-        if (operatingSystem.contains("win")) {
-            this.setDockerHost(DockerHost.defaultWindowsEndpoint());
-        } else {
-            this.setDockerHost(DockerHost.defaultUnixEndpoint());
-        }
-        
-        String dockerHost = System.getenv(DOCKER_HOST);
-        if (!isBlank(dockerHost)) {
-            this.dockerHost = dockerHost;
-        }
-        String dockerCertPath = System.getenv(DOCKER_CERT_PATH);
-        if (!isBlank(dockerCertPath)) {
-            this.dockerCertPath = dockerCertPath;
-        }
+        this.setDockerHost(DockerHost.fromEnv().host());
+        this.setDockerCertPath(DockerHost.fromEnv().dockerCertPath());
         
         this.activeDeadlineSeconds = 20;
         this.imagePullSecrets = new HashSet<>();
@@ -232,5 +216,12 @@ public class JobModel extends KubernetesModel {
     public void setSingleYAML(boolean singleYAML) {
         this.singleYAML = singleYAML;
     }
-
+    
+    public void setRegistry(String registry) {
+        this.registry = registry;
+    }
+    
+    public String getRegistry() {
+        return registry;
+    }
 }

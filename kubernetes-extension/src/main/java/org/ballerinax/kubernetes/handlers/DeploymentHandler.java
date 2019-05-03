@@ -309,7 +309,9 @@ public class DeploymentHandler extends AbstractArtifactHandler {
         DockerModel dockerModel = new DockerModel();
         String dockerImage = deploymentModel.getImage();
         String imageTag = dockerImage.substring(dockerImage.lastIndexOf(":") + 1);
+        dockerImage = dockerImage.substring(0, dockerImage.lastIndexOf(":"));
         dockerModel.setBaseImage(deploymentModel.getBaseImage());
+        dockerModel.setRegistry(deploymentModel.getRegistry());
         dockerModel.setName(dockerImage);
         dockerModel.setTag(imageTag);
         dockerModel.setEnableDebug(false);

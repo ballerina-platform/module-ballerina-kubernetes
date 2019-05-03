@@ -33,15 +33,15 @@ public type TLSOptionMode "PASSTHROUGH"|"SIMPLE"|"MUTUAL";
 
 # Istio gateway server tls option configurations.
 #
-# + httpsRedirect - If set to true, the load balancer will send a 301 redirect for all http connections, asking the clients to use HTTPS.
-# + mode - Indicates whether connections to this port should be secured using TLS. The value of this field determines how TLS is enforced.
+# + httpsRedirect - If set to true, the load balancer will send a 301 redirect for all http connections, asking the clients to use HTTPS. Default is `false`.
+# + mode - Indicates whether connections to this port should be secured using TLS. The value of this field determines how TLS is enforced. Default is `"PASSTHROUGH"`.
 # + serverCertificate - REQUIRED if mode is SIMPLE or MUTUAL. The path to the file holding the server-side TLS certificate to use.
 # + privateKey - REQUIRED if mode is SIMPLE or MUTUAL. The path to the file holding the server’s private key.
 # + caCertificates - REQUIRED if mode is MUTUAL. The path to a file containing certificate authority certificates to use in verifying a presented client side certificate.
 # + subjectAltNames - A list of alternate names to verify the subject identity in the certificate presented by the client.
 public type TLSOptionConfig record {|
     boolean httpsRedirect = false;
-    TLSOptionMode mode?;
+    TLSOptionMode mode = "PASSTHROUGH";
     string serverCertificate?;
     string privateKey?;
     string caCertificates?;

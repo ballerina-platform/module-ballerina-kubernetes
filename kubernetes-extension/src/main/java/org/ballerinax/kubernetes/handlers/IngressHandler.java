@@ -140,8 +140,7 @@ public class IngressHandler extends AbstractArtifactHandler {
             ingressModel.setServiceName(serviceModel.getName());
             ingressModel.setServicePort(serviceModel.getPort());
             String balxFileName = KubernetesUtils.extractBalxName(dataHolder.getBalxFilePath());
-            ingressModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
-            ingressModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
+            ingressModel.getLabels().put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
             if (secretModelsMap.get(ingressModel.getListenerName()) != null && secretModelsMap.get(ingressModel
                     .getListenerName()).size() != 0) {
                 ingressModel.setEnableTLS(true);
