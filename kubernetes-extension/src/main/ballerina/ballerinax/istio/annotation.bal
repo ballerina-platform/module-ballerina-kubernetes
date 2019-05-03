@@ -104,7 +104,7 @@ public type DestinationWeightConfig record {|
 # + appendHeaders - Additional header to add before forwarding/directing.
 public type HTTPRouteConfig record {|
     DestinationWeightConfig[] route?;
-    int ^"timeout";
+    int ^"timeout"?;
     map<string> appendHeaders?;
 |};
 
