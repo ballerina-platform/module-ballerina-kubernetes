@@ -132,7 +132,7 @@ public type ProbeConfiguration record {|
 # + password - Password for docker registry.
 # + baseImage - Base image for docker image building. Default value is `"ballerina/ballerina-runtime:<BALLERINA_VERSION>"`.
 # Use `"ballerina/ballerina-runtime:latest"` to use the latest stable ballerina runtime docker image.
-# + image - Docker image name with tag. Default is `"<OUTPUT_FILE_NAME:latest>"`.
+# + image - Docker image name with tag. Default is `"<OUTPUT_FILE_NAME>:latest"`. If field `registry` is set then it will be prepended to the docker image name as `<registry>/<OUTPUT_FILE_NAME>:latest`.
 # + buildImage - Docker image to be build or not. Default is `true`.
 # + push - Enable pushing docker image to registry. Field `buildImage` must be set to `true` to be effective. Default value is `false`.
 # + copyFiles - Array of [External files](kubernetes#FileConfig) for docker image.

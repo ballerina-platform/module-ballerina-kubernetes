@@ -29,11 +29,11 @@ Annotation based kubernetes extension implementation for ballerina.
 ## Supported Annotations:
 
 ### @kubernetes:Deployment{}
-- Supported with ballerina services or listeners.
+- Supported with ballerina services, listeners and functions.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
-|name|Name of the deployment|<OUTPUT_FILE_NAME>-deployment|
+|name|Name of the deployment|<BALLERINA_FILE_NAME>-deployment or <BALLERINA_MODULE_NAME>-deployment|
 |labels|Labels for deployment|{ app: <OUTPUT_FILE_NAME> }|
 |annotations|Annotations for deployment|{}|
 |dockerHost|Docker host IP and docker PORT.(e.g "tcp://192.168.99.100:2376")|DOCKER_HOST environment variable. If DOCKER_HOST is unavailable, use "unix:///var/run/docker.sock" for Unix or use "npipe:////./pipe/docker_engine" for Windows 10 or use "localhost:2375"|
@@ -42,7 +42,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |username|Username for the docker registry|null|
 |password|Password for the docker registry|null|
 |baseImage|Base image to create the docker image|ballerina/ballerina-runtime:<BALLERINA_VERSION>|
-|image|Docker image with tag|<OUTPUT_FILE_NAME>:latest|
+|image|Docker image with tag|<OUTPUT_FILE_NAME>:latest. If field `registry` is set then it will be prepended to the docker image name as <registry>/<OUTPUT_FILE_NAME>:latest|
 |buildImage|Building docker image|true|
 |push|Push docker image to registry. This will be effective if image buildImage field is true|false|
 |copyFiles|Copy external files for Docker image|null|
@@ -59,7 +59,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |imagePullSecrets|Image pull secrets value|null|
 
 ### @kubernetes:Service{}
-- Supported with ballerina listeners.
+- Supported with ballerina services and listeners.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
@@ -71,7 +71,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |serviceType|Service type of the service|ClusterIP|
 
 ### @kubernetes:Ingress{}
-- Supported with ballerina listeners.
+- Supported with ballerina services and listeners.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
@@ -85,7 +85,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |enableTLS|Enable ingress TLS|false|
 
 ### @kubernetes:HPA{}
-- Supported with ballerina services.
+- Supported with ballerina services and functions.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
@@ -97,7 +97,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |cpuPrecentage|CPU percentage to start scaling|50|
 
 ### @kubernetes:Secret{}
-- Supported with ballerina service.
+- Supported with ballerina service and functions.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
@@ -109,7 +109,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |data|Paths to data files|null|
 
 ### @kubernetes:ConfigMap{}
-- Supported with ballerina services.
+- Supported with ballerina services and functions.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
@@ -120,7 +120,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |data|Paths to data files|null|
 
 ### @kubernetes:PersistentVolumeClaim{}
-- Supported with ballerina services.
+- Supported with ballerina services and functions.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
@@ -133,11 +133,11 @@ Annotation based kubernetes extension implementation for ballerina.
 |readOnly|Is mount read only|false|
 
 ### @kubernetes:ResourceQuota{}
-- Support with ballerina services, listeners and functions.
+- Support with ballerina services and functions.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
-|name| Name of the resource quota|<OUTPUT_FILE_NAME>_resource_quota|
+|name|Name of the resource quota|<BALLERINA_FILE_NAME>-resource-quota or <BALLERINA_MODULE_NAME>-resource-quota|
 |labels|Labels for resource quota|{ app: <OUTPUT_FILE_NAME> }|
 |annotations|Metadata Annotations map|null|
 |hard|Hard rules|{}|
@@ -148,7 +148,7 @@ Annotation based kubernetes extension implementation for ballerina.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
-|name|Name of the job|<OUTPUT_FILE_NAME>-job|
+|name|Name of the job|<BALLERINA_FILE_NAME>-job or <BALLERINA_MODULE_NAME>-job|
 |labels|Labels for job|{ app: <OUTPUT_FILE_NAME> }|
 |annotations|Metadata Annotations map|{}|
 |dockerHost|Docker host IP and docker PORT.(e.g "tcp://192.168.99.100:2376")|DOCKER_HOST environment variable. If DOCKER_HOST is unavailable, use "unix:///var/run/docker.sock" for Unix or use "npipe:////./pipe/docker_engine" for Windows 10 or use "localhost:2375"|
@@ -157,7 +157,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |username|Username for the docker registry|null|
 |password|Password for the docker registry|null|
 |baseImage|Base image to create the docker image|ballerina/ballerina-runtime:<BALLERINA_VERSION>|
-|image|Docker image with tag|<OUTPUT_FILE_NAME>:latest|
+|image|Docker image with tag|<OUTPUT_FILE_NAME>:latest. If field `registry` is set then it will be prepended to the docker image name as <registry>/<OUTPUT_FILE_NAME>:latest|
 |buildImage|Building docker image|true|
 |push|Push docker image to registry. This will be effective if image buildImage field is true|false|
 |copyFiles|Copy external files for Docker image|null|
@@ -171,6 +171,39 @@ Annotation based kubernetes extension implementation for ballerina.
 |schedule|Schedule for cron jobs|none|
 |imagePullSecrets|Image pull secrets value|null|
 
+### @istio:Gateway{}
+- Support with ballerina services and listeners.
+
+|**Annotation Name**|**Description**|**Default value**|
+|--|--|--|
+|name|Name of the istio gateway|<BALLERINA_FILE_NAME>-istio-gw or <BALLERINA_MODULE_NAME>-istio-gw|
+|labels|Labels for istio gateway|{ app: <OUTPUT_FILE_NAME> }|
+|annotations|Metadata Annotations map|null|
+|selector|Set of pods/VMs on which this gateway configuration should be applied|[]|
+|servers|List of Servers|[]|
+
+### @istio:VirtualService{}
+- Support with ballerina services and listeners.
+
+|**Annotation Name**|**Description**|**Default value**|
+|--|--|--|
+|name|Name of the istio virtual service|<BALLERINA_FILE_NAME>-istio-vs or <BALLERINA_MODULE_NAME>-istio-vs|
+|labels|Labels for istio virtual service|{ app: <OUTPUT_FILE_NAME> }|
+|annotations|Metadata Annotations map|null|
+|hosts|Destination which traffic should be sent|[]|
+|gateways|Names of the gateways which the service should listen to|[]|
+|http|Route rules for HTTP traffic|[]|
+
+### @openshift:Route{}
+- Support with ballerina services and listeners.
+
+|**Annotation Name**|**Description**|**Default value**|
+|--|--|--|
+|name|Name of the openshift route|<BALLERINA_FILE_NAME>-openshift-route or <BALLERINA_MODULE_NAME>-openshift-route|
+|labels|Labels for openshift route|{ app: <OUTPUT_FILE_NAME> }|
+|annotations|Metadata Annotations map|null|
+|host|The host of the route|null|
+
 ## How to build
 
 1. Download and install JDK 8 or later
@@ -178,7 +211,39 @@ Annotation based kubernetes extension implementation for ballerina.
 3. Get a clone or download the source from this repository (https://github.com/ballerinax/kubernetes)
 4. Run the Maven command ``mvn clean install`` from within the ``kubernetes`` directory.
 
-## Deploy ballerina service directly using kubectl command.
+## Deploy ballerina service directly using `kubectl` command.
+This repository also provides a kubectl plugin which allows to build ballerina programs and deploy their kubernetes 
+artifacts directly to a kuberetes cluster. The plugin is located at `kubernetes-extension/src/main/resources/kubectl-extension/kubectl-ballerina-deploy`.
+Follow the steps mentioned in "[Extend kubectl with plugins](https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/)"
+. Check if the plugin is available using the command `kubectl plugin list`.
+ 
+### How to execute:
+```bash
+$> kubectl ballerina deploy hello_world_k8s.bal
+> building ballerina source...
+Compiling source
+    hello_world_k8s.bal
+Generating executable
+    hello_world_k8s.balx
+
+	@kubernetes:Service 			 - complete 1/1
+	@kubernetes:Deployment 			 - complete 1/1
+	@kubernetes:Docker 			 - complete 3/3
+	@kubernetes:Helm 			 - complete 1/1
+
+	Run the following command to deploy the Kubernetes artifacts:
+	kubectl apply -f ./kubernetes
+
+	Run the following command to install the application using Helm:
+	helm install --name hello-world-k8s-deployment ./kubernetes/hello-world-k8s-deployment
+
+> deploying artifacts...
+executing 'kubectl apply -f ./kubernetes'
+service/helloworld-svc unchanged
+deployment.apps/hello-world-k8s-deployment configured
+
+> deployment complete!
+```
 
 ### Annotation Usage Sample:
 
@@ -215,14 +280,16 @@ service helloWorld on helloEP {
 
 The kubernetes artifacts will be created in following structure.
 ```bash
-kubernetes
-├── deployment.yaml
-├── ingress.yaml
-├── secret.yaml
-├── config_map.yaml
-├── volume_claim.yaml
-├── svc.yaml
-└── docker
- └── Dockerfile
+$> tree kubernetes
+```
+```
+kubernetes/
+├── docker
+│   └── Dockerfile
+├── hello-world-deployment
+│   ├── Chart.yaml
+│   └── templates
+│       └── hello-world.yaml
+└── hello-world.yaml
     	
 ```
