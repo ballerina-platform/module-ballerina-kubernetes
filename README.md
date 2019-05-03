@@ -10,6 +10,7 @@ Annotation based kubernetes extension implementation for ballerina.
 - Kubernetes deployment support. 
 - Kubernetes service support.
 - Kubernetes liveness probe support
+- Kubernetes readiness probe support
 - Kubernetes ingress support.
 - Kubernetes horizontal pod autoscaler support.
 - Docker image generation. 
@@ -18,10 +19,10 @@ Annotation based kubernetes extension implementation for ballerina.
 - Kubernetes config map support.
 - Kubernetes persistent volume claim support.
 - Kubernetes resource quotas.
-- Istio gateways.
-- Istio virtual services.
-- OpenShift build configs.
-- OpenShift routes.
+- Istio gateways support.
+- Istio virtual services support.
+- OpenShift build config and image stream support.
+- OpenShift route support.
 
 **Refer [samples](samples) for more info.**
 
@@ -32,8 +33,8 @@ Annotation based kubernetes extension implementation for ballerina.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
-|name|Name of the deployment|\<OUPUT_FILE_NAME\>-deployment|
-|labels|Labels for deployment|"app: \<OUPUT_FILE_NAME\>"|
+|name|Name of the deployment|<OUTPUT_FILE_NAME>-deployment|
+|labels|Labels for deployment|{ app: <OUTPUT_FILE_NAME> }|
 |annotations|Annotations for deployment|{}|
 |dockerHost|Docker host IP and docker PORT.(e.g "tcp://192.168.99.100:2376")|DOCKER_HOST environment variable. If DOCKER_HOST is unavailable, use "unix:///var/run/docker.sock" for Unix or use "npipe:////./pipe/docker_engine" for Windows 10 or use "localhost:2375"|
 |dockerCertPath|Docker cert path|DOCKER_CERT_PATH environment variable|
@@ -43,7 +44,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |baseImage|Base image to create the docker image|ballerina/ballerina-runtime:<BALLERINA_VERSION>|
 |image|Docker image with tag|<OUTPUT_FILE_NAME>:latest|
 |buildImage|Building docker image|true|
-|push|Push docker image to registry. This can only be true if image build is true.|false|
+|push|Push docker image to registry. This will be effective if image buildImage field is true|false|
 |copyFiles|Copy external files for Docker image|null|
 |singleYAML|Generate a single yaml file for all k8s resources|true|
 |namespace|Namespace of the deployment|null|
@@ -63,19 +64,21 @@ Annotation based kubernetes extension implementation for ballerina.
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
 |name|Name of the Service|<BALLERINA_SERVICE_NAME>-service|
-|labels|Labels for service|"app: \<outputfilename\>"|
-|serviceType|Service type of the service|ClusterIP|
+|labels|Labels for service|{ app: <OUTPUT_FILE_NAME> }|
 |port|Service port|Port of the ballerina service|
+|targetPort|Target pod(s) port|Port of the ballerina service|
+|sessionAffinity|Pod session affinity|None|
+|serviceType|Service type of the service|ClusterIP|
 
 ### @kubernetes:Ingress{}
 - Supported with ballerina listeners.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
-|name|Name of the Ingress|\<ballerina service name\>-ingress|
-|labels|Labels for service|"app: \<outputfilename\>"|
-|hostname|Host name of the ingress|\<ballerina service name\>.com|
+|name|Name of the Ingress|<BALLERINA_SERVICE_NAME>-ingress|
+|labels|Labels for service|{ app: <OUTPUT_FILE_NAME> }|
 |annotations|Map of additional annotations|null|
+|hostname|Host name of the ingress|<BALLERINA_SERVICE_NAME>.com or <BALLERINA_SERVICE_LISTENER_NAME>.com|
 |path|Resource path.|/|
 |targetPath|This will use for URL rewrite.|null|
 |ingressClass|Ingress class|nginx|
@@ -86,10 +89,11 @@ Annotation based kubernetes extension implementation for ballerina.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
-|name|Name of the Horizontal Pod Autoscaler|\<ballerina service name\>-hpa|
-|labels|Labels for service|"app: \<outputfilename\>"|
-|minReplicas|Minimum number of replicas|No of replicas in deployment|
-|maxReplicas|Maximum number of replicas|minReplicas+1|
+|name|Name of the Horizontal Pod Autoscaler|<BALLERINA_SERVICE_NAME>-hpa|
+|labels|Labels for service|{ app: <OUTPUT_FILE_NAME> }|
+|annotations|Map of annotations|null|
+|minReplicas|Minimum number of replicas|Number of replicas in deployment|
+|maxReplicas|Maximum number of replicas|minReplicas + 1|
 |cpuPrecentage|CPU percentage to start scaling|50|
 
 ### @kubernetes:Secret{}
@@ -97,7 +101,9 @@ Annotation based kubernetes extension implementation for ballerina.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
-|name|Name secret mount|\<service_name\>-secret|
+|name|Name secret mount|<BALLERINA_SERVICE_NAME>-secret|
+|labels|Labels for service|{ app: <OUTPUT_FILE_NAME> }|
+|annotations|Map of annotations|null|
 |mountPath|Path to mount on container|null|
 |readOnly|Is mount read only|true|
 |data|Paths to data files|null|
@@ -107,7 +113,7 @@ Annotation based kubernetes extension implementation for ballerina.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
-|name|Name config map mount|\<service_name\>-config-map|
+|name|Name config map mount|<BALLERINA_SERVICE_NAME>-config-map|
 |mountPath|Path to mount on container|null|
 |readOnly|Is mount read only|true|
 |ballerinaConf|Ballerina conf file location|null|
@@ -119,44 +125,51 @@ Annotation based kubernetes extension implementation for ballerina.
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
 |name|Name secret mount|null|
+|labels|Labels for service|{ app: <OUTPUT_FILE_NAME> }|
 |annotations|Metadata Annotations map|null|
 |mountPath|Path to mount on container|null|
-|readOnly|Is mount read only|false|
 |accessMode|Access mode|ReadWriteOnce|
 |volumeClaimSize|Size of the volume claim|null|
-
-### @kubernetes:Job{}
-- Supported with ballerina main function.
-
-|**Annotation Name**|**Description**|**Default value**|
-|--|--|--|
-|name| Name of the job|\<output file name\>-job|
-|namespace|Namespace for the Job|default|
-|labels| Labels for job|"app: \<outputfilename\>"|
-|restartPolicy| Restart policy|Never|
-|backoffLimit| Backoff limit|3|
-|activeDeadlineSeconds| Active deadline seconds|20|
-|schedule| Schedule for cron jobs|none|
-|imagePullPolicy|Docker image pull policy|IfNotPresent|
-|image|Docker image with tag|\<output file name\>:latest|
-|env|List of environment variables|null|
-|buildImage|Building docker image|true|
-|dockerHost|Docker host IP and docker PORT.(e.g "tcp://192.168.99.100:2376")|null|
-|dockerCertPath|Docker cert path|null|
-|push|Push docker image to registry. This can only be true if image build is true.|false|
-|username|Username for the docker registry|null|
-|password|Password for the docker registry|null|
-|baseImage|Base image to create the docker image|ballerina/ballerina-runtime:latest|
+|readOnly|Is mount read only|false|
 
 ### @kubernetes:ResourceQuota{}
 - Support with ballerina services, listeners and functions.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
-|name| Name of the resource quota|\<output file name\>_resource_quota|
-|labels| Labels for resource quota|"app: \<outputfilename\>"|
-|hard| Hard rules|{}|
-|scopes| scopes to which the resource quota will be applied to|[]|
+|name| Name of the resource quota|<OUTPUT_FILE_NAME>_resource_quota|
+|labels|Labels for resource quota|{ app: <OUTPUT_FILE_NAME> }|
+|annotations|Metadata Annotations map|null|
+|hard|Hard rules|{}|
+|scopes|Scopes to which the resource quota will be applied to|[]|
+
+### @kubernetes:Job{}
+- Supported with ballerina main function.
+
+|**Annotation Name**|**Description**|**Default value**|
+|--|--|--|
+|name|Name of the job|<OUTPUT_FILE_NAME>-job|
+|labels|Labels for job|{ app: <OUTPUT_FILE_NAME> }|
+|annotations|Metadata Annotations map|{}|
+|dockerHost|Docker host IP and docker PORT.(e.g "tcp://192.168.99.100:2376")|DOCKER_HOST environment variable. If DOCKER_HOST is unavailable, use "unix:///var/run/docker.sock" for Unix or use "npipe:////./pipe/docker_engine" for Windows 10 or use "localhost:2375"|
+|dockerCertPath|Docker cert path|DOCKER_CERT_PATH environment variable|
+|registry|Docker registry url|null|
+|username|Username for the docker registry|null|
+|password|Password for the docker registry|null|
+|baseImage|Base image to create the docker image|ballerina/ballerina-runtime:<BALLERINA_VERSION>|
+|image|Docker image with tag|<OUTPUT_FILE_NAME>:latest|
+|buildImage|Building docker image|true|
+|push|Push docker image to registry. This will be effective if image buildImage field is true|false|
+|copyFiles|Copy external files for Docker image|null|
+|singleYAML|Generate a single yaml file for all k8s resources|true|
+|namespace|Namespace for the Job|default|
+|imagePullPolicy|Docker image pull policy|IfNotPresent|
+|env|List of environment variables|null|
+|restartPolicy|Restart policy|Never|
+|backoffLimit|Backoff limit|3|
+|activeDeadlineSeconds|Active deadline seconds|20|
+|schedule|Schedule for cron jobs|none|
+|imagePullSecrets|Image pull secrets value|null|
 
 ## How to build
 

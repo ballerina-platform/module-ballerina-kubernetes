@@ -51,7 +51,8 @@ public class JobModel extends KubernetesModel {
     private Set<String> imagePullSecrets;
     private Set<CopyFileModel> copyFiles;
     private boolean singleYAML;
-
+    private String registry;
+    
     public JobModel() {
         this.labels = new HashMap<>();
         this.env = new LinkedHashMap<>();
@@ -215,5 +216,12 @@ public class JobModel extends KubernetesModel {
     public void setSingleYAML(boolean singleYAML) {
         this.singleYAML = singleYAML;
     }
-
+    
+    public void setRegistry(String registry) {
+        this.registry = registry;
+    }
+    
+    public String getRegistry() {
+        return registry;
+    }
 }

@@ -132,9 +132,9 @@ public type ProbeConfiguration record {|
 # + password - Password for docker registry.
 # + baseImage - Base image for docker image building. Default value is `"ballerina/ballerina-runtime:<BALLERINA_VERSION>"`.
 # Use `"ballerina/ballerina-runtime:latest"` to use the latest stable ballerina runtime docker image.
-# + image - Docker image name with tag.
+# + image - Docker image name with tag. Default is `"<OUTPUT_FILE_NAME:latest>"`.
 # + buildImage - Docker image to be build or not. Default is `true`.
-# + push - Enable pushing docker image to registry. Field `buildImage` must be set to `true`. Default value is `false`.
+# + push - Enable pushing docker image to registry. Field `buildImage` must be set to `true` to be effective. Default value is `false`.
 # + copyFiles - Array of [External files](kubernetes#FileConfig) for docker image.
 # + singleYAML - Generate a single yaml file with all kubernetes artifacts (services, deployment, ingress and etc). Default is `true`.
 # + namespace - Kubernetes namespace to be used on all artifacts.
@@ -207,17 +207,15 @@ public annotation<listener, service> Service ServiceConfiguration;
 
 # Kubernetes ingress configuration.
 #
-# + listenerName - Name of the listener ingress attached
-# + hostname - Host name of the ingress.
-# + path - Resource path.
+# + hostname - Host name of the ingress. Default is `"<BALLERINA_SERVICE_NAME>.com"` or `"<BALLERINA_SERVICE_LISTENER_NAME>.com"`.
+# + path - Resource path. Default is `"/"`.
 # + targetPath - Target path for url rewrite.
 # + ingressClass - Ingress class. Default is `"nginx"`.
 # + enableTLS - Enable/Disable ingress TLS. Default is `false`.
 public type IngressConfiguration record {|
     *Metadata;
-    string listenerName?;
     string hostname;
-    string path?;
+    string path = "/";
     string targetPath?;
     string ingressClass = "nginx";
     boolean enableTLS = false;
@@ -347,15 +345,16 @@ public type RestartPolicy "OnFailure"|"Always"|"Never";
 # Default is to use DOCKER_HOST environment variable.
 # If DOCKER_HOST is unavailable, use `"unix:///var/run/docker.sock"` for Unix or use `"npipe:////./pipe/docker_engine"` for Windows 10 or use `"localhost:2375"`.
 # + dockerCertPath - Docker certificate path. Default is "DOCKER_CERT_PATH" environment variable.
+# + registry - Docker registry url.
 # + username - Username for docker registry.
 # + password - Password for docker registry.
 # + baseImage - Base image for docker image building. Default value is `"ballerina/ballerina-runtime:<BALLERINA_VERSION>"`.
 # Use `"ballerina/ballerina-runtime:latest"` to use the latest stable ballerina runtime docker image.
-# + image - Docker image with tag.
+# + image - Docker image name with tag. Default is `"<OUTPUT_FILE_NAME>:latest"`. If field `registry` is set then it will be prepended to the docker image name as `<registry>/<OUTPUT_FILE_NAME>:latest`.
 # + buildImage - Docker image to be build or not. Default is `true`.
 # + push - Enable pushing docker image to registry. Field `buildImage` must be set to `true`. Default value is `false`.
 # + copyFiles - Array of [External files](kubernetes#FileConfig) for docker image.
-# + singleYAML - Generate a single yaml file with all kubernetes artifacts (ingress, configmaps, secrets and etc).
+# + singleYAML - Generate a single yaml file with all kubernetes artifacts (ingress, configmaps, secrets and etc). Default is `true`.
 # + namespace - Kubernetes namespace to be used on all artifacts.
 # + imagePullPolicy - Image pull policy. Default is `"IfNotPresent"`.
 # + env - Environment varialbes for container.
@@ -368,6 +367,7 @@ public type JobConfig record {|
     *Metadata;
     string dockerHost?;
     string dockerCertPath?;
+    string registry?;
     string username?;
     string password?;
     string baseImage?;
