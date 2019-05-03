@@ -20,6 +20,8 @@ Annotation based kubernetes extension implementation for ballerina.
 - Kubernetes resource quotas.
 - Istio gateways.
 - Istio virtual services.
+- OpenShift build configs.
+- OpenShift routes.
 
 **Refer [samples](samples) for more info.**
 
@@ -30,34 +32,37 @@ Annotation based kubernetes extension implementation for ballerina.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
-|name|Name of the deployment|\<outputfilename\>-deployment|
-|namespace|Namespace of the deployment|null|
-|labels|Labels for deployment|"app: \<outputfilename\>"|
+|name|Name of the deployment|\<OUPUT_FILE_NAME\>-deployment|
+|labels|Labels for deployment|"app: \<OUPUT_FILE_NAME\>"|
 |annotations|Annotations for deployment|{}|
-|podAnnotations|Pod annotations|{}|
-|replicas|Number of replicas|1|
-|dependsOn|Listeners this deployment Depends on|null|
-|livenessProbe|Enable or disable liveness probe|false|
-|imagePullPolicy|Docker image pull policy|IfNotPresent|
-|image|Docker image with tag|<output file name>:latest|
-|env|List of environment variables|null|
-|buildImage|Building docker image|true|
-|copyFiles|Copy external files for Docker image|null|
-|dockerHost|Docker host IP and docker PORT.(e.g "tcp://192.168.99.100:2376")|null|
-|dockerCertPath|Docker cert path|null|
-|push|Push docker image to registry. This can only be true if image build is true.|false|
+|dockerHost|Docker host IP and docker PORT.(e.g "tcp://192.168.99.100:2376")|DOCKER_HOST environment variable. If DOCKER_HOST is unavailable, use "unix:///var/run/docker.sock" for Unix or use "npipe:////./pipe/docker_engine" for Windows 10 or use "localhost:2375"|
+|dockerCertPath|Docker cert path|DOCKER_CERT_PATH environment variable|
+|registry|Docker registry url|null|
 |username|Username for the docker registry|null|
 |password|Password for the docker registry|null|
-|baseImage|Base image to create the docker image|ballerina/ballerina-runtime:latest|
-|imagePullSecrets|Image pull secrets value|null|
+|baseImage|Base image to create the docker image|ballerina/ballerina-runtime:<BALLERINA_VERSION>|
+|image|Docker image with tag|<OUTPUT_FILE_NAME>:latest|
+|buildImage|Building docker image|true|
+|push|Push docker image to registry. This can only be true if image build is true.|false|
+|copyFiles|Copy external files for Docker image|null|
 |singleYAML|Generate a single yaml file for all k8s resources|true|
+|namespace|Namespace of the deployment|null|
+|replicas|Number of replicas|1|
+|livenessProbe|Enable or disable liveness probe|false|
+|readinessProbe|Enable or disable readiness probe|false|
+|imagePullPolicy|Docker image pull policy|IfNotPresent|
+|env|List of environment variables|null|
+|podAnnotations|Pod annotations|{}|
+|buildExtension|Extension for building docker images and artifacts|null|
+|dependsOn|Listeners this deployment Depends on|null|
+|imagePullSecrets|Image pull secrets value|null|
 
 ### @kubernetes:Service{}
 - Supported with ballerina listeners.
 
 |**Annotation Name**|**Description**|**Default value**|
 |--|--|--|
-|name|Name of the Service|\<ballerina service name\>-service|
+|name|Name of the Service|<BALLERINA_SERVICE_NAME>-service|
 |labels|Labels for service|"app: \<outputfilename\>"|
 |serviceType|Service type of the service|ClusterIP|
 |port|Service port|Port of the ballerina service|
@@ -160,6 +165,8 @@ Annotation based kubernetes extension implementation for ballerina.
 3. Get a clone or download the source from this repository (https://github.com/ballerinax/kubernetes)
 4. Run the Maven command ``mvn clean install`` from within the ``kubernetes`` directory.
 
+## Deploy ballerina service directly using kubectl command.
+
 ### Annotation Usage Sample:
 
 ```ballerina
@@ -182,10 +189,10 @@ listener http:Listener helloEP = new(9090);
     basePath: "/helloWorld"
 }
 service helloWorld on helloEP {
-    resource function sayHello(http:Caller outboundEP, http:Request request) {
+    resource function sayHello(http:Caller caller, http:Request request) {
         http:Response response = new;
         response.setTextPayload("Hello, World from service helloWorld ! ");
-        var responseResult = outboundEP -> respond(response);
+        var responseResult = caller->respond(response);
         if (responseResult is error) {
             log:printError("error responding back to client.", err = responseResult);
         }

@@ -16,9 +16,9 @@
 
 # Metadata for artifacts
 #
-# + name - Name of the resource
-# + labels - Map of labels for the resource
-# + annotations - Map of annotations for resource
+# + name - Name of the resource. Default is `"<OUPUT_FILE_NAME>-<RESOURCE_TYPE>"`.
+# + labels - Map of labels for the resource.
+# + annotations - Map of annotations for resource.
 public type Metadata record {|
     string name?;
     map<string> labels?;
@@ -123,48 +123,51 @@ public type ProbeConfiguration record {|
 
 # Kubernetes deployment configuration.
 #
-# + namespace - Kubernetes namespace to be used on all artifacts
-# + podAnnotations - Map of annotations for pods
-# + replicas - Number of replicas
-# + livenessProbe - Enable/Disable liveness probe and configure it.
-# + readinessProbe - Enable/Disable readiness probe and configure it.
-# + imagePullPolicy - Kubernetes image pull policy
-# + image - Docker image with tag
-# + env - Environment varialbe map for containers
-# + buildImage - Docker image to be build or not
-# + dockerHost - Docker host IP and docker PORT. (e.g minikube IP and docker PORT)
-# + registry - Docker registry url
-# + username - Username for docker registry
-# + password - Password for docker registry
-# + buildExtension - Docker image build extensions
-# + baseImage - Base image for docker image building
-# + push - Push to remote registry
-# + dockerCertPath - Docker certificate path
-# + copyFiles - Array of [External files](kubernetes#FileConfig) for docker image
-# + singleYAML - Generate a single yaml file with all kubernetes artifacts (services,deployment,ingress,)
-# + dependsOn - Services this deployment depends on
-# + imagePullSecrets - Image pull secrets
+# + dockerHost - Docker host IP and docker PORT. ( e.g minikube IP and docker PORT).
+# Default is to use DOCKER_HOST environment variable.
+# If DOCKER_HOST is unavailable, use `"unix:///var/run/docker.sock"` for Unix or use `"npipe:////./pipe/docker_engine"` for Windows 10 or use `"localhost:2375"`.
+# + dockerCertPath - Docker certificate path. Default is "DOCKER_CERT_PATH" environment variable.
+# + registry - Docker registry url.
+# + username - Username for docker registry.
+# + password - Password for docker registry.
+# + baseImage - Base image for docker image building. Default value is `"ballerina/ballerina-runtime:<BALLERINA_VERSION>"`.
+# Use `"ballerina/ballerina-runtime:latest"` to use the latest stable ballerina runtime docker image.
+# + image - Docker image name with tag.
+# + buildImage - Docker image to be build or not. Default is `true`.
+# + push - Enable pushing docker image to registry. Field `buildImage` must be set to `true`. Default value is `false`.
+# + copyFiles - Array of [External files](kubernetes#FileConfig) for docker image.
+# + singleYAML - Generate a single yaml file with all kubernetes artifacts (services, deployment, ingress and etc). Default is `true`.
+# + namespace - Kubernetes namespace to be used on all artifacts.
+# + replicas - Number of replicas. Default is `1`.
+# + livenessProbe - Enable/Disable liveness probe and configure it. Default is `false`.
+# + readinessProbe - Enable/Disable readiness probe and configure it. Default is `false`.
+# + imagePullPolicy - Image pull policy. Default is `"IfNotPresent"`.
+# + env - Environment variable map for containers.
+# + podAnnotations - Map of annotations for pods.
+# + buildExtension - Docker image build extensions.
+# + dependsOn - Services this deployment depends on.
+# + imagePullSecrets - Image pull secrets.
 public type DeploymentConfiguration record {|
     *Metadata;
-    string namespace?;
-    map<string> podAnnotations?;
-    int replicas?;
-    boolean|ProbeConfiguration livenessProbe = false;
-    boolean|ProbeConfiguration readinessProbe = false;
-    ImagePullPolicy imagePullPolicy = IMAGE_PULL_POLICY_IF_NOT_PRESENT;
-    string image?;
-    map<string|FieldRef|SecretKeyRef|ResourceFieldRef|ConfigMapKeyRef> env?;
-    boolean buildImage?;
     string dockerHost?;
+    string dockerCertPath?;
     string registry?;
     string username?;
     string password?;
-    BuildExtension|string buildExtension?;
     string baseImage?;
-    boolean push?;
-    string dockerCertPath?;
+    string image?;
+    boolean buildImage = true;
+    boolean push = false;
     FileConfig[] copyFiles?;
     boolean singleYAML = true;
+    string namespace?;
+    int replicas = 1;
+    boolean|ProbeConfiguration livenessProbe = false;
+    boolean|ProbeConfiguration readinessProbe = false;
+    ImagePullPolicy imagePullPolicy = IMAGE_PULL_POLICY_IF_NOT_PRESENT;
+    map<string|FieldRef|SecretKeyRef|ResourceFieldRef|ConfigMapKeyRef> env?;
+    map<string> podAnnotations?;
+    BuildExtension|string buildExtension?;
     string[] dependsOn?;
     string[] imagePullSecrets?;
 |};
@@ -187,10 +190,10 @@ public type ServiceType "NodePort"|"ClusterIP"|"LoadBalancer";
 
 # Kubernetes service configuration.
 #
-# + port - Service port
-# + targetPort - Port of the pods
-# + sessionAffinity - Session affinity for pods
-# + serviceType - Service type of the service
+# + port - Service port. Default is the Ballerina service port.
+# + targetPort - Port of the pods. Default is the Ballerina service port.
+# + sessionAffinity - Session affinity for pods. Default is `"None"`.
+# + serviceType - Service type of the service. Default is `"ClusterIP"`.
 public type ServiceConfiguration record {|
     *Metadata;
     int port?;
@@ -205,19 +208,19 @@ public annotation<listener, service> Service ServiceConfiguration;
 # Kubernetes ingress configuration.
 #
 # + listenerName - Name of the listener ingress attached
-# + hostname - Host name of the ingress
-# + path - Resource path
-# + targetPath - Target path for url rewrite
-# + ingressClass - Ingress class
-# + enableTLS - Enable/Disable ingress TLS
+# + hostname - Host name of the ingress.
+# + path - Resource path.
+# + targetPath - Target path for url rewrite.
+# + ingressClass - Ingress class. Default is `"nginx"`.
+# + enableTLS - Enable/Disable ingress TLS. Default is `false`.
 public type IngressConfiguration record {|
     *Metadata;
     string listenerName?;
     string hostname;
     string path?;
     string targetPath?;
-    string ingressClass?;
-    boolean enableTLS?;
+    string ingressClass = "nginx";
+    boolean enableTLS = false;
 |};
 
 # @kubernetes:Ingress annotation to configure ingress yaml.
@@ -225,14 +228,14 @@ public annotation<service, listener> Ingress IngressConfiguration;
 
 # Kubernetes Horizontal Pod Autoscaler configuration
 #
-# + minReplicas - Minimum number of replicas
-# + maxReplicas - Maximum number of replicas
-# + cpuPercentage - CPU percentage to start scaling
+# + minReplicas - Minimum number of replicas.
+# + maxReplicas - Maximum number of replicas.
+# + cpuPercentage - CPU percentage to start scaling. Default is `50`.
 public type PodAutoscalerConfig record {|
     *Metadata;
     int minReplicas?;
     int maxReplicas?;
-    int cpuPercentage?;
+    int cpuPercentage = 50;
 |};
 
 # @kubernetes:HPA annotation to configure horizontal pod autoscaler yaml.
@@ -240,9 +243,9 @@ public annotation<service, function> HPA PodAutoscalerConfig;
 
 # Kubernetes secret volume mount.
 #
-# + mountPath - Mount path
-# + readOnly - Is mount read only
-# + data - Paths to data files as an array
+# + mountPath - Mount path.
+# + readOnly - Is mount read only. Default is `true`.
+# + data - Paths to data files as an array.
 public type Secret record {|
     *Metadata;
     string mountPath;
@@ -262,9 +265,9 @@ public annotation<service, function> Secret SecretMount;
 
 # Kubernetes Config Map volume mount.
 #
-# + mountPath - Mount path
-# + readOnly - Is mount read only
-# + data - Paths to data files
+# + mountPath - Mount path.
+# + readOnly - Is mount read only. Default is `true`.
+# + data - Paths to data files.
 public type ConfigMap record {|
     *Metadata;
     string mountPath;
@@ -286,14 +289,14 @@ public annotation<service, function> ConfigMap ConfigMapMount;
 
 # Kubernetes Persistent Volume Claim.
 #
-# + mountPath - Mount Path
-# + accessMode - Access mode
-# + volumeClaimSize - Size of the volume claim
-# + readOnly - Is mount read only
+# + mountPath - Mount Path.
+# + accessMode - Access mode. Default is `"ReadWriteOnce"`.
+# + volumeClaimSize - Size of the volume claim.
+# + readOnly - Is mount read only.
 public type PersistentVolumeClaimConfig record {|
     *Metadata;
     string mountPath;
-    string accessMode;
+    string accessMode = "ReadWriteOnce";
     string volumeClaimSize;
     boolean readOnly;
 |};
@@ -340,44 +343,47 @@ public type RestartPolicy "OnFailure"|"Always"|"Never";
 
 # Kubernetes job configuration.
 #
-# + namespace - Kubernetes namespace to be used on all artifacts
-# + restartPolicy - Restart policy
-# + backoffLimit - Backoff limit
-# + activeDeadlineSeconds - Active deadline seconds
-# + schedule - Schedule for cron jobs
-# + env - Environment varialbes for container
-# + image - Docker image with tag
-# + imagePullPolicy - Policy for pulling an image
-# + buildImage - Docker image to be build or not
-# + dockerHost - Docker host IP and docker PORT. (e.g minikube IP and docker PORT)
-# + username - Username for docker registry
-# + password - Password for docker registry
-# + baseImage - Base image for docker image building
-# + push - Push to remote registry
-# + dockerCertPath - Docker cert path
-# + copyFiles - Array of [External files](kubernetes#FileConfig) for docker image
-# + imagePullSecrets - Image pull secrets
-# + singleYAML - Generate a single yaml file with all kubernetes artifacts (services,deployment,ingress,)
+# + dockerHost - Docker host IP and docker PORT. ( e.g minikube IP and docker PORT).
+# Default is to use DOCKER_HOST environment variable.
+# If DOCKER_HOST is unavailable, use `"unix:///var/run/docker.sock"` for Unix or use `"npipe:////./pipe/docker_engine"` for Windows 10 or use `"localhost:2375"`.
+# + dockerCertPath - Docker certificate path. Default is "DOCKER_CERT_PATH" environment variable.
+# + username - Username for docker registry.
+# + password - Password for docker registry.
+# + baseImage - Base image for docker image building. Default value is `"ballerina/ballerina-runtime:<BALLERINA_VERSION>"`.
+# Use `"ballerina/ballerina-runtime:latest"` to use the latest stable ballerina runtime docker image.
+# + image - Docker image with tag.
+# + buildImage - Docker image to be build or not. Default is `true`.
+# + push - Enable pushing docker image to registry. Field `buildImage` must be set to `true`. Default value is `false`.
+# + copyFiles - Array of [External files](kubernetes#FileConfig) for docker image.
+# + singleYAML - Generate a single yaml file with all kubernetes artifacts (ingress, configmaps, secrets and etc).
+# + namespace - Kubernetes namespace to be used on all artifacts.
+# + imagePullPolicy - Image pull policy. Default is `"IfNotPresent"`.
+# + env - Environment varialbes for container.
+# + restartPolicy - Restart policy. Default is `"Never"`.
+# + backoffLimit - Backoff limit.
+# + activeDeadlineSeconds - Active deadline seconds. Default is `20`.
+# + schedule - Schedule for cron jobs.
+# + imagePullSecrets - Image pull secrets.
 public type JobConfig record {|
     *Metadata;
-    string namespace?;
-    RestartPolicy restartPolicy = RESTART_POLICY_NEVER;
-    string backoffLimit?;
-    string activeDeadlineSeconds?;
-    string schedule?;
-    map<string|FieldRef|SecretKeyRef|ResourceFieldRef|ConfigMapKeyRef> env?;
-    ImagePullPolicy imagePullPolicy = IMAGE_PULL_POLICY_IF_NOT_PRESENT;
-    string image?;
-    boolean buildImage = true;
     string dockerHost?;
+    string dockerCertPath?;
     string username?;
     string password?;
     string baseImage?;
+    string image?;
+    boolean buildImage = true;
     boolean push = false;
-    string dockerCertPath?;
     FileConfig[] copyFiles?;
-    string[] imagePullSecrets?;
     boolean singleYAML = true;
+    string namespace?;
+    ImagePullPolicy imagePullPolicy = IMAGE_PULL_POLICY_IF_NOT_PRESENT;
+    map<string|FieldRef|SecretKeyRef|ResourceFieldRef|ConfigMapKeyRef> env?;
+    RestartPolicy restartPolicy = RESTART_POLICY_NEVER;
+    string backoffLimit?;
+    int activeDeadlineSeconds = 20;
+    string schedule?;
+    string[] imagePullSecrets?;
 |};
 
 # @kubernetes:Job annotation to configure kubernetes jobs.

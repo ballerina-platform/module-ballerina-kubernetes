@@ -23,14 +23,10 @@ import org.ballerinax.kubernetes.KubernetesConstants;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import static org.ballerinax.docker.generator.DockerGenConstants.BALLERINA_BASE_IMAGE;
-import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_CERT_PATH;
-import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_HOST;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 
 /**
  * Kubernetes deployment annotations model class.
@@ -77,22 +73,8 @@ public class DeploymentModel extends KubernetesModel {
         this.dependsOn = new HashSet<>();
 
         // Configure Docker Host based on operating system.
-        String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
-        if (operatingSystem.contains("win")) {
-            this.setDockerHost(DockerHost.defaultWindowsEndpoint());
-        } else {
-            this.setDockerHost(DockerHost.defaultUnixEndpoint());
-        }
-    
-        String dockerHost = System.getenv(DOCKER_HOST);
-        if (!isBlank(dockerHost)) {
-            this.setDockerHost(dockerHost);
-        }
-        String dockerCertPath = System.getenv(DOCKER_CERT_PATH);
-        if (!isBlank(dockerCertPath)) {
-            this.dockerCertPath = dockerCertPath;
-        }
-        
+        this.setDockerHost(DockerHost.fromEnv().host());
+        this.setDockerCertPath(DockerHost.fromEnv().dockerCertPath());
         this.ports = new HashSet<>();
         this.secretModels = new HashSet<>();
         this.configMapModels = new HashSet<>();
