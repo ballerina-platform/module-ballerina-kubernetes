@@ -211,6 +211,12 @@ Annotation based kubernetes extension implementation for ballerina.
 3. Get a clone or download the source from this repository (https://github.com/ballerinax/kubernetes)
 4. Run the Maven command ``mvn clean install`` from within the ``kubernetes`` directory.
 
+### Enabling debug logs
+- Use the "BAL_DOCKER_DEBUG=true" environment variable to enable docker related debug logs when building the ballerina
+source(s).
+- Use the "BAL_KUBERNETES_DEBUG=true" environment variable to enable kubernetes related debug logs when building the 
+ballerina source(s).
+
 ## Deploy ballerina service directly using `kubectl` command.
 This repository also provides a kubectl plugin which allows to build ballerina programs and deploy their kubernetes 
 artifacts directly to a kuberetes cluster. The plugin is located at `kubernetes-extension/src/main/resources/kubectl-extension/kubectl-ballerina-deploy`.
