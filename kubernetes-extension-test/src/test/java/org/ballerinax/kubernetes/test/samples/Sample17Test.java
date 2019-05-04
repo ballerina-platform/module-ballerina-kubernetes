@@ -77,8 +77,8 @@ public class Sample17Test extends SampleTest {
         Assert.assertNotNull(buildConfig.getSpec().getOutput().getTo());
         Assert.assertEquals(buildConfig.getSpec().getOutput().getTo().getKind(), "ImageStreamTag",
                 "Invalid output kind.");
-        Assert.assertEquals(buildConfig.getSpec().getOutput().getTo().getName(), "hello_world_oc:latest",
-                "Invalid image stream name.");
+        Assert.assertEquals(buildConfig.getSpec().getOutput().getTo().getName(),
+                "<MINISHIFT_DOCKER_REGISTRY_IP>/hello_world_oc:latest", "Invalid image stream name.");
         Assert.assertNotNull(buildConfig.getSpec().getSource());
         Assert.assertNotNull(buildConfig.getSpec().getSource().getBinary(), "Binary source is missing");
         Assert.assertNotNull(buildConfig.getSpec().getStrategy());
@@ -97,7 +97,8 @@ public class Sample17Test extends SampleTest {
     @Test
     public void validateImageStream() {
         Assert.assertNotNull(imageStream.getMetadata());
-        Assert.assertEquals(imageStream.getMetadata().getName(), "hello_world_oc", "Invalid name found.");
+        Assert.assertEquals(imageStream.getMetadata().getName(), "<MINISHIFT_DOCKER_REGISTRY_IP>/hello_world_oc",
+                "Invalid name found.");
         Assert.assertEquals(imageStream.getMetadata().getNamespace(), "bal-oc", "Invalid namespace found.");
         Assert.assertEquals(imageStream.getMetadata().getLabels().size(), 1, "Labels are missing");
         Assert.assertNotNull(imageStream.getMetadata().getLabels().get("build"), "'build' label is missing");
