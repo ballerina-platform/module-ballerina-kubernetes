@@ -26,12 +26,14 @@ import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.ServiceModel;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
+import org.wso2.ballerinalang.compiler.tree.BLangIdentifier;
 import org.wso2.ballerinalang.compiler.tree.BLangService;
 import org.wso2.ballerinalang.compiler.tree.BLangSimpleVariable;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangTypeInit;
+import org.wso2.ballerinalang.compiler.tree.types.BLangUserDefinedType;
 
 import java.util.List;
 
@@ -76,6 +78,9 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         if (serviceModel.getTargetPort() == -1) {
             serviceModel.setTargetPort(extractPort(bListener));
         }
+    
+        setServiceProtocol(serviceModel, bListener);
+    
         KubernetesContext.getInstance().getDataHolder().addBListenerToK8sServiceMap(serviceNode.getName().getValue(),
                 serviceModel);
     }
@@ -100,6 +105,9 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         if (serviceModel.getTargetPort() == -1) {
             serviceModel.setTargetPort(extractPort(bListener));
         }
+        
+        setServiceProtocol(serviceModel, bListener);
+    
         KubernetesContext.getInstance().getDataHolder().addBListenerToK8sServiceMap(variableNode.getName().getValue()
                 , serviceModel);
     }
@@ -111,6 +119,38 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
             throw new KubernetesPluginException("unable to parse port/targetPort for the service: " +
                                             bListener.argsExpr.get(0).toString());
         }
+    }
+    
+    private void setServiceProtocol(ServiceModel serviceModel, BLangTypeInit bListener) {
+        if (null != bListener.userDefinedType) {
+            serviceModel.setProtocol(bListener.userDefinedType.getPackageAlias().getValue());
+        } else {
+            BLangIdentifier packageAlias =
+                    ((BLangUserDefinedType) ((BLangSimpleVariable) bListener.parent).typeNode).getPackageAlias();
+            serviceModel.setProtocol(packageAlias.getValue());
+        }
+        if ("http".equals(serviceModel.getProtocol())) {
+            // Add http config
+            if (bListener.argsExpr.size() == 2) {
+                if (bListener.argsExpr.get(1) instanceof BLangRecordLiteral) {
+                    BLangRecordLiteral bConfigRecordLiteral = (BLangRecordLiteral) bListener.argsExpr.get(1);
+                    List<BLangRecordLiteral.BLangRecordKeyValue> listenerConfig =
+                            bConfigRecordLiteral.getKeyValuePairs();
+                    serviceModel.setProtocol(isHTTPS(listenerConfig) ? "https" : "http");
+                }
+            }
+        }
+    }
+    
+    private boolean isHTTPS(List<BLangRecordLiteral.BLangRecordKeyValue> listenerConfig) {
+        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : listenerConfig) {
+            String key = keyValue.getKey().toString();
+            if ("secureSocket".equals(key)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     private ServiceModel getServiceModelFromAnnotation(AnnotationAttachmentNode attachmentNode) throws
@@ -134,6 +174,9 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
                 case serviceType:
                     serviceModel.setServiceType(KubernetesConstants.ServiceType.valueOf(
                             getStringValue(keyValue.getValue())).name());
+                    break;
+                case portName:
+                    serviceModel.setPortName(getStringValue(keyValue.getValue()));
                     break;
                 case port:
                     serviceModel.setPort(getIntValue(keyValue.getValue()));
@@ -159,6 +202,7 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         labels,
         annotations,
         serviceType,
+        portName,
         port,
         targetPort,
         sessionAffinity

@@ -46,6 +46,10 @@ public class ServiceHandler extends AbstractArtifactHandler {
      * @throws KubernetesPluginException If an error occurs while generating artifact.
      */
     private void generate(ServiceModel serviceModel) throws KubernetesPluginException {
+        if (null == serviceModel.getPortName()) {
+            serviceModel.setPortName(serviceModel.getProtocol() + "-" + serviceModel.getName());
+        }
+        
         Service service = new ServiceBuilder()
                 .withNewMetadata()
                 .withName(serviceModel.getName())
@@ -54,6 +58,7 @@ public class ServiceHandler extends AbstractArtifactHandler {
                 .endMetadata()
                 .withNewSpec()
                 .addNewPort()
+                .withName(serviceModel.getPortName())
                 .withProtocol(KubernetesConstants.KUBERNETES_SVC_PROTOCOL)
                 .withPort(serviceModel.getPort())
                 .withNewTargetPort(serviceModel.getTargetPort())

@@ -25,7 +25,7 @@ package org.ballerinax.kubernetes.models.istio;
  */
 public class IstioDestinationWeight {
     private IstioDestination destination;
-    private int weight = -1;
+    private int weight = 100;
     
     public IstioDestination getDestination() {
         return destination;

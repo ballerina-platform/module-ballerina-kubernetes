@@ -22,12 +22,12 @@ service shopService on bookShopEP {
         path: "/{id}"
     }
     resource function getBook (http:Caller caller, http:Request request, string id) {
-        var detailCall = bookDetailsEP->get(string `/detail/{{untaint id}}`);
+        var detailCall = bookDetailsEP->get(string `/detail/${untaint id}`);
         if (detailCall is http:Response) {
             if (detailCall.statusCode != 404) {
                 var details = detailCall.getJsonPayload();
                 if (details is json) {
-                    var reviewCall = bookReviewEP->get(string `/review/{{untaint id}}`);
+                    var reviewCall = bookReviewEP->get(string `/review/${untaint id}`);
                     if (reviewCall is http:Response) {
                         var reviews = reviewCall.getTextPayload();
                         if (reviews is string) {
@@ -73,7 +73,7 @@ service shopService on bookShopEP {
                 }
             } else {
                 http:Response errResponse = new;
-                json serverErr = { message: string `book not found: {{untaint id}}` };
+                json serverErr = { message: string `book not found: ${untaint id}` };
                 errResponse.setJsonPayload(serverErr, contentType = "application/json");
                 errResponse.statusCode = 404;
                 var responseResult = caller->respond(errResponse);
