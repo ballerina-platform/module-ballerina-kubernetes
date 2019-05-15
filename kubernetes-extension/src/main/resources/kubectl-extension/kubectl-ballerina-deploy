@@ -42,8 +42,7 @@ then
     fi
 
     printf "> building ballerina source...\n"
-    BAL_BUILD_OUTPUT="$(${BALLERINA_CMD} build $1)"
-    printf "${BAL_BUILD_OUTPUT}\n"
+    BAL_BUILD_OUTPUT=$(${BALLERINA_CMD} build $1 | tee /dev/tty)
 
     if [[ $? -eq 0 ]]; then
         HAS_COMMANDS=false
