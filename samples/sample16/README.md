@@ -222,8 +222,7 @@ bookshopep-istio-vs   6m
 7. Find the IP and port of the istio ingress gateway. See [here](https://istio.io/docs/tasks/traffic-management/ingress/#determining-the-ingress-ip-and-ports)
 on determining the gateway URL. Once found, Execute the following commands to export the URL.
 ```bash
-$> echo $GATEWAY
-export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
+$> export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
 
 ```
 

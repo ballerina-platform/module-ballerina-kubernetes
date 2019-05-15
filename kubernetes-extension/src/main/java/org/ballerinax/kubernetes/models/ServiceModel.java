@@ -30,7 +30,9 @@ public class ServiceModel extends KubernetesModel {
     private int targetPort;
     private String selector;
     private String sessionAffinity;
-
+    private String portName;
+    private String protocol;
+    
     public ServiceModel() {
         serviceType = KubernetesConstants.ServiceType.ClusterIP.name();
         labels = new HashMap<>();
@@ -49,13 +51,28 @@ public class ServiceModel extends KubernetesModel {
     public void setServiceType(String serviceType) {
         this.serviceType = serviceType;
     }
-
+    
+    public String getPortName() {
+        return portName;
+    }
+    
+    public void setPortName(String portName) {
+        this.portName = portName;
+    }
     public int getPort() {
         return port;
     }
 
     public void setPort(int port) {
         this.port = port;
+    }
+    
+    public String getProtocol() {
+        return protocol;
+    }
+    
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
     }
     
     public int getTargetPort() {
@@ -89,6 +106,7 @@ public class ServiceModel extends KubernetesModel {
                ", labels=" + labels +
                ", serviceType='" + serviceType + '\'' +
                ", sessionAffinity='" + sessionAffinity + '\'' +
+               ", portName='" + portName + '\'' +
                ", port=" + port +
                ", selector='" + selector + '\'' +
                '}';

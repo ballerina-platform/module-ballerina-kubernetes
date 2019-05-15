@@ -19,8 +19,13 @@
 package org.ballerinax.kubernetes.test.samples;
 
 import io.fabric8.kubernetes.api.model.Container;
+import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
-import org.apache.commons.io.FileUtils;
+import me.snowdrop.istio.api.networking.v1alpha3.Gateway;
+import me.snowdrop.istio.api.networking.v1alpha3.NumberPort;
+import me.snowdrop.istio.api.networking.v1alpha3.PortSelector;
+import me.snowdrop.istio.api.networking.v1alpha3.VirtualService;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
@@ -30,13 +35,11 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
@@ -52,11 +55,35 @@ public class Sample16Test extends SampleTest {
     private static final String BOOK_DETAILS_DOCKER_IMAGE = "book.details:latest";
     private static final String BOOK_REVIEWS_DOCKER_IMAGE = "book.reviews:latest";
     private static final String BOOK_SHOP_DOCKER_IMAGE = "book.shop:latest";
-
+    private Deployment deployment = null;
+    private Service service = null;
+    private Gateway gateway = null;
+    private VirtualService virtualService = null;
 
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaProject(SOURCE_DIR_PATH), 0);
+        File yamlFile = BOOK_SHOP_PKG_TARGET_PATH.resolve("book.shop.yaml").toFile();
+        Assert.assertTrue(yamlFile.exists());
+        List<HasMetadata> k8sItems = KubernetesTestUtils.loadYaml(yamlFile);
+        for (HasMetadata data : k8sItems) {
+            switch (data.getKind()) {
+                case "Deployment":
+                    deployment = (Deployment) data;
+                    break;
+                case "Service":
+                    service = (Service) data;
+                    break;
+                case "Gateway":
+                    gateway = (Gateway) data;
+                    break;
+                case "VirtualService":
+                    virtualService = (VirtualService) data;
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     @Test
@@ -87,12 +114,11 @@ public class Sample16Test extends SampleTest {
         Assert.assertEquals(ports.get(0), "9080/tcp");
     }
 
-    @Test(enabled = false)
-    public void validateShopDeployment() throws IOException {
-        File deploymentYAML = new File(BOOK_SHOP_PKG_TARGET_PATH + File.separator + "book.shop_deployment.yaml");
-        Assert.assertTrue(deploymentYAML.exists(), "Cannot find deployment yaml");
-        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
+    @Test
+    public void validateShopDeployment() {
         // Assert Deployment
+        Assert.assertNotNull(deployment);
+        Assert.assertNotNull(deployment.getMetadata());
         Assert.assertEquals(deployment.getMetadata().getName(), "book-shop-deployment");
         Assert.assertEquals(deployment.getSpec().getReplicas().intValue(), 1, "Invalid replica value");
         Assert.assertEquals(deployment.getMetadata().getLabels().get(KubernetesConstants
@@ -107,68 +133,72 @@ public class Sample16Test extends SampleTest {
         Assert.assertEquals(container.getPorts().size(), 1, "Invalid number of container ports");
         Assert.assertEquals(container.getPorts().get(0).getContainerPort().intValue(), 9080, "Invalid container port");
     }
+    
+    @Test
+    public void validateShopService() {
+        // Assert Service
+        Assert.assertNotNull(service);
+        Assert.assertNotNull(service.getSpec());
+        Assert.assertNotNull(service.getSpec().getPorts());
+        Assert.assertEquals(service.getSpec().getPorts().size(), 1);
+        Assert.assertEquals(service.getSpec().getPorts().get(0).getName(), "http-bookshopep-svc");
+    }
 
-    @Test(enabled = false)
-    public void validateShopGateway() throws IOException {
-        File gatewayYAML = new File(BOOK_SHOP_PKG_TARGET_PATH + File.separator + "book.shop_istio_gateway.yaml");
-        Assert.assertTrue(gatewayYAML.exists(), "Cannot find istio gateway");
-        // Validate gateway yaml
-        
-        Yaml yamlProcessor = new Yaml();
-        Map<String, Object> gateway = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(gatewayYAML));
-        Assert.assertEquals(gateway.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(gateway.get("kind"), "Gateway", "Invalid kind.");
+    @Test
+    public void validateShopGateway() {
+        Assert.assertNotNull(gateway);
+        Assert.assertNotNull(gateway.getMetadata());
+        Assert.assertEquals(gateway.getMetadata().getName(), "bookshopep-istio-gw", "Invalid gateway name");
     
-        Map<String, Object> metadata = (Map<String, Object>) gateway.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "bookshopep-istio-gw", "Invalid gateway name");
+        Assert.assertNotNull(gateway.getSpec());
+        Assert.assertNotNull(gateway.getSpec().getSelector());
+        Assert.assertEquals(gateway.getSpec().getSelector().get(KubernetesConstants.ISTIO_GATEWAY_SELECTOR),
+                "ingressgateway", "Invalid selector.");
     
-        Map<String, Object> spec = (Map<String, Object>) gateway.get("spec");
-        Map<String, Object> selector = (Map<String, Object>) spec.get("selector");
-        Assert.assertEquals(selector.get(KubernetesConstants.ISTIO_GATEWAY_SELECTOR), "ingressgateway",
-                "Invalid selector.");
+        Assert.assertNotNull(gateway.getSpec().getServers());
+        Assert.assertEquals(gateway.getSpec().getServers().size(), 1);
+        Assert.assertNotNull(gateway.getSpec().getServers().get(0).getPort());
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getNumber().intValue(), 80,
+                "Invalid port number.");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getName(), "http", "Invalid port name.");
+        Assert.assertEquals(gateway.getSpec().getServers().get(0).getPort().getProtocol(), "HTTP",
+                "Invalid port protocol.");
     
-        List<Map<String, Object>> servers = (List<Map<String, Object>>) spec.get("servers");
-        Map<String, Object> server = servers.get(0);
-        Map<String, Object> port = (Map<String, Object>) server.get("port");
-        Assert.assertEquals(port.get("number"), 80, "Invalid port number.");
-        Assert.assertEquals(port.get("name"), "http", "Invalid port name.");
-        Assert.assertEquals(port.get("protocol"), "HTTP", "Invalid port protocol.");
-    
-        List<String> hosts = (List<String>) server.get("hosts");
-        Assert.assertTrue(hosts.contains("*"), "* host not included");
+        Assert.assertTrue(gateway.getSpec().getServers().get(0).getHosts().contains("*"), "* host not included");
     }
     
-    @Test(enabled = false)
-    public void validateShopVirtualService() throws IOException {
-        File vsFile = new File(BOOK_SHOP_PKG_TARGET_PATH + File.separator + "book.shop_istio_virtual_service.yaml");
-        Assert.assertTrue(vsFile.exists(), "Cannot find istio virtual service");
-        Yaml yamlProcessor = new Yaml();
-        Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(vsFile));
-        Assert.assertEquals(virtualSvc.get("apiVersion"), "networking.istio.io/v1alpha3", "Invalid apiVersion");
-        Assert.assertEquals(virtualSvc.get("kind"), "VirtualService", "Invalid kind.");
+    @Test
+    public void validateShopVirtualService() {
+        Assert.assertNotNull(virtualService);
+        Assert.assertNotNull(virtualService.getMetadata());
+        Assert.assertEquals(virtualService.getMetadata().getName(), "bookshopep-istio-vs",
+                "Invalid virtual service name");
     
-        Map<String, Object> metadata = (Map<String, Object>) virtualSvc.get("metadata");
-        Assert.assertEquals(metadata.get("name"), "bookshopep-istio-vs", "Invalid virtual service name");
+        Assert.assertNotNull(virtualService.getSpec());
+        Assert.assertNotNull(virtualService.getSpec().getHosts());
+        Assert.assertEquals(virtualService.getSpec().getHosts().size(), 1);
+        Assert.assertEquals(virtualService.getSpec().getHosts().get(0), "*", "Invalid host value.");
     
-        Map<String, Object> spec = (Map<String, Object>) virtualSvc.get("spec");
-        List<String> hosts = (List<String>) spec.get("hosts");
-        Assert.assertEquals(hosts.get(0), "*", "Invalid host value.");
+        Assert.assertNotNull(virtualService.getSpec().getHttp());
+        Assert.assertEquals(virtualService.getSpec().getHttp().size(), 1, "Invalid number of http items");
     
-        List<Map<String, Object>> http = (List<Map<String, Object>>) spec.get("http");
-        Assert.assertEquals(http.size(), 1, "Invalid number of http items");
+        Assert.assertNotNull(virtualService.getSpec().getHttp().get(0).getRoute());
+        Assert.assertEquals(virtualService.getSpec().getHttp().get(0).getRoute().size(), 1);
+        Assert.assertEquals(virtualService.getSpec().getHttp().get(0).getRoute().get(0).getDestination().getHost(),
+                "bookshopep-svc", "Invalid route destination host");
+        PortSelector.Port destinationPort =
+                virtualService.getSpec().getHttp().get(0).getRoute().get(0).getDestination().getPort().getPort();
+        Assert.assertTrue(destinationPort instanceof NumberPort);
+        NumberPort destinationPortNumber = (NumberPort) destinationPort;
+        Assert.assertEquals(destinationPortNumber.getNumber().intValue(), 9080, "Invalid port");
     
-        Map<String, Object> httpMap = http.get(0);
-    
-        List<Map<String, Map<String, Object>>> route = (List<Map<String, Map<String, Object>>>) httpMap.get("route");
-        Assert.assertEquals(route.get(0).get("destination").get("host"), "bookshopep-svc",
-                "Invalid route destination host");
-        Map<String, Integer> port = (Map<String, Integer>) route.get(0).get("destination").get("port");
-        Assert.assertEquals(port.get("number").intValue(), 9080, "Invalid port");
+        Assert.assertEquals(virtualService.getSpec().getHttp().get(0).getRoute().get(0).getWeight().intValue(), 100,
+                "Invalid weight");
     
     }
 
     @AfterClass
-    public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
+    public void cleanUp() throws KubernetesPluginException {
         KubernetesUtils.deleteDirectory(TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(BOOK_REVIEWS_DOCKER_IMAGE);
         KubernetesTestUtils.deleteDockerImage(BOOK_DETAILS_DOCKER_IMAGE);

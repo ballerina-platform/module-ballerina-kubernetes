@@ -65,6 +65,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |--|--|--|
 |name|Name of the Service|<BALLERINA_SERVICE_NAME>-service|
 |labels|Labels for service|{ app: <OUTPUT_FILE_NAME> }|
+|portName|Name for the port|The protocol of the listener|
 |port|Service port|Port of the ballerina service|
 |targetPort|Target pod(s) port|Port of the ballerina service|
 |sessionAffinity|Pod session affinity|None|
