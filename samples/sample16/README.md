@@ -1,15 +1,14 @@
 ## Sample16: Istio Gateway and Virtual Service generation
 
-- This sample uses 3 microservices implementing a book shop.
+- This sample contains 4 microservices implementing a travel agency.
 - Traffic is managed through an istio gateway and virtual service which gets generated through @istio:Gateway 
-and @istio:VirtualService annotations.
+and @istio:VirtualService annotations. See the `travel_agency` module implementation for these annotations.
 - Following are the microservices:  
-    - `book.details` module has a service which gets details of a book. These details include the author and the price 
-    of a book.
-    - `book.reviews` module has a service which gets reviews of a book.
-    - `book.shop` module has a service that communicates to `book.details` and `book.reviews` service to retrieve 
-    information of a book and responses back to the client collectively.
-- `book.shop` service depends on `book.details` and `book.reviews`.
+    - `airline_reservation` module has a service performs airline reservations. 
+    - `hotel_reservation` module has a service for making reservations at hotels.
+    - `car_rental` module has a service that rents out cars.
+    - `travel_agency` module has a service that communicates to `airline_reservation`, `hotel_reservation` and 
+    `car_rental` service to make reservations and booking upon customer requests.
 - Make sure that istio is installed correctly and that all pods and services of the istio-system are up and running. 
 - Remove the nginx artifacts added in setting up of the tutorial. Run `kubectl delete -f nginx-ingress/namespaces/nginx-ingress.yaml -Rf nginx-ingress` 
 from the `samples` folder.
@@ -17,45 +16,54 @@ See [here](https://istio.io/docs/setup/kubernetes/quick-start/) on how to instal
 - Following files will be generated from building this sample.
     ``` 
     $> docker images
-    book.reviews:latest
-    book.shop:latest 
-    book.details:latest
+    airline_reservation:latest
+    hotel_reservation:latest 
+    car_rental:latest 
+    travel_agency:latest
     
-    $> tree
+    $> tree target/
     target/
     ├── Ballerina.lock
+    ├── airline_reservation.balx
     ├── book.details.balx
     ├── book.reviews.balx
     ├── book.shop.balx
-    └── kubernetes
-        ├── book.details
-        │   ├── book-details-deployment
-        │   │   ├── Chart.yaml
-        │   │   └── templates
-        │   │       └── book.details.yaml
-        │   ├── book.details.yaml
-        │   └── docker
-        │       └── Dockerfile
-        ├── book.reviews
-        │   ├── book-reviews-deployment
-        │   │   ├── Chart.yaml
-        │   │   └── templates
-        │   │       └── book.reviews.yaml
-        │   ├── book.reviews.yaml
-        │   └── docker
-        │       └── Dockerfile
-        └── book.shop
-            ├── book-shop-deployment
-            │   ├── Chart.yaml
-            │   └── templates
-            │       ├── book.shop_deployment.yaml
-            │       └── book.shop_svc.yaml
-            ├── book.shop_deployment.yaml
-            ├── book.shop_istio_gateway.yaml
-            ├── book.shop_istio_virtual_service.yaml
-            ├── book.shop_svc.yaml
-            └── docker
-                └── Dockerfile
+    ├── car_rental.balx
+    ├── hotel_reservation.balx
+    ├── kubernetes
+    │   ├── airline_reservation
+    │   │   ├── airline-reservation-deployment
+    │   │   │   ├── Chart.yaml
+    │   │   │   └── templates
+    │   │   │       └── airline_reservation.yaml
+    │   │   ├── airline_reservation.yaml
+    │   │   └── docker
+    │   │       └── Dockerfile
+    │   ├── car_rental
+    │   │   ├── car-rental-deployment
+    │   │   │   ├── Chart.yaml
+    │   │   │   └── templates
+    │   │   │       └── car_rental.yaml
+    │   │   ├── car_rental.yaml
+    │   │   └── docker
+    │   │       └── Dockerfile
+    │   ├── hotel_reservation
+    │   │   ├── docker
+    │   │   │   └── Dockerfile
+    │   │   ├── hotel-reservation-deployment
+    │   │   │   ├── Chart.yaml
+    │   │   │   └── templates
+    │   │   │       └── hotel_reservation.yaml
+    │   │   └── hotel_reservation.yaml
+    │   └── travel_agency
+    │       ├── docker
+    │       │   └── Dockerfile
+    │       ├── travel-agency-deployment
+    │       │   ├── Chart.yaml
+    │       │   └── templates
+    │       │       └── travel_agency.yaml
+    │       └── travel_agency.yaml
+    └── travel_agency.balx
   
     ```
 ### How to run:
@@ -64,58 +72,100 @@ See [here](https://istio.io/docs/setup/kubernetes/quick-start/) on how to instal
 ```bash
 $> ballerina build
 Compiling source
-    foo/book.details:1.0.0
-    foo/book.shop:1.0.0
-    foo/book.reviews:1.0.0
+    gogo/car_rental:1.0.0
+    gogo/travel_agency:1.0.0
+    gogo/hotel_reservation:1.0.0
+    gogo/airline_reservation:1.0.0
 
 Running tests
-    foo/book.details:1.0.0
-	No tests found
+    gogo/airline_reservation:1.0.0
+[ballerina/http] started HTTP/WS endpoint 0.0.0.0:8080
+	1 passing
+	0 failing
+	0 skipped
 
-    foo/book.reviews:1.0.0
-	No tests found
+[ballerina/http] stopped HTTP/WS endpoint 0.0.0.0:8080
+    gogo/car_rental:1.0.0
+[ballerina/http] started HTTP/WS endpoint 0.0.0.0:6060
+	1 passing
+	0 failing
+	0 skipped
 
-    foo/book.shop:1.0.0
-	No tests found
+[ballerina/http] stopped HTTP/WS endpoint 0.0.0.0:6060
+    gogo/hotel_reservation:1.0.0
+[ballerina/http] started HTTP/WS endpoint 0.0.0.0:7070
+	1 passing
+	0 failing
+	0 skipped
 
+[ballerina/http] stopped HTTP/WS endpoint 0.0.0.0:7070
+    gogo/travel_agency:1.0.0
+[ballerina/http] started HTTP/WS endpoint 0.0.0.0:9090
+[ballerina/http] started HTTP/WS endpoint 0.0.0.0:8080
+[ballerina/http] started HTTP/WS endpoint 0.0.0.0:7070
+[ballerina/http] started HTTP/WS endpoint 0.0.0.0:6060
+	1 passing
+	0 failing
+	0 skipped
+
+[ballerina/http] stopped HTTP/WS endpoint 0.0.0.0:9090
+[ballerina/http] stopped HTTP/WS endpoint 0.0.0.0:8080
+[ballerina/http] stopped HTTP/WS endpoint 0.0.0.0:7070
+[ballerina/http] stopped HTTP/WS endpoint 0.0.0.0:6060
 Generating executables
-    ./target/book.details.balx
+    ./target/car_rental.balx
+
 	@kubernetes:Service 			 - complete 1/1
 	@kubernetes:Deployment 			 - complete 1/1
 	@kubernetes:Docker 			 - complete 3/3
 	@kubernetes:Helm 			 - complete 1/1
 
 	Run the following command to deploy the Kubernetes artifacts:
-	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/book.details
+	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/car_rental
 
 	Run the following command to install the application using Helm:
-	helm install --name book-details-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/book.details/book-details-deployment
+	helm install --name car-rental-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/car_rental/car-rental-deployment
 
-    ./target/book.shop.balx
+    ./target/travel_agency.balx
+
 	@kubernetes:Service 			 - complete 1/1
 	@kubernetes:Deployment 			 - complete 1/1
 	@kubernetes:Docker 			 - complete 3/3
 	@kubernetes:Helm 			 - complete 1/1
-	@istio:Gateway   		 - complete 1/1
-	@istio:VirtualService 	 - complete 1/1
+	@istio:Gateway 				 - complete 1/1
+	@istio:VirtualService 			 - complete 1/1
 
 	Run the following command to deploy the Kubernetes artifacts:
-	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/book.shop
+	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/travel_agency
 
 	Run the following command to install the application using Helm:
-	helm install --name book-shop-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/book.shop/book-shop-deployment
+	helm install --name travel-agency-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/travel_agency/travel-agency-deployment
 
-    ./target/book.reviews.balx
+    ./target/hotel_reservation.balx
+
 	@kubernetes:Service 			 - complete 1/1
 	@kubernetes:Deployment 			 - complete 1/1
 	@kubernetes:Docker 			 - complete 3/3
 	@kubernetes:Helm 			 - complete 1/1
 
 	Run the following command to deploy the Kubernetes artifacts:
-	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/book.reviews
+	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/hotel_reservation
 
 	Run the following command to install the application using Helm:
-	helm install --name book-reviews-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/book.reviews/book-reviews-deployment
+	helm install --name hotel-reservation-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/hotel_reservation/hotel-reservation-deployment
+
+    ./target/airline_reservation.balx
+
+	@kubernetes:Service 			 - complete 1/1
+	@kubernetes:Deployment 			 - complete 1/1
+	@kubernetes:Docker 			 - complete 3/3
+	@kubernetes:Helm 			 - complete 1/1
+
+	Run the following command to deploy the Kubernetes artifacts:
+	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/airline_reservation
+
+	Run the following command to install the application using Helm:
+	helm install --name airline-reservation-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/airline_reservation/airline-reservation-deployment
 ```
 
 2. book.details.balx, book.reviews.balx, book.shop.balx, Dockerfile, docker image, kubernetes and istio artifacts will be generated: 
@@ -123,49 +173,57 @@ Generating executables
 $> tree target
 target/
 ├── Ballerina.lock
+├── airline_reservation.balx
 ├── book.details.balx
 ├── book.reviews.balx
 ├── book.shop.balx
-└── kubernetes
-    ├── book.details
-    │   ├── book-details-deployment
-    │   │   ├── Chart.yaml
-    │   │   └── templates
-    │   │       └── book.details.yaml
-    │   ├── book.details.yaml
-    │   └── docker
-    │       └── Dockerfile
-    ├── book.reviews
-    │   ├── book-reviews-deployment
-    │   │   ├── Chart.yaml
-    │   │   └── templates
-    │   │       └── book.reviews.yaml
-    │   ├── book.reviews.yaml
-    │   └── docker
-    │       └── Dockerfile
-    └── book.shop
-        ├── book-shop-deployment
-        │   ├── Chart.yaml
-        │   └── templates
-        │       ├── book.shop_deployment.yaml
-        │       └── book.shop_svc.yaml
-        ├── book.shop_deployment.yaml
-        ├── book.shop_istio_gateway.yaml
-        ├── book.shop_istio_virtual_service.yaml
-        ├── book.shop_svc.yaml
-        └── docker
-            └── Dockerfile
+├── car_rental.balx
+├── hotel_reservation.balx
+├── kubernetes
+│   ├── airline_reservation
+│   │   ├── airline-reservation-deployment
+│   │   │   ├── Chart.yaml
+│   │   │   └── templates
+│   │   │       └── airline_reservation.yaml
+│   │   ├── airline_reservation.yaml
+│   │   └── docker
+│   │       └── Dockerfile
+│   ├── car_rental
+│   │   ├── car-rental-deployment
+│   │   │   ├── Chart.yaml
+│   │   │   └── templates
+│   │   │       └── car_rental.yaml
+│   │   ├── car_rental.yaml
+│   │   └── docker
+│   │       └── Dockerfile
+│   ├── hotel_reservation
+│   │   ├── docker
+│   │   │   └── Dockerfile
+│   │   ├── hotel-reservation-deployment
+│   │   │   ├── Chart.yaml
+│   │   │   └── templates
+│   │   │       └── hotel_reservation.yaml
+│   │   └── hotel_reservation.yaml
+│   └── travel_agency
+│       ├── docker
+│       │   └── Dockerfile
+│       ├── travel-agency-deployment
+│       │   ├── Chart.yaml
+│       │   └── templates
+│       │       └── travel_agency.yaml
+│       └── travel_agency.yaml
+└── travel_agency.balx
 
 ```
 
 3. Verify the docker images are created:
 ```bash
 $> docker images
-REPOSITORY                                                       TAG                               IMAGE ID            CREATED             SIZE
-book.reviews                                                     latest                            36b31684f47b        5 seconds ago       128MB
-book.shop                                                        latest                            cf5ac9d57651        6 seconds ago       128MB
-book.details                                                     latest                            4d3c92f36683        9 seconds ago       128MB
-
+REPOSITORY                                                       TAG                                        IMAGE ID            CREATED             SIZE
+airline_reservation                                              latest                                     968622b45938        11 minutes ago      180MB
+hotel_reservation                                                latest                                     7e6522d5e713        11 minutes ago      180MB
+travel_agency                                                    latest                                     ff8888d83e86        11 minutes ago      180MB
+car_rental                                                       latest                                     0b3b013df707        11 minutes ago      180MB
 ```
 
 4. Enable istio-sidecar-injection for the default namespace if its not already set:
@@ -176,19 +234,23 @@ namespace "default" labeled
 
 5. Run the kubectl commands to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/book.details
-service "book-detail" created
-deployment.extensions "book-details-deployment" created
+$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/airline_reservation
+service/airline-reservation created
+deployment.apps/airline-reservation-deployment created
 
-$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/book.shop
-deployment.extensions "book-shop-deployment" created
-gateway.networking.istio.io "bookshopep-istio-gw" created
-virtualservice.networking.istio.io "bookshopep-istio-vs" created
-service "bookshopep-svc" created
+$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/hotel_reservation
+service/hotel-reservation created
+deployment.apps/hotel-reservation-deployment created
 
-$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/book.reviews
-service "book-review" created
-deployment.extensions "book-reviews-deployment" created
+$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/car_rental
+service/car-rental created
+deployment.apps/car-rental-deployment created
+
+$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/travel_agency
+service/travelagencyep-svc created
+deployment.apps/travel-agency-deployment created
+gateway.networking.istio.io/travelagencyep-istio-gw created
+virtualservice.networking.istio.io/travelagencyep-istio-vs created
 
 ```
 
@@ -197,25 +259,26 @@ the deployment would have 2 instances running in them. One is the service that w
 other being the sidecar injected by istio: 
 ```bash
 $> kubectl get pods
-NAME                                       READY     STATUS    RESTARTS   AGE
-book-details-deployment-5d689db7fc-vcvg8   2/2       Running   0          3m
-book-reviews-deployment-d4b7f84dd-vkws4    2/2       Running   0          1m
-book-shop-deployment-696b97d9d6-2xcmv      2/2       Running   0          2m
+NAME                                             READY   STATUS    RESTARTS   AGE
+airline-reservation-deployment-987c5847b-hv5zs   1/1     Running   0          16m
+car-rental-deployment-79444847f8-5zlhc           1/1     Running   0          16m
+hotel-reservation-deployment-8445d9d5d8-nm2dn    1/1     Running   0          16m
+travel-agency-deployment-5f4bcd6f8f-6zvgc        1/1     Running   0          16m
 
 $> kubectl get svc
-NAME             TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
-book-detail      ClusterIP   10.101.171.22   <none>        8080/TCP   5m
-book-review      ClusterIP   10.102.1.162    <none>        7070/TCP   3m
-bookshopep-svc   ClusterIP   10.109.214.55   <none>        9080/TCP   4m
-kubernetes       ClusterIP   10.96.0.1       <none>        443/TCP    4d
+NAME                  TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+airline-reservation   ClusterIP   10.98.141.251    <none>        8080/TCP   16m
+car-rental            ClusterIP   10.99.129.188    <none>        6060/TCP   16m
+hotel-reservation     ClusterIP   10.111.42.120    <none>        7070/TCP   16m
+travelagencyep-svc    ClusterIP   10.100.172.128   <none>        9090/TCP   16m
 
 $> kubectl get gateway
-NAME                  AGE
-bookshopep-istio-gw   5m
+NAME                      CREATED AT
+travelagencyep-istio-gw   17m
 
 $> kubectl get virtualservice
-NAME                  AGE
-bookshopep-istio-vs   6m
+NAME                      CREATED AT
+travelagencyep-istio-vs   17m
 
 ```
 
@@ -228,24 +291,19 @@ $> export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
 
 8. Access the books by their IDs with curl commands:
 ```bash
-$> curl http://${GATEWAY_URL}/book/B1
-{"id":"B1", "details":{"author":"John Jonathan", "cost":10.0}, "reviews":"Review of book1"}
-
-$> curl http://${GATEWAY_URL}/book/B2
-{"id":"B2", "details":{"author":"Anne Anakin", "cost":15.0}, "reviews":"Review of book2"}
-
-$> curl http://${GATEWAY_URL}/book/B3
-{"id":"B3", "details":{"author":"Greg George", "cost":20.0}, "reviews":"(no reviews found)"}
-
-$> curl http://${GATEWAY_URL}/book/B4
-{"message":"book not found: B4"}
+$> curl -v -X POST -d '{"Name":"Bob", "ArrivalDate":"12-03-2018", "DepartureDate":"13-04-2018", "Preference":{"Airline":"Business", "Accommodation":"Air Conditioned", "Car":"Air Conditioned"}}' \
+      -H "Content-Type:application/json" \
+      "http://${GATEWAY_URL}/travel/arrange"
+      
+{"Message":"Congratulations! Your journey is ready!!"}
 ```
 
 9. Undeploy sample:
 ```bash
-$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/book.details
-$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/book.shop
-$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/book.reviews
-$> docker rmi book.reviews book.shop book.details
+$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/travel_agency
+$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/car_rental
+$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/hotel_reservation
+$> kubectl delete -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/airline_reservation
+$> docker rmi airline_reservation hotel_reservation travel_agency car_rental
 
 ```
