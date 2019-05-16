@@ -160,6 +160,10 @@
                                     <artifactId>testerina-core</artifactId>
                                 </artifactItem>
                                 <artifactItem>
+                                    <groupId>org.ballerinalang</groupId>
+                                    <artifactId>openapi-to-ballerina-generator</artifactId>
+                                </artifactItem>
+                                <artifactItem>
                                     <groupId>com.fasterxml.jackson.core</groupId>
                                     <artifactId>jackson-core</artifactId>
                                 </artifactItem>
