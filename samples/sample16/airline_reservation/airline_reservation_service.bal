@@ -21,11 +21,11 @@ service airlineReservationService on airlineEP {
 
     // Resource to reserve a ticket
     @http:ResourceConfig {
-        methods:["POST"],
-        path:"/reserve",
-        consumes:["application/json"],
-        produces:["application/json"]
-        }
+        methods: ["POST"],
+        path: "/reserve",
+        consumes: ["application/json"],
+        produces: ["application/json"]
+    }
     resource function reserveTicket(http:Caller caller, http:Request request) {
         http:Response response = new;
         json reqPayload = {};
@@ -39,7 +39,7 @@ service airlineReservationService on airlineEP {
             // NOT a valid JSON payload
             response.statusCode = 400;
             response.setJsonPayload({
-                Message:"Invalid payload - Not a valid JSON payload"
+                Message: "Invalid payload - Not a valid JSON payload"
             });
             var result = caller->respond(response);
             handleError(result);
@@ -55,7 +55,7 @@ service airlineReservationService on airlineEP {
         if (name == () || arrivalDate == () || departDate == () || preferredClass == ()) {
             response.statusCode = 400;
             response.setJsonPayload({
-                Message:"Bad Request - Invalid Payload"
+                Message: "Bad Request - Invalid Payload"
             });
             var result = caller->respond(response);
             handleError(result);
@@ -68,13 +68,13 @@ service airlineReservationService on airlineEP {
         if (preferredClassStr.equalsIgnoreCase(ECONOMY) || preferredClassStr.equalsIgnoreCase(BUSINESS) ||
             preferredClassStr.equalsIgnoreCase(FIRST)) {
             response.setJsonPayload({
-                Status:"Success"
+                Status: "Success"
             });
         }
         else {
             // If request is not for an available flight class, send a reservation failure status
             response.setJsonPayload({
-                Status:"Failed"
+                Status: "Failed"
             });
         }
         // Send the response

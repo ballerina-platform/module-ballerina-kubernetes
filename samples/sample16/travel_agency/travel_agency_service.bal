@@ -15,14 +15,15 @@ http:Client carRentalEP = new("http://car-rental:6060/car");
 // Travel agency service to arrange a complete tour for a user
 @kubernetes:Deployment {}
 @http:ServiceConfig {
-    basePath:"/travel"
+    basePath: "/travel"
 }
 service travelAgencyService on travelAgencyEP {
     // Resource to arrange a tour
     @http:ResourceConfig {
-        methods:["POST"],
-        consumes:["application/json"],
-        produces:["application/json"]
+        methods: ["POST"],
+        consumes: ["application/json"],
+        produces: ["application/json"],
+        path: "/arrange"
     }
     resource function arrangeTour(http:Caller caller, http:Request inRequest) returns error? {
         http:Response outResponse = new;
@@ -134,7 +135,6 @@ service travelAgencyService on travelAgencyEP {
             handleError(result);
             return;
         }
-
 
         // If all three services response positive status, send a successful message to the user
         outResponse.setJsonPayload({
