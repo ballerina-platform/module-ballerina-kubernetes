@@ -222,17 +222,21 @@ public class DeploymentHandler extends AbstractArtifactHandler {
     }
     
     private List<Toleration> populatePodTolerations(List<PodTolerationModel> podTolerationModels) {
-        List<Toleration> tolerations = new LinkedList<>();
-        for (PodTolerationModel podTolerationModel : podTolerationModels) {
-            Toleration toleration = new TolerationBuilder()
-                    .withKey(podTolerationModel.getKey())
-                    .withOperator(podTolerationModel.getOperator())
-                    .withValue(podTolerationModel.getValue())
-                    .withEffect(podTolerationModel.getEffect())
-                    .withTolerationSeconds((long) podTolerationModel.getTolerationSeconds())
-                    .build();
-    
-            tolerations.add(toleration);
+        List<Toleration> tolerations = null;
+        
+        if (null != podTolerationModels && podTolerationModels.size() > 0) {
+            tolerations = new LinkedList<>();
+            for (PodTolerationModel podTolerationModel : podTolerationModels) {
+                Toleration toleration = new TolerationBuilder()
+                        .withKey(podTolerationModel.getKey())
+                        .withOperator(podTolerationModel.getOperator())
+                        .withValue(podTolerationModel.getValue())
+                        .withEffect(podTolerationModel.getEffect())
+                        .withTolerationSeconds((long) podTolerationModel.getTolerationSeconds())
+                        .build();
+        
+                tolerations.add(toleration);
+            }
         }
         
         return tolerations;
