@@ -24,6 +24,7 @@ import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
+import org.ballerinax.kubernetes.models.PodTolerationModel;
 import org.ballerinax.kubernetes.models.ProbeModel;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
@@ -32,6 +33,7 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -89,44 +91,11 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 case name:
                     deploymentModel.setName(getValidName(getStringValue(keyValue.getValue())));
                     break;
-                case namespace:
-                    KubernetesContext.getInstance().getDataHolder().setNamespace(getStringValue(keyValue.getValue()));
-                    break;
                 case labels:
                     deploymentModel.setLabels(getMap(keyValue.getValue()));
                     break;
                 case annotations:
                     deploymentModel.setAnnotations(getMap(keyValue.getValue()));
-                    break;
-                case podAnnotations:
-                    deploymentModel.setPodAnnotations(getMap(keyValue.getValue()));
-                    break;
-                case livenessProbe:
-                    deploymentModel.setLivenessProbe(parseProbeConfiguration(keyValue.getValue()));
-                    break;
-                case readinessProbe:
-                    deploymentModel.setReadinessProbe(parseProbeConfiguration(keyValue.getValue()));
-                    break;
-                case username:
-                    deploymentModel.setUsername(getStringValue(keyValue.getValue()));
-                    break;
-                case env:
-                    deploymentModel.setEnv(getEnvVarMap(keyValue.getValue()));
-                    break;
-                case password:
-                    deploymentModel.setPassword(getStringValue(keyValue.getValue()));
-                    break;
-                case baseImage:
-                    deploymentModel.setBaseImage(getStringValue(keyValue.getValue()));
-                    break;
-                case push:
-                    deploymentModel.setPush(getBooleanValue(keyValue.getValue()));
-                    break;
-                case buildImage:
-                    deploymentModel.setBuildImage(getBooleanValue(keyValue.getValue()));
-                    break;
-                case image:
-                    deploymentModel.setImage(getStringValue(keyValue.getValue()));
                     break;
                 case dockerHost:
                     deploymentModel.setDockerHost(getStringValue(keyValue.getValue()));
@@ -134,11 +103,26 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 case dockerCertPath:
                     deploymentModel.setDockerCertPath(getStringValue(keyValue.getValue()));
                     break;
-                case imagePullPolicy:
-                    deploymentModel.setImagePullPolicy(getStringValue(keyValue.getValue()));
+                case registry:
+                    deploymentModel.setRegistry(getStringValue(keyValue.getValue()));
                     break;
-                case replicas:
-                    deploymentModel.setReplicas(getIntValue(keyValue.getValue()));
+                case username:
+                    deploymentModel.setUsername(getStringValue(keyValue.getValue()));
+                    break;
+                case password:
+                    deploymentModel.setPassword(getStringValue(keyValue.getValue()));
+                    break;
+                case baseImage:
+                    deploymentModel.setBaseImage(getStringValue(keyValue.getValue()));
+                    break;
+                case image:
+                    deploymentModel.setImage(getStringValue(keyValue.getValue()));
+                    break;
+                case buildImage:
+                    deploymentModel.setBuildImage(getBooleanValue(keyValue.getValue()));
+                    break;
+                case push:
+                    deploymentModel.setPush(getBooleanValue(keyValue.getValue()));
                     break;
                 case copyFiles:
                     deploymentModel.setCopyFiles(getExternalFileMap(keyValue));
@@ -146,17 +130,38 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 case singleYAML:
                     deploymentModel.setSingleYAML(getBooleanValue(keyValue.getValue()));
                     break;
+                case namespace:
+                    KubernetesContext.getInstance().getDataHolder().setNamespace(getStringValue(keyValue.getValue()));
+                    break;
+                case replicas:
+                    deploymentModel.setReplicas(getIntValue(keyValue.getValue()));
+                    break;
+                case livenessProbe:
+                    deploymentModel.setLivenessProbe(parseProbeConfiguration(keyValue.getValue()));
+                    break;
+                case readinessProbe:
+                    deploymentModel.setReadinessProbe(parseProbeConfiguration(keyValue.getValue()));
+                    break;
+                case imagePullPolicy:
+                    deploymentModel.setImagePullPolicy(getStringValue(keyValue.getValue()));
+                    break;
+                case env:
+                    deploymentModel.setEnv(getEnvVarMap(keyValue.getValue()));
+                    break;
+                case podAnnotations:
+                    deploymentModel.setPodAnnotations(getMap(keyValue.getValue()));
+                    break;
+                case podTolerations:
+                    deploymentModel.setPodTolerations(parsePodTolerationConfiguration(keyValue.getValue()));
+                    break;
+                case buildExtension:
+                    deploymentModel.setBuildExtension(parseBuildExtension(keyValue.getValue()));
+                    break;
                 case dependsOn:
                     deploymentModel.setDependsOn(getDependsOn(keyValue));
                     break;
                 case imagePullSecrets:
                     deploymentModel.setImagePullSecrets(getImagePullSecrets(keyValue));
-                    break;
-                case registry:
-                    deploymentModel.setRegistry(getStringValue(keyValue.getValue()));
-                    break;
-                case buildExtension:
-                    deploymentModel.setBuildExtension(parseBuildExtension(keyValue.getValue()));
                     break;
                 default:
                     break;
@@ -172,6 +177,51 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
             deploymentModel.setDockerCertPath(dockerCertPath);
         }
         KubernetesContext.getInstance().getDataHolder().setDeploymentModel(deploymentModel);
+    }
+    
+    /**
+     * Parse pod toleration configurations from a record array.
+     *
+     * @param podTolerationValues Pod toleration configuration records.
+     * @return Pod toleration models.
+     * @throws KubernetesPluginException When an unknown field is found.
+     */
+    private List<PodTolerationModel> parsePodTolerationConfiguration(BLangExpression podTolerationValues)
+            throws KubernetesPluginException {
+        List<PodTolerationModel> podTolerationModels = new ArrayList<>();
+        List<BLangExpression> podTolerations = ((BLangArrayLiteral) podTolerationValues).exprs;
+        for (BLangExpression podTolerationFieldsAsExpression : podTolerations) {
+            List<BLangRecordLiteral.BLangRecordKeyValue> podTolerationFields =
+                    ((BLangRecordLiteral) podTolerationFieldsAsExpression).keyValuePairs;
+            PodTolerationModel podTolerationModel = new PodTolerationModel();
+            for (BLangRecordLiteral.BLangRecordKeyValue podTolerationField : podTolerationFields) {
+                PodTolerationConfiguration podTolerationFieldName =
+                        PodTolerationConfiguration.valueOf(podTolerationField.getKey().toString());
+                switch (podTolerationFieldName) {
+                    case key:
+                        podTolerationModel.setKey(getStringValue(podTolerationField.getValue()));
+                        break;
+                    case operator:
+                        podTolerationModel.setOperator(getStringValue(podTolerationField.getValue()));
+                        break;
+                    case value:
+                        podTolerationModel.setValue(getStringValue(podTolerationField.getValue()));
+                        break;
+                    case effect:
+                        podTolerationModel.setEffect(getStringValue(podTolerationField.getValue()));
+                        break;
+                    case tolerationSeconds:
+                        podTolerationModel.setTolerationSeconds(getIntValue(podTolerationField.getValue()));
+                        break;
+                    default:
+                        throw new KubernetesPluginException("unknown pod toleration field found: " +
+                                                            podTolerationField.getKey().toString());
+                }
+            }
+            podTolerationModels.add(podTolerationModel);
+        }
+        
+        return podTolerationModels;
     }
     
     /**
@@ -229,34 +279,43 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
      */
     private enum DeploymentConfiguration {
         name,
-        namespace,
         labels,
         annotations,
-        podAnnotations,
-        replicas,
-        livenessProbe,
-        readinessProbe,
-        imagePullPolicy,
-        image,
-        env,
-        buildImage,
         dockerHost,
+        dockerCertPath,
         registry,
         username,
         password,
         baseImage,
+        image,
+        buildImage,
         push,
-        dockerCertPath,
         copyFiles,
         singleYAML,
+        namespace,
+        replicas,
+        livenessProbe,
+        readinessProbe,
+        imagePullPolicy,
+        env,
+        podAnnotations,
+        podTolerations,
+        buildExtension,
         dependsOn,
         imagePullSecrets,
-        buildExtension
     }
     
     private enum ProbeConfiguration {
         port,
         initialDelaySeconds,
         periodSeconds
+    }
+    
+    private enum PodTolerationConfiguration {
+        key,
+        operator,
+        value,
+        effect,
+        tolerationSeconds
     }
 }
