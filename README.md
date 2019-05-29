@@ -54,6 +54,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |imagePullPolicy|Docker image pull policy|IfNotPresent|
 |env|List of environment variables|null|
 |podAnnotations|Pod annotations|{}|
+|podTolerations|Pod tolerations|{}|
 |buildExtension|Extension for building docker images and artifacts|null|
 |dependsOn|Listeners this deployment Depends on|null|
 |imagePullSecrets|Image pull secrets value|null|
