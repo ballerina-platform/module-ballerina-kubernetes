@@ -54,6 +54,7 @@ import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -221,7 +222,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
     }
     
     private List<Toleration> populatePodTolerations(List<PodTolerationModel> podTolerationModels) {
-        List<Toleration> tolerations = new ArrayList<>();
+        List<Toleration> tolerations = new LinkedList<>();
         for (PodTolerationModel podTolerationModel : podTolerationModels) {
             Toleration toleration = new TolerationBuilder()
                     .withKey(podTolerationModel.getKey())
