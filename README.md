@@ -36,7 +36,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |name|Name of the deployment|<BALLERINA_FILE_NAME>-deployment or <BALLERINA_MODULE_NAME>-deployment|
 |labels|Labels for deployment|{ app: <OUTPUT_FILE_NAME> }|
 |annotations|Annotations for deployment|{}|
-|dockerHost|Docker host IP and docker PORT.(e.g "tcp://192.168.99.100:2376")|DOCKER_HOST environment variable. If DOCKER_HOST is unavailable, use "unix:///var/run/docker.sock" for Unix or use "npipe:////./pipe/docker_engine" for Windows 10 or use "localhost:2375"|
+|dockerHost|Docker host IP and docker PORT.(e.g "tcp://192.168.99.100:2376")|DOCKER_HOST environment variable. If DOCKER_HOST is unavailable, uses "unix:///var/run/docker.sock" for Unix or uses "npipe:////./pipe/docker_engine" for Windows 10 or uses "localhost:2375"|
 |dockerCertPath|Docker cert path|DOCKER_CERT_PATH environment variable|
 |registry|Docker registry url|null|
 |username|Username for the docker registry|null|
@@ -152,7 +152,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |name|Name of the job|<BALLERINA_FILE_NAME>-job or <BALLERINA_MODULE_NAME>-job|
 |labels|Labels for job|{ app: <OUTPUT_FILE_NAME> }|
 |annotations|Metadata Annotations map|{}|
-|dockerHost|Docker host IP and docker PORT.(e.g "tcp://192.168.99.100:2376")|DOCKER_HOST environment variable. If DOCKER_HOST is unavailable, use "unix:///var/run/docker.sock" for Unix or use "npipe:////./pipe/docker_engine" for Windows 10 or use "localhost:2375"|
+|dockerHost|Docker host IP and docker PORT.(e.g "tcp://192.168.99.100:2376")|DOCKER_HOST environment variable. If DOCKER_HOST is unavailable, uses "unix:///var/run/docker.sock" for Unix or uses "npipe:////./pipe/docker_engine" for Windows 10 or uses "localhost:2375"|
 |dockerCertPath|Docker cert path|DOCKER_CERT_PATH environment variable|
 |registry|Docker registry url|null|
 |username|Username for the docker registry|null|
@@ -223,6 +223,19 @@ This repository also provides a kubectl plugin which allows to build ballerina p
 artifacts directly to a kuberetes cluster. The plugin is located at `kubernetes-extension/src/main/resources/kubectl-extension/kubectl-ballerina-deploy`.
 Follow the steps mentioned in "[Extend kubectl with plugins](https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/)"
 . Check if the plugin is available using the command `kubectl plugin list`.
+
+## Replacing values with environment variables.
+You can replace values in an annotation using environment variables. The replacement is done with a string placeholder 
+like `"$env{ENV_VAR}"`. As an example lets say that you want to set the `namespace` field in the @kubernetes:Deployment{} 
+annotation with a environment variable and the name of the environment variable is `K8S_NAMESPACE`. Following is how the
+ annotation would look like:
+```ballerina
+@kubernetes:Deployment {
+    namespace: "$env{K8S_NAMESPACE}"
+}
+```  
+Note: You cannot use the `ballerina/config` module to replace values in the annotation. This is because the kubernetes 
+artifacts are generated during compile time. The `ballerina/config` module works in the runtime. 
  
 ### How to execute:
 ```bash
