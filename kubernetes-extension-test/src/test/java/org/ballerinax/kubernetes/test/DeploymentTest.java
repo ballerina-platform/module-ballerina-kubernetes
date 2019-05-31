@@ -107,6 +107,47 @@ public class DeploymentTest extends BaseTest {
     }
     
     /**
+     * Build bal file with deployment having annotations.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
+     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
+     */
+    @Test
+    public void podTolerationsTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "pod_tolerations.bal"), 0);
+        
+        // Check if docker image exists and correct
+        validateDockerfile();
+        validateDockerImage();
+        
+        // Validate deployment yaml
+        File deploymentYAML = TARGET_PATH.resolve("pod_tolerations_deployment.yaml").toFile();
+        Assert.assertTrue(deploymentYAML.exists());
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
+        Assert.assertNotNull(deployment.getSpec());
+        Assert.assertNotNull(deployment.getSpec().getTemplate());
+        Assert.assertNotNull(deployment.getSpec().getTemplate().getSpec());
+        Assert.assertNotNull(deployment.getSpec().getTemplate().getSpec().getTolerations());
+        Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getTolerations().size(), 1,
+                "Toleration missing.");
+        Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getTolerations().get(0).getKey(), "app",
+                "Invalid toleration key.");
+        Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getTolerations().get(0).getOperator(), "Equal",
+                "Invalid toleration operator.");
+        Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getTolerations().get(0).getValue(), "blue",
+                "Invalid toleration value.");
+        Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getTolerations().get(0).getEffect(),
+                "NoSchedule", "Invalid toleration effect.");
+        Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getTolerations().get(0).getTolerationSeconds()
+                        .longValue(), 0L, "Invalid toleration seconds.");
+        
+        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
+    }
+    
+    /**
      * Validate if Dockerfile is created.
      */
     public void validateDockerfile() {

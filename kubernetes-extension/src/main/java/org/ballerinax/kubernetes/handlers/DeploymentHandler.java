@@ -29,6 +29,8 @@ import io.fabric8.kubernetes.api.model.Probe;
 import io.fabric8.kubernetes.api.model.ProbeBuilder;
 import io.fabric8.kubernetes.api.model.TCPSocketAction;
 import io.fabric8.kubernetes.api.model.TCPSocketActionBuilder;
+import io.fabric8.kubernetes.api.model.Toleration;
+import io.fabric8.kubernetes.api.model.TolerationBuilder;
 import io.fabric8.kubernetes.api.model.Volume;
 import io.fabric8.kubernetes.api.model.VolumeBuilder;
 import io.fabric8.kubernetes.api.model.VolumeMount;
@@ -44,6 +46,7 @@ import org.ballerinax.kubernetes.models.ConfigMapModel;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
+import org.ballerinax.kubernetes.models.PodTolerationModel;
 import org.ballerinax.kubernetes.models.ProbeModel;
 import org.ballerinax.kubernetes.models.SecretModel;
 import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
@@ -51,6 +54,7 @@ import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -216,6 +220,27 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                 .withTcpSocket(tcpSocketAction)
                 .build();
     }
+    
+    private List<Toleration> populatePodTolerations(List<PodTolerationModel> podTolerationModels) {
+        List<Toleration> tolerations = null;
+        
+        if (null != podTolerationModels && podTolerationModels.size() > 0) {
+            tolerations = new LinkedList<>();
+            for (PodTolerationModel podTolerationModel : podTolerationModels) {
+                Toleration toleration = new TolerationBuilder()
+                        .withKey(podTolerationModel.getKey())
+                        .withOperator(podTolerationModel.getOperator())
+                        .withValue(podTolerationModel.getValue())
+                        .withEffect(podTolerationModel.getEffect())
+                        .withTolerationSeconds((long) podTolerationModel.getTolerationSeconds())
+                        .build();
+        
+                tolerations.add(toleration);
+            }
+        }
+        
+        return tolerations;
+    }
 
     private List<LocalObjectReference> getImagePullSecrets(DeploymentModel deploymentModel) {
         List<LocalObjectReference> imagePullSecrets = new ArrayList<>();
@@ -259,6 +284,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                 .withImagePullSecrets(getImagePullSecrets(deploymentModel))
                 .withInitContainers(generateInitContainer(deploymentModel))
                 .withVolumes(populateVolume(deploymentModel))
+                .withTolerations(populatePodTolerations(deploymentModel.getPodTolerations()))
                 .endSpec()
                 .endTemplate()
                 .endSpec()
@@ -272,7 +298,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
             throw new KubernetesPluginException(errorMessage, e);
         }
     }
-
+    
     @Override
     public void createArtifacts() throws KubernetesPluginException {
         try {

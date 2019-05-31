@@ -23,6 +23,7 @@ import org.ballerinax.kubernetes.KubernetesConstants;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -59,6 +60,7 @@ public class DeploymentModel extends KubernetesModel {
     private boolean singleYAML;
     private String registry;
     private DeploymentBuildExtension buildExtension;
+    private List<PodTolerationModel> podTolerations;
     
     public DeploymentModel() {
         // Initialize with default values.
@@ -336,6 +338,14 @@ public class DeploymentModel extends KubernetesModel {
         this.buildExtension = buildExtension;
     }
     
+    public List<PodTolerationModel> getPodTolerations() {
+        return podTolerations;
+    }
+    
+    public void setPodTolerations(List<PodTolerationModel> podTolerations) {
+        this.podTolerations = podTolerations;
+    }
+    
     @Override
     public String toString() {
         return "DeploymentModel{" +
@@ -365,6 +375,7 @@ public class DeploymentModel extends KubernetesModel {
                ", singleYAML=" + singleYAML +
                ", registry='" + registry +
                ", buildExtension=" + buildExtension +
+               ", podTolerations=" + podTolerations +
                '}';
     }
 }

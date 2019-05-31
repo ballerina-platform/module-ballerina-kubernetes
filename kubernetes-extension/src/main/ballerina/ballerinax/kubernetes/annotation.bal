@@ -121,6 +121,27 @@ public type ProbeConfiguration record {|
     int periodSeconds?;
 |};
 
+# Type of operations between key and value of a toleration.
+public type TolerationOperator "Exists"|"Equal";
+
+# Types of toleration effects for pods.
+public type TolerationEffect "NoSchedule"|"PreferNoSchedule"|"NoExecute";
+
+# Pod toleration configuration.
+#
+# + key - Taint key of the toleration.
+# + operator - Operator between the key and value. Default is `"Equal"`.
+# + value - Taint value of the toleration.
+# + effect - The taint effect
+# + tolerationSeconds - Time period of toleration in seconds. Default is `0`.
+public type PodTolerationConfiguration record {|
+    string key;
+    TolerationOperator operator = "Equal";
+    string value;
+    TolerationEffect effect?;
+    int tolerationSeconds = 0;
+|};
+
 # Kubernetes deployment configuration.
 #
 # + dockerHost - Docker host IP and docker PORT. ( e.g minikube IP and docker PORT).
@@ -144,6 +165,7 @@ public type ProbeConfiguration record {|
 # + imagePullPolicy - Image pull policy. Default is `"IfNotPresent"`.
 # + env - Environment variable map for containers.
 # + podAnnotations - Map of annotations for pods.
+# + podTolerations - Toleration for pods.
 # + buildExtension - Docker image build extensions.
 # + dependsOn - Services this deployment depends on.
 # + imagePullSecrets - Image pull secrets.
@@ -167,6 +189,7 @@ public type DeploymentConfiguration record {|
     ImagePullPolicy imagePullPolicy = IMAGE_PULL_POLICY_IF_NOT_PRESENT;
     map<string|FieldRef|SecretKeyRef|ResourceFieldRef|ConfigMapKeyRef> env?;
     map<string> podAnnotations?;
+    PodTolerationConfiguration[] podTolerations?;
     BuildExtension|string buildExtension?;
     string[] dependsOn?;
     string[] imagePullSecrets?;
