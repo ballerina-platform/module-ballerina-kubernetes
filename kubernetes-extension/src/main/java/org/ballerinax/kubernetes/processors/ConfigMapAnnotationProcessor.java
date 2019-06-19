@@ -27,8 +27,8 @@ import org.ballerinax.kubernetes.models.ConfigMapModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
-import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangListConstructorExpr;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
@@ -84,7 +84,7 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
             String key = keyValue.getKey().toString();
             switch (key) {
                 case "configMaps":
-                    List<BLangExpression> configAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
+                    List<BLangExpression> configAnnotation = ((BLangListConstructorExpr) keyValue.valueExpr).exprs;
                     for (BLangExpression bLangExpression : configAnnotation) {
                         ConfigMapModel configMapModel = new ConfigMapModel();
                         List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
@@ -126,7 +126,8 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
                                     configMapModel.setMountPath(getStringValue(annotation.getValue()));
                                     break;
                                 case data:
-                                    List<BLangExpression> data = ((BLangArrayLiteral) annotation.valueExpr).exprs;
+                                    List<BLangExpression> data =
+                                            ((BLangListConstructorExpr) annotation.valueExpr).exprs;
                                     configMapModel.setData(getDataForConfigMap(data));
                                     break;
                                 case readOnly:

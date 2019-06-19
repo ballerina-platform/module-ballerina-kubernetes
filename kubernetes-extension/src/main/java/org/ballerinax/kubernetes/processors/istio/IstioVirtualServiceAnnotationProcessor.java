@@ -30,7 +30,7 @@ import org.ballerinax.kubernetes.models.istio.IstioHttpRoute;
 import org.ballerinax.kubernetes.models.istio.IstioVirtualServiceModel;
 import org.ballerinax.kubernetes.processors.AbstractAnnotationProcessor;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
-import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangListConstructorExpr;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
 import java.util.LinkedList;
@@ -125,7 +125,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
                     vsModel.setGateways(getList(vsField.getValue()));
                     break;
                 case http:
-                    BLangArrayLiteral httpFields = (BLangArrayLiteral) vsField.getValue();
+                    BLangListConstructorExpr httpFields = (BLangListConstructorExpr) vsField.getValue();
                     List<IstioHttpRoute> httpModels = processHttpAnnotation(httpFields);
                     vsModel.setHttp(httpModels);
                     break;
@@ -144,7 +144,8 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
      * @return Converted list of Istio http routes.
      * @throws KubernetesPluginException When an unknown field is found.
      */
-    private List<IstioHttpRoute> processHttpAnnotation(BLangArrayLiteral httpArray) throws KubernetesPluginException {
+    private List<IstioHttpRoute> processHttpAnnotation(BLangListConstructorExpr httpArray)
+            throws KubernetesPluginException {
         List<IstioHttpRoute> httpRoutes = new LinkedList<>();
         for (ExpressionNode expression : httpArray.getExpressions()) {
             BLangRecordLiteral httpFields = (BLangRecordLiteral) expression;
@@ -152,7 +153,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
             for (BLangRecordLiteral.BLangRecordKeyValue httpField : httpFields.getKeyValuePairs()) {
                 switch (HttpRouteConfig.valueOf(httpField.getKey().toString())) {
                     case route:
-                        BLangArrayLiteral routeFields = (BLangArrayLiteral)  httpField.getValue();
+                        BLangListConstructorExpr routeFields = (BLangListConstructorExpr)  httpField.getValue();
                         httpRoute.setRoute(processRoutesAnnotation(routeFields));
                         break;
                     case timeout:
@@ -178,7 +179,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
      * @return A list of istio destination weight models.
      * @throws KubernetesPluginException When an unknown field is found.
      */
-    private List<IstioDestinationWeight> processRoutesAnnotation(BLangArrayLiteral routeArray)
+    private List<IstioDestinationWeight> processRoutesAnnotation(BLangListConstructorExpr routeArray)
             throws KubernetesPluginException {
         List<IstioDestinationWeight> destinationWeights = new LinkedList<>();
         for (ExpressionNode expression : routeArray.getExpressions()) {
