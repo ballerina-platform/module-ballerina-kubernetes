@@ -47,8 +47,8 @@ import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
 import org.ballerinax.kubernetes.processors.openshift.OpenShiftBuildExtensionProcessor;
 import org.wso2.ballerinalang.compiler.semantics.model.symbols.BConstantSymbol;
 import org.wso2.ballerinalang.compiler.semantics.model.types.BFiniteType;
-import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangListConstructorExpr;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
@@ -300,7 +300,7 @@ public class KubernetesUtils {
     }
     
     /**
-     * Generate array of string using a {@link BLangArrayLiteral}.
+     * Generate array of string using a {@link BLangListConstructorExpr}.
      *
      * @param expr Array literal.
      * @return Convert string.
@@ -309,7 +309,7 @@ public class KubernetesUtils {
         if (expr.getKind() != NodeKind.ARRAY_LITERAL_EXPR) {
             throw new KubernetesPluginException("unable to parse value: " + expr.toString());
         } else {
-            BLangArrayLiteral array = (BLangArrayLiteral) expr;
+            BLangListConstructorExpr array = (BLangListConstructorExpr) expr;
             List<String> scopeSet = new LinkedList<>();
             for (ExpressionNode bLangExpression : array.getExpressions()) {
                 scopeSet.add(getStringValue((BLangExpression) bLangExpression));
@@ -521,7 +521,7 @@ public class KubernetesUtils {
     public static Set<String> getImagePullSecrets(BLangRecordLiteral.BLangRecordKeyValue keyValue) throws
             KubernetesPluginException {
         Set<String> imagePullSecrets = new HashSet<>();
-        List<BLangExpression> configAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
+        List<BLangExpression> configAnnotation = ((BLangListConstructorExpr) keyValue.valueExpr).exprs;
         for (BLangExpression bLangExpression : configAnnotation) {
             imagePullSecrets.add(getStringValue(bLangExpression));
         }
@@ -539,7 +539,7 @@ public class KubernetesUtils {
     public static Set<CopyFileModel> getExternalFileMap(BLangRecordLiteral.BLangRecordKeyValue keyValue) throws
             KubernetesPluginException {
         Set<CopyFileModel> externalFiles = new HashSet<>();
-        List<BLangExpression> configAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
+        List<BLangExpression> configAnnotation = ((BLangListConstructorExpr) keyValue.valueExpr).exprs;
         for (BLangExpression bLangExpression : configAnnotation) {
             List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
                     ((BLangRecordLiteral) bLangExpression).getKeyValuePairs();

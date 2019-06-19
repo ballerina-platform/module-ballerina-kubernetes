@@ -27,8 +27,8 @@ import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.PodTolerationModel;
 import org.ballerinax.kubernetes.models.ProbeModel;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
-import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangListConstructorExpr;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
@@ -189,7 +189,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
     private List<PodTolerationModel> parsePodTolerationConfiguration(BLangExpression podTolerationValues)
             throws KubernetesPluginException {
         List<PodTolerationModel> podTolerationModels = new LinkedList<>();
-        List<BLangExpression> podTolerations = ((BLangArrayLiteral) podTolerationValues).exprs;
+        List<BLangExpression> podTolerations = ((BLangListConstructorExpr) podTolerationValues).exprs;
         for (BLangExpression podTolerationFieldsAsExpression : podTolerations) {
             List<BLangRecordLiteral.BLangRecordKeyValue> podTolerationFields =
                     ((BLangRecordLiteral) podTolerationFieldsAsExpression).keyValuePairs;
@@ -266,7 +266,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
 
     private Set<String> getDependsOn(BLangRecordLiteral.BLangRecordKeyValue keyValue) {
         Set<String> dependsOnList = new HashSet<>();
-        List<BLangExpression> configAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
+        List<BLangExpression> configAnnotation = ((BLangListConstructorExpr) keyValue.valueExpr).exprs;
         for (BLangExpression bLangExpression : configAnnotation) {
             dependsOnList.add(bLangExpression.toString());
         }
