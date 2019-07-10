@@ -37,4 +37,4 @@ public type RouteConfiguration record {|
 |};
 
 # @kubernetes:OpenShiftRoute annotation to generate openshift routes.
-public annotation<service, listener> Route RouteConfiguration;
+public const annotation RouteConfiguration Route on source service, source listener;

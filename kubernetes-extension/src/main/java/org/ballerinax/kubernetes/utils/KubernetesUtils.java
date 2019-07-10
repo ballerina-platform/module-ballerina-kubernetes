@@ -546,7 +546,7 @@ public class KubernetesUtils {
             CopyFileModel externalFileModel = new CopyFileModel();
             for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
                 switch (annotation.getKey().toString()) {
-                    case "source":
+                    case "sourceFile":
                         externalFileModel.setSource(getStringValue(annotation.getValue()));
                         break;
                     case "target":

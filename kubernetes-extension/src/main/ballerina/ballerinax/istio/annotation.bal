@@ -75,7 +75,7 @@ public type GatewayConfig record {|
 |};
 
 # @istio:Gateway annotation to generate istio gateways.
-public annotation<service, listener> Gateway GatewayConfig;
+public const annotation GatewayConfig Gateway on source service, source listener;
 
 # Configuration to a network addressable service.
 #
@@ -104,7 +104,7 @@ public type DestinationWeightConfig record {|
 # + appendHeaders - Additional header to add before forwarding/directing.
 public type HTTPRouteConfig record {|
     DestinationWeightConfig[] route?;
-    int ^"timeout"?;
+    int 'timeout?;
     map<string> appendHeaders?;
 |};
 
@@ -126,4 +126,4 @@ public type VirtualServiceConfig record {|
 |};
 
 # @istio:VirtualService annotation to generate istio virtual service.
-public annotation<service, listener> VirtualService VirtualServiceConfig;
+public const annotation VirtualServiceConfig VirtualService on source service, source listener;

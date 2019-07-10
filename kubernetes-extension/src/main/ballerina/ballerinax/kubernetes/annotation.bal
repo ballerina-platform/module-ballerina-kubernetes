@@ -27,10 +27,10 @@ public type Metadata record {|
 
 # External file type for docker.
 #
-# + source - source path of the file (in your machine)
+# + sourceFile - source path of the file (in your machine)
 # + target - target path (inside container)
 public type FileConfig record {|
-    string source;
+    string sourceFile;
     string target;
 |};
 
@@ -56,7 +56,7 @@ public type SecretKeyValue record {|
 # + resource - Resource field
 public type ResourceFieldValue record {|
     string containerName?;
-    string ^"resource";
+    string 'resource;
 |};
 
 # Value for config map key.
@@ -196,7 +196,7 @@ public type DeploymentConfiguration record {|
 |};
 
 # @kubernetes:Deployment annotation to configure deplyoment yaml.
-public annotation<service, function, listener> Deployment DeploymentConfiguration;
+public const annotation DeploymentConfiguration Deployment on source service, source function, source listener;
 
 public const string SESSION_AFFINITY_NONE = "None";
 public const string SESSION_AFFINITY_CLIENT_IP = "ClientIP";
@@ -228,7 +228,7 @@ public type ServiceConfiguration record {|
 |};
 
 # @kubernetes:Service annotation to configure service yaml.
-public annotation<listener, service> Service ServiceConfiguration;
+public const annotation ServiceConfiguration Service on source listener, source service;
 
 # Kubernetes ingress configuration.
 #
@@ -247,7 +247,7 @@ public type IngressConfiguration record {|
 |};
 
 # @kubernetes:Ingress annotation to configure ingress yaml.
-public annotation<service, listener> Ingress IngressConfiguration;
+public const annotation IngressConfiguration Ingress on source service, source listener;
 
 # Kubernetes Horizontal Pod Autoscaler configuration
 #
@@ -262,7 +262,7 @@ public type PodAutoscalerConfig record {|
 |};
 
 # @kubernetes:HPA annotation to configure horizontal pod autoscaler yaml.
-public annotation<service, function> HPA PodAutoscalerConfig;
+public const annotation PodAutoscalerConfig HPA on source service, source function;
 
 # Kubernetes secret volume mount.
 #
@@ -284,7 +284,7 @@ public type SecretMount record {|
 |};
 
 # @kubernetes:Secret annotation to configure secrets.
-public annotation<service, function> Secret SecretMount;
+public const annotation SecretMount Secret on source service, source function;
 
 # Kubernetes Config Map volume mount.
 #
@@ -308,7 +308,7 @@ public type ConfigMapMount record {|
 |};
 
 # @kubernetes:ConfigMap annotation to configure config maps.
-public annotation<service, function> ConfigMap ConfigMapMount;
+public const annotation ConfigMapMount ConfigMap on source service, source function;
 
 # Kubernetes Persistent Volume Claim.
 #
@@ -332,7 +332,7 @@ public type PersistentVolumeClaims record {|
 |};
 
 # @kubernetes:PersistentVolumeClaim annotation to configure Persistent Volume Claims.
-public annotation<service, function> PersistentVolumeClaim PersistentVolumeClaims;
+public const annotation PersistentVolumeClaims PersistentVolumeClaim on source service, source function;
 
 # Scopes for kubernetes resource quotas
 public type ResourceQuotaScope "Terminating"|"NotTerminating"|"BestEffort"|"NotBestEffort";
@@ -355,7 +355,7 @@ public type ResourceQuotas record {|
 |};
 
 # @kubernetes:ResourcesQuotas annotation to configure Resource Quotas.
-public annotation<service, function> ResourceQuota ResourceQuotas;
+public const annotation ResourceQuotas ResourceQuota on source service, source function;
 
 public const string RESTART_POLICY_ON_FAILURE = "OnFailure";
 public const string RESTART_POLICY_ALWAYS = "Always";
@@ -412,7 +412,7 @@ public type JobConfig record {|
 |};
 
 # @kubernetes:Job annotation to configure kubernetes jobs.
-public annotation<function> Job JobConfig;
+public const annotation JobConfig Job on source function;
 
 
 # Build Config configuration for OpenShift.
