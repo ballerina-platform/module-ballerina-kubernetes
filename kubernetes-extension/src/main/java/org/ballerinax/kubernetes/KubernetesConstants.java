@@ -64,7 +64,6 @@ public class KubernetesConstants {
     public static final String DOCKER_HOST = "DOCKER_HOST";
     public static final String DOCKER_CERT_PATH = "DOCKER_CERT_PATH";
     public static final String NGINX = "nginx";
-    public static final String DEFAULT_NAMESPACE = "default";
     public static final String HELM_CHART_YAML_FILE_NAME = "Chart.yaml";
     public static final String HELM_API_VERSION = "apiVersion";
     public static final String HELM_API_VERSION_DEFAULT = "v1";

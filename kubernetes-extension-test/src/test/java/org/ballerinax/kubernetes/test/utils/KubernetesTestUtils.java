@@ -65,7 +65,7 @@ public class KubernetesTestUtils {
                                                     File.separator + "bin" +
                                                     File.separator +
                                                     (System.getProperty("os.name").toLowerCase(Locale.getDefault())
-                                                             .contains("win") ? "ballerina.bat" : "ballerina");
+                                                             .contains("win") ? "jballerina.bat" : "jballerina");
     private static final String BUILD = "build";
     private static final String EXECUTING_COMMAND = "Executing command: ";
     private static final String COMPILING = "Compiling: ";
