@@ -45,7 +45,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class BaseTest {
     private static final String TAG_SEPARATOR = ":";
     private static final String BALLERINA_BASE_IMAGE = "ballerina/ballerina-runtime";
-    
+
     private static final Log log = LogFactory.getLog(SampleTest.class);
     
     /**
@@ -76,7 +76,7 @@ public class BaseTest {
                                                System.getProperty("docker.image.version");
     
     
-    String builtImageID = null;
+    private String builtImageID = null;
     
     @BeforeSuite
     public void buildDockerImage() throws IOException, DockerTestException, DockerException, InterruptedException {
