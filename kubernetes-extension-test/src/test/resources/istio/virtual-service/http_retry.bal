@@ -33,7 +33,7 @@ import ballerinax/istio;
                     }
                 }
             ],
-            ^"retries": {
+            'retries: {
                 attempts: 3,
                 perTryTimeout: "2s"
             }

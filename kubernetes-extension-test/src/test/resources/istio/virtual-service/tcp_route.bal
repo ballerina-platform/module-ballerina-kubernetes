@@ -23,7 +23,7 @@ import ballerinax/istio;
     hosts: ["mongo.prod.svc.cluster.local"],
     tcp: [
         {
-            ^"match": [{port: 27017}],
+            'match: [{port: 27017}],
             route: [{destination: {
                 host: "mongo.backup.svc.cluster.local",
                 port: {

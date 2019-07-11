@@ -35,12 +35,12 @@ listener http:Listener pizzaEP = new(9099);
         "MY_CPU_REQUEST": {
             resourceFieldRef: {
                 containerName: "client",
-                ^"resource": "requests.cpu"
+                'resource: "requests.cpu"
             }
         },
         "MY_CPU_LIMIT": {
             resourceFieldRef: {
-                ^"resource": "limits.cpu"
+                'resource: "limits.cpu"
             }
         }
     },

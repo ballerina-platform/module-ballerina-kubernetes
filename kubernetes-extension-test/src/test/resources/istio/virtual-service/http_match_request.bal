@@ -25,10 +25,10 @@ import ballerinax/istio;
     ],
     http: [
         {
-            ^"match": [
+            'match: [
                 {
                     headers: {
-                        ^"end-user": {
+                        'end-user: {
                             exact: "jason"
                         }
                     },
