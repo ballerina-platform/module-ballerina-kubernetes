@@ -25,7 +25,7 @@ listener http:Listener hotDrinkEP = new(9090);
 @kubernetes:Deployment {
     copyFiles: [{ 
         target: "/ballerina/runtime/bre/lib",
-        source: "./resource/lib/mysql-connector-java-8.0.11.jar"
+        sourceFile: "./resource/lib/mysql-connector-java-8.0.11.jar"
     }]
 }
 @http:ServiceConfig {

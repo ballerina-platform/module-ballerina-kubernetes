@@ -25,7 +25,7 @@ jdbc:Client coolDrinkDB = new({
     livenessProbe: true,
     copyFiles: [{
         target: "/ballerina/runtime/bre/lib",
-        source: "./resource/lib/mysql-connector-java-8.0.11.jar"
+        sourceFile: "./resource/lib/mysql-connector-java-8.0.11.jar"
     }]
 }
 @http:ServiceConfig {
