@@ -26,7 +26,7 @@ import ballerinax/kubernetes;
     copyFiles: [
         {
             target: "/home/ballerina/data/data.txt",
-            source: "./data/data.txt"
+            sourceFile: "./data/data.txt"
         }
     ],
     singleYAML: false
