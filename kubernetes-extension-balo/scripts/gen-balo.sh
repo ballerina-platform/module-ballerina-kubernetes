@@ -19,6 +19,6 @@
 
 DISTRIBUTION_PATH=${1}
 EXECUTABLE="${DISTRIBUTION_PATH}/bin/jballerina"
-SOURCE_FILE_PATH="./src/main/ballerina/ballerinax/kubernetes/annotation.bal"
-echo `${EXECUTABLE} build ${SOURCE_FILE_PATH}`
+SOURCE_FILE_PATH="./src/main/ballerina/ballerinax/"
+echo `${EXECUTABLE} compile ${SOURCE_FILE_PATH} --jvmTarget`
 mv ./annotation.jar ${DISTRIBUTION_PATH}/bre/lib
