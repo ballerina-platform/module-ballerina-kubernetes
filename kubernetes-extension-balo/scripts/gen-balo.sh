@@ -18,7 +18,33 @@
 #!/usr/bin/env bash
 
 DISTRIBUTION_PATH=${1}
-EXECUTABLE="${DISTRIBUTION_PATH}/bin/jballerina"
-SOURCE_FILE_PATH="./src/main/ballerina/ballerinax/"
-echo `${EXECUTABLE} compile ${SOURCE_FILE_PATH} --jvmTarget`
-mv ./annotation.jar ${DISTRIBUTION_PATH}/bre/lib
+KUBERNETES_BALO_MAVEN_PROJECT_ROOT=${2}
+
+# TEMP
+#rm -rf ${DISTRIBUTION_PATH}/*
+#cp -r /Users/hemikak/ballerina/dev/ballerina/distribution/zip/jballerina-tools/build/distributions/jballerina-tools-0.992.0-m2-SNAPSHOT/* ${DISTRIBUTION_PATH}
+
+EXECUTABLE="${DISTRIBUTION_PATH}/bin/ballerina"
+KUBERNETES_BALLERINA_PROJECT="${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/src/main/ballerina/ballerinax"
+BALLERINAX_BIR_CACHE="${DISTRIBUTION_PATH}/bir-cache/ballerinax/"
+BALLERINAX_SYSTEM_LIB="${DISTRIBUTION_PATH}/bre/lib/"
+
+mkdir -p ${BALLERINAX_BIR_CACHE}
+mkdir -p ${BALLERINAX_SYSTEM_LIB}
+
+rm -rf ${KUBERNETES_BALLERINA_PROJECT}/target
+
+pushd ${KUBERNETES_BALLERINA_PROJECT} /dev/null 2>&1
+    ${EXECUTABLE} compile --jvmTarget
+popd > /dev/null 2>&1
+
+cp -r ${KUBERNETES_BALLERINA_PROJECT}/target/* ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target
+
+cp -r ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/bir_cache/ballerinax/kubernetes ${BALLERINAX_BIR_CACHE}
+cp -r ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/bir_cache/ballerinax/istio ${BALLERINAX_BIR_CACHE}
+cp -r ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/bir_cache/ballerinax/openshift ${BALLERINAX_BIR_CACHE}
+
+cp ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/jar_cache/ballerinax/kubernetes/0.0.0/kubernetes.jar ${BALLERINAX_SYSTEM_LIB}
+cp ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/jar_cache/ballerinax/istio/0.0.0/istio.jar ${BALLERINAX_SYSTEM_LIB}
+cp ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/jar_cache/ballerinax/openshift/0.0.0/openshift.jar ${BALLERINAX_SYSTEM_LIB}
+

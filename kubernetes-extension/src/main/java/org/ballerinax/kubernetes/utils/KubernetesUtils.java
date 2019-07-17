@@ -179,13 +179,20 @@ public class KubernetesUtils {
     /**
      * Extract the ballerina file name from a given file path
      *
-     * @param balxFilePath balx file path.
+     * @param uberJarFilePath balx file path.
      * @return output file name of balx
      */
-    public static String extractBalxName(Path balxFilePath) {
-        if (FilenameUtils.isExtension(balxFilePath.toString(), "balx")) {
-            return FilenameUtils.getBaseName(balxFilePath.toString());
+    public static String extractBalxName(Path uberJarFilePath) {
+        if (null != uberJarFilePath) {
+            Path fileName = uberJarFilePath.getFileName();
+            if (null != fileName) {
+                String s = fileName.toString();
+                if (null != s) {
+                    return s.replace("-executable", "").replace(".jar", "");
+                }
+            }
         }
+    
         return null;
     }
     

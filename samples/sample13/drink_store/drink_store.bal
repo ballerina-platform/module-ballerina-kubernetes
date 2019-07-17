@@ -46,15 +46,15 @@ service DrinkStoreAPI on drinkStoreEP {
                 log:printInfo(msg.toString());
                 response.setJsonPayload(untaint getHotDrinkPrice(msg), contentType = "application/json");
             } else if (msg is error) {
-                log:printError("Invalid response received from hot drink server", err = msg);
+                log:printError("Invalid response received from hot drink server", msg);
             }
             log:printInfo("GET request:");
             var responseResult = outboundEP->respond(response);
             if (responseResult is error) {
-                log:printError("error responding back to client.", err = responseResult);
+                log:printError("error responding back to client.", responseResult);
             }
         } else if (response is error) {
-            log:printError("Error when getting hot drink menu", err = response);
+            log:printError("Error when getting hot drink menu", response);
         }
     }
 
@@ -70,15 +70,15 @@ service DrinkStoreAPI on drinkStoreEP {
                 log:printInfo(msg.toString());
                 response.setJsonPayload(untaint getCoolDrinkPrice(msg), contentType = "application/json");
             } else if (msg is error) {
-                log:printError("Invalid response received from cool drink server", err = msg);
+                log:printError("Invalid response received from cool drink server", msg);
             }
             log:printInfo("GET request: ");
             var responseResult = outboundEP->respond(response);
             if (responseResult is error) {
-                log:printError("error responding back to client.", err = responseResult);
+                log:printError("error responding back to client.", responseResult);
             }
         } else if (response is error) {
-            log:printError("Error getting cool drink menu", err = response);
+            log:printError("Error getting cool drink menu", response);
         }
     }
 
@@ -96,7 +96,7 @@ service DrinkStoreAPI on drinkStoreEP {
          }
         var responseResult = outboundEP->respond(response);
         if (responseResult is error) {
-            log:printError("error responding back to client.", err = responseResult);
+            log:printError("error responding back to client.", responseResult);
         }
     }
 }
@@ -118,7 +118,7 @@ function getCoolDrinkPrice(json payload) returns (json){
                 item.diff = "-" + priceVariation;
             }
         } else if (result is error) {
-            log:printError("Error while reading values.", err = result);
+            log:printError("Error while reading values.", result);
         }
     }
     io:println(items);
@@ -142,7 +142,7 @@ function getHotDrinkPrice(json payload) returns (json){
                 item.diff = "-" + priceVariation;
             }
         } else if (result is error) {
-            log:printError("Error while reading values.", err = result);
+            log:printError("Error while reading values.", result);
         }
     }
     io:println(items);
@@ -165,11 +165,11 @@ function getTempreatureInCelcius() returns (float) {
             if (result is float) {
                 celciusValue = result - 273.15;
             } else if (result is error) {
-                log:printError("Error while reading values.", err = result);
+                log:printError("Error while reading values.", result);
             }
         }
     } else if (response is error) {
-        log:printError("Error occurred when getting weather data.", err = response);
+        log:printError("Error occurred when getting weather data.", response);
     }
     return celciusValue;
 }

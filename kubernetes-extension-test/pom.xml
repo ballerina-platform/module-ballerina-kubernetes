@@ -33,21 +33,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.ballerinalang</groupId>
-            <artifactId>ballerina</artifactId>
-            <type>zip</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.ballerinalang</groupId>
-                    <artifactId>strip-bouncycastle</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId> org.bouncycastle</groupId>
-                    <artifactId>bcprov-jdk15on</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>org.ballerinax.kubernetes</groupId>
             <artifactId>kubernetes-extension</artifactId>
             <type>zip</type>

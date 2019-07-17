@@ -37,7 +37,7 @@ service hello on helloEP {
         var responseResult = caller->respond(payload);
         if (responseResult is error) {
             error err = responseResult;
-            log:printError("Error sending response", err = err);
+            log:printError("Error sending response", err);
         }
     }
 }

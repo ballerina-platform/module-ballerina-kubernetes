@@ -28,7 +28,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>kubernetes-extension-balo</artifactId>
     <packaging>pom</packaging>
-    <name>Ballerinax - Kubernetes Extension balo</name>
+    <name>Ballerinax - Kubernetes Extension Balo</name>
     <url>https://ballerina.io</url>
 
     <dependencies>
@@ -100,6 +100,9 @@
                             <arguments>
                                 <argument>
                                     ${project.build.directory}/extracted-distribution/jballerina-tools-${ballerina.lang.version}
+                                </argument>
+                                <argument>
+                                    ${project.basedir}
                                 </argument>
                             </arguments>
                         </configuration>

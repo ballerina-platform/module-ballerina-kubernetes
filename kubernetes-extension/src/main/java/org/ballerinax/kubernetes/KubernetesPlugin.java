@@ -132,7 +132,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
         if (dataHolder.isCanProcess()) {
             binaryPath = binaryPath.toAbsolutePath();
-            boolean isProject = binaryPath.getParent().getParent().resolve(".ballerina").toFile().exists();
+            boolean isProject = binaryPath.getParent().getParent().resolve("Ballerina.toml").toFile().exists();
             dataHolder.setProject(isProject);
             Path balBuildOutputPath = binaryPath.getParent();
             Path artifactOutputPath = balBuildOutputPath.resolve(KUBERNETES);

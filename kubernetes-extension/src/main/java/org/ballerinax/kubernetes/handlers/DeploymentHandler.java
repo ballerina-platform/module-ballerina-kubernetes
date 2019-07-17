@@ -59,7 +59,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.ballerinax.docker.generator.DockerGenConstants.REGISTRY_SEPARATOR;
-import static org.ballerinax.kubernetes.KubernetesConstants.BALX;
+import static org.ballerinax.kubernetes.KubernetesConstants.EXECUTABLE_JAR;
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT_BUILD_CONFIG_POSTFIX;
@@ -344,7 +344,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
         dockerModel.setUsername(deploymentModel.getUsername());
         dockerModel.setPassword(deploymentModel.getPassword());
         dockerModel.setPush(deploymentModel.isPush());
-        dockerModel.setBalxFileName(KubernetesUtils.extractBalxName(dataHolder.getBalxFilePath()) + BALX);
+        dockerModel.setUberJarFileName(KubernetesUtils.extractBalxName(dataHolder.getBalxFilePath()) + EXECUTABLE_JAR);
         dockerModel.setPorts(deploymentModel.getPorts());
         dockerModel.setService(true);
         dockerModel.setDockerHost(deploymentModel.getDockerHost());

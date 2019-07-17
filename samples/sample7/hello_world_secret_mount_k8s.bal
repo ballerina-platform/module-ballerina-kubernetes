@@ -47,7 +47,7 @@ service helloWorld on helloWorldEP {
     resource function getSecret1(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         string payload = readFile("./private/MySecret1.txt");
-        response.setTextPayload("Secret1 resource: " + untaint payload + "\n");
+        response.setTextPayload("Secret1 resource: " + <@untainted> payload + "\n");
         var responseResult = outboundEP->respond(response);
         if (responseResult is error) {
             log:printError("error responding back to client.", err = responseResult);
@@ -61,7 +61,7 @@ service helloWorld on helloWorldEP {
     resource function getSecret2(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         string payload = readFile("./public/MySecret2.txt");
-        response.setTextPayload("Secret2 resource: " + untaint payload + "\n");
+        response.setTextPayload("Secret2 resource: " + <@untainted> payload + "\n");
         var responseResult = outboundEP->respond(response);
         if (responseResult is error) {
             log:printError("error responding back to client.", err = responseResult);
@@ -75,7 +75,7 @@ service helloWorld on helloWorldEP {
     resource function getSecret3(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         string payload = readFile("./public/MySecret3.txt");
-        response.setTextPayload("Secret3 resource: " + untaint payload + "\n");
+        response.setTextPayload("Secret3 resource: " + <@untainted> payload + "\n");
         var responseResult = outboundEP->respond(response);
         if (responseResult is error) {
             log:printError("error responding back to client.", err = responseResult);
