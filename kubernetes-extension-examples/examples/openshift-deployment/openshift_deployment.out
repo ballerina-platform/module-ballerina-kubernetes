@@ -31,7 +31,7 @@ buildconfig.build.openshift.io/openshift-openshift-bc-openshift-bc created
 imagestream.image.openshift.io/hello-service created
 route.route.openshift.io/helloep-openshift-route created
 
-# Trigger a build to create the docker image
+# Trigger a build to create the Docker image
 $ oc start-build bc/openshift-openshift-bc-openshift-bc --from-dir=. --follow
 Uploading directory "." as binary input for the build ...
 
@@ -76,6 +76,6 @@ $ oc get pods
 NAME                                               READY     STATUS      RESTARTS   AGE
 openshift-deployment-deployment-865d564bc9-5rh78   1/1       Running     0          35m
 
-# Invoke the service. If you are using minikube, resolving www.oc-example.com to minikube IP. Use `minikube ip` command to find the IP.
+# Invoke the service. If you are using minikube, go to www.oc-example.com to get the minikube IP. Use the `minikube ip` command to find the IP.
 $ curl --resolve www.oc-example.com:80:192.168.99.101 http://www.oc-example.com/hello/john
 Hello john!
