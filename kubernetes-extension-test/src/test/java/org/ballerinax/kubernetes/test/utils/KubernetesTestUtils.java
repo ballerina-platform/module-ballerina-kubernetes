@@ -30,9 +30,10 @@ import com.spotify.docker.client.messages.ImageInfo;
 import io.fabric8.kubernetes.client.utils.Serialization;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.ballerinax.kubernetes.test.samples.SampleTest;
 import org.glassfish.jersey.internal.RuntimeDelegateImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -57,15 +58,15 @@ import javax.ws.rs.ext.RuntimeDelegate;
  * Kubernetes test utils.
  */
 public class KubernetesTestUtils {
-    private static final Log log = LogFactory.getLog(KubernetesTestUtils.class);
+    private static final Logger log = LoggerFactory.getLogger(SampleTest.class);
     private static final String JAVA_OPTS = "JAVA_OPTS";
     private static final Path DISTRIBUTION_PATH = Paths.get(FilenameUtils.separatorsToSystem(
             System.getProperty("ballerina.pack")));
     private static final String BALLERINA_COMMAND = DISTRIBUTION_PATH +
-                                                    File.separator + "bin" +
-                                                    File.separator +
-                                                    (System.getProperty("os.name").toLowerCase(Locale.getDefault())
-                                                             .contains("win") ? "ballerina.bat" : "ballerina");
+            File.separator + "bin" +
+            File.separator +
+            (System.getProperty("os.name").toLowerCase(Locale.getDefault())
+                    .contains("win") ? "ballerina.bat" : "ballerina");
     private static final String BUILD = "build";
     private static final String EXECUTING_COMMAND = "Executing command: ";
     private static final String COMPILING = "Compiling: ";
@@ -78,7 +79,7 @@ public class KubernetesTestUtils {
             br.lines().forEach(log::info);
         }
     }
-    
+
     /**
      * Return a ImageInspect object for a given Docker Image name
      *
@@ -93,33 +94,33 @@ public class KubernetesTestUtils {
             throw new DockerTestException(e);
         }
     }
-    
+
     /**
      * Get the list of exposed ports of the docker image.
      *
      * @param imageName The docker image name.
      * @return Exposed ports.
-     * @throws DockerTestException      If issue occurs inspecting docker image
+     * @throws DockerTestException  If issue occurs inspecting docker image
      * @throws InterruptedException If issue occurs inspecting docker image
      */
     public static List<String> getExposedPorts(String imageName) throws DockerTestException, InterruptedException {
         ImageInfo dockerImage = getDockerImage(imageName);
         return Objects.requireNonNull(dockerImage.config().exposedPorts()).asList();
     }
-    
+
     /**
      * Get the list of commands of the docker image.
      *
      * @param imageName The docker image name.
      * @return The list of commands.
-     * @throws DockerTestException      If issue occurs inspecting docker image
+     * @throws DockerTestException  If issue occurs inspecting docker image
      * @throws InterruptedException If issue occurs inspecting docker image
      */
     public static List<String> getCommand(String imageName) throws DockerTestException, InterruptedException {
         ImageInfo dockerImage = getDockerImage(imageName);
         return dockerImage.config().cmd();
     }
-    
+
     /**
      * Delete a given Docker image and prune
      *
@@ -132,16 +133,16 @@ public class KubernetesTestUtils {
                 DockerClient client = getDockerClient();
                 client.removeImage(imageName, true, false);
             } catch (DockerException | InterruptedException | DockerTestException e) {
-                log.error(e);
+                log.error(e.getMessage());
             }
         });
     }
-    
+
     public static DockerClient getDockerClient() throws DockerTestException {
         RuntimeDelegate.setInstance(new RuntimeDelegateImpl());
         URI dockerURI = DockerHost.fromEnv().uri();
         DockerClient dockerClient = DefaultDockerClient.builder().uri(dockerURI).build();
-        
+
         try {
             String dockerCertPath = DockerHost.fromEnv().dockerCertPath();
             if (null != dockerCertPath && !"".equals(dockerCertPath)) {
@@ -159,8 +160,8 @@ public class KubernetesTestUtils {
         } catch (DockerCertificateException e) {
             throw new DockerTestException(e);
         }
-        
-        
+
+
         return dockerClient;
     }
 
@@ -181,7 +182,7 @@ public class KubernetesTestUtils {
             log.warn("Deleting already existing ballerina-internal.log file.");
             FileUtils.deleteQuietly(ballerinaInternalLog.toFile());
         }
-        
+
         ProcessBuilder pb = new ProcessBuilder(BALLERINA_COMMAND, BUILD, fileName);
         log.info(COMPILING + sourceDirectory.resolve(fileName).normalize());
         log.debug(EXECUTING_COMMAND + pb.command());
@@ -189,13 +190,13 @@ public class KubernetesTestUtils {
         Map<String, String> environment = pb.environment();
         addJavaAgents(environment);
         environment.putAll(envVar);
-        
+
         Process process = pb.start();
         int exitCode = process.waitFor();
         log.info(EXIT_CODE + exitCode);
         logOutput(process.getInputStream());
         logOutput(process.getErrorStream());
-    
+
         // log ballerina-internal.log content
         if (Files.exists(ballerinaInternalLog)) {
             log.error("ballerina-internal.log file found. content: ");
@@ -203,7 +204,7 @@ public class KubernetesTestUtils {
         }
         return exitCode;
     }
-    
+
     /**
      * Compile a ballerina file in a given directory
      *
@@ -233,7 +234,7 @@ public class KubernetesTestUtils {
             log.warn("Deleting already existing ballerina-internal.log file.");
             FileUtils.deleteQuietly(ballerinaInternalLog.toFile());
         }
-        
+
         ProcessBuilder pb = new ProcessBuilder(BALLERINA_COMMAND, "init");
         log.info(COMPILING + sourceDirectory.normalize());
         log.debug(EXECUTING_COMMAND + pb.command());
@@ -249,22 +250,22 @@ public class KubernetesTestUtils {
         pb.directory(sourceDirectory.toFile());
         Map<String, String> environment = pb.environment();
         addJavaAgents(environment);
-        
+
         process = pb.start();
         exitCode = process.waitFor();
         log.info(EXIT_CODE + exitCode);
         logOutput(process.getInputStream());
         logOutput(process.getErrorStream());
-    
+
         // log ballerina-internal.log content
         if (Files.exists(ballerinaInternalLog)) {
             log.info("ballerina-internal.log file found. content: ");
             log.info(FileUtils.readFileToString(ballerinaInternalLog.toFile()));
         }
-        
+
         return exitCode;
     }
-    
+
     private static synchronized void addJavaAgents(Map<String, String> envProperties) {
         String javaOpts = "";
         if (envProperties.containsKey(JAVA_OPTS)) {
@@ -276,7 +277,7 @@ public class KubernetesTestUtils {
         javaOpts = getJacocoAgentArgs() + javaOpts;
         envProperties.put(JAVA_OPTS, javaOpts);
     }
-    
+
     private static String getJacocoAgentArgs() {
         String jacocoArgLine = System.getProperty("jacoco.agent.argLine");
         if (jacocoArgLine == null || jacocoArgLine.isEmpty()) {
@@ -285,7 +286,7 @@ public class KubernetesTestUtils {
         }
         return jacocoArgLine + " ";
     }
-    
+
     /**
      * Load YAML files to kubernetes resource(s).
      *

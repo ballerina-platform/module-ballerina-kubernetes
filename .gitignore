@@ -38,3 +38,4 @@ dependency-reduced-pom.xml
 *.balx
 samples/*/kubernetes
 velocity.log*
+*Ballerina.lock

@@ -16,13 +16,13 @@
   ~ under the License.
   -->
 
-<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<assembly xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
           xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
 
     <id>extracted-test-pack</id>
     <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>ballerina-${ballerina.lang.version}</baseDirectory>
+    <baseDirectory>jballerina-tools-${ballerina.lang.version}</baseDirectory>
 
     <formats>
         <format>zip</format>
@@ -31,7 +31,7 @@
     <fileSets>
         <fileSet>
             <directory>
-                ${project.build.directory}/extracted-distributions/ballerina-zip/ballerina-${ballerina.lang.version}/
+                ${project.build.directory}/extracted-distribution/jballerina-tools-${ballerina.lang.version}/
             </directory>
             <outputDirectory>.</outputDirectory>
             <fileMode>755</fileMode>

@@ -85,6 +85,16 @@
                 <version>${ballerina.lang.version}</version>
                 <type>zip</type>
                 <classifier>ballerina-binary-repo</classifier>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.ops4j.pax.logging</groupId>
+                        <artifactId>pax-logging-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-simple</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
@@ -166,6 +176,16 @@
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>${commons.codec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -278,10 +298,12 @@
         <snowdrop.istio.model.version>1.0.1</snowdrop.istio.model.version>
         <spotify.docker.client.version>8.15.0</spotify.docker.client.version>
         <testng.version>6.14.3</testng.version>
+        <slf4j.version>1.7.26</slf4j.version>
     </properties>
 
     <modules>
         <module>kubernetes-extension</module>
+        <module>kubernetes-extension-balo</module>
         <module>kubernetes-extension-test</module>
         <module>kubernetes-extension-examples</module>
         <module>kubernetes-extension-coverage-report</module>

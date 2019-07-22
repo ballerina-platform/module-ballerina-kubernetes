@@ -25,7 +25,7 @@ import ballerinax/istio;
     ],
     http: [
         {
-            ^"match": [
+            'match: [
                 {
                     uri: {
                         exact: "/v1/getProductRatings"

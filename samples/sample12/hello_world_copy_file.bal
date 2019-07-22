@@ -24,7 +24,7 @@ listener http:Listener helloWorldEP = new(9090, config = {
     copyFiles: [
         {
             target: "/home/ballerina/data/data.txt",
-            source: "./data/data.txt"
+            sourceFile: "./data/data.txt"
         }
     ]
 }
@@ -42,7 +42,7 @@ service helloWorld on helloWorldEP {
         response.setTextPayload("Data: " + untaint payload + "\n");
         var responseResult = outboundEP->respond(response);
         if (responseResult is error) {
-            log:printError("error responding back to client.", err = responseResult);
+            log:printError("error responding back to client.", responseResult);
         }
     }
 }

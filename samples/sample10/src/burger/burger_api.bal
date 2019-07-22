@@ -32,7 +32,7 @@ service BurgerAPI on burgerEP {
         response.setTextPayload("Burger menu \n");
         var responseResult = outboundEP->respond(response);
         if (responseResult is error) {
-            log:printError("error responding back to client.", err = responseResult);
+            log:printError("error responding back to client.", responseResult);
         }
     }
 }

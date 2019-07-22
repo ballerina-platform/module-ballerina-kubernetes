@@ -34,7 +34,7 @@ import ballerinax/istio;
                 }
             ],
             fault: {
-                ^"abort": {
+                'abort: {
                     percent: 10,
                     httpStatus: 400
                 }

@@ -44,7 +44,7 @@ public class HelmChartGeneratorTests {
         ports.add(9092);
         dockerModel.setPorts(ports);
         dockerModel.setService(true);
-        dockerModel.setBalxFileName("hello.balx");
+        dockerModel.setUberJarFileName("hello.balx");
         dockerModel.setEnableDebug(true);
         dockerModel.setBaseImage(BALLERINA_BASE_IMAGE + ":latest");
         dockerModel.setDebugPort(5005);

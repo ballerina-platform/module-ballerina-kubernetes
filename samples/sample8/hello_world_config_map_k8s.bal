@@ -8,7 +8,7 @@ import ballerinax/kubernetes;
 @kubernetes:Ingress {
     hostname: "abc.com"
 }
-listener http:Listener helloWorldEP = new(9090, config = {
+listener http:Listener helloWorldEP = new(9090, {
     secureSocket:{
         keyStore:{
             path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
@@ -47,7 +47,7 @@ service helloWorld on helloWorldEP {
         response.setTextPayload(payload + "\n");
         var responseResult = outboundEP->respond(response);
         if (responseResult is error) {
-            log:printError("error responding back to client.", err = responseResult);
+            log:printError("error responding back to client.", responseResult);
         }
     }
     @http:ResourceConfig {
@@ -57,16 +57,16 @@ service helloWorld on helloWorldEP {
     resource function getData(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         string payload = readFile("./data/data.txt");
-        response.setTextPayload("Data: " + untaint payload + "\n");
+        response.setTextPayload("Data: " + <@untainted> payload + "\n");
         var responseResult = outboundEP->respond(response);
         if (responseResult is error) {
-            log:printError("error responding back to client.", err = responseResult);
+            log:printError("error responding back to client.", responseResult);
         }
     }
 }
 
 function getConfigValue(string instanceId, string property) returns (string) {
-    string key = untaint instanceId + "." + untaint property;
+    string key = <@untainted> instanceId + "." + <@untainted> property;
     return config:getAsString(key, defaultValue = "Invalid User");
 }
 
