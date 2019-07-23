@@ -41,7 +41,8 @@ import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT;
 
 public class Sample17Test extends SampleTest {
     private static final Path SOURCE_DIR_PATH = SAMPLE_DIR.resolve("sample17");
-    private static final Path TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
+    private static final Path DOCKER_TARGET_PATH = SOURCE_DIR_PATH.resolve(DOCKER);
+    private static final Path KUBERNETES_TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
     private BuildConfig buildConfig;
     private ImageStream imageStream;
     private Route route;
@@ -49,7 +50,7 @@ public class Sample17Test extends SampleTest {
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "hello_world_oc.bal"), 0);
-        File yamlFile = TARGET_PATH.resolve(OPENSHIFT).resolve("hello_world_oc.yaml").toFile();
+        File yamlFile = KUBERNETES_TARGET_PATH.resolve(OPENSHIFT).resolve("hello_world_oc.yaml").toFile();
         Assert.assertTrue(yamlFile.exists());
         List<HasMetadata> k8sItems = KubernetesTestUtils.loadYaml(yamlFile);
         for (HasMetadata data : k8sItems) {
@@ -129,12 +130,13 @@ public class Sample17Test extends SampleTest {
     
     @Test
     public void validateDockerfile() {
-        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
+        File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
     
     @AfterClass
     public void cleanUp() throws KubernetesPluginException {
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
     }
 }

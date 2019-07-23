@@ -41,7 +41,8 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDocker
  */
 public class DeploymentTest extends BaseTest {
     private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "deployment");
-    private static final Path TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
+    private static final Path DOCKER_TARGET_PATH = BAL_DIRECTORY.resolve(DOCKER);
+    private static final Path KUBERNETES_TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
     private static final String DOCKER_IMAGE = "pizza-shop:latest";
     
     /**
@@ -61,7 +62,7 @@ public class DeploymentTest extends BaseTest {
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = TARGET_PATH.resolve("dep_annotations_deployment.yaml").toFile();
+        File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("dep_annotations_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         Assert.assertEquals(deployment.getMetadata().getAnnotations().size(), 2,
@@ -71,7 +72,8 @@ public class DeploymentTest extends BaseTest {
         Assert.assertEquals(deployment.getMetadata().getAnnotations().get("anno2"), "anno2Val",
                 "Invalid annotation found.");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -92,7 +94,7 @@ public class DeploymentTest extends BaseTest {
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = TARGET_PATH.resolve("pod_annotations_deployment.yaml").toFile();
+        File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("pod_annotations_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         Assert.assertEquals(deployment.getSpec().getTemplate().getMetadata().getAnnotations().size(), 2,
@@ -102,7 +104,8 @@ public class DeploymentTest extends BaseTest {
         Assert.assertEquals(deployment.getSpec().getTemplate().getMetadata().getAnnotations().get("anno2"), "anno2Val",
                 "Invalid annotation found.");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -123,7 +126,7 @@ public class DeploymentTest extends BaseTest {
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = TARGET_PATH.resolve("pod_tolerations_deployment.yaml").toFile();
+        File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("pod_tolerations_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         Assert.assertNotNull(deployment.getSpec());
@@ -143,7 +146,8 @@ public class DeploymentTest extends BaseTest {
         Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getTolerations().get(0).getTolerationSeconds()
                         .longValue(), 0L, "Invalid toleration seconds.");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -151,7 +155,7 @@ public class DeploymentTest extends BaseTest {
      * Validate if Dockerfile is created.
      */
     public void validateDockerfile() {
-        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
+        File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
     

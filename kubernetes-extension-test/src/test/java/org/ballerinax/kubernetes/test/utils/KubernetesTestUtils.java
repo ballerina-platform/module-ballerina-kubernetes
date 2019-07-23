@@ -234,25 +234,15 @@ public class KubernetesTestUtils {
             log.warn("Deleting already existing ballerina-internal.log file.");
             FileUtils.deleteQuietly(ballerinaInternalLog.toFile());
         }
-
-        ProcessBuilder pb = new ProcessBuilder(BALLERINA_COMMAND, "init");
-        log.info(COMPILING + sourceDirectory.normalize());
-        log.debug(EXECUTING_COMMAND + pb.command());
-        pb.directory(sourceDirectory.toFile());
-        Process process = pb.start();
-        int exitCode = process.waitFor();
-        log.info(EXIT_CODE + exitCode);
-        logOutput(process.getInputStream());
-        logOutput(process.getErrorStream());
-
-        pb = new ProcessBuilder(BALLERINA_COMMAND, BUILD);
+    
+        ProcessBuilder pb = new ProcessBuilder(BALLERINA_COMMAND, BUILD);
         log.debug(EXECUTING_COMMAND + pb.command());
         pb.directory(sourceDirectory.toFile());
         Map<String, String> environment = pb.environment();
         addJavaAgents(environment);
-
-        process = pb.start();
-        exitCode = process.waitFor();
+    
+        Process process = pb.start();
+        int exitCode = process.waitFor();
         log.info(EXIT_CODE + exitCode);
         logOutput(process.getInputStream());
         logOutput(process.getErrorStream());

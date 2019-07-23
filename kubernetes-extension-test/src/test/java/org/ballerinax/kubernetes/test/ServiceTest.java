@@ -47,14 +47,15 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
  */
 public class ServiceTest extends BaseTest {
     private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "svc");
-    private static final Path TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
+    private static final Path DOCKER_TARGET_PATH = BAL_DIRECTORY.resolve(DOCKER);
+    private static final Path KUBERNETES_TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
     private static final String DOCKER_IMAGE = "pizza-shop:latest";
     
     @Test
     public void differentSvcPortTest() throws IOException, InterruptedException, DockerTestException,
             KubernetesPluginException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "different_svc_ports.bal"), 0);
-        File yamlFile = TARGET_PATH.resolve("different_svc_ports.yaml").toFile();
+        File yamlFile = KUBERNETES_TARGET_PATH.resolve("different_svc_ports.yaml").toFile();
         Assert.assertTrue(yamlFile.exists());
         List<HasMetadata> k8sItems = KubernetesTestUtils.loadYaml(yamlFile);
         Service service = null;
@@ -98,7 +99,8 @@ public class ServiceTest extends BaseTest {
                 .getServicePort().getIntVal().intValue());
         Assert.assertEquals(2, ingress.getMetadata().getAnnotations().size());
     
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -116,7 +118,7 @@ public class ServiceTest extends BaseTest {
     public void portAndTargetPortTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "port_and_target_port.bal"), 0);
-        File yamlFile = TARGET_PATH.resolve("port_and_target_port.yaml").toFile();
+        File yamlFile = KUBERNETES_TARGET_PATH.resolve("port_and_target_port.yaml").toFile();
         Assert.assertTrue(yamlFile.exists());
         KubernetesClient client = new DefaultKubernetesClient();
         List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
@@ -137,12 +139,13 @@ public class ServiceTest extends BaseTest {
         validateDockerfile();
         validateDockerImage(DOCKER_IMAGE);
     
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
     public void validateDockerfile() {
-        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
+        File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
     

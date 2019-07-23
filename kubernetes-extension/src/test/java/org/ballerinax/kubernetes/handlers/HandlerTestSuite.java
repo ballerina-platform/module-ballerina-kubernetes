@@ -30,20 +30,24 @@ import org.wso2.ballerinalang.compiler.util.Names;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
+import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
+
 public class HandlerTestSuite {
+    static PackageID module = new PackageID(Names.ANON_ORG, new Name("my_pkg"), Names.DEFAULT_VERSION);
 
     @BeforeSuite
     public static void setUp() {
         KubernetesContext context = KubernetesContext.getInstance();
-        context.addDataHolder(new PackageID(Names.ANON_ORG, new Name("my_pkg"), Names.DEFAULT_VERSION),
-                Paths.get("target"));
+        context.addDataHolder(module, Paths.get("target"));
         KubernetesDataHolder dataHolder = context.getDataHolder();
-        dataHolder.setArtifactOutputPath(Paths.get("target").resolve("kubernetes"));
+        dataHolder.setK8sArtifactOutputPath(Paths.get("target").resolve(KUBERNETES).resolve(module.name.toString()));
+        dataHolder.setDockerArtifactOutputPath(Paths.get("target").resolve(DOCKER).resolve(module.name.toString()));
         Path resourcesDirectory = Paths.get("src").resolve("test").resolve("resources");
         DeploymentModel deploymentModel = new DeploymentModel();
         deploymentModel.setSingleYAML(false);
         dataHolder.setDeploymentModel(deploymentModel);
-        dataHolder.setBalxFilePath(resourcesDirectory.toAbsolutePath().resolve("hello.balx"));
+        dataHolder.setUberJarPath(resourcesDirectory.toAbsolutePath().resolve("hello-executable.jar"));
     }
 
     @AfterSuite

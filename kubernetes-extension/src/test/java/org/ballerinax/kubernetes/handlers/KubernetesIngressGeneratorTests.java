@@ -30,13 +30,14 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Test kubernetes ingress generation.
  */
-public class KubernetesIngressGeneratorTests {
+public class KubernetesIngressGeneratorTests extends HandlerTestSuite {
 
     private final String ingressName = "MyIngress";
     private final String hostname = "abc.com";
@@ -72,7 +73,7 @@ public class KubernetesIngressGeneratorTests {
 
         try {
             new IngressHandler().createArtifacts();
-            File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_ingress.yaml");
+            File tempFile = Paths.get("target", "kubernetes", module.name.toString(), "hello_ingress.yaml").toFile();
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

@@ -46,7 +46,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
  *
  * @since 0.985.0
  */
-public class IstioGatewayGeneratorTests {
+public class IstioGatewayGeneratorTests extends HandlerTestSuite {
     @Test
     public void testSimpleGateway() {
         IstioGatewayModel istioGatewayModel = new IstioGatewayModel();
@@ -79,7 +79,8 @@ public class IstioGatewayGeneratorTests {
         KubernetesContext.getInstance().getDataHolder().addIstioGatewayModel("sample-svc", istioGatewayModel);
         try {
             new IstioGatewayHandler().createArtifacts();
-            File gwYaml = Paths.get("target", "kubernetes", "hello" + ISTIO_GATEWAY_FILE_POSTFIX + YAML).toFile();
+            File gwYaml = Paths.get("target", "kubernetes", module.name.toString(), "hello" +
+                                                            ISTIO_GATEWAY_FILE_POSTFIX + YAML).toFile();
             Gateway gateway = Utils.loadYaml(gwYaml);
             
             // metadata

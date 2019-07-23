@@ -31,7 +31,6 @@ import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.BLangService;
 import org.wso2.ballerinalang.compiler.tree.BLangSimpleVariable;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
-import org.wso2.ballerinalang.compiler.tree.expressions.BLangNamedArgsExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangTypeInit;
 
@@ -74,9 +73,8 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
     
         BLangTypeInit bListener = (BLangTypeInit) ((BLangSimpleVariable) variableNode).expr;
         if (bListener.argsExpr.size() == 2) {
-            if (bListener.argsExpr.get(1) instanceof BLangNamedArgsExpression) {
-                BLangNamedArgsExpression configArg = (BLangNamedArgsExpression) bListener.argsExpr.get(1);
-                BLangRecordLiteral bConfigRecordLiteral = (BLangRecordLiteral) configArg.expr;
+            if (bListener.argsExpr.get(1) instanceof BLangRecordLiteral) {
+                BLangRecordLiteral bConfigRecordLiteral = (BLangRecordLiteral) bListener.argsExpr.get(1);
                 List<BLangRecordLiteral.BLangRecordKeyValue> listenerConfig = bConfigRecordLiteral.getKeyValuePairs();
                 processListener(listenerName, listenerConfig);
             }

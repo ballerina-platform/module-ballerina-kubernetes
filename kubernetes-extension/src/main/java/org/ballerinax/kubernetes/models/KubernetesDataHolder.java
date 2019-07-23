@@ -51,8 +51,9 @@ public class KubernetesDataHolder {
     private OpenShiftBuildExtensionModel openShiftBuildExtensionModel;
     private Map<String, OpenShiftRouteModel> openShiftRouteModels;
     private JobModel jobModel;
-    private Path balxFilePath;
-    private Path artifactOutputPath;
+    private Path uberJarPath;
+    private Path k8sArtifactOutputPath;
+    private Path dockerArtifactOutputPath;
     private String namespace;
     private Path sourceRoot;
     private boolean isProject = false;
@@ -176,22 +177,30 @@ public class KubernetesDataHolder {
         this.canProcess = canProcess;
     }
 
-    public Path getBalxFilePath() {
-        return balxFilePath;
+    public Path getUberJarPath() {
+        return uberJarPath;
     }
 
-    public void setBalxFilePath(Path balxFilePath) {
-        this.balxFilePath = balxFilePath;
+    public void setUberJarPath(Path uberJarPath) {
+        this.uberJarPath = uberJarPath;
     }
 
-    public Path getArtifactOutputPath() {
-        return artifactOutputPath;
+    public Path getK8sArtifactOutputPath() {
+        return k8sArtifactOutputPath;
     }
 
-    public void setArtifactOutputPath(Path artifactOutputPath) {
-        this.artifactOutputPath = artifactOutputPath;
+    public void setK8sArtifactOutputPath(Path k8sArtifactOutputPath) {
+        this.k8sArtifactOutputPath = k8sArtifactOutputPath;
     }
-
+    
+    public Path getDockerArtifactOutputPath() {
+        return dockerArtifactOutputPath;
+    }
+    
+    public void setDockerArtifactOutputPath(Path dockerArtifactOutputPath) {
+        this.dockerArtifactOutputPath = dockerArtifactOutputPath;
+    }
+    
     public DockerModel getDockerModel() {
         return dockerModel;
     }

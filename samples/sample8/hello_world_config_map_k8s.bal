@@ -56,7 +56,7 @@ service helloWorld on helloWorldEP {
     }
     resource function getData(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
-        string payload = readFile("./data/data.txt");
+        string payload = <@untainted> readFile("./data/data.txt");
         response.setTextPayload("Data: " + <@untainted> payload + "\n");
         var responseResult = outboundEP->respond(response);
         if (responseResult is error) {
@@ -67,11 +67,11 @@ service helloWorld on helloWorldEP {
 
 function getConfigValue(string instanceId, string property) returns (string) {
     string key = <@untainted> instanceId + "." + <@untainted> property;
-    return config:getAsString(key, defaultValue = "Invalid User");
+    return config:getAsString(key, "Invalid User");
 }
 
-function readFile(string filePath) returns (string) {
-    io:ReadableByteChannel bchannel = io:openReadableFile(filePath);
+function readFile(string filePath) returns @tainted string {
+    io:ReadableByteChannel bchannel = checkpanic io:openReadableFile(filePath);
     io:ReadableCharacterChannel cChannel = new io:ReadableCharacterChannel(bchannel, "UTF-8");
 
     var readOutput = cChannel.read(50);

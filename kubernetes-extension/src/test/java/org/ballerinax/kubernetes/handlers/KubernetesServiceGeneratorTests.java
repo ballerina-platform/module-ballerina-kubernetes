@@ -29,13 +29,14 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Test kubernetes Service generation.
  */
-public class KubernetesServiceGeneratorTests {
+public class KubernetesServiceGeneratorTests extends HandlerTestSuite {
 
     private final String serviceName = "MyService";
     private final String selector = "hello";
@@ -57,7 +58,7 @@ public class KubernetesServiceGeneratorTests {
         KubernetesContext.getInstance().getDataHolder().addBListenerToK8sServiceMap("HelloWorldService", serviceModel);
         try {
             new ServiceHandler().createArtifacts();
-            File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_svc.yaml");
+            File tempFile = Paths.get("target", "kubernetes", module.name.toString(), "hello_svc.yaml").toFile();
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

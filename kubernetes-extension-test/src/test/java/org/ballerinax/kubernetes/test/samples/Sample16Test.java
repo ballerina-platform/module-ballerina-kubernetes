@@ -48,11 +48,15 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
 public class Sample16Test extends SampleTest {
 
     private static final Path SOURCE_DIR_PATH = SAMPLE_DIR.resolve("sample16");
-    private static final Path TARGET_PATH = SOURCE_DIR_PATH.resolve("target").resolve(KUBERNETES);
-    private static final Path AIRLINE_RESERVATION_PKG_TARGET_PATH = TARGET_PATH.resolve("airline_reservation");
-    private static final Path HOTEL_RESERVATION_PKG_TARGET_PATH = TARGET_PATH.resolve("hotel_reservation");
-    private static final Path CAR_RENTAL_PKG_TARGET_PATH = TARGET_PATH.resolve("car_rental");
-    private static final Path TRAVEL_AGENCY_PKG_TARGET_PATH = TARGET_PATH.resolve("travel_agency");
+    private static final Path DOCKER_TARGET_PATH = SOURCE_DIR_PATH.resolve("target").resolve(DOCKER);
+    private static final Path KUBERNETES_TARGET_PATH = SOURCE_DIR_PATH.resolve("target").resolve(KUBERNETES);
+    private static final Path AIRLINE_RESERVATION_PKG_DOCKER_TARGET_PATH =
+            DOCKER_TARGET_PATH.resolve("airline_reservation");
+    private static final Path HOTEL_RESERVATION_PKG_DOCKER_TARGET_PATH =
+            DOCKER_TARGET_PATH.resolve("hotel_reservation");
+    private static final Path CAR_RENTAL_PKG_DOCKER_TARGET_PATH = DOCKER_TARGET_PATH.resolve("car_rental");
+    private static final Path TRAVEL_AGENCY_PKG_DOCKER_TARGET_PATH = DOCKER_TARGET_PATH.resolve("travel_agency");
+    private static final Path TRAVEL_AGENCY_PKG_K8S_TARGET_PATH = KUBERNETES_TARGET_PATH.resolve("travel_agency");
     private static final String AIRLINE_RESERVATION_DOCKER_IMAGE = "airline_reservation:latest";
     private static final String HOTEL_RESERVATION_DOCKER_IMAGE = "hotel_reservation:latest";
     private static final String CAR_RENTAL_DOCKER_IMAGE = "car_rental:latest";
@@ -65,7 +69,7 @@ public class Sample16Test extends SampleTest {
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaProject(SOURCE_DIR_PATH), 0);
-        File yamlFile = TRAVEL_AGENCY_PKG_TARGET_PATH.resolve("travel_agency.yaml").toFile();
+        File yamlFile = TRAVEL_AGENCY_PKG_K8S_TARGET_PATH.resolve("travel_agency.yaml").toFile();
         Assert.assertTrue(yamlFile.exists());
         List<HasMetadata> k8sItems = KubernetesTestUtils.loadYaml(yamlFile);
         for (HasMetadata data : k8sItems) {
@@ -90,10 +94,10 @@ public class Sample16Test extends SampleTest {
 
     @Test
     public void validateDockerfile() {
-        Assert.assertTrue(AIRLINE_RESERVATION_PKG_TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile().exists());
-        Assert.assertTrue(HOTEL_RESERVATION_PKG_TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile().exists());
-        Assert.assertTrue(CAR_RENTAL_PKG_TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile().exists());
-        Assert.assertTrue(TRAVEL_AGENCY_PKG_TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile().exists());
+        Assert.assertTrue(AIRLINE_RESERVATION_PKG_DOCKER_TARGET_PATH.resolve("Dockerfile").toFile().exists());
+        Assert.assertTrue(HOTEL_RESERVATION_PKG_DOCKER_TARGET_PATH.resolve("Dockerfile").toFile().exists());
+        Assert.assertTrue(CAR_RENTAL_PKG_DOCKER_TARGET_PATH.resolve("Dockerfile").toFile().exists());
+        Assert.assertTrue(TRAVEL_AGENCY_PKG_DOCKER_TARGET_PATH.resolve("Dockerfile").toFile().exists());
     }
 
     @Test
@@ -215,7 +219,8 @@ public class Sample16Test extends SampleTest {
 
     @AfterClass
     public void cleanUp() throws KubernetesPluginException {
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(AIRLINE_RESERVATION_DOCKER_IMAGE);
         KubernetesTestUtils.deleteDockerImage(HOTEL_RESERVATION_DOCKER_IMAGE);
         KubernetesTestUtils.deleteDockerImage(CAR_RENTAL_DOCKER_IMAGE);

@@ -33,7 +33,7 @@ import static org.ballerinax.docker.generator.DockerGenConstants.BALLERINA_BASE_
 /**
  * Helm chart generator tests.
  */
-public class HelmChartGeneratorTests {
+public class HelmChartGeneratorTests extends HandlerTestSuite {
 
     @Test
     public void testHelmGenerate() throws KubernetesPluginException {
@@ -44,7 +44,7 @@ public class HelmChartGeneratorTests {
         ports.add(9092);
         dockerModel.setPorts(ports);
         dockerModel.setService(true);
-        dockerModel.setUberJarFileName("hello.balx");
+        dockerModel.setUberJarFileName("hello-executable.jar");
         dockerModel.setEnableDebug(true);
         dockerModel.setBaseImage(BALLERINA_BASE_IMAGE + ":latest");
         dockerModel.setDebugPort(5005);
@@ -54,7 +54,7 @@ public class HelmChartGeneratorTests {
         dataHolder.setDockerModel(dockerModel);
         new DockerHandler().createArtifacts();
         new HelmChartHandler().createArtifacts();
-        File charYaml = new File("target/kubernetes/hello/hello-deployment/Chart.yaml");
+        File charYaml = new File("target/kubernetes/" + module.name.toString() + "/hello-deployment/Chart.yaml");
         Assert.assertTrue(charYaml.exists());
         charYaml.deleteOnExit();
     }

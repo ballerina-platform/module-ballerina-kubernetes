@@ -31,13 +31,14 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Test job generation.
  */
-public class KubernetesJobGeneratorTests {
+public class KubernetesJobGeneratorTests extends HandlerTestSuite {
 
     private final String jobName = "MyJOB";
     private final String selector = "TestAPP";
@@ -62,7 +63,7 @@ public class KubernetesJobGeneratorTests {
 
         try {
             new JobHandler().createArtifacts();
-            File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_job.yaml");
+            File tempFile = Paths.get("target", "kubernetes", module.name.toString(), "hello_job.yaml").toFile();
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

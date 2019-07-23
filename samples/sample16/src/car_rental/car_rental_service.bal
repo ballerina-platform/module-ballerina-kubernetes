@@ -1,32 +1,31 @@
 import ballerina/http;
+import ballerina/internal;
 import ballerina/log;
 import ballerinax/kubernetes;
 
-// Service endpoint
 @kubernetes:Service {
-    name: "airline-reservation"
+    name: "car-rental"
 }
-listener http:Listener airlineEP = new(8080);
+listener http:Listener carEP = new(6060);
 
-// Available flight classes
-const string ECONOMY = "Economy";
-const string BUSINESS = "Business";
-const string FIRST = "First";
+// Available car types
+const string AC = "Air Conditioned";
+const string NORMAL = "Normal";
 
-// Airline reservation service to reserve airline tickets
+// Car rental service to rent cars
 @http:ServiceConfig {
-    basePath: "/airline"
+    basePath: "/car"
 }
-service airlineReservationService on airlineEP {
+service carRentalService on carEP {
 
-    // Resource to reserve a ticket
+    // Resource to rent a car
     @http:ResourceConfig {
         methods: ["POST"],
-        path: "/reserve",
+        path: "/rent",
         consumes: ["application/json"],
         produces: ["application/json"]
     }
-    resource function reserveTicket(http:Caller caller, http:Request request) {
+    resource function rentCar(http:Caller caller, http:Request request) {
         http:Response response = new;
         json reqPayload = {};
 
@@ -46,16 +45,16 @@ service airlineReservationService on airlineEP {
             return;
         }
 
-        json name = reqPayload.Name;
-        json arrivalDate = reqPayload.ArrivalDate;
-        json departDate = reqPayload.DepartureDate;
-        json preferredClass = reqPayload.Preference;
+        json|error name = reqPayload.Name;
+        json|error arrivalDate = reqPayload.ArrivalDate;
+        json|error departDate = reqPayload.DepartureDate;
+        json|error preferredType = reqPayload.Preference;
 
         // If payload parsing fails, send a "Bad Request" message as the response
-        if (name == () || arrivalDate == () || departDate == () || preferredClass == ()) {
+        if (name is error || arrivalDate is error || departDate is error || preferredType is error) {
             response.statusCode = 400;
             response.setJsonPayload({
-                Message: "Bad Request - Invalid Payload"
+                Message:"Bad Request - Invalid Payload"
             });
             var result = caller->respond(response);
             handleError(result);
@@ -63,16 +62,15 @@ service airlineReservationService on airlineEP {
         }
 
         // Mock logic
-        // If request is for an available flight class, send a reservation successful status
-        string preferredClassStr = preferredClass.toString();
-        if (preferredClassStr.equalsIgnoreCase(ECONOMY) || preferredClassStr.equalsIgnoreCase(BUSINESS) ||
-            preferredClassStr.equalsIgnoreCase(FIRST)) {
+        // If request is for an available car type, send a rental successful status
+        string preferredTypeStr = preferredType.toString();
+        if (internal:equalsIgnoreCase(preferredTypeStr, AC) || internal:equalsIgnoreCase(preferredTypeStr, NORMAL)) {
             response.setJsonPayload({
                 Status: "Success"
             });
         }
         else {
-            // If request is not for an available flight class, send a reservation failure status
+            // If request is not for an available car type, send a rental failure status
             response.setJsonPayload({
                 Status: "Failed"
             });

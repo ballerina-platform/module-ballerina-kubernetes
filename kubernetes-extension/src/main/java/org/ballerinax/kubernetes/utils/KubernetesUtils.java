@@ -31,7 +31,6 @@ import io.fabric8.kubernetes.api.model.ResourceFieldSelectorBuilder;
 import io.fabric8.kubernetes.api.model.SecretKeySelector;
 import io.fabric8.kubernetes.api.model.SecretKeySelectorBuilder;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.ballerinalang.model.tree.NodeKind;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
 import org.ballerinax.docker.generator.models.CopyFileModel;
@@ -72,6 +71,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 
 /**
@@ -92,7 +92,7 @@ public class KubernetesUtils {
      */
     public static void writeToFile(String context, String outputFileName) throws IOException {
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
-        writeToFile(dataHolder.getArtifactOutputPath(), context, outputFileName);
+        writeToFile(dataHolder.getK8sArtifactOutputPath(), context, outputFileName);
     }
     
     /**
@@ -105,14 +105,14 @@ public class KubernetesUtils {
      */
     public static void writeToFile(Path outputDir, String context, String fileSuffix) throws IOException {
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
-        Path artifactFileName = outputDir.resolve(extractBalxName(dataHolder.getBalxFilePath()) + fileSuffix);
+        Path artifactFileName = outputDir.resolve(extractUberJarName(dataHolder.getUberJarPath()) + fileSuffix);
         DeploymentModel deploymentModel = dataHolder.getDeploymentModel();
         JobModel jobModel = dataHolder.getJobModel();
         // Priority given for job, then deployment.
         if (jobModel != null && jobModel.isSingleYAML()) {
-            artifactFileName = outputDir.resolve(extractBalxName(dataHolder.getBalxFilePath()) + YAML);
+            artifactFileName = outputDir.resolve(extractUberJarName(dataHolder.getUberJarPath()) + YAML);
         } else if (jobModel == null && deploymentModel != null && deploymentModel.isSingleYAML()) {
-            artifactFileName = outputDir.resolve(extractBalxName(dataHolder.getBalxFilePath()) + YAML);
+            artifactFileName = outputDir.resolve(extractUberJarName(dataHolder.getUberJarPath()) + YAML);
             
         }
         File newFile = artifactFileName.toFile();
@@ -175,26 +175,7 @@ public class KubernetesUtils {
             throw new KubernetesPluginException("error while copying file", e);
         }
     }
-
-    /**
-     * Extract the ballerina file name from a given file path
-     *
-     * @param uberJarFilePath balx file path.
-     * @return output file name of balx
-     */
-    public static String extractBalxName(Path uberJarFilePath) {
-        if (null != uberJarFilePath) {
-            Path fileName = uberJarFilePath.getFileName();
-            if (null != fileName) {
-                String s = fileName.toString();
-                if (null != s) {
-                    return s.replace("-executable", "").replace(".jar", "");
-                }
-            }
-        }
     
-        return null;
-    }
     
     /**
      * Prints an Information message.
@@ -313,7 +294,7 @@ public class KubernetesUtils {
      * @return Convert string.
      */
     public static List<String> getList(BLangExpression expr) throws KubernetesPluginException {
-        if (expr.getKind() != NodeKind.ARRAY_LITERAL_EXPR) {
+        if (expr.getKind() != NodeKind.LIST_CONSTRUCTOR_EXPR) {
             throw new KubernetesPluginException("unable to parse value: " + expr.toString());
         } else {
             BLangListConstructorExpr array = (BLangListConstructorExpr) expr;

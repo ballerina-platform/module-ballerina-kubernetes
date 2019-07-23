@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-#!/usr/bin/env bash
+#!/bin/bash
 
 DISTRIBUTION_PATH=${1}
 KUBERNETES_BALO_MAVEN_PROJECT_ROOT=${2}

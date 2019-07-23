@@ -7,7 +7,7 @@ import ballerinax/kubernetes;
 @kubernetes:Ingress {
     hostname: "abc.com"
 }
-listener http:Listener helloWorldEP = new(9090, config = {
+listener http:Listener helloWorldEP = new(9090, {
     secureSocket: {
         keyStore: {
             path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
@@ -46,7 +46,7 @@ service helloWorld on helloWorldEP {
     }
     resource function getSecret1(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
-        string payload = readFile("./private/MySecret1.txt");
+        string payload = <@untainted>readFile("./private/MySecret1.txt");
         response.setTextPayload("Secret1 resource: " + <@untainted> payload + "\n");
         var responseResult = outboundEP->respond(response);
         if (responseResult is error) {
@@ -60,7 +60,7 @@ service helloWorld on helloWorldEP {
     }
     resource function getSecret2(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
-        string payload = readFile("./public/MySecret2.txt");
+        string payload = <@untainted>readFile("./public/MySecret2.txt");
         response.setTextPayload("Secret2 resource: " + <@untainted> payload + "\n");
         var responseResult = outboundEP->respond(response);
         if (responseResult is error) {
@@ -74,7 +74,7 @@ service helloWorld on helloWorldEP {
     }
     resource function getSecret3(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
-        string payload = readFile("./public/MySecret3.txt");
+        string payload = <@untainted>readFile("./public/MySecret3.txt");
         response.setTextPayload("Secret3 resource: " + <@untainted> payload + "\n");
         var responseResult = outboundEP->respond(response);
         if (responseResult is error) {
@@ -83,8 +83,8 @@ service helloWorld on helloWorldEP {
     }
 }
 
-function readFile(string filePath) returns (string) {
-    io:ReadableByteChannel bchannel = io:openReadableFile(filePath);
+function readFile(string filePath) returns @tainted string {
+    io:ReadableByteChannel bchannel = checkpanic io:openReadableFile(filePath);
     io:ReadableCharacterChannel cChannel = new io:ReadableCharacterChannel(bchannel, "UTF-8");
 
     var readOutput = cChannel.read(50);
