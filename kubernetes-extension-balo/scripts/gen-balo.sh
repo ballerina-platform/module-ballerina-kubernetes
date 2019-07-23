@@ -34,9 +34,16 @@ mkdir -p ${BALLERINAX_SYSTEM_LIB}
 
 rm -rf ${KUBERNETES_BALLERINA_PROJECT}/target
 
-pushd ${KUBERNETES_BALLERINA_PROJECT} /dev/null 2>&1
+if ! hash pushd 2>/dev/null
+then
+    cd ${KUBERNETES_BALLERINA_PROJECT}
     ${EXECUTABLE} compile --jvmTarget
-popd > /dev/null 2>&1
+    cd -
+else
+    pushd ${KUBERNETES_BALLERINA_PROJECT} /dev/null 2>&1
+        ${EXECUTABLE} compile --jvmTarget
+    popd > /dev/null 2>&1
+fi
 
 cp -r ${KUBERNETES_BALLERINA_PROJECT}/target/* ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target
 
