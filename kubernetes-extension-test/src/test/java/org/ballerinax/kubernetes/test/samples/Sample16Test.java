@@ -68,7 +68,7 @@ public class Sample16Test extends SampleTest {
 
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
-        Assert.assertEquals(KubernetesTestUtils.compileBallerinaProject(SOURCE_DIR_PATH), 0);
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaProject(SOURCE_DIR_PATH, true), 0);
         File yamlFile = TRAVEL_AGENCY_PKG_K8S_TARGET_PATH.resolve("travel_agency.yaml").toFile();
         Assert.assertTrue(yamlFile.exists());
         List<HasMetadata> k8sItems = KubernetesTestUtils.loadYaml(yamlFile);

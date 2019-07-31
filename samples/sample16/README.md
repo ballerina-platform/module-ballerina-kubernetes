@@ -70,48 +70,13 @@ See [here](https://istio.io/docs/setup/kubernetes/quick-start/) on how to instal
 
 1. Compile the ballerina project from `sample16` folder. Command to run kubernetes artifacts will be printed on success:
 ```bash
-$> ballerina build
+$> ballerina build --skip-tests
 Compiling source
     gogo/car_rental:1.0.0
     gogo/travel_agency:1.0.0
     gogo/hotel_reservation:1.0.0
     gogo/airline_reservation:1.0.0
 
-Running tests
-    gogo/airline_reservation:1.0.0
-[ballerina/http] started HTTP/WS endpoint 0.0.0.0:8080
-	1 passing
-	0 failing
-	0 skipped
-
-[ballerina/http] stopped HTTP/WS endpoint 0.0.0.0:8080
-    gogo/car_rental:1.0.0
-[ballerina/http] started HTTP/WS endpoint 0.0.0.0:6060
-	1 passing
-	0 failing
-	0 skipped
-
-[ballerina/http] stopped HTTP/WS endpoint 0.0.0.0:6060
-    gogo/hotel_reservation:1.0.0
-[ballerina/http] started HTTP/WS endpoint 0.0.0.0:7070
-	1 passing
-	0 failing
-	0 skipped
-
-[ballerina/http] stopped HTTP/WS endpoint 0.0.0.0:7070
-    gogo/travel_agency:1.0.0
-[ballerina/http] started HTTP/WS endpoint 0.0.0.0:9090
-[ballerina/http] started HTTP/WS endpoint 0.0.0.0:8080
-[ballerina/http] started HTTP/WS endpoint 0.0.0.0:7070
-[ballerina/http] started HTTP/WS endpoint 0.0.0.0:6060
-	1 passing
-	0 failing
-	0 skipped
-
-[ballerina/http] stopped HTTP/WS endpoint 0.0.0.0:9090
-[ballerina/http] stopped HTTP/WS endpoint 0.0.0.0:8080
-[ballerina/http] stopped HTTP/WS endpoint 0.0.0.0:7070
-[ballerina/http] stopped HTTP/WS endpoint 0.0.0.0:6060
 Generating executables
     ./target/car_rental.balx
 

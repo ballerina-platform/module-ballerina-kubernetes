@@ -21,8 +21,8 @@ DISTRIBUTION_PATH=${1}
 KUBERNETES_BALO_MAVEN_PROJECT_ROOT=${2}
 
 # TEMP
-#rm -rf ${DISTRIBUTION_PATH}/*
-#cp -r /Users/hemikak/ballerina/dev/ballerina/distribution/zip/jballerina-tools/build/distributions/jballerina-tools-0.992.0-m2-SNAPSHOT/* ${DISTRIBUTION_PATH}
+rm -rf ${DISTRIBUTION_PATH}/*
+cp -r /Users/hemikak/ballerina/dev/ballerina/distribution/zip/jballerina-tools/build/distributions/jballerina-tools-0.992.0-m2-SNAPSHOT/* ${DISTRIBUTION_PATH}
 
 EXECUTABLE="${DISTRIBUTION_PATH}/bin/ballerina"
 KUBERNETES_BALLERINA_PROJECT="${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/src/main/ballerina/ballerinax"
@@ -37,11 +37,11 @@ rm -rf ${KUBERNETES_BALLERINA_PROJECT}/target
 if ! hash pushd 2>/dev/null
 then
     cd ${KUBERNETES_BALLERINA_PROJECT}
-    ${EXECUTABLE} compile --jvmTarget
+    ${EXECUTABLE} compile --skip-tests
     cd -
 else
     pushd ${KUBERNETES_BALLERINA_PROJECT} /dev/null 2>&1
-        ${EXECUTABLE} compile --jvmTarget
+        ${EXECUTABLE} compile --skip-tests
     popd > /dev/null 2>&1
 fi
 

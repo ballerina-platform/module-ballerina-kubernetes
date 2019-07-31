@@ -227,7 +227,7 @@ public class KubernetesTestUtils {
      * @throws InterruptedException if an error occurs while compiling
      * @throws IOException          if an error occurs while writing file
      */
-    public static int compileBallerinaProject(Path sourceDirectory) throws InterruptedException,
+    public static int compileBallerinaProject(Path sourceDirectory, boolean skipTests) throws InterruptedException,
             IOException {
         Path ballerinaInternalLog = Paths.get(sourceDirectory.toAbsolutePath().toString(), "ballerina-internal.log");
         if (ballerinaInternalLog.toFile().exists()) {
@@ -235,7 +235,14 @@ public class KubernetesTestUtils {
             FileUtils.deleteQuietly(ballerinaInternalLog.toFile());
         }
     
-        ProcessBuilder pb = new ProcessBuilder(BALLERINA_COMMAND, BUILD);
+        ProcessBuilder pb;
+        if (skipTests) {
+            pb = new ProcessBuilder(BALLERINA_COMMAND, BUILD, "--skip-tests");
+        } else {
+            pb = new ProcessBuilder(BALLERINA_COMMAND, BUILD);
+        }
+    
+        log.info(COMPILING + sourceDirectory.normalize());
         log.debug(EXECUTING_COMMAND + pb.command());
         pb.directory(sourceDirectory.toFile());
         Map<String, String> environment = pb.environment();
@@ -254,6 +261,19 @@ public class KubernetesTestUtils {
         }
 
         return exitCode;
+    }
+    
+    /**
+     * Compile a ballerina project in a given directory
+     *
+     * @param sourceDirectory Ballerina source directory
+     * @return Exit code
+     * @throws InterruptedException if an error occurs while compiling
+     * @throws IOException          if an error occurs while writing file
+     */
+    public static int compileBallerinaProject(Path sourceDirectory) throws InterruptedException,
+            IOException {
+        return compileBallerinaProject(sourceDirectory, false);
     }
 
     private static synchronized void addJavaAgents(Map<String, String> envProperties) {
