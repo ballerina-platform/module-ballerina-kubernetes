@@ -28,6 +28,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -39,7 +40,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 /**
  * Test resource quotas
  */
-public class KubernetesResourceQuotaGeneratorTests {
+public class KubernetesResourceQuotaGeneratorTests extends HandlerTestSuite {
     
     @Test
     public void testResourceQuota() {
@@ -61,8 +62,8 @@ public class KubernetesResourceQuotaGeneratorTests {
         KubernetesContext.getInstance().getDataHolder().setResourceQuotaModels(resourceQuotaModels);
         try {
             new ResourceQuotaHandler().createArtifacts();
-            File yamlFile = new File("target" + File.separator + "kubernetes" + File.separator +
-                                     "hello" + RESOURCE_QUOTA_FILE_POSTFIX + YAML);
+            File yamlFile = Paths.get("target", "kubernetes", module.name.toString(), "hello" +
+                                                                          RESOURCE_QUOTA_FILE_POSTFIX + YAML).toFile();
             Assert.assertTrue(yamlFile.exists(), "Generated file not found.");
             ResourceQuota resourceQuota = Utils.loadYaml(yamlFile);
             

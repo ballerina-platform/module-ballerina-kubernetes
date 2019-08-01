@@ -44,7 +44,8 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
  */
 public class EnvVarTest extends BaseTest {
     private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "env-vars");
-    private static final Path TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
+    private static final Path DOCKER_TARGET_PATH = BAL_DIRECTORY.resolve(DOCKER);
+    private static final Path KUBERNETES_TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
     private static final String DOCKER_IMAGE = "pizza-shop:latest";
     
     /**
@@ -63,7 +64,7 @@ public class EnvVarTest extends BaseTest {
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = TARGET_PATH.resolve("name_value_deployment.yaml").toFile();
+        File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("name_value_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         List<EnvVar> envVars = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
@@ -73,7 +74,8 @@ public class EnvVarTest extends BaseTest {
         Assert.assertEquals(envVars.get(1).getName(), "city", "Invalid environment variable name found.");
         Assert.assertEquals(envVars.get(1).getValue(), "COLOMBO", "Invalid environment variable value found.");
     
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -98,7 +100,7 @@ public class EnvVarTest extends BaseTest {
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = TARGET_PATH.resolve("build_name_value_deployment.yaml").toFile();
+        File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("build_name_value_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         List<EnvVar> envVars = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
@@ -112,7 +114,8 @@ public class EnvVarTest extends BaseTest {
         Assert.assertEquals(envVars.get(3).getName(), "DATABASE_PASSWORD", "Invalid environment variable name found.");
         Assert.assertEquals(envVars.get(3).getValue(), "rootpwd", "Invalid environment variable value found.");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -132,7 +135,7 @@ public class EnvVarTest extends BaseTest {
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = TARGET_PATH.resolve("field_ref_value_deployment.yaml").toFile();
+        File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("field_ref_value_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         List<EnvVar> envVars = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
@@ -146,7 +149,8 @@ public class EnvVarTest extends BaseTest {
         Assert.assertEquals(envVars.get(1).getValueFrom().getFieldRef().getFieldPath(), "metadata.name",
                 "Invalid environment variable value found.");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -166,7 +170,7 @@ public class EnvVarTest extends BaseTest {
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = TARGET_PATH.resolve("secret_key_ref_deployment.yaml").toFile();
+        File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("secret_key_ref_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         List<EnvVar> envVars = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
@@ -184,7 +188,8 @@ public class EnvVarTest extends BaseTest {
         Assert.assertEquals(envVars.get(1).getValueFrom().getSecretKeyRef().getKey(), "password",
                 "Invalid environment variable value found.");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -204,7 +209,7 @@ public class EnvVarTest extends BaseTest {
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = TARGET_PATH.resolve("resource_field_ref_value_deployment.yaml").toFile();
+        File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("resource_field_ref_value_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         List<EnvVar> envVars = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
@@ -220,7 +225,8 @@ public class EnvVarTest extends BaseTest {
         Assert.assertEquals(envVars.get(1).getValueFrom().getResourceFieldRef().getResource(), "limits.cpu",
                 "Invalid environment variable value found.");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -240,7 +246,7 @@ public class EnvVarTest extends BaseTest {
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = TARGET_PATH.resolve("config_map_key_ref_deployment.yaml").toFile();
+        File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("config_map_key_ref_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         List<EnvVar> envVars = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
@@ -258,7 +264,8 @@ public class EnvVarTest extends BaseTest {
         Assert.assertEquals(envVars.get(1).getValueFrom().getConfigMapKeyRef().getKey(), "log_level",
                 "Invalid environment variable value found.");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -278,7 +285,7 @@ public class EnvVarTest extends BaseTest {
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = TARGET_PATH.resolve("combination_deployment.yaml").toFile();
+        File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("combination_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         List<EnvVar> envVars = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
@@ -309,7 +316,8 @@ public class EnvVarTest extends BaseTest {
         Assert.assertEquals(envVars.get(4).getValueFrom().getSecretKeyRef().getKey(), "password",
                 "Invalid environment variable value found.");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -322,14 +330,15 @@ public class EnvVarTest extends BaseTest {
     @Test
     public void invalidTest() throws IOException, InterruptedException, KubernetesPluginException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "invalid.bal"), 1);
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
     }
     
     /**
      * Validate if Dockerfile is created.
      */
     public void validateDockerfile() {
-        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
+        File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
     

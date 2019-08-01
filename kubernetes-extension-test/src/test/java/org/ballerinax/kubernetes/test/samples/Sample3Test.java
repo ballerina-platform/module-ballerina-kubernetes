@@ -47,7 +47,8 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
 public class Sample3Test extends SampleTest {
 
     private static final Path SOURCE_DIR_PATH = SAMPLE_DIR.resolve("sample3");
-    private static final Path TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
+    private static final Path DOCKER_TARGET_PATH = SOURCE_DIR_PATH.resolve(DOCKER);
+    private static final Path KUBERNETES_TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
     private static final String DOCKER_IMAGE = "foodstore:latest";
     private static final String SELECTOR_APP = "foodstore";
     private Deployment deployment;
@@ -59,7 +60,7 @@ public class Sample3Test extends SampleTest {
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "foodstore.bal"), 0);
-        File artifactYaml = TARGET_PATH.resolve("foodstore.yaml").toFile();
+        File artifactYaml = KUBERNETES_TARGET_PATH.resolve("foodstore.yaml").toFile();
         Assert.assertTrue(artifactYaml.exists());
         KubernetesClient client = new DefaultKubernetesClient();
         List<HasMetadata> k8sItems = client.load(new FileInputStream(artifactYaml)).get();
@@ -177,7 +178,7 @@ public class Sample3Test extends SampleTest {
     
     @Test
     public void validateDockerfile() {
-        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
+        File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
     
@@ -190,8 +191,9 @@ public class Sample3Test extends SampleTest {
     }
 
     @AfterClass
-    public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+    public void cleanUp() throws KubernetesPluginException {
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
 }

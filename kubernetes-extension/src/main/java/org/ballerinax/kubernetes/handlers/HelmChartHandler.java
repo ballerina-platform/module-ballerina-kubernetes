@@ -33,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.HELM_API_VERSION;
 import static org.ballerinax.kubernetes.KubernetesConstants.HELM_API_VERSION_DEFAULT;
 import static org.ballerinax.kubernetes.KubernetesConstants.HELM_APP_VERSION;
@@ -44,7 +45,6 @@ import static org.ballerinax.kubernetes.KubernetesConstants.HELM_NAME;
 import static org.ballerinax.kubernetes.KubernetesConstants.HELM_VERSION;
 import static org.ballerinax.kubernetes.KubernetesConstants.HELM_VERSION_DEFAULT;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
 
 /**
  * Generates the Helm chart from annotations.
@@ -55,9 +55,9 @@ public class HelmChartHandler extends AbstractArtifactHandler {
     public void createArtifacts() throws KubernetesPluginException {
         DeploymentModel model = this.dataHolder.getDeploymentModel();
         OUT.println();
-        Path helmBaseOutputDir = this.dataHolder.getArtifactOutputPath();
+        Path helmBaseOutputDir = this.dataHolder.getK8sArtifactOutputPath();
         if (helmBaseOutputDir.endsWith("target" + File.separator + "kubernetes" + File.separator)) {
-            helmBaseOutputDir = helmBaseOutputDir.resolve(extractBalxName(this.dataHolder.getBalxFilePath()));
+            helmBaseOutputDir = helmBaseOutputDir.resolve(extractUberJarName(this.dataHolder.getUberJarPath()));
         }
         helmBaseOutputDir = helmBaseOutputDir.resolve(model.getName());
         String helmTemplatesOutputDir = helmBaseOutputDir + File.separator + HELM_CHART_TEMPLATES;
@@ -72,7 +72,7 @@ public class HelmChartHandler extends AbstractArtifactHandler {
     
     private void copyKubernetesArtifactsToHelmTemplates(String helmTemplatesOutputDir) 
             throws KubernetesPluginException {
-        File dir = this.dataHolder.getArtifactOutputPath().toFile();
+        File dir = this.dataHolder.getK8sArtifactOutputPath().toFile();
         File[] yamlFiles = dir.listFiles(new KubernetesArtifactsFileFilter());
         if (yamlFiles == null) {
             throw new KubernetesPluginException("kuberenetes artifacts not available to generate Helm templates");

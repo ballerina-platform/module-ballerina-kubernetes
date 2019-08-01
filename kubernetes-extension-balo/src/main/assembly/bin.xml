@@ -22,7 +22,7 @@
 
     <id>extracted-test-pack</id>
     <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>jballerina-tools-${ballerina.lang.version}</baseDirectory>
+    <baseDirectory>kubernetes-artifacts</baseDirectory>
 
     <formats>
         <format>zip</format>
@@ -31,10 +31,45 @@
     <fileSets>
         <fileSet>
             <directory>
-                ${project.build.directory}/extracted-distribution/jballerina-tools-${ballerina.lang.version}/
+                ${project.build.directory}/extracted-distribution/jballerina-tools-${ballerina.lang.version}/bir-cache/ballerinax/kubernetes
             </directory>
-            <outputDirectory>.</outputDirectory>
+            <outputDirectory>kubernetes</outputDirectory>
+            <fileMode>755</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>
+                ${project.build.directory}/extracted-distribution/jballerina-tools-${ballerina.lang.version}/bir-cache/ballerinax/istio
+            </directory>
+            <outputDirectory>istio</outputDirectory>
+            <fileMode>755</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>
+                ${project.build.directory}/extracted-distribution/jballerina-tools-${ballerina.lang.version}/bir-cache/ballerinax/openshift
+            </directory>
+            <outputDirectory>openshift</outputDirectory>
             <fileMode>755</fileMode>
         </fileSet>
     </fileSets>
+
+    <files>
+        <file>
+            <source>${project.build.directory}/extracted-distribution/jballerina-tools-${ballerina.lang.version}/bre/lib/kubernetes.jar</source>
+            <outputDirectory>.</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
+        <file>
+            <source>${project.build.directory}/extracted-distribution/jballerina-tools-${ballerina.lang.version}/bre/lib/istio.jar</source>
+            <outputDirectory>.</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
+        <file>
+            <source>${project.build.directory}/extracted-distribution/jballerina-tools-${ballerina.lang.version}/bre/lib/openshift.jar</source>
+            <outputDirectory>.</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
+    </files>
 </assembly>

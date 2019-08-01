@@ -5,7 +5,7 @@ import ballerina/http;
 http:Client clientEP = new("http://localhost:7070/hotel");
 
 // Function to test Hotel reservation service
-@test:Config
+@test:Config{}
 function testHotelReservationService() returns error? {
     // Initialize the empty http requests and responses
     http:Request req;
@@ -22,12 +22,12 @@ function testHotelReservationService() returns error? {
     // Send a 'post' request and obtain the response
     http:Response response = check clientEP -> post("/reserve", payload);
     // Expected response code is 200
-    test:assertEquals(response.statusCode, 200, msg = "Hotel reservation service did not respond with 200 OK signal!");
+    test:assertEquals(response.statusCode, 200, "Hotel reservation service did not respond with 200 OK signal!");
     // Check whether the response is as expected
     json resPayload = check response.getJsonPayload();
     json expected = {
         Status: "Success"
     };
-    test:assertEquals(resPayload, expected, msg = "Response mismatch!");
+    test:assertEquals(resPayload, expected, "Response mismatch!");
     return ();
 }

@@ -26,7 +26,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,7 +33,7 @@ import java.util.Set;
 /**
  * Docker generator tests.
  */
-public class DockerGeneratorTests {
+public class DockerGeneratorTests extends HandlerTestSuite {
 
     @Test
     public void testDockerGenerate() throws KubernetesPluginException {
@@ -45,21 +44,18 @@ public class DockerGeneratorTests {
         ports.add(9092);
         dockerModel.setPorts(ports);
         dockerModel.setService(true);
-        dockerModel.setUberJarFileName("hello.balx");
+        dockerModel.setUberJarFileName("hello-executable.jar");
         dockerModel.setEnableDebug(true);
         dockerModel.setBaseImage("ballerina/ballerina-runtime" + ":latest");
         dockerModel.setDebugPort(5005);
         dockerModel.setBuildImage(false);
         KubernetesContext context = KubernetesContext.getInstance();
         KubernetesDataHolder dataHolder = context.getDataHolder();
-        Path tempArtifactHolder = dataHolder.getArtifactOutputPath();
-        dataHolder.setArtifactOutputPath(tempArtifactHolder.resolve("hello"));
         dataHolder.setDockerModel(dockerModel);
         new DockerHandler().createArtifacts();
-        File dockerfile = new File("target/kubernetes/hello/docker/");
+        File dockerfile = new File("target/docker/" + module.name.toString() + "/");
         dockerfile.mkdirs();
-        dockerfile = new File("target/kubernetes/hello/docker/Dockerfile");
-        dataHolder.setArtifactOutputPath(tempArtifactHolder);
+        dockerfile = new File("target/docker/" + module.name.toString() + "/Dockerfile");
         Assert.assertTrue(dockerfile.exists());
         dockerfile.deleteOnExit();
     }

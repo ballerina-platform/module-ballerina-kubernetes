@@ -46,7 +46,8 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDocker
  */
 public class MainFunctionDeploymentTest extends BaseTest {
     private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "deployment");
-    private static final Path TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
+    private static final Path DOCKER_TARGET_PATH = BAL_DIRECTORY.resolve(DOCKER);
+    private static final Path KUBERNETES_TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
     private static final String DOCKER_IMAGE = "main_function:latest";
     
     /**
@@ -66,7 +67,7 @@ public class MainFunctionDeploymentTest extends BaseTest {
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = TARGET_PATH.resolve("main_function_deployment.yaml").toFile();
+        File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("main_function_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         Assert.assertEquals(deployment.getMetadata().getLabels().size(), 2, "Invalid number of labels found.");
@@ -75,7 +76,7 @@ public class MainFunctionDeploymentTest extends BaseTest {
         Assert.assertEquals(deployment.getMetadata().getLabels().get("task_type"), "printer", "Invalid label found.");
     
         // Validate volume claim yaml.
-        File volumeClaimYaml = TARGET_PATH.resolve("main_function_volume_claim.yaml").toFile();
+        File volumeClaimYaml = KUBERNETES_TARGET_PATH.resolve("main_function_volume_claim.yaml").toFile();
         Assert.assertTrue(volumeClaimYaml.exists());
         PersistentVolumeClaim volumeClaim = KubernetesTestUtils.loadYaml(volumeClaimYaml);
         Assert.assertNotNull(volumeClaim);
@@ -83,14 +84,14 @@ public class MainFunctionDeploymentTest extends BaseTest {
         Assert.assertEquals(volumeClaim.getSpec().getAccessModes().size(), 1);
     
         // Validate secret.
-        File secretYaml = TARGET_PATH.resolve("main_function_secret.yaml").toFile();
+        File secretYaml = KUBERNETES_TARGET_PATH.resolve("main_function_secret.yaml").toFile();
         Assert.assertTrue(secretYaml.exists());
         Secret privateSecret = KubernetesTestUtils.loadYaml(secretYaml);
         Assert.assertNotNull(privateSecret);
         Assert.assertEquals(privateSecret.getData().size(), 1);
     
         // Validate horizontal pod scalar.
-        File hpaYaml = TARGET_PATH.resolve("main_function_hpa.yaml").toFile();
+        File hpaYaml = KUBERNETES_TARGET_PATH.resolve("main_function_hpa.yaml").toFile();
         Assert.assertTrue(hpaYaml.exists());
         HorizontalPodAutoscaler podAutoscaler = KubernetesTestUtils.loadYaml(hpaYaml);
         Assert.assertNotNull(podAutoscaler);
@@ -110,7 +111,8 @@ public class MainFunctionDeploymentTest extends BaseTest {
         Assert.assertEquals(container.getEnv().get(0).getName(), "CONFIG_FILE");
         Assert.assertEquals(container.getEnv().get(0).getValue(), "/home/ballerina/conf/ballerina.conf");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -129,7 +131,7 @@ public class MainFunctionDeploymentTest extends BaseTest {
      * Validate if Dockerfile is created.
      */
     public void validateDockerfile() {
-        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
+        File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
     

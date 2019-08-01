@@ -32,13 +32,14 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Test kubernetes HPA generation.
  */
-public class KubernetesHPAGeneratorTests {
+public class KubernetesHPAGeneratorTests extends HandlerTestSuite {
 
 
     private final String hpaName = "MyHPA";
@@ -79,7 +80,7 @@ public class KubernetesHPAGeneratorTests {
         KubernetesContext.getInstance().getDataHolder().setDeploymentModel(deploymentModel);
         try {
             new HPAHandler().createArtifacts();
-            File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_hpa.yaml");
+            File tempFile = Paths.get("target", "kubernetes", module.name.toString(), "hello_hpa.yaml").toFile();
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

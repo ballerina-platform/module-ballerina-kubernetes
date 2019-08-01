@@ -19,6 +19,7 @@
 package org.ballerinax.kubernetes.utils;
 
 import org.apache.commons.io.FileUtils;
+import org.ballerinax.docker.generator.utils.DockerGenUtils;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -52,9 +53,9 @@ public class KubernetesUtilsTest {
         Path balxFilePath =
                 Paths.get("/Users/anuruddha/workspace/ballerinax/docker/samples/sample5/hello_config_file.balx");
         String baxlFileName = "hello_config_file";
-        Assert.assertEquals(KubernetesUtils.extractBalxName(balxFilePath), baxlFileName);
+        Assert.assertEquals(DockerGenUtils.extractUberJarName(balxFilePath), baxlFileName);
         balxFilePath = Paths.get("/Users/anuruddha/workspace/ballerinax/docker/samples/sample5/");
-        Assert.assertNull(KubernetesUtils.extractBalxName(balxFilePath));
+        Assert.assertNull(DockerGenUtils.extractUberJarName((balxFilePath)));
     }
 
     @Test

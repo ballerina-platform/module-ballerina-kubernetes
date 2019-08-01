@@ -15,11 +15,12 @@
 // under the License.
 
 import ballerina/http;
+import ballerina/'lang\.object as lang;
 import ballerinax/kubernetes;
 
 public type ABC object {
 
-    *AbstractListener;
+    *lang:AbstractListener;
 
     public function __start() returns error?{
         error e = error("startError");

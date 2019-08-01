@@ -45,7 +45,8 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
 public class IstioGatewayTest extends BaseTest {
     
     private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "istio", "gateway");
-    private static final Path TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
+    private static final Path DOCKER_TARGET_PATH = BAL_DIRECTORY.resolve(DOCKER);
+    private static final Path KUBERNETES_TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
     private static final String DOCKER_IMAGE = "pizza-shop:latest";
     
     /**
@@ -65,7 +66,7 @@ public class IstioGatewayTest extends BaseTest {
         validateDockerImage();
 
         // Validate gateway yaml
-        File gatewayFile = TARGET_PATH.resolve("all_fields_istio_gateway.yaml").toFile();
+        File gatewayFile = KUBERNETES_TARGET_PATH.resolve("all_fields_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Gateway gateway = KubernetesTestUtils.loadYaml(gatewayFile);
 
@@ -106,7 +107,8 @@ public class IstioGatewayTest extends BaseTest {
         Assert.assertTrue(gateway.getSpec().getServers().get(0).getTls().getHttpsRedirect(),
                 "Invalid tls httpsRedirect value");
 
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -138,7 +140,7 @@ public class IstioGatewayTest extends BaseTest {
         validateDockerImage();
 
         // Validate gateway yaml
-        File gatewayFile = TARGET_PATH.resolve("multiple_servers_istio_gateway.yaml").toFile();
+        File gatewayFile = KUBERNETES_TARGET_PATH.resolve("multiple_servers_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Gateway gateway = KubernetesTestUtils.loadYaml(gatewayFile);
     
@@ -186,7 +188,8 @@ public class IstioGatewayTest extends BaseTest {
         Assert.assertFalse(gateway.getSpec().getServers().get(1).getTls().getHttpsRedirect(),
                 "Invalid tls httpsRedirect value");
 
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -206,7 +209,7 @@ public class IstioGatewayTest extends BaseTest {
         validateDockerImage();
     
         // Validate gateway yaml
-        File gatewayFile = TARGET_PATH.resolve("no_selector_istio_gateway.yaml").toFile();
+        File gatewayFile = KUBERNETES_TARGET_PATH.resolve("no_selector_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Gateway gateway = KubernetesTestUtils.loadYaml(gatewayFile);
     
@@ -215,7 +218,8 @@ public class IstioGatewayTest extends BaseTest {
         Assert.assertEquals(gateway.getSpec().getSelector().get(KubernetesConstants.ISTIO_GATEWAY_SELECTOR),
                 "ingressgateway", "Invalid selector.");
     
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -236,7 +240,7 @@ public class IstioGatewayTest extends BaseTest {
         validateDockerImage();
 
         // Validate gateway yaml
-        File gatewayFile = TARGET_PATH.resolve("no_tls_https_redirect_istio_gateway.yaml").toFile();
+        File gatewayFile = KUBERNETES_TARGET_PATH.resolve("no_tls_https_redirect_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Gateway gateway = KubernetesTestUtils.loadYaml(gatewayFile);
     
@@ -264,7 +268,8 @@ public class IstioGatewayTest extends BaseTest {
     
         Assert.assertNull(gateway.getSpec().getServers().get(0).getTls(), "tls options should not be available");
 
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -285,7 +290,7 @@ public class IstioGatewayTest extends BaseTest {
         validateDockerImage();
 
         // Validate gateway yaml
-        File gatewayFile = TARGET_PATH.resolve("tls_mutual_istio_gateway.yaml").toFile();
+        File gatewayFile = KUBERNETES_TARGET_PATH.resolve("tls_mutual_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Gateway gateway = KubernetesTestUtils.loadYaml(gatewayFile);
     
@@ -322,7 +327,8 @@ public class IstioGatewayTest extends BaseTest {
         Assert.assertEquals(gateway.getSpec().getServers().get(0).getTls().getCaCertificates(),
                 "/etc/istio/ingressgateway-ca-certs/ca-chain.cert.pem", "Invalid tls caCertificates value");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -354,7 +360,7 @@ public class IstioGatewayTest extends BaseTest {
         validateDockerImage();
         
         // Validate gateway yaml
-        File gatewayFile = TARGET_PATH.resolve("tls_simple_istio_gateway.yaml").toFile();
+        File gatewayFile = KUBERNETES_TARGET_PATH.resolve("tls_simple_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Gateway gateway = KubernetesTestUtils.loadYaml(gatewayFile);
     
@@ -391,7 +397,8 @@ public class IstioGatewayTest extends BaseTest {
         Assert.assertNull(gateway.getSpec().getServers().get(0).getTls().getCaCertificates(),
                 "Unexpected tls caCertificates value found.");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -412,7 +419,7 @@ public class IstioGatewayTest extends BaseTest {
         validateDockerImage();
         
         // Validate gateway yaml
-        File gatewayFile = TARGET_PATH.resolve("empty_annotation_ep_istio_gateway.yaml").toFile();
+        File gatewayFile = KUBERNETES_TARGET_PATH.resolve("empty_annotation_ep_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Gateway gateway = KubernetesTestUtils.loadYaml(gatewayFile);
     
@@ -436,7 +443,8 @@ public class IstioGatewayTest extends BaseTest {
         Assert.assertEquals(gateway.getSpec().getServers().get(0).getHosts().get(0), "*",
                 "* host not included");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -457,7 +465,7 @@ public class IstioGatewayTest extends BaseTest {
         validateDockerImage();
         
         // Validate gateway yaml
-        File gatewayFile = TARGET_PATH.resolve("empty_annotation_svc_istio_gateway.yaml").toFile();
+        File gatewayFile = KUBERNETES_TARGET_PATH.resolve("empty_annotation_svc_istio_gateway.yaml").toFile();
         Assert.assertTrue(gatewayFile.exists());
         Gateway gateway = KubernetesTestUtils.loadYaml(gatewayFile);
     
@@ -481,7 +489,8 @@ public class IstioGatewayTest extends BaseTest {
         Assert.assertEquals(gateway.getSpec().getServers().get(0).getHosts().get(0), "*",
                 "* host not included");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -500,7 +509,7 @@ public class IstioGatewayTest extends BaseTest {
      * Validate if Dockerfile is created.
      */
     public void validateDockerfile() {
-        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
+        File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
     

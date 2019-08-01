@@ -46,9 +46,12 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
 public class Sample10Test extends SampleTest {
 
     private static final Path SOURCE_DIR_PATH = SAMPLE_DIR.resolve("sample10");
-    private static final Path TARGET_PATH = SOURCE_DIR_PATH.resolve("target").resolve(KUBERNETES);
-    private static final Path BURGER_PKG_TARGET_PATH = TARGET_PATH.resolve("burger");
-    private static final Path PIZZA_PKG_TARGET_PATH = TARGET_PATH.resolve("pizza");
+    private static final Path DOCKER_TARGET_PATH = SOURCE_DIR_PATH.resolve("target").resolve(DOCKER);
+    private static final Path KUBERNETES_TARGET_PATH = SOURCE_DIR_PATH.resolve("target").resolve(KUBERNETES);
+    private static final Path BURGER_PKG_DOCKER_TARGET_PATH = DOCKER_TARGET_PATH.resolve("burger");
+    private static final Path PIZZA_PKG_DOCKER_TARGET_PATH = DOCKER_TARGET_PATH.resolve("pizza");
+    private static final Path BURGER_PKG_K8S_TARGET_PATH = KUBERNETES_TARGET_PATH.resolve("burger");
+    private static final Path PIZZA_PKG_K8S_TARGET_PATH = KUBERNETES_TARGET_PATH.resolve("pizza");
     private static final String BURGER_DOCKER_IMAGE = "burger:latest";
     private static final String PIZZA_DOCKER_IMAGE = "pizza:latest";
     private static final String BURGER_SELECTOR = "burger";
@@ -64,7 +67,7 @@ public class Sample10Test extends SampleTest {
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaProject(SOURCE_DIR_PATH), 0);
-        File burgerYamlFile = BURGER_PKG_TARGET_PATH.resolve("burger.yaml").toFile();
+        File burgerYamlFile = BURGER_PKG_K8S_TARGET_PATH.resolve("burger.yaml").toFile();
         Assert.assertTrue(burgerYamlFile.exists());
         List<HasMetadata> k8sItems = KubernetesTestUtils.loadYaml(burgerYamlFile);
         for (HasMetadata data : k8sItems) {
@@ -86,7 +89,7 @@ public class Sample10Test extends SampleTest {
             }
         }
         
-        File pizzaYamlFile = PIZZA_PKG_TARGET_PATH.resolve("pizza.yaml").toFile();
+        File pizzaYamlFile = PIZZA_PKG_K8S_TARGET_PATH.resolve("pizza.yaml").toFile();
         Assert.assertTrue(pizzaYamlFile.exists());
         k8sItems = KubernetesTestUtils.loadYaml(pizzaYamlFile);
         for (HasMetadata data : k8sItems) {
@@ -108,12 +111,13 @@ public class Sample10Test extends SampleTest {
 
     @Test
     public void validateHelmChartYaml() {
-        Assert.assertTrue(BURGER_PKG_TARGET_PATH.resolve("burger-deployment").resolve("Chart.yaml").toFile().exists());
+        Assert.assertTrue(BURGER_PKG_K8S_TARGET_PATH.resolve("burger-deployment").resolve("Chart.yaml").toFile()
+                .exists());
     }
     
     @Test
     public void validateHelmChartTemplates() {
-        File templateDir = BURGER_PKG_TARGET_PATH.resolve("burger-deployment").resolve("templates").toFile();
+        File templateDir = BURGER_PKG_K8S_TARGET_PATH.resolve("burger-deployment").resolve("templates").toFile();
         Assert.assertTrue(templateDir.isDirectory());
         Assert.assertTrue(templateDir.list().length > 0);
     }
@@ -219,8 +223,8 @@ public class Sample10Test extends SampleTest {
     
     @Test
     public void validateDockerfile() {
-        Assert.assertTrue(BURGER_PKG_TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile().exists());
-        Assert.assertTrue(PIZZA_PKG_TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile().exists());
+        Assert.assertTrue(BURGER_PKG_DOCKER_TARGET_PATH.resolve("Dockerfile").toFile().exists());
+        Assert.assertTrue(PIZZA_PKG_DOCKER_TARGET_PATH.resolve("Dockerfile").toFile().exists());
     }
     
     @Test
@@ -238,8 +242,9 @@ public class Sample10Test extends SampleTest {
     }
 
     @AfterClass
-    public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+    public void cleanUp() throws KubernetesPluginException {
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(PIZZA_DOCKER_IMAGE);
         KubernetesTestUtils.deleteDockerImage(BURGER_DOCKER_IMAGE);
     }

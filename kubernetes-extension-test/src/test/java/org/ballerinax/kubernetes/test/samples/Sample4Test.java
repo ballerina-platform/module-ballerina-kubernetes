@@ -48,7 +48,8 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
 public class Sample4Test extends SampleTest {
 
     private static final Path SOURCE_DIR_PATH = SAMPLE_DIR.resolve("sample4");
-    private static final Path TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
+    private static final Path DOCKER_TARGET_PATH = SOURCE_DIR_PATH.resolve(DOCKER);
+    private static final Path KUBERNETES_TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
     private static final String DOCKER_IMAGE = "hello_world_ssl_k8s:latest";
     private static final String SELECTOR_APP = "hello_world_ssl_k8s";
     private Deployment deployment;
@@ -58,7 +59,7 @@ public class Sample4Test extends SampleTest {
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "hello_world_ssl_k8s.bal"), 0);
-        File artifactYaml = TARGET_PATH.resolve("hello_world_ssl_k8s.yaml").toFile();
+        File artifactYaml = KUBERNETES_TARGET_PATH.resolve("hello_world_ssl_k8s.yaml").toFile();
         Assert.assertTrue(artifactYaml.exists());
         KubernetesClient client = new DefaultKubernetesClient();
         List<HasMetadata> k8sItems = client.load(new FileInputStream(artifactYaml)).get();
@@ -130,7 +131,7 @@ public class Sample4Test extends SampleTest {
     
     @Test
     public void validateDockerfile() {
-        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
+        File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
     
@@ -143,7 +144,8 @@ public class Sample4Test extends SampleTest {
 
     @AfterClass
     public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
 }

@@ -55,7 +55,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.ballerinalang</groupId>
-                                    <artifactId>jballerina-ext-build</artifactId>
+                                    <artifactId>jballerina-tools</artifactId>
                                     <version>${ballerina.lang.version}</version>
                                     <type>zip</type>
                                     <outputDirectory>${project.build.directory}/extracted-distribution/
@@ -122,9 +122,25 @@
                             <descriptors>
                                 <descriptor>src/main/assembly/bin.xml</descriptor>
                             </descriptors>
+                            <finalName>kubernetes-artifacts</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <outputDirectory>${project.build.directory}/</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>zip-jballerina-pack</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/zip.xml</descriptor>
+                            </descriptors>
                             <finalName>jballerina-tools-${ballerina.lang.version}</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                             <outputDirectory>${project.build.directory}/extracted-distribution/</outputDirectory>
+                            <attach>false</attach>
                         </configuration>
                     </execution>
                 </executions>

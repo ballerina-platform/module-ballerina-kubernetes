@@ -48,7 +48,8 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
 public class IstioVirtualServiceTest extends BaseTest {
     
     private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "istio", "virtual-service");
-    private static final Path TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
+    private static final Path DOCKER_TARGET_PATH = BAL_DIRECTORY.resolve(DOCKER);
+    private static final Path KUBERNETES_TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
     private static final String DOCKER_IMAGE = "pizza-shop:latest";
     
     /**
@@ -68,7 +69,7 @@ public class IstioVirtualServiceTest extends BaseTest {
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = TARGET_PATH.resolve("http_route_istio_virtual_service.yaml").toFile();
+        File vsFile = KUBERNETES_TARGET_PATH.resolve("http_route_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(vsFile));
@@ -113,7 +114,8 @@ public class IstioVirtualServiceTest extends BaseTest {
                 "Invalid route destination host");
         Assert.assertEquals(route2.get(0).get("destination").get("subset"), "v1", "Invalid route destination subset");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -134,7 +136,7 @@ public class IstioVirtualServiceTest extends BaseTest {
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = TARGET_PATH.resolve("http_match_request_istio_virtual_service.yaml").toFile();
+        File vsFile = KUBERNETES_TARGET_PATH.resolve("http_match_request_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(vsFile));
@@ -163,7 +165,8 @@ public class IstioVirtualServiceTest extends BaseTest {
         Assert.assertEquals(route.get(0).get("destination").get("host"), "ratings.prod.svc.cluster.local",
                 "Invalid route destination host");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -184,7 +187,7 @@ public class IstioVirtualServiceTest extends BaseTest {
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = TARGET_PATH.resolve("destination_weight_istio_virtual_service.yaml").toFile();
+        File vsFile = KUBERNETES_TARGET_PATH.resolve("destination_weight_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         VirtualService virtualService = KubernetesTestUtils.loadYaml(vsFile);
         
@@ -213,7 +216,8 @@ public class IstioVirtualServiceTest extends BaseTest {
         Assert.assertEquals(virtualService.getSpec().getHttp().get(0).getRoute().get(1).getWeight().intValue(), 75,
                 "Invalid route weight");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -234,7 +238,7 @@ public class IstioVirtualServiceTest extends BaseTest {
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = TARGET_PATH.resolve("destination_istio_virtual_service.yaml").toFile();
+        File vsFile = KUBERNETES_TARGET_PATH.resolve("destination_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         VirtualService virtualService = KubernetesTestUtils.loadYaml(vsFile);
         
@@ -255,7 +259,8 @@ public class IstioVirtualServiceTest extends BaseTest {
         Assert.assertEquals(virtualService.getSpec().getHttp().get(0).getRoute().get(0).getDestination().getHost(),
                 "reviews.prod.svc.cluster.local", "Invalid route destination host");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -276,7 +281,7 @@ public class IstioVirtualServiceTest extends BaseTest {
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = TARGET_PATH.resolve("http_redirect_istio_virtual_service.yaml").toFile();
+        File vsFile = KUBERNETES_TARGET_PATH.resolve("http_redirect_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(vsFile));
@@ -302,7 +307,8 @@ public class IstioVirtualServiceTest extends BaseTest {
         Assert.assertEquals(redirect.get("authority"), "newratings.default.svc.cluster.local",
                 "Invalid redirect authority");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -323,7 +329,7 @@ public class IstioVirtualServiceTest extends BaseTest {
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = TARGET_PATH.resolve("http_retry_istio_virtual_service.yaml").toFile();
+        File vsFile = KUBERNETES_TARGET_PATH.resolve("http_retry_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(vsFile));
@@ -350,7 +356,8 @@ public class IstioVirtualServiceTest extends BaseTest {
         Assert.assertEquals(retries.get("attempts"), 3, "Invalid number of retry attempts");
         Assert.assertEquals(retries.get("perTryTimeout"), "2s", "Invalid number of retry timeout try");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -371,7 +378,7 @@ public class IstioVirtualServiceTest extends BaseTest {
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = TARGET_PATH.resolve("http_fault_injection_istio_virtual_service.yaml").toFile();
+        File vsFile = KUBERNETES_TARGET_PATH.resolve("http_fault_injection_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(vsFile));
@@ -398,7 +405,8 @@ public class IstioVirtualServiceTest extends BaseTest {
         Assert.assertEquals(fault.get("abort").get("percent"), 10, "Invalid fault abort percent");
         Assert.assertEquals(fault.get("abort").get("httpStatus"), 400, "Invalid fault abort http status code");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -419,7 +427,7 @@ public class IstioVirtualServiceTest extends BaseTest {
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = TARGET_PATH.resolve("cors_policy_istio_virtual_service.yaml").toFile();
+        File vsFile = KUBERNETES_TARGET_PATH.resolve("cors_policy_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(vsFile));
@@ -452,7 +460,8 @@ public class IstioVirtualServiceTest extends BaseTest {
         Assert.assertEquals(((List<String>) corsPolicy.get("allowHeaders")).get(0), "X-Foo-Bar",
                 "Invalid cors allowHeaders");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -473,7 +482,7 @@ public class IstioVirtualServiceTest extends BaseTest {
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = TARGET_PATH.resolve("tls_route_istio_virtual_service.yaml").toFile();
+        File vsFile = KUBERNETES_TARGET_PATH.resolve("tls_route_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(vsFile));
@@ -512,7 +521,8 @@ public class IstioVirtualServiceTest extends BaseTest {
         Assert.assertEquals(route2.get(0).get("destination").get("host"), "reviews.prod.svc.cluster.local",
                 "Invalid route destination host");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -533,7 +543,7 @@ public class IstioVirtualServiceTest extends BaseTest {
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = TARGET_PATH.resolve("tcp_route_istio_virtual_service.yaml").toFile();
+        File vsFile = KUBERNETES_TARGET_PATH.resolve("tcp_route_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         Yaml yamlProcessor = new Yaml();
         Map<String, Object> virtualSvc = (Map<String, Object>) yamlProcessor.load(FileUtils.readFileToString(vsFile));
@@ -561,7 +571,8 @@ public class IstioVirtualServiceTest extends BaseTest {
         Assert.assertEquals(((Map<String, Object>) destination.get("port")).get("number"), 5555,
                 "Invalid destination port");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -582,7 +593,7 @@ public class IstioVirtualServiceTest extends BaseTest {
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = TARGET_PATH.resolve("empty_annotation_istio_virtual_service.yaml").toFile();
+        File vsFile = KUBERNETES_TARGET_PATH.resolve("empty_annotation_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         VirtualService virtualService = KubernetesTestUtils.loadYaml(vsFile);
     
@@ -605,7 +616,8 @@ public class IstioVirtualServiceTest extends BaseTest {
                         .getPort();
         Assert.assertEquals(numberPort.getNumber().intValue(), 9090, "Invalid port found");
     
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -626,7 +638,7 @@ public class IstioVirtualServiceTest extends BaseTest {
         validateDockerImage();
         
         // Validate virtual service yaml
-        File vsFile = TARGET_PATH.resolve("svc_port_istio_virtual_service.yaml").toFile();
+        File vsFile = KUBERNETES_TARGET_PATH.resolve("svc_port_istio_virtual_service.yaml").toFile();
         Assert.assertTrue(vsFile.exists());
         VirtualService virtualService = KubernetesTestUtils.loadYaml(vsFile);
     
@@ -649,7 +661,8 @@ public class IstioVirtualServiceTest extends BaseTest {
                         .getPort();
         Assert.assertEquals(numberPort.getNumber().intValue(), 8080, "Invalid port found");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -657,7 +670,7 @@ public class IstioVirtualServiceTest extends BaseTest {
      * Validate if Dockerfile is created.
      */
     public void validateDockerfile() {
-        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
+        File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
     

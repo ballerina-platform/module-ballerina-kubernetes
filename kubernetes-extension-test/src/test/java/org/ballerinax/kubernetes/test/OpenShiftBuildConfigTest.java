@@ -36,6 +36,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 
 /**
@@ -43,7 +44,8 @@ import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
  */
 public class OpenShiftBuildConfigTest extends BaseTest {
     private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "openshift", "build-config");
-    private static final Path TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
+    private static final Path DOCKER_TARGET_PATH = BAL_DIRECTORY.resolve(DOCKER);
+    private static final Path KUBERNETES_TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
     
     /**
      * Test case openshift build config annotation with default values.
@@ -51,7 +53,7 @@ public class OpenShiftBuildConfigTest extends BaseTest {
     @Test(groups = {"openshift"})
     public void simpleBuildConfigTest() throws IOException, InterruptedException, KubernetesPluginException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "simple_bc.bal"), 0);
-        File yamlFile = new File(TARGET_PATH + File.separator + "simple_bc.yaml");
+        File yamlFile = new File(KUBERNETES_TARGET_PATH + File.separator + "simple_bc.yaml");
         Assert.assertTrue(yamlFile.exists());
         KubernetesClient client = new DefaultKubernetesClient();
         List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
@@ -110,7 +112,8 @@ public class OpenShiftBuildConfigTest extends BaseTest {
             }
         }
     
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
     }
     
     /**
@@ -119,7 +122,7 @@ public class OpenShiftBuildConfigTest extends BaseTest {
     @Test(groups = {"openshift"})
     public void withNoNamespaceTest() throws IOException, InterruptedException {
         KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "no_namespace.bal");
-        File yamlFile = new File(TARGET_PATH + File.separator + "no_namespace.yaml");
+        File yamlFile = new File(KUBERNETES_TARGET_PATH + File.separator + "no_namespace.yaml");
         Assert.assertFalse(yamlFile.exists());
     }
     
@@ -129,7 +132,7 @@ public class OpenShiftBuildConfigTest extends BaseTest {
     @Test(groups = {"openshift"})
     public void withNoRegistryTest() throws IOException, InterruptedException {
         KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "no_registry.bal");
-        File yamlFile = new File(TARGET_PATH + File.separator + "no_registry.yaml");
+        File yamlFile = new File(KUBERNETES_TARGET_PATH + File.separator + "no_registry.yaml");
         Assert.assertFalse(yamlFile.exists());
     }
     
@@ -148,7 +151,7 @@ public class OpenShiftBuildConfigTest extends BaseTest {
     @Test(groups = {"openshift"})
     public void mainFunctionTest() throws IOException, InterruptedException, KubernetesPluginException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "main_function.bal"), 0);
-        File yamlFile = new File(TARGET_PATH + File.separator + "main_function.yaml");
+        File yamlFile = new File(KUBERNETES_TARGET_PATH + File.separator + "main_function.yaml");
         Assert.assertTrue(yamlFile.exists());
         KubernetesClient client = new DefaultKubernetesClient();
         List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
@@ -207,7 +210,8 @@ public class OpenShiftBuildConfigTest extends BaseTest {
             }
         }
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
     }
     
     /**
@@ -216,7 +220,7 @@ public class OpenShiftBuildConfigTest extends BaseTest {
     @Test(groups = {"openshift"})
     public void noCacheAndForcePullTest() throws IOException, InterruptedException, KubernetesPluginException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "cache_and_force_pull.bal"), 0);
-        File yamlFile = new File(TARGET_PATH + File.separator + "cache_and_force_pull.yaml");
+        File yamlFile = new File(KUBERNETES_TARGET_PATH + File.separator + "cache_and_force_pull.yaml");
         Assert.assertTrue(yamlFile.exists());
         KubernetesClient client = new DefaultKubernetesClient();
         List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
@@ -275,7 +279,8 @@ public class OpenShiftBuildConfigTest extends BaseTest {
             }
         }
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
     }
     
     /**
@@ -284,7 +289,7 @@ public class OpenShiftBuildConfigTest extends BaseTest {
     @Test(groups = {"openshift"})
     public void serviceAnnotationTest() throws IOException, InterruptedException, KubernetesPluginException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "annotation_on_service.bal"), 0);
-        File yamlFile = new File(TARGET_PATH + File.separator + "annotation_on_service.yaml");
+        File yamlFile = new File(KUBERNETES_TARGET_PATH + File.separator + "annotation_on_service.yaml");
         Assert.assertTrue(yamlFile.exists());
         KubernetesClient client = new DefaultKubernetesClient();
         List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
@@ -343,7 +348,8 @@ public class OpenShiftBuildConfigTest extends BaseTest {
             }
         }
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
     }
     
     /**
@@ -415,5 +421,6 @@ public class OpenShiftBuildConfigTest extends BaseTest {
         }
         
         KubernetesUtils.deleteDirectory(targetPath);
+        KubernetesUtils.deleteDirectory(targetPath.resolve(DOCKER).resolve("printer"));
     }
 }

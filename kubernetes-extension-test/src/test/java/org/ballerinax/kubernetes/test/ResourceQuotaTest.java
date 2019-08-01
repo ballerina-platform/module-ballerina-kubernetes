@@ -43,7 +43,8 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
  */
 public class ResourceQuotaTest extends BaseTest {
     private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "resource-quotas");
-    private static final Path TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
+    private static final Path DOCKER_TARGET_PATH = BAL_DIRECTORY.resolve(DOCKER);
+    private static final Path KUBERNETES_TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
     private static final String DOCKER_IMAGE = "pizza-shop:latest";
     
     /**
@@ -63,7 +64,7 @@ public class ResourceQuotaTest extends BaseTest {
         validateDockerImage();
     
         // Validate resource quota yaml.
-        File resourceQuotaYaml = TARGET_PATH.resolve("simple_quota_resource_quota.yaml").toFile();
+        File resourceQuotaYaml = KUBERNETES_TARGET_PATH.resolve("simple_quota_resource_quota.yaml").toFile();
         Assert.assertTrue(resourceQuotaYaml.exists());
         
         ResourceQuota resourceQuota = KubernetesTestUtils.loadYaml(resourceQuotaYaml);
@@ -86,7 +87,8 @@ public class ResourceQuotaTest extends BaseTest {
     
         Assert.assertEquals(resourceQuota.getSpec().getScopes().size(), 0, "Unexpected number of scopes.");
     
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -107,7 +109,7 @@ public class ResourceQuotaTest extends BaseTest {
         validateDockerImage();
         
         // Validate resource quota yaml
-        File resourceQuotaYaml = TARGET_PATH.resolve("quota_with_scope_resource_quota.yaml").toFile();
+        File resourceQuotaYaml = KUBERNETES_TARGET_PATH.resolve("quota_with_scope_resource_quota.yaml").toFile();
         Assert.assertTrue(resourceQuotaYaml.exists());
         ResourceQuota resourceQuota = KubernetesTestUtils.loadYaml(resourceQuotaYaml);
         Assert.assertEquals(resourceQuota.getMetadata().getName(), "compute-resources");
@@ -126,7 +128,8 @@ public class ResourceQuotaTest extends BaseTest {
         Assert.assertEquals(resourceQuota.getSpec().getScopes().size(), 1, "Unexpected number of scopes.");
         Assert.assertEquals(resourceQuota.getSpec().getScopes().get(0), "BestEffort", "Invalid scope found.");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -147,7 +150,7 @@ public class ResourceQuotaTest extends BaseTest {
         validateDockerImage();
         
         // Validate resource quota yaml.
-        File resourceQuotaYaml = TARGET_PATH.resolve("multiple_quotas_resource_quota.yaml").toFile();
+        File resourceQuotaYaml = KUBERNETES_TARGET_PATH.resolve("multiple_quotas_resource_quota.yaml").toFile();
         Assert.assertTrue(resourceQuotaYaml.exists());
         List<ResourceQuota> resourceQuotas = KubernetesTestUtils.loadYaml(resourceQuotaYaml);
     
@@ -170,7 +173,8 @@ public class ResourceQuotaTest extends BaseTest {
         Assert.assertEquals(resourceQuotas.get(1).getSpec().getHard().get("pods").getAmount(), "1",
                 "Invalid number of pods.");
 
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -184,7 +188,8 @@ public class ResourceQuotaTest extends BaseTest {
     @Test
     public void invalidTest() throws IOException, InterruptedException, KubernetesPluginException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "quota-with-invalid-scope.bal"), 1);
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
     }
     
     /**
@@ -204,13 +209,13 @@ public class ResourceQuotaTest extends BaseTest {
         Assert.assertNotNull(getDockerImage(DOCKER_IMAGE));
     
         // Validate deployment yaml.
-        File deploymentYAML = TARGET_PATH.resolve("on_main_function_deployment.yaml").toFile();
+        File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("on_main_function_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         Assert.assertEquals("simple-quota", deployment.getMetadata().getName());
         
         // Validate resource quota yaml.
-        File resourceQuotaYaml = TARGET_PATH.resolve("on_main_function_resource_quota.yaml").toFile();
+        File resourceQuotaYaml = KUBERNETES_TARGET_PATH.resolve("on_main_function_resource_quota.yaml").toFile();
         Assert.assertTrue(resourceQuotaYaml.exists());
         ResourceQuota resourceQuota = KubernetesTestUtils.loadYaml(resourceQuotaYaml);
         Assert.assertEquals(resourceQuota.getMetadata().getName(), "compute-resources");
@@ -232,7 +237,8 @@ public class ResourceQuotaTest extends BaseTest {
         
         Assert.assertEquals(resourceQuota.getSpec().getScopes().size(), 0, "Unexpected number of scopes.");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -240,7 +246,7 @@ public class ResourceQuotaTest extends BaseTest {
      * Validate if Dockerfile is created.
      */
     public void validateDockerfile() {
-        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
+        File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
     
