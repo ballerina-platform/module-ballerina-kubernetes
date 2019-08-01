@@ -41,14 +41,16 @@ import org.wso2.ballerinalang.compiler.SourceDirectory;
 import org.wso2.ballerinalang.compiler.tree.BLangPackage;
 import org.wso2.ballerinalang.compiler.util.CompilerContext;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
+import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.extractBalxName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
 
 /**
@@ -127,36 +129,52 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     }
 
     @Override
-    public void codeGenerated(PackageID moduleID, Path binaryPath) {
+    public void codeGenerated(PackageID moduleID, Path executableJarFile) {
         KubernetesContext.getInstance().setCurrentPackage(moduleID);
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
         if (dataHolder.isCanProcess()) {
-            binaryPath = binaryPath.toAbsolutePath();
-            boolean isProject = binaryPath.getParent().getParent().resolve(".ballerina").toFile().exists();
-            dataHolder.setProject(isProject);
-            Path balBuildOutputPath = binaryPath.getParent();
-            Path artifactOutputPath = balBuildOutputPath.resolve(KUBERNETES);
-            if (isProject) {
-                // Compiling package therefore append balx file name to docker artifact dir path
-                artifactOutputPath = balBuildOutputPath.resolve(KUBERNETES).resolve(extractBalxName(binaryPath));
-            }
-            dataHolder.setBalxFilePath(binaryPath);
-            dataHolder.setArtifactOutputPath(artifactOutputPath);
-            ArtifactManager artifactManager = new ArtifactManager();
-            try {
-                KubernetesUtils.deleteDirectory(artifactOutputPath);
-                artifactManager.populateDeploymentModel();
-                validateDeploymentDependencies();
-                artifactManager.createArtifacts();
-            } catch (KubernetesPluginException e) {
-                String errorMessage = "module [" + moduleID + "] " + e.getMessage();
-                printError(errorMessage);
-                pluginLog.error(errorMessage, e);
-                try {
-                    KubernetesUtils.deleteDirectory(artifactOutputPath);
-                } catch (KubernetesPluginException ignored) {
-                    //ignored
+            executableJarFile = executableJarFile.toAbsolutePath();
+            if (null != executableJarFile.getParent() && Files.exists(executableJarFile.getParent())) {
+                // artifacts location for a single bal file.
+                Path kubernetesOutputPath = executableJarFile.getParent().resolve(KUBERNETES);
+                Path dockerOutputPath = executableJarFile.getParent().resolve(DOCKER);
+                if (null != executableJarFile.getParent().getParent().getParent() &&
+                    Files.exists(executableJarFile.getParent().getParent().getParent())) {
+                    // if executable came from a ballerina project
+                    Path projectRoot = executableJarFile.getParent().getParent().getParent();
+                    if (Files.exists(projectRoot.resolve("Ballerina.toml"))) {
+                        dataHolder.setProject(true);
+                        kubernetesOutputPath = projectRoot.resolve("target")
+                                        .resolve(KUBERNETES)
+                                        .resolve(extractUberJarName(executableJarFile));
+                        dockerOutputPath = projectRoot.resolve("target")
+                                .resolve(DOCKER)
+                                .resolve(extractUberJarName(executableJarFile));
+                    }
                 }
+    
+                dataHolder.setUberJarPath(executableJarFile);
+                dataHolder.setK8sArtifactOutputPath(kubernetesOutputPath);
+                dataHolder.setDockerArtifactOutputPath(dockerOutputPath);
+                ArtifactManager artifactManager = new ArtifactManager();
+                try {
+                    KubernetesUtils.deleteDirectory(kubernetesOutputPath);
+                    artifactManager.populateDeploymentModel();
+                    validateDeploymentDependencies();
+                    artifactManager.createArtifacts();
+                } catch (KubernetesPluginException e) {
+                    String errorMessage = "module [" + moduleID + "] " + e.getMessage();
+                    printError(errorMessage);
+                    pluginLog.error(errorMessage, e);
+                    try {
+                        KubernetesUtils.deleteDirectory(kubernetesOutputPath);
+                    } catch (KubernetesPluginException ignored) {
+                        //ignored
+                    }
+                }
+            } else {
+                printError("error in resolving docker generation location.");
+                pluginLog.error("error in resolving docker generation location.");
             }
         }
     }

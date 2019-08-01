@@ -24,14 +24,14 @@ import ballerinax/istio;
     gateways: ["mygateway"],
     tls: [
         {
-            ^"match": [{
+            'match: [{
                     port: 443,
                     sniHosts: ["login.bookinfo.com"]
                 }
             ],
             route: [{destination: {host: "login.prod.svc.cluster.local"}}]
         },{
-            ^"match": [{
+            'match: [{
                     port: 443,
                     sniHosts: ["reviews.bookinfo.com"]
                 }

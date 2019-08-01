@@ -48,9 +48,9 @@ public class OpenShiftRouteHandler extends AbstractArtifactHandler {
             // setting instructions
             Map<String, String> instructions = ArtifactManager.getInstructions();
             instructions.put("\tRun the following command to deploy the OpenShift artifacts: ",
-                    "\toc apply -f " + dataHolder.getArtifactOutputPath().resolve(OPENSHIFT).toAbsolutePath());
+                    "\toc apply -f " + dataHolder.getK8sArtifactOutputPath().resolve(OPENSHIFT).toAbsolutePath());
             instructions.put("\tRun the following command to deploy the Kubernetes artifacts: ",
-                    "\tkubectl apply -f " + dataHolder.getArtifactOutputPath());
+                    "\tkubectl apply -f " + dataHolder.getK8sArtifactOutputPath());
         }
         int count = 0;
         for (Map.Entry<String, OpenShiftRouteModel> routeModel : routeModels.entrySet()) {
@@ -104,7 +104,7 @@ public class OpenShiftRouteHandler extends AbstractArtifactHandler {
                     .build();
             
             String resourceQuotaContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(route);
-            KubernetesUtils.writeToFile(dataHolder.getArtifactOutputPath().resolve(OPENSHIFT), resourceQuotaContent,
+            KubernetesUtils.writeToFile(dataHolder.getK8sArtifactOutputPath().resolve(OPENSHIFT), resourceQuotaContent,
                     OPENSHIFT_ROUTE_FILE_POSTFIX + YAML);
         } catch (IOException e) {
             String errorMessage = "error while generating OpenShift Route yaml file: " +

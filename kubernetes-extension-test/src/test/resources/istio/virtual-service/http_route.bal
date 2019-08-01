@@ -33,7 +33,7 @@ import ballerinax/istio;
     ],
     http: [
         {
-            ^"match": [
+            'match: [
                 {
                     uri: {
                         prefix: "/wpcatalog"

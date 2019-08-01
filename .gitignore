@@ -36,5 +36,8 @@ dependency-reduced-pom.xml
 
 #Ballerina
 *.balx
+*.jar
 samples/*/kubernetes
+samples/*/docker
 velocity.log*
+*Ballerina.lock

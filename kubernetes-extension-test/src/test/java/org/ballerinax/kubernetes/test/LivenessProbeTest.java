@@ -39,9 +39,10 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDocker
 /**
  * Test cases for deployment liveness probes.
  */
-public class LivenessProbeTest {
+public class LivenessProbeTest extends BaseTest {
     private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "deployment", "liveness-probe");
-    private static final Path TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
+    private static final Path DOCKER_TARGET_PATH = BAL_DIRECTORY.resolve(DOCKER);
+    private static final Path KUBERNETES_TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
     private static final String DOCKER_IMAGE = "pizza-shop:latest";
     
     /**
@@ -61,7 +62,7 @@ public class LivenessProbeTest {
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = TARGET_PATH.resolve("disabled_deployment.yaml").toFile();
+        File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("disabled_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         Assert.assertNotNull(deployment.getSpec());
@@ -70,7 +71,8 @@ public class LivenessProbeTest {
         Assert.assertTrue(deployment.getSpec().getTemplate().getSpec().getContainers().size() > 0);
         Assert.assertNull(deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getLivenessProbe());
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -90,7 +92,7 @@ public class LivenessProbeTest {
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = TARGET_PATH.resolve("enabled_deployment.yaml").toFile();
+        File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("enabled_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         Assert.assertNotNull(deployment.getSpec());
@@ -106,7 +108,8 @@ public class LivenessProbeTest {
         Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getLivenessProbe()
                 .getTcpSocket().getPort().getIntVal().intValue(), 9090, "TCP port in liveness probe is missing.");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -127,7 +130,7 @@ public class LivenessProbeTest {
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = TARGET_PATH.resolve("enabled_with_record_deployment.yaml").toFile();
+        File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("enabled_with_record_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         Assert.assertNotNull(deployment.getSpec());
@@ -143,7 +146,8 @@ public class LivenessProbeTest {
         Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getLivenessProbe()
                 .getTcpSocket().getPort().getIntVal().intValue(), 9090, "TCP port in liveness probe is missing.");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -164,7 +168,7 @@ public class LivenessProbeTest {
         validateDockerImage();
         
         // Validate deployment yaml
-        File deploymentYAML = TARGET_PATH.resolve("configured_deployment.yaml").toFile();
+        File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("configured_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
         Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
         Assert.assertNotNull(deployment.getSpec());
@@ -180,7 +184,8 @@ public class LivenessProbeTest {
         Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getLivenessProbe()
                 .getTcpSocket().getPort().getIntVal().intValue(), 8080, "TCP port in liveness probe is missing.");
         
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
     
@@ -188,7 +193,7 @@ public class LivenessProbeTest {
      * Validate if Dockerfile is created.
      */
     public void validateDockerfile() {
-        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
+        File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
     

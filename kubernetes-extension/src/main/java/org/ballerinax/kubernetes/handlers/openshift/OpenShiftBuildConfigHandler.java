@@ -51,8 +51,8 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
     
             Map<String, String> instructions = ArtifactManager.getInstructions();
             instructions.put("\tRun the following command to deploy the OpenShift artifacts: ",
-                    "\toc apply -f " + dataHolder.getArtifactOutputPath().resolve(OPENSHIFT).toAbsolutePath());
-            if (dataHolder.getArtifactOutputPath().toString().contains("target")) {
+                    "\toc apply -f " + dataHolder.getK8sArtifactOutputPath().resolve(OPENSHIFT).toAbsolutePath());
+            if (dataHolder.getK8sArtifactOutputPath().toString().contains("target")) {
                 instructions.put("\tRun the following command to start a build: ",
                         "\toc start-build bc/" + buildConfigModel.getName() +
                         " --from-dir=./target --follow");
@@ -62,7 +62,7 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
                         " --from-dir=. --follow");
             }
             instructions.put("\tRun the following command to deploy the Kubernetes artifacts: ",
-                    "\tkubectl apply -f " + dataHolder.getArtifactOutputPath());
+                    "\tkubectl apply -f " + dataHolder.getK8sArtifactOutputPath());
         }
     }
     
@@ -74,7 +74,7 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
             }
     
             // Generate docker artifacts
-            Path dockerOutputDir = dataHolder.getArtifactOutputPath().resolve(DOCKER).resolve("Dockerfile");
+            Path dockerOutputDir = dataHolder.getK8sArtifactOutputPath().resolve(DOCKER).resolve("Dockerfile");
             
             BuildConfig bc = new BuildConfigBuilder()
                     .withNewMetadata()
@@ -96,7 +96,7 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
                     .endSource()
                     .withNewStrategy()
                     .withNewDockerStrategy()
-                    .withDockerfilePath(dataHolder.getBalxFilePath().getParent().relativize(dockerOutputDir).toString())
+                    .withDockerfilePath(dataHolder.getUberJarPath().getParent().relativize(dockerOutputDir).toString())
                     .withForcePull(buildConfigModel.isForcePullDockerImage())
                     .withNoCache(buildConfigModel.isBuildDockerWithNoCache())
                     .endDockerStrategy()
@@ -105,7 +105,7 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
                     .build();
             
             String resourceQuotaContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(bc);
-            KubernetesUtils.writeToFile(dataHolder.getArtifactOutputPath().resolve(OPENSHIFT),
+            KubernetesUtils.writeToFile(dataHolder.getK8sArtifactOutputPath().resolve(OPENSHIFT),
                     resourceQuotaContent, OPENSHIFT_BUILD_CONFIG_FILE_POSTFIX + YAML);
             
             // Modify instructions

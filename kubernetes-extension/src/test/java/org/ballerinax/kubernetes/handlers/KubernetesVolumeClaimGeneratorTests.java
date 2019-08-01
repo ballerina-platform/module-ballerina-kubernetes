@@ -28,6 +28,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,7 +36,7 @@ import java.util.Set;
 /**
  * Test kubernetes volume claim generation.
  */
-public class KubernetesVolumeClaimGeneratorTests {
+public class KubernetesVolumeClaimGeneratorTests extends HandlerTestSuite {
 
     private final String volumeClaimName = "MyVolumeClaim";
     private final boolean readOnly = true;
@@ -58,8 +59,8 @@ public class KubernetesVolumeClaimGeneratorTests {
         KubernetesContext.getInstance().getDataHolder().addPersistentVolumeClaims(claimModles);
         try {
             new PersistentVolumeClaimHandler().createArtifacts();
-            File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_volume_claim" +
-                    ".yaml");
+            File tempFile = Paths.get("target", "kubernetes", module.name.toString(), "hello_volume_claim.yaml")
+                    .toFile();
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

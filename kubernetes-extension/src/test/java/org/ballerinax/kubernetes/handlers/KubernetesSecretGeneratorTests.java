@@ -28,6 +28,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -36,7 +37,7 @@ import java.util.Set;
 /**
  * Test kubernetes Secret generation.
  */
-public class KubernetesSecretGeneratorTests {
+public class KubernetesSecretGeneratorTests extends HandlerTestSuite {
 
     private final String secretName = "MySecret";
     private final boolean readOnly = true;
@@ -57,7 +58,7 @@ public class KubernetesSecretGeneratorTests {
         KubernetesContext.getInstance().getDataHolder().addSecrets(secretModels);
         try {
             new SecretHandler().createArtifacts();
-            File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_secret.yaml");
+            File tempFile = Paths.get("target", "kubernetes", module.name.toString(), "hello_secret.yaml").toFile();
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

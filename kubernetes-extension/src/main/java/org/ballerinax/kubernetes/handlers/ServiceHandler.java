@@ -31,6 +31,7 @@ import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.SVC_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 
@@ -46,6 +47,10 @@ public class ServiceHandler extends AbstractArtifactHandler {
      * @throws KubernetesPluginException If an error occurs while generating artifact.
      */
     private void generate(ServiceModel serviceModel) throws KubernetesPluginException {
+        if (null == serviceModel.getPortName()) {
+            serviceModel.setPortName(serviceModel.getProtocol() + "-" + serviceModel.getName());
+        }
+        
         Service service = new ServiceBuilder()
                 .withNewMetadata()
                 .withName(serviceModel.getName())
@@ -54,6 +59,7 @@ public class ServiceHandler extends AbstractArtifactHandler {
                 .endMetadata()
                 .withNewSpec()
                 .addNewPort()
+                .withName(serviceModel.getPortName())
                 .withProtocol(KubernetesConstants.KUBERNETES_SVC_PROTOCOL)
                 .withPort(serviceModel.getPort())
                 .withNewTargetPort(serviceModel.getTargetPort())
@@ -81,8 +87,8 @@ public class ServiceHandler extends AbstractArtifactHandler {
         int count = 0;
         for (ServiceModel serviceModel : serviceModels.values()) {
             count++;
-            String balxFileName = KubernetesUtils.extractBalxName(KubernetesContext.getInstance().getDataHolder()
-                    .getBalxFilePath());
+            String balxFileName = extractUberJarName(KubernetesContext.getInstance().getDataHolder()
+                    .getUberJarPath());
             serviceModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
             serviceModel.setSelector(balxFileName);
             generate(serviceModel);

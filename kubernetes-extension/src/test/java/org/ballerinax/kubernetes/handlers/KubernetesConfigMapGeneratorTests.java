@@ -28,6 +28,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -36,7 +37,7 @@ import java.util.Set;
 /**
  * Test config map generation.
  */
-public class KubernetesConfigMapGeneratorTests {
+public class KubernetesConfigMapGeneratorTests extends HandlerTestSuite {
 
     private final String configMapName = "MyConfigMap";
     private final boolean readOnly = true;
@@ -57,8 +58,7 @@ public class KubernetesConfigMapGeneratorTests {
         KubernetesContext.getInstance().getDataHolder().addConfigMaps(configMapModels);
         try {
             new ConfigMapHandler().createArtifacts();
-            File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_config_map" +
-                    ".yaml");
+            File tempFile = Paths.get("target", "kubernetes", module.name.toString(), "hello_config_map.yaml").toFile();
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

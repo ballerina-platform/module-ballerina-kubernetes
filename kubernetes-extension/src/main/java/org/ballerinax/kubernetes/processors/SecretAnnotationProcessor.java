@@ -28,8 +28,8 @@ import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.SecretModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
-import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangListConstructorExpr;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
 import java.nio.file.Path;
@@ -76,7 +76,7 @@ public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
-            List<BLangExpression> secretAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
+            List<BLangExpression> secretAnnotation = ((BLangListConstructorExpr) keyValue.valueExpr).exprs;
             for (BLangExpression bLangExpression : secretAnnotation) {
                 SecretModel secretModel = new SecretModel();
                 List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
@@ -98,7 +98,7 @@ public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
                             secretModel.setMountPath(getStringValue(annotation.getValue()));
                             break;
                         case data:
-                            List<BLangExpression> data = ((BLangArrayLiteral) annotation.valueExpr).exprs;
+                            List<BLangExpression> data = ((BLangListConstructorExpr) annotation.valueExpr).exprs;
                             secretModel.setData(getDataForSecret(data));
                             break;
                         case readOnly:

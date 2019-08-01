@@ -1,5 +1,5 @@
-//Ballerina supports generating OpenShift Route, BuildConfig and ImageStream artifacts based on annotations.
-//Docker image of the ballerina service is built using the BuildConfig which then can be used by the generated Kubernetes Deployment.
+//Ballerina supports generating the OpenShift Route, BuildConfig, and ImageStream artifacts based on annotations.
+//Docker image of the Ballerina service is built using the BuildConfig, which then can be used by the generated Kubernetes Deployment.
 //A generated OpenShift Route exposes the Kubernetes Service of the Ballerina Service.
-//This example deploys http service which responses "Hello" followed by a name.
+//This example deploys an HTTP service, which responses "Hello" followed by a name.
 

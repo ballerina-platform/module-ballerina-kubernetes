@@ -41,10 +41,11 @@ import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 
-public class Sample9Test implements SampleTest {
+public class Sample9Test extends SampleTest {
 
     private static final Path SOURCE_DIR_PATH = SAMPLE_DIR.resolve("sample9");
-    private static final Path TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
+    private static final Path DOCKER_TARGET_PATH = SOURCE_DIR_PATH.resolve(DOCKER);
+    private static final Path KUBERNETES_TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
     private static final String DOCKER_IMAGE = "hello_world_persistence_volume_k8s:latest";
     private Deployment deployment;
     private PersistentVolumeClaim volumeClaim;
@@ -53,7 +54,7 @@ public class Sample9Test implements SampleTest {
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(SOURCE_DIR_PATH,
                 "hello_world_persistence_volume_k8s.bal") , 0);
-        File yamlFile = TARGET_PATH.resolve("hello_world_persistence_volume_k8s.yaml").toFile();
+        File yamlFile = KUBERNETES_TARGET_PATH.resolve("hello_world_persistence_volume_k8s.yaml").toFile();
         Assert.assertTrue(yamlFile.exists());
         List<HasMetadata> k8sItems = KubernetesTestUtils.loadYaml(yamlFile);
         for (HasMetadata data : k8sItems) {
@@ -97,7 +98,7 @@ public class Sample9Test implements SampleTest {
     
     @Test
     public void validateDockerfile() {
-        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
+        File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
 
@@ -109,8 +110,9 @@ public class Sample9Test implements SampleTest {
     }
 
     @AfterClass
-    public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+    public void cleanUp() throws KubernetesPluginException {
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
 }

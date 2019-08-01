@@ -24,7 +24,7 @@
     </parent>
 
     <groupId>org.ballerinax.kubernetes</groupId>
-    <version>0.990.4-SNAPSHOT</version>
+    <version>0.992.0-m2-SNAPSHOT</version>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>kubernetes-extension-parent</artifactId>
     <name>Ballerinax - Kubernetes Extension Parent</name>
@@ -85,6 +85,16 @@
                 <version>${ballerina.lang.version}</version>
                 <type>zip</type>
                 <classifier>ballerina-binary-repo</classifier>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.ops4j.pax.logging</groupId>
+                        <artifactId>pax-logging-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-simple</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
@@ -101,9 +111,7 @@
             </dependency>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
-                <artifactId>testerina-core</artifactId>
-                <type>zip</type>
-                <classifier>ballerina-binary-repo</classifier>
+                <artifactId>openapi-to-ballerina-generator</artifactId>
                 <version>${ballerina.lang.version}</version>
             </dependency>
             <dependency>
@@ -156,6 +164,21 @@
                 <artifactId>testng</artifactId>
                 <version>${testng.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons.codec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -252,11 +275,12 @@
     </scm>
 
     <properties>
-        <ballerina.lang.version>0.990.4-SNAPSHOT</ballerina.lang.version>
+        <ballerina.lang.version>0.992.0-m2-SNAPSHOT</ballerina.lang.version>
         <ballerina.source.directory>${project.build.directory}/../src/main/ballerina</ballerina.source.directory>
         <com.fasterxml.jackson.core.annotations.version>2.9.8</com.fasterxml.jackson.core.annotations.version>
         <com.fasterxml.jackson.dataformat.yaml.version>2.9.8</com.fasterxml.jackson.dataformat.yaml.version>
-        <docker.generator.version>0.990.4-SNAPSHOT</docker.generator.version>
+        <commons.codec.version>1.12</commons.codec.version>
+        <docker.generator.version>0.992.0-m2-SNAPSHOT</docker.generator.version>
         <fabric8.kubernetes.client.version>4.1.2</fabric8.kubernetes.client.version>
         <jackson.version>2.9.8</jackson.version>
         <maven.jacoco.plugin.version>0.8.3</maven.jacoco.plugin.version>
@@ -267,10 +291,12 @@
         <snowdrop.istio.model.version>1.0.1</snowdrop.istio.model.version>
         <spotify.docker.client.version>8.15.0</spotify.docker.client.version>
         <testng.version>6.14.3</testng.version>
+        <slf4j.version>1.7.26</slf4j.version>
     </properties>
 
     <modules>
         <module>kubernetes-extension</module>
+        <module>kubernetes-extension-balo</module>
         <module>kubernetes-extension-test</module>
         <module>kubernetes-extension-examples</module>
         <module>kubernetes-extension-coverage-report</module>

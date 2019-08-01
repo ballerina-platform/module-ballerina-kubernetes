@@ -39,9 +39,10 @@ import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT;
 
-public class Sample17Test implements SampleTest {
+public class Sample17Test extends SampleTest {
     private static final Path SOURCE_DIR_PATH = SAMPLE_DIR.resolve("sample17");
-    private static final Path TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
+    private static final Path DOCKER_TARGET_PATH = SOURCE_DIR_PATH.resolve(DOCKER);
+    private static final Path KUBERNETES_TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
     private BuildConfig buildConfig;
     private ImageStream imageStream;
     private Route route;
@@ -49,7 +50,7 @@ public class Sample17Test implements SampleTest {
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "hello_world_oc.bal"), 0);
-        File yamlFile = TARGET_PATH.resolve(OPENSHIFT).resolve("hello_world_oc.yaml").toFile();
+        File yamlFile = KUBERNETES_TARGET_PATH.resolve(OPENSHIFT).resolve("hello_world_oc.yaml").toFile();
         Assert.assertTrue(yamlFile.exists());
         List<HasMetadata> k8sItems = KubernetesTestUtils.loadYaml(yamlFile);
         for (HasMetadata data : k8sItems) {
@@ -77,8 +78,8 @@ public class Sample17Test implements SampleTest {
         Assert.assertNotNull(buildConfig.getSpec().getOutput().getTo());
         Assert.assertEquals(buildConfig.getSpec().getOutput().getTo().getKind(), "ImageStreamTag",
                 "Invalid output kind.");
-        Assert.assertEquals(buildConfig.getSpec().getOutput().getTo().getName(), "hello_world_oc:latest",
-                "Invalid image stream name.");
+        Assert.assertEquals(buildConfig.getSpec().getOutput().getTo().getName(),
+                "<MINISHIFT_DOCKER_REGISTRY_IP>/hello_world_oc:latest", "Invalid image stream name.");
         Assert.assertNotNull(buildConfig.getSpec().getSource());
         Assert.assertNotNull(buildConfig.getSpec().getSource().getBinary(), "Binary source is missing");
         Assert.assertNotNull(buildConfig.getSpec().getStrategy());
@@ -97,7 +98,8 @@ public class Sample17Test implements SampleTest {
     @Test
     public void validateImageStream() {
         Assert.assertNotNull(imageStream.getMetadata());
-        Assert.assertEquals(imageStream.getMetadata().getName(), "hello_world_oc", "Invalid name found.");
+        Assert.assertEquals(imageStream.getMetadata().getName(), "<MINISHIFT_DOCKER_REGISTRY_IP>/hello_world_oc",
+                "Invalid name found.");
         Assert.assertEquals(imageStream.getMetadata().getNamespace(), "bal-oc", "Invalid namespace found.");
         Assert.assertEquals(imageStream.getMetadata().getLabels().size(), 1, "Labels are missing");
         Assert.assertNotNull(imageStream.getMetadata().getLabels().get("build"), "'build' label is missing");
@@ -128,12 +130,13 @@ public class Sample17Test implements SampleTest {
     
     @Test
     public void validateDockerfile() {
-        File dockerFile = TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile();
+        File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
     
     @AfterClass
     public void cleanUp() throws KubernetesPluginException {
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
     }
 }

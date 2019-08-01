@@ -22,10 +22,6 @@ import org.ballerinax.docker.generator.DockerArtifactHandler;
 import org.ballerinax.docker.generator.exceptions.DockerGenException;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 
-import java.nio.file.Path;
-
-import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
-
 /**
  * Wrapper handler for creating docker artifacts.
  */
@@ -34,11 +30,10 @@ public class DockerHandler extends AbstractArtifactHandler {
     public void createArtifacts() throws KubernetesPluginException {
         try {
             // Generate docker artifacts
-            Path dockerOutputDir = dataHolder.getArtifactOutputPath().resolve(DOCKER);
             DockerArtifactHandler dockerArtifactHandler = new DockerArtifactHandler(dataHolder.getDockerModel());
             OUT.println();
-            dockerArtifactHandler.createArtifacts(OUT, "\t@kubernetes:Docker \t\t\t",
-                    dataHolder.getBalxFilePath().toString(), dockerOutputDir);
+            dockerArtifactHandler.createArtifacts(OUT, "\t@kubernetes:Docker \t\t\t", dataHolder.getUberJarPath(),
+                    dataHolder.getDockerArtifactOutputPath());
         } catch (DockerGenException e) {
             throw new KubernetesPluginException(e.getMessage(), e);
         }

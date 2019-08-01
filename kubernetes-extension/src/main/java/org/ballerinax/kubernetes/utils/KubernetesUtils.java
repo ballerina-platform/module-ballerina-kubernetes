@@ -31,7 +31,6 @@ import io.fabric8.kubernetes.api.model.ResourceFieldSelectorBuilder;
 import io.fabric8.kubernetes.api.model.SecretKeySelector;
 import io.fabric8.kubernetes.api.model.SecretKeySelectorBuilder;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.ballerinalang.model.tree.NodeKind;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
 import org.ballerinax.docker.generator.models.CopyFileModel;
@@ -47,8 +46,8 @@ import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
 import org.ballerinax.kubernetes.processors.openshift.OpenShiftBuildExtensionProcessor;
 import org.wso2.ballerinalang.compiler.semantics.model.symbols.BConstantSymbol;
 import org.wso2.ballerinalang.compiler.semantics.model.types.BFiniteType;
-import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangListConstructorExpr;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
@@ -72,6 +71,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 
 /**
@@ -92,7 +92,7 @@ public class KubernetesUtils {
      */
     public static void writeToFile(String context, String outputFileName) throws IOException {
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
-        writeToFile(dataHolder.getArtifactOutputPath(), context, outputFileName);
+        writeToFile(dataHolder.getK8sArtifactOutputPath(), context, outputFileName);
     }
     
     /**
@@ -105,14 +105,14 @@ public class KubernetesUtils {
      */
     public static void writeToFile(Path outputDir, String context, String fileSuffix) throws IOException {
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
-        Path artifactFileName = outputDir.resolve(extractBalxName(dataHolder.getBalxFilePath()) + fileSuffix);
+        Path artifactFileName = outputDir.resolve(extractUberJarName(dataHolder.getUberJarPath()) + fileSuffix);
         DeploymentModel deploymentModel = dataHolder.getDeploymentModel();
         JobModel jobModel = dataHolder.getJobModel();
         // Priority given for job, then deployment.
         if (jobModel != null && jobModel.isSingleYAML()) {
-            artifactFileName = outputDir.resolve(extractBalxName(dataHolder.getBalxFilePath()) + YAML);
+            artifactFileName = outputDir.resolve(extractUberJarName(dataHolder.getUberJarPath()) + YAML);
         } else if (jobModel == null && deploymentModel != null && deploymentModel.isSingleYAML()) {
-            artifactFileName = outputDir.resolve(extractBalxName(dataHolder.getBalxFilePath()) + YAML);
+            artifactFileName = outputDir.resolve(extractUberJarName(dataHolder.getUberJarPath()) + YAML);
             
         }
         File newFile = artifactFileName.toFile();
@@ -175,19 +175,7 @@ public class KubernetesUtils {
             throw new KubernetesPluginException("error while copying file", e);
         }
     }
-
-    /**
-     * Extract the ballerina file name from a given file path
-     *
-     * @param balxFilePath balx file path.
-     * @return output file name of balx
-     */
-    public static String extractBalxName(Path balxFilePath) {
-        if (FilenameUtils.isExtension(balxFilePath.toString(), "balx")) {
-            return FilenameUtils.getBaseName(balxFilePath.toString());
-        }
-        return null;
-    }
+    
     
     /**
      * Prints an Information message.
@@ -300,16 +288,16 @@ public class KubernetesUtils {
     }
     
     /**
-     * Generate array of string using a {@link BLangArrayLiteral}.
+     * Generate array of string using a {@link BLangListConstructorExpr}.
      *
      * @param expr Array literal.
      * @return Convert string.
      */
     public static List<String> getList(BLangExpression expr) throws KubernetesPluginException {
-        if (expr.getKind() != NodeKind.ARRAY_LITERAL_EXPR) {
+        if (expr.getKind() != NodeKind.LIST_CONSTRUCTOR_EXPR) {
             throw new KubernetesPluginException("unable to parse value: " + expr.toString());
         } else {
-            BLangArrayLiteral array = (BLangArrayLiteral) expr;
+            BLangListConstructorExpr array = (BLangListConstructorExpr) expr;
             List<String> scopeSet = new LinkedList<>();
             for (ExpressionNode bLangExpression : array.getExpressions()) {
                 scopeSet.add(getStringValue((BLangExpression) bLangExpression));
@@ -521,7 +509,7 @@ public class KubernetesUtils {
     public static Set<String> getImagePullSecrets(BLangRecordLiteral.BLangRecordKeyValue keyValue) throws
             KubernetesPluginException {
         Set<String> imagePullSecrets = new HashSet<>();
-        List<BLangExpression> configAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
+        List<BLangExpression> configAnnotation = ((BLangListConstructorExpr) keyValue.valueExpr).exprs;
         for (BLangExpression bLangExpression : configAnnotation) {
             imagePullSecrets.add(getStringValue(bLangExpression));
         }
@@ -539,14 +527,14 @@ public class KubernetesUtils {
     public static Set<CopyFileModel> getExternalFileMap(BLangRecordLiteral.BLangRecordKeyValue keyValue) throws
             KubernetesPluginException {
         Set<CopyFileModel> externalFiles = new HashSet<>();
-        List<BLangExpression> configAnnotation = ((BLangArrayLiteral) keyValue.valueExpr).exprs;
+        List<BLangExpression> configAnnotation = ((BLangListConstructorExpr) keyValue.valueExpr).exprs;
         for (BLangExpression bLangExpression : configAnnotation) {
             List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
                     ((BLangRecordLiteral) bLangExpression).getKeyValuePairs();
             CopyFileModel externalFileModel = new CopyFileModel();
             for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
                 switch (annotation.getKey().toString()) {
-                    case "source":
+                    case "sourceFile":
                         externalFileModel.setSource(getStringValue(annotation.getValue()));
                         break;
                     case "target":

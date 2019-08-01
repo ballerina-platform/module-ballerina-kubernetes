@@ -25,7 +25,7 @@ import ballerinax/istio;
     ],
     http: [
         {
-            ^"timeout": 5,
+            'timeout: 5,
             route: [
                 {
                     destination: {

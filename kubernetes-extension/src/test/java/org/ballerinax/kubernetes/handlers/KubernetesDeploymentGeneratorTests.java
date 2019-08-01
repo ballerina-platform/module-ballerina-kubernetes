@@ -32,13 +32,14 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Test deployment generation.
  */
-public class KubernetesDeploymentGeneratorTests {
+public class KubernetesDeploymentGeneratorTests extends HandlerTestSuite {
 
     private final String deploymentName = "MyDeployment";
     private final String selector = "hello";
@@ -70,8 +71,7 @@ public class KubernetesDeploymentGeneratorTests {
         KubernetesContext.getInstance().getDataHolder().setDeploymentModel(deploymentModel);
         try {
             new DeploymentHandler().createArtifacts();
-            File tempFile = new File("target" + File.separator + "kubernetes" + File.separator + "hello_deployment" +
-                    ".yaml");
+            File tempFile = Paths.get("target", "kubernetes", module.name.toString(), "hello_deployment.yaml").toFile();
             Assert.assertTrue(tempFile.exists());
             testGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

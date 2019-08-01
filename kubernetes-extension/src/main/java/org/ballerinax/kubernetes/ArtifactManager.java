@@ -38,11 +38,11 @@ import org.ballerinax.kubernetes.handlers.openshift.OpenShiftRouteHandler;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
-import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_LATEST_TAG;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
@@ -111,7 +111,7 @@ public class ArtifactManager {
     public void populateDeploymentModel() {
         DeploymentModel deploymentModel = kubernetesDataHolder.getDeploymentModel();
         kubernetesDataHolder.setDeploymentModel(deploymentModel);
-        String balxFileName = KubernetesUtils.extractBalxName(kubernetesDataHolder.getBalxFilePath());
+        String balxFileName = extractUberJarName(kubernetesDataHolder.getUberJarPath());
         if (isBlank(deploymentModel.getName())) {
             if (balxFileName != null) {
                 deploymentModel.setName(getValidName(balxFileName) + DEPLOYMENT_POSTFIX);
@@ -138,11 +138,11 @@ public class ArtifactManager {
      */
     private void setDefaultKubernetesInstructions() {
         instructions.put("\tRun the following command to deploy the Kubernetes artifacts: ",
-                "\tkubectl apply -f " + this.kubernetesDataHolder.getArtifactOutputPath().toAbsolutePath());
+                "\tkubectl apply -f " + this.kubernetesDataHolder.getK8sArtifactOutputPath().toAbsolutePath());
         
         DeploymentModel model = this.kubernetesDataHolder.getDeploymentModel();
         instructions.put("\tRun the following command to install the application using Helm: ",
                 "\thelm install --name " + model.getName() + " " +
-                this.kubernetesDataHolder.getArtifactOutputPath().resolve(model.getName()).toAbsolutePath());
+                this.kubernetesDataHolder.getK8sArtifactOutputPath().resolve(model.getName()).toAbsolutePath());
     }
 }

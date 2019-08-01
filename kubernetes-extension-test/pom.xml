@@ -20,7 +20,7 @@
 
     <parent>
         <groupId>org.ballerinax.kubernetes</groupId>
-        <version>0.990.4-SNAPSHOT</version>
+        <version>0.992.0-m2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
         <artifactId>kubernetes-extension-parent</artifactId>
     </parent>
@@ -33,43 +33,30 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.ballerinalang</groupId>
-            <artifactId>ballerina</artifactId>
+            <groupId>org.ballerinax.kubernetes</groupId>
+            <artifactId>kubernetes-extension</artifactId>
             <type>zip</type>
+            <classifier>ballerina-binary-repo</classifier>
             <exclusions>
                 <exclusion>
-                    <groupId>org.ballerinalang</groupId>
-                    <artifactId>strip-bouncycastle</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId> org.bouncycastle</groupId>
-                    <artifactId>bcprov-jdk15on</artifactId>
+                    <groupId>org.ops4j.pax.logging</groupId>
+                    <artifactId>pax-logging-api</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-simple</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-jdk14</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-nop</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.ballerinax.kubernetes</groupId>
-            <artifactId>kubernetes-extension</artifactId>
-            <type>zip</type>
-            <classifier>ballerina-binary-repo</classifier>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.ballerinalang</groupId>
-            <artifactId>testerina-core</artifactId>
-            <type>zip</type>
-            <classifier>ballerina-binary-repo</classifier>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ballerinax.docker</groupId>
@@ -95,89 +82,15 @@
             <groupId>org.ballerinax.kubernetes</groupId>
             <artifactId>kubernetes-extension</artifactId>
         </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <id>unpack-dependencies</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includeArtifactIds>
-                                ballerina
-                            </includeArtifactIds>
-                            <outputDirectory>${project.build.directory}/extracted-distributions
-                            </outputDirectory>
-                            <overWriteReleases>false</overWriteReleases>
-                            <overWriteSnapshots>true</overWriteSnapshots>
-                            <useSubDirectoryPerArtifact>true</useSubDirectoryPerArtifact>
-                            <stripVersion>true</stripVersion>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>unpack-balo</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includeClassifiers>ballerina-binary-repo</includeClassifiers>
-                            <outputDirectory>
-                                ${project.build.directory}/extracted-distributions/ballerina-zip/ballerina-${ballerina.lang.version}/lib
-                            </outputDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.ballerinalang</groupId>
-                                    <artifactId>ballerina-packerina</artifactId>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.ballerinax.kubernetes</groupId>
-                                    <artifactId>kubernetes-extension</artifactId>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.ballerinalang</groupId>
-                                    <artifactId>testerina-core</artifactId>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>com.fasterxml.jackson.core</groupId>
-                                    <artifactId>jackson-core</artifactId>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>com.fasterxml.jackson.dataformat</groupId>
-                                    <artifactId>jackson-dataformat-yaml</artifactId>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>com.fasterxml.jackson.core</groupId>
-                                    <artifactId>jackson-databind</artifactId>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>com.fasterxml.jackson.core</groupId>
-                                    <artifactId>jackson-annotations</artifactId>
-                                </artifactItem>
-                            </artifactItems>
-                            <outputDirectory>
-                                ${project.build.directory}/extracted-distributions/ballerina-zip/ballerina-${ballerina.lang.version}/bre/lib
-                            </outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -190,11 +103,14 @@
                     <argLine>${jacoco.agent.argLine}</argLine>
                     <systemPropertyVariables>
                         <ballerina.pack>
-                            ${project.build.directory}/extracted-distributions/ballerina-zip/ballerina-${ballerina.lang.version}/bin
+                            ${project.basedir}/../kubernetes-extension-balo/target/extracted-distribution/jballerina-tools-${ballerina.lang.version}/
                         </ballerina.pack>
                         <sample.dir>
                             ${project.build.directory}/../../samples
                         </sample.dir>
+                        <docker.image.version>
+                            ${project.version}
+                        </docker.image.version>
                         <jacoco.agent.argLine>${jacoco.agent.argLine}</jacoco.agent.argLine>
                     </systemPropertyVariables>
                     <suiteXmlFiles>

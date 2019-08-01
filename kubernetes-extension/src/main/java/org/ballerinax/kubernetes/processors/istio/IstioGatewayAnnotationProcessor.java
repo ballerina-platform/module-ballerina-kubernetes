@@ -29,7 +29,7 @@ import org.ballerinax.kubernetes.models.istio.IstioPortModel;
 import org.ballerinax.kubernetes.models.istio.IstioServerModel;
 import org.ballerinax.kubernetes.processors.AbstractAnnotationProcessor;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
-import org.wso2.ballerinalang.compiler.tree.expressions.BLangArrayLiteral;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangListConstructorExpr;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
 import java.util.LinkedList;
@@ -130,7 +130,8 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
                     gatewayModel.setSelector(getMap(gatewayField.getValue()));
                     break;
                 case servers:
-                    processIstioGatewayServerAnnotation(gatewayModel, (BLangArrayLiteral) gatewayField.getValue());
+                    processIstioGatewayServerAnnotation(gatewayModel,
+                            (BLangListConstructorExpr) gatewayField.getValue());
                     break;
                 default:
                     throw new KubernetesPluginException("unknown field found for istio gateway.");
@@ -147,7 +148,8 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
      * @param serversField List of servers of the gateway.
      * @throws KubernetesPluginException Unable to process annotation
      */
-    private void processIstioGatewayServerAnnotation(IstioGatewayModel gatewayModel, BLangArrayLiteral serversField)
+    private void processIstioGatewayServerAnnotation(IstioGatewayModel gatewayModel,
+                                                     BLangListConstructorExpr serversField)
             throws KubernetesPluginException {
         List<IstioServerModel> servers = new LinkedList<>();
         for (ExpressionNode serverRecord : serversField.getExpressions()) {

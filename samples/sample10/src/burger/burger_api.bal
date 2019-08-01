@@ -8,7 +8,7 @@ import ballerinax/kubernetes;
     path: "/",
     targetPath: "/burger"
 }
-listener http:Listener burgerEP = new(9096, config = {
+listener http:Listener burgerEP = new(9096, {
     secureSocket: {
         keyStore: {
             path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
@@ -32,7 +32,7 @@ service BurgerAPI on burgerEP {
         response.setTextPayload("Burger menu \n");
         var responseResult = outboundEP->respond(response);
         if (responseResult is error) {
-            log:printError("error responding back to client.", err = responseResult);
+            log:printError("error responding back to client.", responseResult);
         }
     }
 }

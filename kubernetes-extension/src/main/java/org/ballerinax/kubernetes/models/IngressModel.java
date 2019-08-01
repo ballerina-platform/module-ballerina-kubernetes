@@ -18,7 +18,6 @@
 package org.ballerinax.kubernetes.models;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.NGINX;
 
@@ -30,7 +29,6 @@ public class IngressModel extends KubernetesModel {
     private String path;
     private String ingressClass;
     private String listenerName;
-    private Map<String, String> annotations;
     private String serviceName;
     private int servicePort;
     private String targetPath;
@@ -98,7 +96,15 @@ public class IngressModel extends KubernetesModel {
     public void setEnableTLS(boolean enableTLS) {
         this.enableTLS = enableTLS;
     }
-
+    
+    public String getListenerName() {
+        return listenerName;
+    }
+    
+    public void setListenerName(String listenerName) {
+        this.listenerName = listenerName;
+    }
+    
     @Override
     public String toString() {
         return "IngressModel{" +
@@ -112,25 +118,5 @@ public class IngressModel extends KubernetesModel {
                 ", targetPath='" + targetPath + '\'' +
                 ", enableTLS=" + enableTLS +
                 '}';
-    }
-
-    public void addLabel(String key, String value) {
-        this.labels.put(key, value);
-    }
-
-    public String getListenerName() {
-        return listenerName;
-    }
-
-    public void setListenerName(String listenerName) {
-        this.listenerName = listenerName;
-    }
-
-    public Map<String, String> getAnnotations() {
-        return annotations;
-    }
-
-    public void setAnnotations(Map<String, String> annotations) {
-        this.annotations = annotations;
     }
 }

@@ -25,7 +25,7 @@ listener http:Listener hotDrinkEP = new(9090);
 @kubernetes:Deployment {
     copyFiles: [{ 
         target: "/ballerina/runtime/bre/lib",
-        source: "./resource/lib/mysql-connector-java-8.0.11.jar"
+        sourceFile: "./resource/lib/mysql-connector-java-8.0.11.jar"
     }]
 }
 @http:ServiceConfig {
@@ -45,17 +45,17 @@ service HotDrinksAPI on hotDrinkEP {
             if (jsonConversionRet is json) {
                 response.setJsonPayload(untaint jsonConversionRet);
             } else if (jsonConversionRet is error) {
-                log:printError("Error in table to json conversion", err = jsonConversionRet);
+                log:printError("Error in table to json conversion", jsonConversionRet);
                 response.setTextPayload("Error in table to json conversion");
             }
         } else if (selectRet is error) {
-            log:printError("Retrieving data from hotdrink table failed", err = selectRet);
+            log:printError("Retrieving data from hotdrink table failed", selectRet);
             response.setTextPayload("Error in reading results");
         }
 
         var responseResult = outboundEP->respond(response);
         if (responseResult is error) {
-            log:printError("error responding back to client.", err = responseResult);
+            log:printError("error responding back to client.", responseResult);
         }
     }
 }

@@ -20,7 +20,7 @@
 
     <parent>
         <groupId>org.ballerinax.kubernetes</groupId>
-        <version>0.990.4-SNAPSHOT</version>
+        <version>0.992.0-m2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
         <artifactId>kubernetes-extension-parent</artifactId>
     </parent>
@@ -35,12 +35,6 @@
         <dependency>
             <groupId>org.ballerinalang</groupId>
             <artifactId>ballerina-lang</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.ballerinalang</groupId>
@@ -48,6 +42,10 @@
             <type>zip</type>
             <classifier>ballerina-binary-repo</classifier>
             <exclusions>
+                <exclusion>
+                    <groupId>org.ops4j.pax.logging</groupId>
+                    <artifactId>pax-logging-api</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-simple</artifactId>
@@ -98,80 +96,6 @@
         </resources>
 
         <plugins>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
-                <executions>
-                    <execution>
-                        <id>gen-balo</id>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <phase>compile</phase>
-                        <configuration>
-                            <systemProperties>
-                                <systemProperty>
-                                    <key>BALLERINA_DEV_MODE_COMPILE</key>
-                                    <value>true</value>
-                                </systemProperty>
-                            </systemProperties>
-                            <arguments>
-                                <!--is built in pkg loaded from source-->
-                                <argument>false</argument>
-                                <!--source project dir-->
-                                <argument>${basedir}/src/main/ballerina/ballerinax</argument>
-                                <!--balo destination-->
-                                <argument>${project.build.directory}/generated-balo/repo/ballerinax</argument>
-                                <!--ballerina home-->
-                                <argument>${project.build.directory}</argument>
-                                <!--not used-->
-                                <argument>${project.version}</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-                <configuration>
-                    <mainClass>org.ballerinalang.stdlib.utils.GenerateBalo</mainClass>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unpack-dependencies</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includeClassifiers>ballerina-binary-repo</includeClassifiers>
-                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.2</version>
-                <executions>
-                    <execution>
-                        <id>distribution</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attached</goal>
-                        </goals>
-                        <configuration>
-                            <descriptorSourceDirectory>assembly</descriptorSourceDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

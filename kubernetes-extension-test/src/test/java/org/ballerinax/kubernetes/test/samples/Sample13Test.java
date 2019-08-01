@@ -35,13 +35,14 @@ import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 
-public class Sample13Test implements SampleTest {
+public class Sample13Test extends SampleTest {
 
     private static final Path SOURCE_DIR_PATH = SAMPLE_DIR.resolve("sample13");
-    private static final Path TARGET_PATH = SOURCE_DIR_PATH.resolve("target").resolve(KUBERNETES);
-    private static final Path COOL_DRINK_PKG_TARGET_PATH = TARGET_PATH.resolve("cool_drink");
-    private static final Path DRINK_STORE_PKG_TARGET_PATH = TARGET_PATH.resolve("drink_store");
-    private static final Path HOT_DRINK_PKG_TARGET_PATH = TARGET_PATH.resolve("hot_drink");
+    private static final Path DOCKER_TARGET_PATH = SOURCE_DIR_PATH.resolve("target").resolve(DOCKER);
+    private static final Path KUBERNETES_TARGET_PATH = SOURCE_DIR_PATH.resolve("target").resolve(KUBERNETES);
+    private static final Path COOL_DRINK_PKG_DOCKER_TARGET_PATH = DOCKER_TARGET_PATH.resolve("cool_drink");
+    private static final Path DRINK_STORE_PKG_DOCKER_TARGET_PATH = DOCKER_TARGET_PATH.resolve("drink_store");
+    private static final Path HOT_DRINK_PKG_DOCKER_TARGET_PATH = DOCKER_TARGET_PATH.resolve("hot_drink");
     private static final String COOL_DRINK_DOCKER_IMAGE = "cool_drink:latest";
     private static final String DRINK_STORE_DOCKER_IMAGE = "drink_store:latest";
     private static final String HOT_DRINK_DOCKER_IMAGE = "hot_drink:latest";
@@ -53,9 +54,9 @@ public class Sample13Test implements SampleTest {
 
     @Test
     public void validateDockerfile() {
-        Assert.assertTrue(COOL_DRINK_PKG_TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile().exists());
-        Assert.assertTrue(DRINK_STORE_PKG_TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile().exists());
-        Assert.assertTrue(HOT_DRINK_PKG_TARGET_PATH.resolve(DOCKER).resolve("Dockerfile").toFile().exists());
+        Assert.assertTrue(COOL_DRINK_PKG_DOCKER_TARGET_PATH.resolve("Dockerfile").toFile().exists());
+        Assert.assertTrue(DRINK_STORE_PKG_DOCKER_TARGET_PATH.resolve("Dockerfile").toFile().exists());
+        Assert.assertTrue(HOT_DRINK_PKG_DOCKER_TARGET_PATH.resolve("Dockerfile").toFile().exists());
     }
 
     @Test
@@ -80,8 +81,9 @@ public class Sample13Test implements SampleTest {
     }
 
     @AfterClass
-    public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
-        KubernetesUtils.deleteDirectory(TARGET_PATH);
+    public void cleanUp() throws KubernetesPluginException {
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DRINK_STORE_DOCKER_IMAGE);
         KubernetesTestUtils.deleteDockerImage(COOL_DRINK_DOCKER_IMAGE);
         KubernetesTestUtils.deleteDockerImage(HOT_DRINK_DOCKER_IMAGE);
