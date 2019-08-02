@@ -70,11 +70,6 @@
                 <version>${fabric8.kubernetes.client.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.ballerinalang</groupId>
-                <version>${ballerina.lang.version}</version>
-                <artifactId>lib-creator</artifactId>
-            </dependency>
-            <dependency>
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-client</artifactId>
                 <version>${spotify.docker.client.version}</version>
