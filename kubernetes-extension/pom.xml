@@ -161,6 +161,7 @@
                                     <include>org.ow2.asm:asm</include>
                                     <include>org.bouncycastle:bcpkix-jdk15on</include>
                                     <include>org.bouncycastle:bcprov-jdk15on</include>
+                                    <include>com.google.guava:guava</include>
                                 </includes>
                                 <excludes>
                                     <exclude>com.fasterxml.jackson.core:jackson-annotations</exclude>
