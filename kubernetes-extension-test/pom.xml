@@ -20,7 +20,7 @@
 
     <parent>
         <groupId>org.ballerinax.kubernetes</groupId>
-        <version>0.992.0-m2-SNAPSHOT</version>
+        <version>1.0.0-beta-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
         <artifactId>kubernetes-extension-parent</artifactId>
     </parent>
@@ -32,22 +32,6 @@
     <url>https://ballerina.io</url>
 
     <dependencies>
-        <dependency>
-            <groupId>org.ballerinax.kubernetes</groupId>
-            <artifactId>kubernetes-extension</artifactId>
-            <type>zip</type>
-            <classifier>ballerina-binary-repo</classifier>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.ops4j.pax.logging</groupId>
-                    <artifactId>pax-logging-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -81,6 +65,11 @@
         <dependency>
             <groupId>org.ballerinax.kubernetes</groupId>
             <artifactId>kubernetes-extension</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>

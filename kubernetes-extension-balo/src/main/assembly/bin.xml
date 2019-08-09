@@ -31,21 +31,21 @@
     <fileSets>
         <fileSet>
             <directory>
-                ${project.build.directory}/extracted-distribution/jballerina-tools-${ballerina.lang.version}/bir-cache/ballerinax/kubernetes
+                ${project.build.directory}/caches/bir_cache/ballerinax/kubernetes
             </directory>
             <outputDirectory>kubernetes</outputDirectory>
             <fileMode>755</fileMode>
         </fileSet>
         <fileSet>
             <directory>
-                ${project.build.directory}/extracted-distribution/jballerina-tools-${ballerina.lang.version}/bir-cache/ballerinax/istio
+                ${project.build.directory}/caches/bir_cache/ballerinax/istio
             </directory>
             <outputDirectory>istio</outputDirectory>
             <fileMode>755</fileMode>
         </fileSet>
         <fileSet>
             <directory>
-                ${project.build.directory}/extracted-distribution/jballerina-tools-${ballerina.lang.version}/bir-cache/ballerinax/openshift
+                ${project.build.directory}/caches/bir_cache/ballerinax/openshift
             </directory>
             <outputDirectory>openshift</outputDirectory>
             <fileMode>755</fileMode>
@@ -54,21 +54,18 @@
 
     <files>
         <file>
-            <source>${project.build.directory}/extracted-distribution/jballerina-tools-${ballerina.lang.version}/bre/lib/kubernetes.jar</source>
+            <source>${project.build.directory}/caches/jar_cache/ballerinax/kubernetes/0.0.0/kubernetes.jar</source>
             <outputDirectory>.</outputDirectory>
-            <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>${project.build.directory}/extracted-distribution/jballerina-tools-${ballerina.lang.version}/bre/lib/istio.jar</source>
+            <source>${project.build.directory}/caches/jar_cache/ballerinax/istio/0.0.0/istio.jar</source>
             <outputDirectory>.</outputDirectory>
-            <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>${project.build.directory}/extracted-distribution/jballerina-tools-${ballerina.lang.version}/bre/lib/openshift.jar</source>
+            <source>${project.build.directory}/caches/jar_cache/ballerinax/openshift/0.0.0/openshift.jar</source>
             <outputDirectory>.</outputDirectory>
-            <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
     </files>

@@ -24,7 +24,7 @@
     </parent>
 
     <groupId>org.ballerinax.kubernetes</groupId>
-    <version>0.992.0-m2-SNAPSHOT</version>
+    <version>1.0.0-beta-SNAPSHOT</version>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>kubernetes-extension-parent</artifactId>
     <name>Ballerinax - Kubernetes Extension Parent</name>
@@ -70,44 +70,15 @@
                 <version>${fabric8.kubernetes.client.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.ballerinalang</groupId>
-                <version>${ballerina.lang.version}</version>
-                <artifactId>lib-creator</artifactId>
-            </dependency>
-            <dependency>
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-client</artifactId>
                 <version>${spotify.docker.client.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
-                <artifactId>ballerina-builtin</artifactId>
-                <version>${ballerina.lang.version}</version>
-                <type>zip</type>
-                <classifier>ballerina-binary-repo</classifier>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.ops4j.pax.logging</groupId>
-                        <artifactId>pax-logging-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-simple</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.ballerinalang</groupId>
                 <artifactId>ballerina</artifactId>
                 <version>${ballerina.lang.version}</version>
                 <type>zip</type>
-            </dependency>
-            <dependency>
-                <groupId>org.ballerinax.kubernetes</groupId>
-                <artifactId>kubernetes-extension</artifactId>
-                <type>zip</type>
-                <classifier>ballerina-binary-repo</classifier>
-                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
@@ -216,6 +187,16 @@
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
         </repository>
+        <repository>
+            <id>wso2.stage</id>
+            <name>WSO2 Stage Repository</name>
+            <url>https://maven.wso2.org/nexus/content/repositories/orgballerinalang-1386/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+        </repository>
     </repositories>
 
 
@@ -275,12 +256,12 @@
     </scm>
 
     <properties>
-        <ballerina.lang.version>0.992.0-m2-SNAPSHOT</ballerina.lang.version>
+        <ballerina.lang.version>1.0.0-alpha</ballerina.lang.version>
         <ballerina.source.directory>${project.build.directory}/../src/main/ballerina</ballerina.source.directory>
         <com.fasterxml.jackson.core.annotations.version>2.9.8</com.fasterxml.jackson.core.annotations.version>
         <com.fasterxml.jackson.dataformat.yaml.version>2.9.8</com.fasterxml.jackson.dataformat.yaml.version>
         <commons.codec.version>1.12</commons.codec.version>
-        <docker.generator.version>0.992.0-m2-SNAPSHOT</docker.generator.version>
+        <docker.generator.version>1.0.0-alpha</docker.generator.version>
         <fabric8.kubernetes.client.version>4.1.2</fabric8.kubernetes.client.version>
         <jackson.version>2.9.8</jackson.version>
         <maven.jacoco.plugin.version>0.8.3</maven.jacoco.plugin.version>

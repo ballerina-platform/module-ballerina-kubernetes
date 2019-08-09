@@ -20,7 +20,7 @@
 
     <parent>
         <groupId>org.ballerinax.kubernetes</groupId>
-        <version>0.992.0-m2-SNAPSHOT</version>
+        <version>1.0.0-beta-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
         <artifactId>kubernetes-extension-parent</artifactId>
     </parent>
@@ -35,26 +35,6 @@
         <dependency>
             <groupId>org.ballerinalang</groupId>
             <artifactId>ballerina-lang</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.ballerinalang</groupId>
-            <artifactId>ballerina-builtin</artifactId>
-            <type>zip</type>
-            <classifier>ballerina-binary-repo</classifier>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.ops4j.pax.logging</groupId>
-                    <artifactId>pax-logging-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.ballerinalang</groupId>
-            <artifactId>lib-creator</artifactId>
         </dependency>
         <dependency>
             <groupId>org.ballerinax.docker</groupId>
@@ -181,6 +161,7 @@
                                     <include>org.ow2.asm:asm</include>
                                     <include>org.bouncycastle:bcpkix-jdk15on</include>
                                     <include>org.bouncycastle:bcprov-jdk15on</include>
+                                    <include>com.google.guava:guava</include>
                                 </includes>
                                 <excludes>
                                     <exclude>com.fasterxml.jackson.core:jackson-annotations</exclude>
@@ -195,6 +176,7 @@
                                     <exclude>org.ballerinalang:ballerina-launcher</exclude>
                                     <exclude>org.ballerinalang:ballerina-logging</exclude>
                                     <exclude>org.ballerinalang:ballerina-mime</exclude>
+                                    <exclude>org.ballerinalang:ballerina-runtime</exclude>
                                     <exclude>org.bsc.maven:maven-processor-plugin</exclude>
                                     <exclude>org.slf4j:slf4j-api</exclude>
                                     <exclude>org.slf4j:slf4j-jdk14</exclude>
