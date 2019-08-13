@@ -54,17 +54,17 @@
 
     <files>
         <file>
-            <source>${project.build.directory}/caches/jar_cache/ballerinax/kubernetes/0.0.0/kubernetes.jar</source>
+            <source>${project.build.directory}/caches/jar_cache/ballerinax/kubernetes/0.0.0/ballerinax-kubernetes-0.0.0.jar</source>
             <outputDirectory>.</outputDirectory>
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>${project.build.directory}/caches/jar_cache/ballerinax/istio/0.0.0/istio.jar</source>
+            <source>${project.build.directory}/caches/jar_cache/ballerinax/istio/0.0.0/ballerinax-istio-0.0.0.jar</source>
             <outputDirectory>.</outputDirectory>
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>${project.build.directory}/caches/jar_cache/ballerinax/openshift/0.0.0/openshift.jar</source>
+            <source>${project.build.directory}/caches/jar_cache/ballerinax/openshift/0.0.0/ballerinax-openshift-0.0.0.jar</source>
             <outputDirectory>.</outputDirectory>
             <fileMode>755</fileMode>
         </file>
