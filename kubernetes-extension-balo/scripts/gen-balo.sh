@@ -51,7 +51,7 @@ cp -r ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/bir_cache/ballerinax/k
 cp -r ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/bir_cache/ballerinax/istio ${BALLERINAX_BIR_CACHE}
 cp -r ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/bir_cache/ballerinax/openshift ${BALLERINAX_BIR_CACHE}
 
-cp ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/jar_cache/ballerinax/kubernetes/0.0.0/kubernetes.jar ${BALLERINAX_SYSTEM_LIB}
-cp ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/jar_cache/ballerinax/istio/0.0.0/istio.jar ${BALLERINAX_SYSTEM_LIB}
-cp ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/jar_cache/ballerinax/openshift/0.0.0/openshift.jar ${BALLERINAX_SYSTEM_LIB}
+cp ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/jar_cache/ballerinax/kubernetes/0.0.0/ballerinax-kubernetes-0.0.0.jar ${BALLERINAX_SYSTEM_LIB}
+cp ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/jar_cache/ballerinax/istio/0.0.0/ballerinax-istio-0.0.0.jar ${BALLERINAX_SYSTEM_LIB}
+cp ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/jar_cache/ballerinax/openshift/0.0.0/ballerinax-openshift-0.0.0.jar ${BALLERINAX_SYSTEM_LIB}
 

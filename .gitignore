@@ -11,6 +11,7 @@
 .mtj.tmp/
 
 # Package Files #
+!kubernetes-extension/src/test/resources/hello-executable.jar
 *.jar
 *.war
 *.ear
