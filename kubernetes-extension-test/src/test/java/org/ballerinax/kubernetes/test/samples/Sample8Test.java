@@ -138,7 +138,7 @@ public class Sample8Test extends SampleTest {
         Assert.assertEquals(ports.get(0), "9090/tcp");
         // Validate ballerina.conf in run command
         Assert.assertEquals(getCommand(DOCKER_IMAGE).toString(),
-                    "[/bin/sh, -c, ballerina run --config ${CONFIG_FILE} hello_world_config_map_k8s-executable.jar]");
+                    "[/bin/sh, -c, java -jar hello_world_config_map_k8s-executable.jar --config ${CONFIG_FILE}]");
     }
 
     @AfterClass

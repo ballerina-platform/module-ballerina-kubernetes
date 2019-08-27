@@ -39,7 +39,7 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDocker
 /**
  * Test cases for deployment liveness probes.
  */
-public class LivenessProbeTest extends BaseTest {
+public class LivenessProbeTest {
     private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "deployment", "liveness-probe");
     private static final Path DOCKER_TARGET_PATH = BAL_DIRECTORY.resolve(DOCKER);
     private static final Path KUBERNETES_TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);

@@ -11,7 +11,7 @@ import ballerinax/kubernetes;
 listener http:Listener burgerEP = new(9096, {
     secureSocket: {
         keyStore: {
-            path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
+            path: "src/burger/resources/ballerinaKeystore.p12",
             password: "ballerina"
         }
     }

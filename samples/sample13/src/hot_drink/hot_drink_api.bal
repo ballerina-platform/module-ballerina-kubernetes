@@ -43,7 +43,7 @@ service HotDrinksAPI on hotDrinkEP {
         if (selectRet is table<HotDrink>) {
             var jsonConversionRet = json.convert(selectRet);
             if (jsonConversionRet is json) {
-                response.setJsonPayload(untaint jsonConversionRet);
+                response.setJsonPayload(<@untainted> jsonConversionRet);
             } else if (jsonConversionRet is error) {
                 log:printError("Error in table to json conversion", jsonConversionRet);
                 response.setTextPayload("Error in table to json conversion");

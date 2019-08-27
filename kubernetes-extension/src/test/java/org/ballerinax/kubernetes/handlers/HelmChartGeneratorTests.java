@@ -28,7 +28,7 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.ballerinax.docker.generator.DockerGenConstants.BALLERINA_BASE_IMAGE;
+import static org.ballerinax.docker.generator.DockerGenConstants.OPENJDK_8_JRE_ALPINE_BASE_IMAGE;
 
 /**
  * Helm chart generator tests.
@@ -46,7 +46,7 @@ public class HelmChartGeneratorTests extends HandlerTestSuite {
         dockerModel.setService(true);
         dockerModel.setUberJarFileName("hello-executable.jar");
         dockerModel.setEnableDebug(true);
-        dockerModel.setBaseImage(BALLERINA_BASE_IMAGE + ":latest");
+        dockerModel.setBaseImage(OPENJDK_8_JRE_ALPINE_BASE_IMAGE);
         dockerModel.setDebugPort(5005);
         dockerModel.setBuildImage(false);
         KubernetesContext context = KubernetesContext.getInstance();

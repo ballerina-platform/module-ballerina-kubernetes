@@ -44,7 +44,7 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDocker
 /**
  * Test case for creating a deployment using a main function.
  */
-public class MainFunctionDeploymentTest extends BaseTest {
+public class MainFunctionDeploymentTest {
     private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "deployment");
     private static final Path DOCKER_TARGET_PATH = BAL_DIRECTORY.resolve(DOCKER);
     private static final Path KUBERNETES_TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);

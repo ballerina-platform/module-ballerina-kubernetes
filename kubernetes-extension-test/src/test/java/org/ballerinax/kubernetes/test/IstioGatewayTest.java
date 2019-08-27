@@ -42,7 +42,7 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
  *
  * @since 0.985.0
  */
-public class IstioGatewayTest extends BaseTest {
+public class IstioGatewayTest {
     
     private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "istio", "gateway");
     private static final Path DOCKER_TARGET_PATH = BAL_DIRECTORY.resolve(DOCKER);

@@ -42,7 +42,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 /**
  * Test cases for OpenShift BuildConfig generated artifacts.
  */
-public class OpenShiftBuildConfigTest extends BaseTest {
+public class OpenShiftBuildConfigTest {
     private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "openshift", "build-config");
     private static final Path DOCKER_TARGET_PATH = BAL_DIRECTORY.resolve(DOCKER);
     private static final Path KUBERNETES_TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);

@@ -19,19 +19,25 @@ import ballerina/'lang\.object as lang;
 import ballerinax/kubernetes;
 
 public type ABC object {
-
     *lang:AbstractListener;
 
-    public function __start() returns error?{
-        error e = error("startError");
-        panic e;
-    }
-
-    public function __stop() returns error? {
-        return ();
+    public function __init() {
     }
 
     public function __attach(service s, string? name = ()) returns error? {
+    }
+
+    public function __detach(service s) returns error? {
+    }
+
+    public function __start() returns error? {
+    }
+
+    public function __gracefulStop() returns error? {
+        return ();
+    }
+
+    public function __immediateStop() returns error? {
         return ();
     }
 };
