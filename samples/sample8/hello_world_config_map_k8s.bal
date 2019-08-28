@@ -9,13 +9,13 @@ import ballerinax/kubernetes;
     hostname: "abc.com"
 }
 listener http:Listener helloWorldEP = new(9090, {
-    secureSocket:{
-        keyStore:{
-            path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
-            password:"ballerina"
+    secureSocket: {
+        keyStore: {
+            path: "./ballerinaKeystore.p12",
+            password: "ballerina"
         },
-        trustStore:{
-            path: "${ballerina.home}/bre/security/ballerinaTruststore.p12",
+        trustStore: {
+            path: "./ballerinaTruststore.p12",
             password: "ballerina"
         }
     }

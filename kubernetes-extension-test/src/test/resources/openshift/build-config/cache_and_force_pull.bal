@@ -16,7 +16,6 @@
 
 import ballerina/http;
 import ballerinax/kubernetes;
-import ballerinax/openshift;
 
 @kubernetes:Deployment {
     namespace: "bal-oc-test",

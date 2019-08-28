@@ -28,7 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static org.ballerinax.docker.generator.DockerGenConstants.BALLERINA_BASE_IMAGE;
+import static org.ballerinax.docker.generator.DockerGenConstants.OPENJDK_8_JRE_ALPINE_BASE_IMAGE;
 
 /**
  * Job model class.
@@ -58,8 +58,7 @@ public class JobModel extends KubernetesModel {
         this.env = new LinkedHashMap<>();
         this.copyFiles = new HashSet<>();
         this.restartPolicy = KubernetesConstants.RestartPolicy.Never.name();
-        String baseImageVersion = getClass().getPackage().getImplementationVersion();
-        this.setBaseImage(BALLERINA_BASE_IMAGE + ":" + baseImageVersion);
+        this.setBaseImage(OPENJDK_8_JRE_ALPINE_BASE_IMAGE);
         this.setPush(false);
         this.buildImage = true;
         this.labels = new HashMap<>();

@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.ballerinax.docker.generator.DockerGenConstants.BALLERINA_BASE_IMAGE;
+import static org.ballerinax.docker.generator.DockerGenConstants.OPENJDK_8_JRE_ALPINE_BASE_IMAGE;
 
 /**
  * Kubernetes deployment annotations model class.
@@ -66,8 +66,7 @@ public class DeploymentModel extends KubernetesModel {
         // Initialize with default values.
         this.replicas = 1;
         this.buildImage = true;
-        String baseImageVersion = getClass().getPackage().getImplementationVersion();
-        this.baseImage = BALLERINA_BASE_IMAGE + ":" + baseImageVersion;
+        this.baseImage = OPENJDK_8_JRE_ALPINE_BASE_IMAGE;
         this.push = false;
         this.labels = new LinkedHashMap<>();
         this.env = new LinkedHashMap<>();

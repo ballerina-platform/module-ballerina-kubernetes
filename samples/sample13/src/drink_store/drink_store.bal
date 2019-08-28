@@ -13,7 +13,7 @@ import ballerinax/kubernetes;
 listener http:Listener drinkStoreEP = new(9091, config = {
     secureSocket: {
         keyStore: {
-            path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
+            path: "src/drink_store/resources/ballerinaKeystore.p12",
             password: "ballerina"
         }
     }

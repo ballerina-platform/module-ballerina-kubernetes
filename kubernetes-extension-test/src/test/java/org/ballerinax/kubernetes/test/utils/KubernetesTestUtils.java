@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -200,7 +201,7 @@ public class KubernetesTestUtils {
         // log ballerina-internal.log content
         if (Files.exists(ballerinaInternalLog)) {
             log.error("ballerina-internal.log file found. content: ");
-            log.error(FileUtils.readFileToString(ballerinaInternalLog.toFile()));
+            log.error(FileUtils.readFileToString(ballerinaInternalLog.toFile(), Charset.defaultCharset()));
         }
         return exitCode;
     }
@@ -237,9 +238,9 @@ public class KubernetesTestUtils {
     
         ProcessBuilder pb;
         if (skipTests) {
-            pb = new ProcessBuilder(BALLERINA_COMMAND, BUILD, "--skip-tests");
+            pb = new ProcessBuilder(BALLERINA_COMMAND, BUILD, "-a", "--skip-tests");
         } else {
-            pb = new ProcessBuilder(BALLERINA_COMMAND, BUILD);
+            pb = new ProcessBuilder(BALLERINA_COMMAND, BUILD, "-a");
         }
     
         log.info(COMPILING + sourceDirectory.normalize());
@@ -257,7 +258,7 @@ public class KubernetesTestUtils {
         // log ballerina-internal.log content
         if (Files.exists(ballerinaInternalLog)) {
             log.info("ballerina-internal.log file found. content: ");
-            log.info(FileUtils.readFileToString(ballerinaInternalLog.toFile()));
+            log.info(FileUtils.readFileToString(ballerinaInternalLog.toFile(), Charset.defaultCharset()));
         }
 
         return exitCode;
@@ -271,8 +272,7 @@ public class KubernetesTestUtils {
      * @throws InterruptedException if an error occurs while compiling
      * @throws IOException          if an error occurs while writing file
      */
-    public static int compileBallerinaProject(Path sourceDirectory) throws InterruptedException,
-            IOException {
+    public static int compileBallerinaProject(Path sourceDirectory) throws InterruptedException, IOException {
         return compileBallerinaProject(sourceDirectory, false);
     }
 

@@ -20,7 +20,6 @@ package org.ballerinax.kubernetes.test.samples;
 
 import org.apache.commons.io.FilenameUtils;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.test.BaseTest;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -29,7 +28,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public abstract class SampleTest extends BaseTest {
+public abstract class SampleTest {
     /**
      * Location of the samples directory.
      */
