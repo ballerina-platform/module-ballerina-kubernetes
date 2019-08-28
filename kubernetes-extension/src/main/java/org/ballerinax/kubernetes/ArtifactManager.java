@@ -39,6 +39,7 @@ import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 
+import java.io.PrintStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -54,6 +55,7 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.printInstruction;
  */
 public class ArtifactManager {
     private static final Map<String, String> instructions = new LinkedHashMap<>();
+    private static final PrintStream OUT = System.out;
     private KubernetesDataHolder kubernetesDataHolder;
 
     ArtifactManager() {
@@ -68,7 +70,7 @@ public class ArtifactManager {
     void   createArtifacts() throws KubernetesPluginException {
         // add default kubernetes instructions.
         setDefaultKubernetesInstructions();
-        
+        OUT.println("\nGenerating artifacts...");
         if (kubernetesDataHolder.getJobModel() != null) {
             new JobHandler().createArtifacts();
             new DockerHandler().createArtifacts();
