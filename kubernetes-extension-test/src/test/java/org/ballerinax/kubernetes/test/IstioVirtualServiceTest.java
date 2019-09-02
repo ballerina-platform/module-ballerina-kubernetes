@@ -45,7 +45,7 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
  *
  * @since 0.985.0
  */
-public class IstioVirtualServiceTest extends BaseTest {
+public class IstioVirtualServiceTest {
     
     private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "istio", "virtual-service");
     private static final Path DOCKER_TARGET_PATH = BAL_DIRECTORY.resolve(DOCKER);

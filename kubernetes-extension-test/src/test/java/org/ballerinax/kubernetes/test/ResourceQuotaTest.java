@@ -41,7 +41,7 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExpose
 /**
  * Test creating resource quotas.
  */
-public class ResourceQuotaTest extends BaseTest {
+public class ResourceQuotaTest {
     private static final Path BAL_DIRECTORY = Paths.get("src", "test", "resources", "resource-quotas");
     private static final Path DOCKER_TARGET_PATH = BAL_DIRECTORY.resolve(DOCKER);
     private static final Path KUBERNETES_TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);

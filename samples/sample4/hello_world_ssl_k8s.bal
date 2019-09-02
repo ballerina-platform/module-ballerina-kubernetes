@@ -4,12 +4,12 @@ import ballerinax/kubernetes;
 
 @kubernetes:Service {}
 @kubernetes:Ingress {
-    hostname:"abc.com"
+    hostname: "abc.com"
 }
 listener http:Listener helloWorldSecuredEP = new(9090, {
     secureSocket: {
         keyStore: {
-            path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
+            path: "./security/ballerinaKeystore.p12",
             password: "ballerina"
         }
     }
@@ -17,7 +17,7 @@ listener http:Listener helloWorldSecuredEP = new(9090, {
 
 @kubernetes:Deployment {}
 @http:ServiceConfig {
-    basePath:"/helloWorld"
+    basePath: "/helloWorld"
 }
 service helloWorld on helloWorldSecuredEP {
     resource function sayHello(http:Caller outboundEP, http:Request request) {

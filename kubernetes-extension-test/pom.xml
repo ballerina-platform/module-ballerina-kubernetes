@@ -97,9 +97,6 @@
                         <sample.dir>
                             ${project.build.directory}/../../samples
                         </sample.dir>
-                        <docker.image.version>
-                            ${project.version}
-                        </docker.image.version>
                         <jacoco.agent.argLine>${jacoco.agent.argLine}</jacoco.agent.argLine>
                     </systemPropertyVariables>
                     <suiteXmlFiles>
