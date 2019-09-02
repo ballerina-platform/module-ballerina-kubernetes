@@ -19,7 +19,7 @@ import ballerina/'lang\.object as lang;
 import ballerinax/kubernetes;
 
 public type ABC object {
-    *lang:AbstractListener;
+    *lang:Listener;
 
     public function __init() {
     }
