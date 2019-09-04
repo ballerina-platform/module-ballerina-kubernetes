@@ -10,19 +10,25 @@ groups="esb"
 # Build the ballerina program
 $ ballerina build kubernetes_deployment.bal
 Compiling source
-    kubernetes_deployment.bal
+	kubernetes_deployment.bal
+Generating executables
+	kubernetes_deployment-executable.jar
 
-Generating executable
-    kubernetes_deployment.balx
-        @kubernetes:Service                      - complete 1/1
-        @kubernetes:Ingress                      - complete 1/1
-        @kubernetes:Secret                       - complete 1/1
-        @kubernetes:ConfigMap                    - complete 1/1
-        @kubernetes:Deployment                   - complete 1/1
-        @kubernetes:Docker                       - complete 3/3
+Generating artifacts...
 
-        Run the following command to deploy the Kubernetes artifacts:
-        kubectl apply -f ./kubernetes
+	@kubernetes:Service 			 - complete 1/1
+	@kubernetes:Ingress 			 - complete 1/1
+	@kubernetes:ConfigMap 			 - complete 1/1
+	@kubernetes:Deployment 			 - complete 1/1
+	@kubernetes:Docker 			 - complete 2/2 
+	@kubernetes:Helm 			 - complete 1/1
+
+	Run the following command to deploy the Kubernetes artifacts: 
+	kubectl apply -f ./kubernetes
+
+	Run the following command to install the application using Helm: 
+	helm install --name kubernetes-deployment-deployment ./kubernetes-deployment-deployment
+
 
 # Verify the Docker image is generated
 $ docker images
