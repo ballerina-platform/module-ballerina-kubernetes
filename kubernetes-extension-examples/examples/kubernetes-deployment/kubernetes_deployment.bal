@@ -69,6 +69,6 @@ service helloWorld on helloWorldEP {
 }
 
 function getConfigValue(string instanceId, string property) returns (string) {
-    string key = untaint instanceId + "." + untaint property;
-    return config:getAsString(key, defaultValue = "Invalid User");
+    string key = <@untainted string> (instanceId + "." + property);
+    return config:getAsString(key, "Invalid User");
 }
