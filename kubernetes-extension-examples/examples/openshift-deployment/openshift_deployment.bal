@@ -33,7 +33,7 @@ service hello on helloEP {
         path: "/{user}"
     }
     resource function sayHello(http:Caller caller, http:Request request, string user) {
-        string payload = string `Hello ${untaint user}!`;
+        string payload = string `Hello ${<@untainted string> user}!`;
         var responseResult = caller->respond(payload);
         if (responseResult is error) {
             error err = responseResult;
