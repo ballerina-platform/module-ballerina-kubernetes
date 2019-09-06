@@ -1,5 +1,5 @@
 import ballerina/io;
-import ballerinax/kubernetes;
+import ballerina/kubernetes;
 
 @kubernetes:Job {}
 public function main(string... args) {

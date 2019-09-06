@@ -15,7 +15,7 @@
 // under the License.
 
 import ballerina/http;
-import ballerinax/kubernetes;
+import ballerina/kubernetes;
 
 listener http:Listener helloEP = new(9090);
 

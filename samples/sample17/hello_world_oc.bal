@@ -16,8 +16,8 @@
 
 import ballerina/http;
 import ballerina/log;
-import ballerinax/kubernetes;
-import ballerinax/openshift;
+import ballerina/kubernetes;
+import ballerina/openshift;
 
 @openshift:Route {
     host: {

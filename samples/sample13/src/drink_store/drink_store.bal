@@ -2,7 +2,7 @@ import ballerina/http;
 import ballerina/log;
 import ballerina/io;
 import ballerina/math;
-import ballerinax/kubernetes;
+import ballerina/kubernetes;
 
 @kubernetes:Service {
     serviceType: "NodePort"

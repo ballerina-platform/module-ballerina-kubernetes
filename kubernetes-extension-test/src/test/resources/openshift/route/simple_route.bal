@@ -15,8 +15,8 @@
 // under the License.
 
 import ballerina/http;
-import ballerinax/kubernetes;
-import ballerinax/openshift;
+import ballerina/kubernetes;
+import ballerina/openshift;
 
 @openshift:Route {
     host: "www.bxoc.com"
