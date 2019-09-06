@@ -12,7 +12,7 @@ $ ballerina build kubernetes_deployment.bal
 Compiling source
 	kubernetes_deployment.bal
 Generating executables
-	kubernetes_deployment-executable.jar
+	kubernetes_deployment.jar
 
 Generating artifacts...
 
