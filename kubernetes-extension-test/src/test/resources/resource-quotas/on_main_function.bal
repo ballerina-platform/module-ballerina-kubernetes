@@ -15,7 +15,7 @@
 // under the License.
 
 import ballerina/io;
-import ballerinax/kubernetes;
+import ballerina/kubernetes;
 
 @kubernetes:Deployment {
     name: "simple-quota",

@@ -2,7 +2,7 @@ import ballerina/config;
 import ballerina/http;
 import ballerina/log;
 import ballerina/io;
-import ballerinax/kubernetes;
+import ballerina/kubernetes;
 
 @kubernetes:Service {}
 @kubernetes:Ingress {

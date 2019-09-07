@@ -1,6 +1,6 @@
 import ballerina/http;
 import ballerina/log;
-import ballerinax/kubernetes;
+import ballerina/kubernetes;
 
 @kubernetes:Deployment {
     livenessProbe: true,

@@ -15,8 +15,8 @@
 // under the License.
 
 import ballerina/io;
-import ballerinax/kubernetes;
-import ballerinax/openshift;
+import ballerina/kubernetes;
+import ballerina/openshift;
 
 @kubernetes:Deployment {
     namespace: "bal-oc-test",

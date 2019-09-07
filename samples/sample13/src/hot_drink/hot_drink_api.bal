@@ -2,8 +2,8 @@ import ballerina/http;
 import ballerina/io;
 import ballerina/log;
 import ballerina/config;
-import ballerinax/jdbc;
-import ballerinax/kubernetes;
+import ballerina/jdbc;
+import ballerina/kubernetes;
 
 @kubernetes:Service {
     name: "hotdrink-backend"

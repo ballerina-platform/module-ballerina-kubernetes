@@ -1,7 +1,7 @@
 import ballerina/http;
 import ballerina/internal;
 import ballerina/log;
-import ballerinax/kubernetes;
+import ballerina/kubernetes;
 
 @kubernetes:Service {
     name: "car-rental"

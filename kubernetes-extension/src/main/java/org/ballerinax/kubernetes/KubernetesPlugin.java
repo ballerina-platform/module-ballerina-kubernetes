@@ -57,7 +57,7 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
  * Compiler plugin to generate kubernetes artifacts.
  */
 @SupportedAnnotationPackages(
-        value = {"ballerinax/kubernetes:0.0.0", "ballerinax/istio:0.0.0", "ballerinax/openshift:0.0.0"}
+        value = {"ballerina/kubernetes", "ballerina/istio", "ballerina/openshift"}
 )
 public class KubernetesPlugin extends AbstractCompilerPlugin {
     private static final Logger pluginLog = LoggerFactory.getLogger(KubernetesPlugin.class);
