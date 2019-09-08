@@ -16,7 +16,7 @@
 
 import ballerina/http;
 import ballerina/'lang\.object as lang;
-import ballerinax/kubernetes;
+import ballerina/kubernetes;
 
 public type ABC object {
     *lang:Listener;

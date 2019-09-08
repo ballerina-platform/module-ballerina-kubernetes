@@ -1,7 +1,7 @@
 import ballerina/http;
 import ballerina/log;
-import ballerinax/kubernetes;
-import ballerinax/openshift;
+import ballerina/kubernetes;
+import ballerina/openshift;
 
 //Add the `@kubernetes:Service` to a listener endpoint to expose the endpoint as a Kubernetes Service.
 @kubernetes:Service {}

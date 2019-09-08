@@ -15,8 +15,8 @@
 // under the License.
 
 import ballerina/http;
-import ballerinax/kubernetes;
-import ballerinax/istio;
+import ballerina/kubernetes;
+import ballerina/istio;
 
 @istio:Gateway {}
 @kubernetes:Deployment {

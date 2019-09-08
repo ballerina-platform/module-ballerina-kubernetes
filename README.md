@@ -271,7 +271,7 @@ deployment.apps/hello-world-k8s-deployment configured
 ```ballerina
 import ballerina/http;
 import ballerina/log;
-import ballerinax/kubernetes;
+import ballerina/kubernetes;
 
 @kubernetes:Ingress{
     hostname: "abc.com"

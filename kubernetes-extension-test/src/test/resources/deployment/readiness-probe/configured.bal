@@ -15,7 +15,7 @@
 // under the License.
 
 import ballerina/http;
-import ballerinax/kubernetes;
+import ballerina/kubernetes;
 
 @kubernetes:Deployment {
     image: "pizza-shop:latest",

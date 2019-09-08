@@ -1,7 +1,7 @@
 import ballerina/config;
 import ballerina/http;
 import ballerina/log;
-import ballerinax/kubernetes;
+import ballerina/kubernetes;
 
 //Add the `@kubernetes:Service` to a listner endpoint to expose the endpoint as a Kubernetes Service.
 @kubernetes:Service {

@@ -47,7 +47,7 @@ public class HandlerTestSuite {
         DeploymentModel deploymentModel = new DeploymentModel();
         deploymentModel.setSingleYAML(false);
         dataHolder.setDeploymentModel(deploymentModel);
-        dataHolder.setUberJarPath(resourcesDirectory.toAbsolutePath().resolve("hello-executable.jar"));
+        dataHolder.setUberJarPath(resourcesDirectory.toAbsolutePath().resolve("hello.jar"));
     }
 
     @AfterSuite
