@@ -190,7 +190,7 @@
         <repository>
             <id>wso2.stage</id>
             <name>WSO2 Stage Repository</name>
-            <url>https://maven.wso2.org/nexus/content/repositories/orgballerinalang-1406/</url>
+            <url>https://maven.wso2.org/nexus/content/repositories/orgballerinalang-1408/</url>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>daily</updatePolicy>
@@ -256,7 +256,7 @@
     </scm>
 
     <properties>
-        <ballerina.lang.version>1.0.0-rc1-SNAPSHOT</ballerina.lang.version>
+        <ballerina.lang.version>1.0.0</ballerina.lang.version>
         <ballerina.source.directory>${project.build.directory}/../src/main/ballerina</ballerina.source.directory>
         <com.fasterxml.jackson.core.annotations.version>2.9.8</com.fasterxml.jackson.core.annotations.version>
         <com.fasterxml.jackson.dataformat.yaml.version>2.9.8</com.fasterxml.jackson.dataformat.yaml.version>
