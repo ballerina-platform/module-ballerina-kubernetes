@@ -37,7 +37,7 @@ public class KubernetesConstants {
     public static final String SECRET_POSTFIX = "-secret";
     public static final String DOCKER = "docker";
     public static final String HELM_CHART_TEMPLATES = "templates";
-    public static final String EXECUTABLE_JAR = "-executable.jar";
+    public static final String EXECUTABLE_JAR = ".jar";
     public static final String DEPLOYMENT_POSTFIX = "-deployment";
     public static final String JOB_POSTFIX = "-job";
     public static final String HPA_POSTFIX = "-hpa";

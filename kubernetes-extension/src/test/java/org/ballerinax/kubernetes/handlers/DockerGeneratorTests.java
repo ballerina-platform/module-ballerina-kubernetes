@@ -44,7 +44,7 @@ public class DockerGeneratorTests extends HandlerTestSuite {
         ports.add(9092);
         dockerModel.setPorts(ports);
         dockerModel.setService(true);
-        dockerModel.setUberJarFileName("hello-executable.jar");
+        dockerModel.setUberJarFileName("hello.jar");
         dockerModel.setEnableDebug(true);
         dockerModel.setBaseImage("ballerina/ballerina-runtime" + ":latest");
         dockerModel.setDebugPort(5005);
