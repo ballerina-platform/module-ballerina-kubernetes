@@ -18,11 +18,11 @@ listener http:Listener helloWorldEP = new(9090, config = {
     //annotation is added to the endpoint.
     secureSocket: {
         keyStore: {
-            path: "/home/ballerina/security/ballerinaKeystore.p12",
+            path: "./security/ballerinaKeystore.p12",
             password: "ballerina"
         },
         trustStore: {
-            path: "/home/ballerina/security/ballerinaTruststore.p12",
+            path: "./security/ballerinaTruststore.p12",
             password: "ballerina"
         }
     }
@@ -39,20 +39,10 @@ listener http:Listener helloWorldEP = new(9090, config = {
     //Enable Kubernetes liveness probe to this service.
     livenessProbe: true,
     //Generate a Docker image with the name `kubernetes:v1.0`.
-    image: "kubernetes:v.1.0",
+    image: "kubernetes:v.1.0"
     //If you are using minikube, uncomment and change the following values accordingly.
     ////dockerHost:"tcp://<minikube IP>:2376",
     ////dockerCertPath:"<HOME_DIRECTORY>/.minikube/certs"
-    copyFiles: [
-        {
-            sourceFile: "./ballerinaKeystore.p12",
-            target: "/home/ballerina/security/ballerinaKeystore.p12"
-        },
-        {
-            sourceFile: "./ballerinaTruststore.p12",
-            target: "/home/ballerina/security/ballerinaTruststore.p12"
-        }
-    ]
 }
 @http:ServiceConfig {
     basePath: "/helloWorld"

@@ -79,7 +79,7 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
                 BLangRecordLiteral bConfigRecordLiteral = (BLangRecordLiteral) bListener.argsExpr.get(1);
                 List<BLangRecordLiteral.BLangRecordKeyValue> listenerConfig = bConfigRecordLiteral.getKeyValuePairs();
                 processListener(listenerName, listenerConfig);
-            } else  if (bListener.argsExpr.get(1) instanceof BLangNamedArgsExpression) {
+            } else if (bListener.argsExpr.get(1) instanceof BLangNamedArgsExpression) {
                 // expression is in config = {} format.
                 List<BLangRecordLiteral.BLangRecordKeyValue> listenerConfig =
                         ((BLangRecordLiteral) ((BLangNamedArgsExpression) bListener.argsExpr.get(1)).expr)
@@ -161,7 +161,13 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
         return Base64.encodeBase64String(KubernetesUtils.readFileContent(dataFilePath));
     }
 
-    private String getMountPath(String mountPath) {
+    private String getMountPath(String mountPath) throws KubernetesPluginException {
+        if (".".equals(Paths.get(mountPath).getParent().toString())) {
+            throw new KubernetesPluginException("Invalid path: " + mountPath + ". " +
+                    "Providing relative path in the same level as source file is not supported with " +
+                    "@kubernetes:Ingress annotations. Please create a subfolder and provide the relative path. " +
+                    "eg: './security/ballerinaKeystore.p12'");
+        }
         if (!Paths.get(mountPath).isAbsolute()) {
             mountPath = BALLERINA_HOME + File.separator + mountPath;
         }
