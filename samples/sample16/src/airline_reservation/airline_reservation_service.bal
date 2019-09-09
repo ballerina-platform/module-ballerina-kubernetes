@@ -1,5 +1,5 @@
 import ballerina/http;
-import ballerina/internal;
+import ballerina/stringutils;
 import ballerina/log;
 import ballerina/kubernetes;
 
@@ -66,9 +66,9 @@ service airlineReservationService on airlineEP {
         // Mock logic
         // If request is for an available flight class, send a reservation successful status
         string preferredClassStr = preferredClass.toString();
-        if (internal:equalsIgnoreCase(preferredClassStr, ECONOMY) ||
-            internal:equalsIgnoreCase(preferredClassStr, BUSINESS) ||
-            internal:equalsIgnoreCase(preferredClassStr, FIRST)) {
+        if (stringutils:equalsIgnoreCase(preferredClassStr, ECONOMY) ||
+            stringutils:equalsIgnoreCase(preferredClassStr, BUSINESS) ||
+            stringutils:equalsIgnoreCase(preferredClassStr, FIRST)) {
             response.setJsonPayload({
                 Status: "Success"
             });

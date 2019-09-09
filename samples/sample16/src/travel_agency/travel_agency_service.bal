@@ -1,5 +1,5 @@
 import ballerina/http;
-import ballerina/internal;
+import ballerina/stringutils;
 import ballerina/log;
 import ballerina/kubernetes;
 import ballerina/istio;
@@ -82,7 +82,7 @@ service travelAgencyService on travelAgencyEP {
         var airlineResPayload = check inResAirline.getJsonPayload();
         string airlineStatus = airlineResPayload.Status.toString();
         // If reservation status is negative, send a failure response to user
-        if (internal:equalsIgnoreCase(airlineStatus, "Failed")) {
+        if (stringutils:equalsIgnoreCase(airlineStatus, "Failed")) {
             outResponse.setJsonPayload({
                 Message: "Failed to reserve airline! Provide a valid 'Preference' for 'Airline' and try again"
             });
@@ -107,7 +107,7 @@ service travelAgencyService on travelAgencyEP {
         var hotelResPayload = check inResHotel.getJsonPayload();
         string hotelStatus = hotelResPayload.Status.toString();
         // If reservation status is negative, send a failure response to user
-        if (internal:equalsIgnoreCase(hotelStatus, "Failed")) {
+        if (stringutils:equalsIgnoreCase(hotelStatus, "Failed")) {
             outResponse.setJsonPayload({
                 Message: "Failed to reserve hotel! Provide a valid 'Preference' for 'Accommodation' and try again"
             });
@@ -132,7 +132,7 @@ service travelAgencyService on travelAgencyEP {
         var carResPayload = check inResCar.getJsonPayload();
         string carRentalStatus = carResPayload.Status.toString();
         // If rental status is negative, send a failure response to user
-        if (internal:equalsIgnoreCase(carRentalStatus, "Failed")) {
+        if (stringutils:equalsIgnoreCase(carRentalStatus, "Failed")) {
             outResponse.setJsonPayload({
                 "Message": "Failed to rent car! Provide a valid 'Preference' for 'Car' and try again"
             });
