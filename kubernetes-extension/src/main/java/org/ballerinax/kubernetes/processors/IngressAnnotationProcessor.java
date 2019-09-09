@@ -162,7 +162,9 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
     }
 
     private String getMountPath(String mountPath) throws KubernetesPluginException {
-        if (".".equals(Paths.get(mountPath).getParent().toString())) {
+        Path parentPath = Paths.get(mountPath).getParent();
+        if (parentPath != null && ".".equals(parentPath.toString())) {
+            // Mounts to the same path overriding the source file.
             throw new KubernetesPluginException("Invalid path: " + mountPath + ". " +
                     "Providing relative path in the same level as source file is not supported with " +
                     "@kubernetes:Ingress annotations. Please create a subfolder and provide the relative path. " +
