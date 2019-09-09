@@ -97,7 +97,7 @@ public class Sample4Test extends SampleTest {
         // Assert Containers
         Container container = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);
         Assert.assertEquals(container.getVolumeMounts().size(), 1);
-        Assert.assertEquals(container.getVolumeMounts().get(0).getMountPath(), "./security");
+        Assert.assertEquals(container.getVolumeMounts().get(0).getMountPath(), "/home/ballerina/./security");
         Assert.assertEquals(container.getVolumeMounts().get(0).getName(), "helloworldsecuredep-keystore-volume");
         Assert.assertTrue(container.getVolumeMounts().get(0).getReadOnly());
         Assert.assertEquals(container.getImage(), DOCKER_IMAGE);

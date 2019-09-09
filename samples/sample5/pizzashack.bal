@@ -15,7 +15,7 @@ listener http:Listener pizzaEP = new(9090);
 listener http:Listener pizzaEPSecured = new(9095, config = {
     secureSocket: {
         keyStore: {
-            path: "./ballerinaKeystore.p12",
+            path: "./security/ballerinaKeystore.p12",
             password: "ballerina"
         }
     }

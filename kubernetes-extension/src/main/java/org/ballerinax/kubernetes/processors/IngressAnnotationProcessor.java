@@ -31,9 +31,11 @@ import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.BLangService;
 import org.wso2.ballerinalang.compiler.tree.BLangSimpleVariable;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangNamedArgsExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangTypeInit;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -43,7 +45,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.ANONYMOUS_POSTFIX;
-import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_RUNTIME;
+import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_HOME;
 import static org.ballerinax.kubernetes.KubernetesConstants.INGRESS_HOSTNAME_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.INGRESS_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.LISTENER_PATH_VARIABLE;
@@ -70,16 +72,22 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
             ingressModel.setHostname(getValidName(listenerName) + INGRESS_HOSTNAME_POSTFIX);
         }
         ingressModel.setListenerName(listenerName);
-    
+
         BLangTypeInit bListener = (BLangTypeInit) ((BLangSimpleVariable) variableNode).expr;
         if (bListener.argsExpr.size() == 2) {
             if (bListener.argsExpr.get(1) instanceof BLangRecordLiteral) {
                 BLangRecordLiteral bConfigRecordLiteral = (BLangRecordLiteral) bListener.argsExpr.get(1);
                 List<BLangRecordLiteral.BLangRecordKeyValue> listenerConfig = bConfigRecordLiteral.getKeyValuePairs();
                 processListener(listenerName, listenerConfig);
+            } else if (bListener.argsExpr.get(1) instanceof BLangNamedArgsExpression) {
+                // expression is in config = {} format.
+                List<BLangRecordLiteral.BLangRecordKeyValue> listenerConfig =
+                        ((BLangRecordLiteral) ((BLangNamedArgsExpression) bListener.argsExpr.get(1)).expr)
+                                .getKeyValuePairs();
+                processListener(listenerName, listenerConfig);
             }
         }
-        
+
         KubernetesContext.getInstance().getDataHolder().addIngressModel(ingressModel);
     }
 
@@ -153,10 +161,17 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
         return Base64.encodeBase64String(KubernetesUtils.readFileContent(dataFilePath));
     }
 
-    private String getMountPath(String mountPath) {
-        if (mountPath.contains("${ballerina.home}")) {
-            // replace mount path with container's ballerina.home
-            mountPath = mountPath.replace("${ballerina.home}", BALLERINA_RUNTIME);
+    private String getMountPath(String mountPath) throws KubernetesPluginException {
+        Path parentPath = Paths.get(mountPath).getParent();
+        if (parentPath != null && ".".equals(parentPath.toString())) {
+            // Mounts to the same path overriding the source file.
+            throw new KubernetesPluginException("Invalid path: " + mountPath + ". " +
+                    "Providing relative path in the same level as source file is not supported with " +
+                    "@kubernetes:Ingress annotations. Please create a subfolder and provide the relative path. " +
+                    "eg: './security/ballerinaKeystore.p12'");
+        }
+        if (!Paths.get(mountPath).isAbsolute()) {
+            mountPath = BALLERINA_HOME + File.separator + mountPath;
         }
         return String.valueOf(Paths.get(mountPath).getParent());
     }
@@ -234,7 +249,7 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
         for (BLangExpression attachedExpr : bService.getAttachedExprs()) {
             if (attachedExpr instanceof BLangTypeInit) {
                 throw new KubernetesPluginException("adding @kubernetes:Ingress{} annotation to a service is only " +
-                                                    "supported when service is bind to an anonymous listener");
+                        "supported when service is bind to an anonymous listener");
             }
         }
         IngressModel ingressModel = getIngressModelFromAnnotation(attachmentNode);
@@ -248,7 +263,7 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
             ingressModel.setHostname(getValidName(listenerName) + INGRESS_HOSTNAME_POSTFIX);
         }
         ingressModel.setListenerName(listenerName);
-    
+
         // Add http config
         for (BLangExpression attachedExpr : bService.getAttachedExprs()) {
             if (attachedExpr instanceof BLangTypeInit) {
@@ -263,7 +278,7 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
                 }
             }
         }
-        
+
         KubernetesContext.getInstance().getDataHolder().addIngressModel(ingressModel);
 
     }

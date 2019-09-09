@@ -137,7 +137,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
         if (null != dockerRegistry && !"".equals(dockerRegistry)) {
             deploymentImageName = dockerRegistry + REGISTRY_SEPARATOR + deploymentImageName;
         }
-        
+
         if (deploymentModel.getBuildExtension() != null) {
             if (deploymentModel.getBuildExtension() instanceof OpenShiftBuildExtensionModel) {
                 OpenShiftBuildExtensionModel openShiftBC =
@@ -145,25 +145,25 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                 openShiftBC.setName(deploymentModel.getName().replace(DEPLOYMENT_POSTFIX,
                         OPENSHIFT_BUILD_CONFIG_POSTFIX));
                 dataHolder.setOpenShiftBuildExtensionModel(openShiftBC);
-        
+
                 dockerRegistry = deploymentModel.getRegistry();
                 if (dockerRegistry == null || "".equals(dockerRegistry.trim())) {
                     throw new KubernetesPluginException("value for 'registry' field in @kubernetes:Deployment{} " +
-                                                        "annotation is required to generate OpenShift Build Configs.");
+                            "annotation is required to generate OpenShift Build Configs.");
                 }
-        
+
                 String namespace = dataHolder.getNamespace();
                 if (namespace == null || "".equals(namespace.trim())) {
                     throw new KubernetesPluginException("value for 'namespace' field in @kubernetes:Deployment{} " +
-                                                        "annotation is required to generate OpenShift Build Configs. " +
-                                                        "use the value of the OpenShift project name.");
+                            "annotation is required to generate OpenShift Build Configs. " +
+                            "use the value of the OpenShift project name.");
                 }
-        
+
                 deploymentImageName = dockerRegistry + REGISTRY_SEPARATOR + namespace + REGISTRY_SEPARATOR +
-                                      deploymentModel.getImage();
+                        deploymentModel.getImage();
             }
         }
-    
+
         return new ContainerBuilder()
                 .withName(deploymentModel.getName())
                 .withImage(deploymentImageName)
@@ -221,10 +221,10 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                 .withTcpSocket(tcpSocketAction)
                 .build();
     }
-    
+
     private List<Toleration> populatePodTolerations(List<PodTolerationModel> podTolerationModels) {
         List<Toleration> tolerations = null;
-        
+
         if (null != podTolerationModels && podTolerationModels.size() > 0) {
             tolerations = new LinkedList<>();
             for (PodTolerationModel podTolerationModel : podTolerationModels) {
@@ -235,11 +235,11 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                         .withEffect(podTolerationModel.getEffect())
                         .withTolerationSeconds((long) podTolerationModel.getTolerationSeconds())
                         .build();
-        
+
                 tolerations.add(toleration);
             }
         }
-        
+
         return tolerations;
     }
 
@@ -299,7 +299,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
             throw new KubernetesPluginException(errorMessage, e);
         }
     }
-    
+
     @Override
     public void createArtifacts() throws KubernetesPluginException {
         try {
@@ -312,7 +312,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                 //set first port as liveness port
                 deploymentModel.getLivenessProbe().setPort(deploymentModel.getPorts().iterator().next());
             }
-        
+
             if (null != deploymentModel.getReadinessProbe() && deploymentModel.getReadinessProbe().getPort() == 0) {
                 //set first port as readiness port
                 deploymentModel.getReadinessProbe().setPort(deploymentModel.getPorts().iterator().next());
@@ -335,8 +335,11 @@ public class DeploymentHandler extends AbstractArtifactHandler {
     private DockerModel getDockerModel(DeploymentModel deploymentModel) throws DockerGenException {
         DockerModel dockerModel = new DockerModel();
         String dockerImage = deploymentModel.getImage();
-        String imageTag = dockerImage.substring(dockerImage.lastIndexOf(":") + 1);
-        dockerImage = dockerImage.substring(0, dockerImage.lastIndexOf(":"));
+        String imageTag = "latest";
+        if (dockerImage.contains(":")) {
+            imageTag = dockerImage.substring(dockerImage.lastIndexOf(":") + 1);
+            dockerImage = dockerImage.substring(0, dockerImage.lastIndexOf(":"));
+        }
         dockerModel.setBaseImage(deploymentModel.getBaseImage());
         dockerModel.setRegistry(deploymentModel.getRegistry());
         dockerModel.setName(dockerImage);

@@ -18,11 +18,11 @@ listener http:Listener helloWorldEP = new(9090, config = {
     //annotation is added to the endpoint.
     secureSocket: {
         keyStore: {
-            path: "${ballerina.home}/bre/security/ballerinaKeystore.p12",
+            path: "./security/ballerinaKeystore.p12",
             password: "ballerina"
         },
         trustStore: {
-            path: "${ballerina.home}/bre/security/ballerinaTruststore.p12",
+            path: "./security/ballerinaTruststore.p12",
             password: "ballerina"
         }
     }
@@ -43,7 +43,6 @@ listener http:Listener helloWorldEP = new(9090, config = {
     //If you are using minikube, uncomment and change the following values accordingly.
     ////dockerHost:"tcp://<minikube IP>:2376",
     ////dockerCertPath:"<HOME_DIRECTORY>/.minikube/certs"
-
 }
 @http:ServiceConfig {
     basePath: "/helloWorld"
