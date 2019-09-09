@@ -31,9 +31,11 @@ import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.BLangService;
 import org.wso2.ballerinalang.compiler.tree.BLangSimpleVariable;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangNamedArgsExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangTypeInit;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -76,6 +78,12 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
             if (bListener.argsExpr.get(1) instanceof BLangRecordLiteral) {
                 BLangRecordLiteral bConfigRecordLiteral = (BLangRecordLiteral) bListener.argsExpr.get(1);
                 List<BLangRecordLiteral.BLangRecordKeyValue> listenerConfig = bConfigRecordLiteral.getKeyValuePairs();
+                processListener(listenerName, listenerConfig);
+            } else  if (bListener.argsExpr.get(1) instanceof BLangNamedArgsExpression) {
+                // expression is in config = {} format.
+                List<BLangRecordLiteral.BLangRecordKeyValue> listenerConfig =
+                        ((BLangRecordLiteral) ((BLangNamedArgsExpression) bListener.argsExpr.get(1)).expr)
+                                .getKeyValuePairs();
                 processListener(listenerName, listenerConfig);
             }
         }
@@ -155,12 +163,8 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
 
     private String getMountPath(String mountPath) {
         if (!Paths.get(mountPath).isAbsolute()) {
-            mountPath = BALLERINA_HOME + mountPath;
+            mountPath = BALLERINA_HOME + File.separator + mountPath;
         }
-//        if (mountPath.contains("${ballerina.home}")) {
-//            // replace mount path with container's ballerina.home
-//            mountPath = mountPath.replace("${ballerina.home}", BALLERINA_RUNTIME);
-//        }
         return String.valueOf(Paths.get(mountPath).getParent());
     }
 
