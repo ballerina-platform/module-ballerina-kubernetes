@@ -6,8 +6,6 @@ groups="apim,esb"
 userid="jane3@ballerina.com"
 groups="esb"
 
-# Copy the ballerinaKeystore.p12 and ballerinaTruststore.p12 files located in https://github.com/ballerina-platform/ballerina-lang/tree/master/examples/resources/ to the current working directory, from where the following ballerina build command will be issued.
-
 
 # Build the ballerina program
 $ ballerina build kubernetes_deployment.bal
