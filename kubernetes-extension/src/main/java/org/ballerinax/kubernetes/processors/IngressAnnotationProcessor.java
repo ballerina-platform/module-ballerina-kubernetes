@@ -43,7 +43,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.ANONYMOUS_POSTFIX;
-import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_RUNTIME;
+import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_HOME;
 import static org.ballerinax.kubernetes.KubernetesConstants.INGRESS_HOSTNAME_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.INGRESS_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.LISTENER_PATH_VARIABLE;
@@ -70,7 +70,7 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
             ingressModel.setHostname(getValidName(listenerName) + INGRESS_HOSTNAME_POSTFIX);
         }
         ingressModel.setListenerName(listenerName);
-    
+
         BLangTypeInit bListener = (BLangTypeInit) ((BLangSimpleVariable) variableNode).expr;
         if (bListener.argsExpr.size() == 2) {
             if (bListener.argsExpr.get(1) instanceof BLangRecordLiteral) {
@@ -79,7 +79,7 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
                 processListener(listenerName, listenerConfig);
             }
         }
-        
+
         KubernetesContext.getInstance().getDataHolder().addIngressModel(ingressModel);
     }
 
@@ -154,10 +154,13 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
     }
 
     private String getMountPath(String mountPath) {
-        if (mountPath.contains("${ballerina.home}")) {
-            // replace mount path with container's ballerina.home
-            mountPath = mountPath.replace("${ballerina.home}", BALLERINA_RUNTIME);
+        if (!Paths.get(mountPath).isAbsolute()) {
+            mountPath = BALLERINA_HOME + mountPath;
         }
+//        if (mountPath.contains("${ballerina.home}")) {
+//            // replace mount path with container's ballerina.home
+//            mountPath = mountPath.replace("${ballerina.home}", BALLERINA_RUNTIME);
+//        }
         return String.valueOf(Paths.get(mountPath).getParent());
     }
 
@@ -234,7 +237,7 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
         for (BLangExpression attachedExpr : bService.getAttachedExprs()) {
             if (attachedExpr instanceof BLangTypeInit) {
                 throw new KubernetesPluginException("adding @kubernetes:Ingress{} annotation to a service is only " +
-                                                    "supported when service is bind to an anonymous listener");
+                        "supported when service is bind to an anonymous listener");
             }
         }
         IngressModel ingressModel = getIngressModelFromAnnotation(attachmentNode);
@@ -248,7 +251,7 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
             ingressModel.setHostname(getValidName(listenerName) + INGRESS_HOSTNAME_POSTFIX);
         }
         ingressModel.setListenerName(listenerName);
-    
+
         // Add http config
         for (BLangExpression attachedExpr : bService.getAttachedExprs()) {
             if (attachedExpr instanceof BLangTypeInit) {
@@ -263,7 +266,7 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
                 }
             }
         }
-        
+
         KubernetesContext.getInstance().getDataHolder().addIngressModel(ingressModel);
 
     }
