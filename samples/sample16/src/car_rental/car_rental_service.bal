@@ -1,5 +1,5 @@
 import ballerina/http;
-import ballerina/internal;
+import ballerina/stringutils;
 import ballerina/log;
 import ballerina/kubernetes;
 
@@ -64,7 +64,7 @@ service carRentalService on carEP {
         // Mock logic
         // If request is for an available car type, send a rental successful status
         string preferredTypeStr = preferredType.toString();
-        if (internal:equalsIgnoreCase(preferredTypeStr, AC) || internal:equalsIgnoreCase(preferredTypeStr, NORMAL)) {
+        if (stringutils:equalsIgnoreCase(preferredTypeStr, AC) || stringutils:equalsIgnoreCase(preferredTypeStr, NORMAL)) {
             response.setJsonPayload({
                 Status: "Success"
             });
