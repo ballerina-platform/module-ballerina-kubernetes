@@ -124,6 +124,9 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 case push:
                     deploymentModel.setPush(getBooleanValue(keyValue.getValue()));
                     break;
+                case cmd:
+                    deploymentModel.setCmd(getStringValue(keyValue.getValue()));
+                    break;
                 case copyFiles:
                     deploymentModel.setCopyFiles(getExternalFileMap(keyValue));
                     break;
@@ -290,6 +293,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         image,
         buildImage,
         push,
+        cmd,
         copyFiles,
         singleYAML,
         namespace,
