@@ -20,7 +20,7 @@
 
     <parent>
         <groupId>org.ballerinax.kubernetes</groupId>
-        <version>1.0.2-SNAPSHOT</version>
+        <version>1.0.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
         <artifactId>kubernetes-extension-parent</artifactId>
     </parent>
@@ -82,6 +82,49 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.ballerinalang</groupId>
+                                    <artifactId>jballerina-tools</artifactId>
+                                    <version>${ballerina.lang.version}</version>
+                                    <type>zip</type>
+                                    <outputDirectory>${project.build.directory}/extracted-distribution/
+                                    </outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.ballerinax.kubernetes</groupId>
+                                    <artifactId>kubernetes-extension</artifactId>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>
+                                ${project.build.directory}/extracted-distribution/jballerina-tools-${ballerina.lang.version}/bre/lib/
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <executions>
                     <execution>
@@ -92,7 +135,7 @@
                     <argLine>${jacoco.agent.argLine}</argLine>
                     <systemPropertyVariables>
                         <ballerina.pack>
-                            ${project.basedir}/../kubernetes-extension-balo/target/extracted-distribution/jballerina-tools-${ballerina.lang.version}/
+                            ${project.build.directory}/extracted-distribution/jballerina-tools-${ballerina.lang.version}/
                         </ballerina.pack>
                         <sample.dir>
                             ${project.build.directory}/../../samples
