@@ -38,6 +38,13 @@
         </fileSet>
         <fileSet>
             <directory>
+                ${project.build.directory}/caches/bir_cache/ballerinax/Knative
+            </directory>
+            <outputDirectory>Knative</outputDirectory>
+            <fileMode>755</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>
                 ${project.build.directory}/caches/bir_cache/ballerinax/istio
             </directory>
             <outputDirectory>istio</outputDirectory>
@@ -55,6 +62,11 @@
     <files>
         <file>
             <source>${project.build.directory}/caches/jar_cache/ballerinax/kubernetes/0.0.0/ballerinax-kubernetes-0.0.0.jar</source>
+            <outputDirectory>.</outputDirectory>
+            <fileMode>755</fileMode>
+        </file>
+        <file>
+            <source>${project.build.directory}/caches/jar_cache/ballerinax/Knative/0.0.0/ballerinax-Knative-0.0.0.jar</source>
             <outputDirectory>.</outputDirectory>
             <fileMode>755</fileMode>
         </file>

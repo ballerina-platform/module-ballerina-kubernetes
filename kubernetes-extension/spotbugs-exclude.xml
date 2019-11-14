@@ -18,6 +18,10 @@
         <Bug pattern="DMI_HARDCODED_ABSOLUTE_FILENAME"/>
     </Match>
     <Match>
+        <Class name="org.ballerinax.kubernetes.processors.knative.KnativeConfigMapAnnotationProcessor"/>
+        <Bug pattern="DMI_HARDCODED_ABSOLUTE_FILENAME"/>
+    </Match>
+    <Match>
         <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/>
     </Match>
     <Match>
@@ -34,7 +38,8 @@
     <Match>
         <Class name="org.ballerinax.kubernetes.utils.KubernetesUtils"/>
         <Bug pattern="BC_UNCONFIRMED_CAST"/>
-    </Match>    <Match>
+    </Match>
+    <Match>
         <Class name="org.ballerinax.kubernetes.handlers.DockerHandler"/>
         <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
     </Match>

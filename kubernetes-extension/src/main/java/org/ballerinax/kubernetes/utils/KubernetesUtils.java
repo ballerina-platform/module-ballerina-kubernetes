@@ -36,14 +36,14 @@ import org.ballerinalang.model.tree.expressions.ExpressionNode;
 import org.ballerinax.docker.generator.models.CopyFileModel;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.DeploymentBuildExtension;
+//import org.ballerinax.kubernetes.models.DeploymentBuildExtension;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.EnvVarValueModel;
 import org.ballerinax.kubernetes.models.JobModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
-import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
-import org.ballerinax.kubernetes.processors.openshift.OpenShiftBuildExtensionProcessor;
+/*import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
+import org.ballerinax.kubernetes.processors.openshift.OpenShiftBuildExtensionProcessor;*/
 import org.wso2.ballerinalang.compiler.semantics.model.symbols.BConstantSymbol;
 import org.wso2.ballerinalang.compiler.semantics.model.types.BFiniteType;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
@@ -402,7 +402,7 @@ public class KubernetesUtils {
      * @return Build extension model.
      * @throws KubernetesPluginException When an unknown extension is found.
      */
-    public static DeploymentBuildExtension parseBuildExtension(BLangExpression buildExtensionValue)
+/*    public static DeploymentBuildExtension parseBuildExtension(BLangExpression buildExtensionValue)
             throws KubernetesPluginException {
         if (buildExtensionValue.getKind() == NodeKind.SIMPLE_VARIABLE_REF ||
                                                                     buildExtensionValue.getKind() == NodeKind.LITERAL) {
@@ -419,7 +419,7 @@ public class KubernetesUtils {
             }
         }
         throw new KubernetesPluginException("unknown build extension found");
-    }
+    }*/
 
     /**
      * Convert environment variable values into a map for deployment model.

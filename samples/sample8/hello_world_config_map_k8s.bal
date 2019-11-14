@@ -23,7 +23,6 @@ listener http:Listener helloWorldEP = new(9090, {
 
 @kubernetes: Deployment {}
 @kubernetes:ConfigMap {
-    conf: "./conf/ballerina.conf",
     configMaps:[
         {
             mountPath: "/home/ballerina/data",

@@ -19,15 +19,15 @@
 package org.ballerinax.kubernetes.models;
 
 import org.ballerinax.docker.generator.models.DockerModel;
-import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
+/*import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
 import org.ballerinax.kubernetes.models.istio.IstioVirtualServiceModel;
 import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
-import org.ballerinax.kubernetes.models.openshift.OpenShiftRouteModel;
+import org.ballerinax.kubernetes.models.openshift.OpenShiftRouteModel;*/
 
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
+//import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,10 +46,10 @@ public class KubernetesDataHolder {
     private Set<ConfigMapModel> configMapModelSet;
     private Set<PersistentVolumeClaimModel> volumeClaimModelSet;
     private Set<ResourceQuotaModel> resourceQuotaModels;
-    private Map<String, IstioGatewayModel> istioGatewayModels;
+    /*private Map<String, IstioGatewayModel> istioGatewayModels;
     private Map<String, IstioVirtualServiceModel> istioVirtualServiceModels;
     private OpenShiftBuildExtensionModel openShiftBuildExtensionModel;
-    private Map<String, OpenShiftRouteModel> openShiftRouteModels;
+    private Map<String, OpenShiftRouteModel> openShiftRouteModels;*/
     private JobModel jobModel;
     private Path uberJarPath;
     private Path k8sArtifactOutputPath;
@@ -68,9 +68,9 @@ public class KubernetesDataHolder {
         this.ingressModelSet = new HashSet<>();
         this.deploymentModel = new DeploymentModel();
         this.resourceQuotaModels = new HashSet<>();
-        this.istioGatewayModels = new LinkedHashMap<>();
+        /*this.istioGatewayModels = new LinkedHashMap<>();
         this.istioVirtualServiceModels = new LinkedHashMap<>();
-        this.openShiftRouteModels = new LinkedHashMap<>();
+        this.openShiftRouteModels = new LinkedHashMap<>();*/
     }
     
     public Path getSourceRoot() {
@@ -217,7 +217,7 @@ public class KubernetesDataHolder {
         this.namespace = namespace;
     }
     
-    public Map<String, IstioGatewayModel> getIstioGatewayModels() {
+   /* public Map<String, IstioGatewayModel> getIstioGatewayModels() {
         return istioGatewayModels;
     }
     
@@ -255,5 +255,5 @@ public class KubernetesDataHolder {
     
     public void addOpenShiftRouteModel(String serviceName, OpenShiftRouteModel openShiftRouteModel) {
         this.openShiftRouteModels.put(serviceName, openShiftRouteModel);
-    }
+    }*/
 }

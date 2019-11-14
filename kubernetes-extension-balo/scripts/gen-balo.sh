@@ -47,11 +47,10 @@ fi
 
 cp -r ${KUBERNETES_BALLERINA_PROJECT}/target/* ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target
 
-cp -r ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/bir_cache/ballerinax/kubernetes ${BALLERINAX_BIR_CACHE}
-cp -r ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/bir_cache/ballerinax/istio ${BALLERINAX_BIR_CACHE}
-cp -r ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/bir_cache/ballerinax/openshift ${BALLERINAX_BIR_CACHE}
 
-cp ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/jar_cache/ballerinax/kubernetes/0.0.0/ballerinax-kubernetes-0.0.0.jar ${BALLERINAX_SYSTEM_LIB}
-cp ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/jar_cache/ballerinax/istio/0.0.0/ballerinax-istio-0.0.0.jar ${BALLERINAX_SYSTEM_LIB}
-cp ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/jar_cache/ballerinax/openshift/0.0.0/ballerinax-openshift-0.0.0.jar ${BALLERINAX_SYSTEM_LIB}
+cp -r ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/bir_cache/ballerinax/Knative ${BALLERINAX_BIR_CACHE}
+
+
+
+cp ${KUBERNETES_BALO_MAVEN_PROJECT_ROOT}/target/caches/jar_cache/ballerinax/Knative/0.0.0/ballerinax-Knative-0.0.0.jar ${BALLERINAX_SYSTEM_LIB}
 

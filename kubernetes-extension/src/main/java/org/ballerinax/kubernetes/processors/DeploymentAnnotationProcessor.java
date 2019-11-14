@@ -17,7 +17,7 @@
  */
 package org.ballerinax.kubernetes.processors;
 
-import org.ballerinalang.model.tree.AnnotationAttachmentNode;
+/*import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.FunctionNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.SimpleVariableNode;
@@ -52,9 +52,9 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.parseBuildExtension;
 
-/**
+*//**
  * Deployment Annotation processor.
- */
+ *//*
 public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
 
     @Override
@@ -179,13 +179,13 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         KubernetesContext.getInstance().getDataHolder().setDeploymentModel(deploymentModel);
     }
     
-    /**
+    *//**
      * Parse pod toleration configurations from a record array.
      *
      * @param podTolerationValues Pod toleration configuration records.
      * @return Pod toleration models.
      * @throws KubernetesPluginException When an unknown field is found.
-     */
+     *//*
     private List<PodTolerationModel> parsePodTolerationConfiguration(BLangExpression podTolerationValues)
             throws KubernetesPluginException {
         List<PodTolerationModel> podTolerationModels = new LinkedList<>();
@@ -224,13 +224,13 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         return podTolerationModels;
     }
     
-    /**
+    *//**
      * Parse probe configuration from a record.
      *
      * @param probeValue Probe configuration record.
      * @return Parse probe model.
      * @throws KubernetesPluginException When an unknown field is found.
-     */
+     *//*
     private ProbeModel parseProbeConfiguration(BLangExpression probeValue) throws KubernetesPluginException {
         if ((probeValue instanceof BLangSimpleVarRef || probeValue instanceof BLangLiteral) &&
             getBooleanValue(probeValue)) {
@@ -274,9 +274,9 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
     }
 
 
-    /**
+    *//**
      * Enum class for DeploymentConfiguration.
-     */
+     *//*
     private enum DeploymentConfiguration {
         name,
         labels,
@@ -318,4 +318,4 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         effect,
         tolerationSeconds
     }
-}
+}*/

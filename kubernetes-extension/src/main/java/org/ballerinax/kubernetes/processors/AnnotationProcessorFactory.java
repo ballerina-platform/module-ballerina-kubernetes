@@ -18,15 +18,15 @@
 
 package org.ballerinax.kubernetes.processors;
 
-import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+/*import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.processors.istio.IstioGatewayAnnotationProcessor;
 import org.ballerinax.kubernetes.processors.istio.IstioVirtualServiceAnnotationProcessor;
 import org.ballerinax.kubernetes.processors.openshift.OpenShiftRouteProcessor;
 
-/**
+*//**
  * Annotation processor factory.
- */
+ *//*
 public class AnnotationProcessorFactory {
 
     public static AnnotationProcessor getAnnotationProcessorInstance(String type) throws KubernetesPluginException {
@@ -78,4 +78,4 @@ public class AnnotationProcessorFactory {
         VirtualService,
         Route
     }
-}
+}*/
