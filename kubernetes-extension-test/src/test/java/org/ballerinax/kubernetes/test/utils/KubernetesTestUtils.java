@@ -128,15 +128,12 @@ public class KubernetesTestUtils {
      * @param imageName Docker image Name
      */
     public static void deleteDockerImage(String imageName) {
-        // using a thread to make tests run faster
-//        CompletableFuture.runAsync(() -> {
         try {
             DockerClient client = getDockerClient();
             client.removeImage(imageName, true, false);
         } catch (DockerException | InterruptedException | DockerTestException e) {
             log.error(e.getMessage());
         }
-//        });
     }
 
     public static DockerClient getDockerClient() throws DockerTestException {
