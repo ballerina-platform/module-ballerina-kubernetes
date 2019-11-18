@@ -6,7 +6,7 @@ http:Client clientEP = new("http://localhost:7070/hotel");
 
 // Function to test Hotel reservation service
 @test:Config{}
-function testHotelReservationService() returns error? {
+function testHotelReservationService() returns @tainted error? {
     // Initialize the empty http requests and responses
     http:Request req;
 
