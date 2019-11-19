@@ -6,7 +6,7 @@ http:Client clientEP = new("http://localhost:7070/hotel");
 
 // Function to test Hotel reservation service
 @test:Config{}
-function testHotelReservationService() returns @tainted error? {
+function testHotelReservationService() returns error? {
     // Initialize the empty http requests and responses
     http:Request req;
 
@@ -20,7 +20,7 @@ function testHotelReservationService() returns @tainted error? {
     };
 
     // Send a 'post' request and obtain the response
-    http:Response response = check clientEP -> post("/reserve", payload);
+    http:Response response = <@untainted> check clientEP -> post("/reserve", payload);
     // Expected response code is 200
     test:assertEquals(response.statusCode, 200, "Hotel reservation service did not respond with 200 OK signal!");
     // Check whether the response is as expected
