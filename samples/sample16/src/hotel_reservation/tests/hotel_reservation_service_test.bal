@@ -24,7 +24,7 @@ function testHotelReservationService() returns error? {
     // Expected response code is 200
     test:assertEquals(response.statusCode, 200, "Hotel reservation service did not respond with 200 OK signal!");
     // Check whether the response is as expected
-    json resPayload = check response.getJsonPayload();
+    json resPayload = <@untainted> check response.getJsonPayload();
     json expected = {
         Status: "Success"
     };
