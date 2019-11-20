@@ -1,20 +1,15 @@
 import ballerina/http;
 import ballerina/log;
-import ballerinax/Knative;
+import ballerina/kubernetes;
 
-
-
-
-@Knative:Service{
-    namespace: "default"
+@kubernetes:Service {
+    serviceType: "NodePort"
 }
-
-@Knative:ConfigMap {
-    conf: "./conf/micro-gw.conf"
+@kubernetes:Deployment {}
+@http:ServiceConfig {
+    basePath: "/helloWorld"
 }
-
-
-service helloWorld on new http:Listener(8080) {
+service helloWorld on new http:Listener(9090) {
     resource function sayHello(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         response.setTextPayload("Hello, World from service helloWorld ! \n");
