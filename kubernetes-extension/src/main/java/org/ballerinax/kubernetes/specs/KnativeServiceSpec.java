@@ -26,15 +26,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-//import io.fabric8.kubernetes.api.model.Doneable;
 import io.fabric8.kubernetes.api.model.KubernetesResource;
 import io.fabric8.kubernetes.api.model.LabelSelector;
 import io.fabric8.kubernetes.api.model.apps.DeploymentStrategy;
-//import org.ballerinax.kubernetes.specs.KnativePodTemplateSpec;
-/*import io.sundr.builder.annotations.Buildable;
-import io.sundr.builder.annotations.Inline;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;*/
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Generated;
