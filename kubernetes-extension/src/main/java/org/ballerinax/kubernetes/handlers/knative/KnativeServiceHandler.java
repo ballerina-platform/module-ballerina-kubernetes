@@ -172,35 +172,6 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
                 .build();
     }
 
-    /*private List<Toleration> populatePodTolerations(List<PodTolerationModel> podTolerationModels) {
-        List<Toleration> tolerations = null;
-
-        if (null != podTolerationModels && podTolerationModels.size() > 0) {
-            tolerations = new LinkedList<>();
-            for (PodTolerationModel podTolerationModel : podTolerationModels) {
-                Toleration toleration = new TolerationBuilder()
-                        .withKey(podTolerationModel.getKey())
-                        .withOperator(podTolerationModel.getOperator())
-                        .withValue(podTolerationModel.getValue())
-                        .withEffect(podTolerationModel.getEffect())
-                        .withTolerationSeconds((long) podTolerationModel.getTolerationSeconds())
-                        .build();
-
-                tolerations.add(toleration);
-            }
-        }
-
-        return tolerations;
-    }*/
-
-    /*private List<LocalObjectReference> getImagePullSecrets(ServiceModel serviceModel) {
-        List<LocalObjectReference> imagePullSecrets = new ArrayList<>();
-        for (String imagePullSecret : serviceModel.getImagePullSecrets()) {
-            imagePullSecrets.add(new LocalObjectReferenceBuilder().withName(imagePullSecret).build());
-        }
-        return imagePullSecrets;
-    }*/
-
     /**
      * Generate kubernetes deployment definition from annotation.
      *

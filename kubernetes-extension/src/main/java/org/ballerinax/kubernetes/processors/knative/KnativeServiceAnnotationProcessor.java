@@ -21,9 +21,7 @@ import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.FunctionNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.SimpleVariableNode;
-//import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-//import org.ballerinax.kubernetes.models.knative.KnativeContainerModel;
 import org.ballerinax.kubernetes.models.knative.KnativeContext;
 import org.ballerinax.kubernetes.models.knative.PodTolerationModel;
 import org.ballerinax.kubernetes.models.knative.ProbeModel;
@@ -31,7 +29,6 @@ import org.ballerinax.kubernetes.models.knative.ServiceModel;
 import org.ballerinax.kubernetes.processors.AbstractAnnotationProcessor;
 import org.ballerinax.kubernetes.utils.KnativeUtils;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
-//import org.wso2.ballerinalang.compiler.tree.BLangIdentifier;
 import org.wso2.ballerinalang.compiler.tree.BLangService;
 import org.wso2.ballerinalang.compiler.tree.BLangSimpleVariable;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
@@ -40,7 +37,6 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangTypeInit;
-//import org.wso2.ballerinalang.compiler.tree.types.BLangUserDefinedType;
 
 
 import java.util.HashSet;
@@ -68,18 +64,6 @@ import static org.ballerinax.kubernetes.utils.KnativeUtils.isBlank;
  * Deployment Annotation processor.
  */
 public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcessor {
-
-    /*@Override
-    public void processAnnotation(ServiceNode entityName, AnnotationAttachmentNode attachmentNode) throws
-            KubernetesPluginException {
-        processService(attachmentNode);
-    }
-
-    @Override
-    public void processAnnotation(SimpleVariableNode variableNode, AnnotationAttachmentNode attachmentNode) throws
-            KubernetesPluginException {
-        processService(attachmentNode);
-    }*/
 
     @Override
     public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode) throws
@@ -118,14 +102,6 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
             serviceModel.addPort(extractPort(bListener));
         }
 
-        /*if (serviceModel.getTargetPort() == -1) {
-            serviceModel.setTargetPort(extractPort(bListener));
-        }
-
-        setServiceProtocol(serviceModel, bListener);
-
-        KnativeContext.getInstance().getDataHolder().addBListenerToK8sServiceMap(serviceNode.getName().getValue(),
-                serviceModel);*/
     }
 
     @Override
@@ -145,14 +121,6 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
             serviceModel.addPort(extractPort(bListener));
         }
 
-        /*if (serviceModel.getTargetPort() == -1) {
-            serviceModel.setTargetPort(extractPort(bListener));
-        }
-
-        setServiceProtocol(serviceModel, bListener);
-
-        KnativeContext.getInstance().getDataHolder().addBListenerToK8sServiceMap(variableNode.getName().getValue()
-                , serviceModel);*/
     }
 
 
@@ -362,80 +330,6 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
         }
     }
 
-    /*private void setServiceProtocol(KnativeContainerModel serviceModel, BLangTypeInit bListener) {
-        if (null != bListener.userDefinedType) {
-            serviceModel.setProtocol(bListener.userDefinedType.getPackageAlias().getValue());
-        } else {
-            BLangIdentifier packageAlias =
-                    ((BLangUserDefinedType) ((BLangSimpleVariable) bListener.parent).typeNode).getPackageAlias();
-            serviceModel.setProtocol(packageAlias.getValue());
-        }
-        if ("http".equals(serviceModel.getProtocol())) {
-            // Add http config
-            if (bListener.argsExpr.size() == 2) {
-                if (bListener.argsExpr.get(1) instanceof BLangRecordLiteral) {
-                    BLangRecordLiteral bConfigRecordLiteral = (BLangRecordLiteral) bListener.argsExpr.get(1);
-                    List<BLangRecordLiteral.BLangRecordKeyValue> listenerConfig =
-                            bConfigRecordLiteral.getKeyValuePairs();
-                    serviceModel.setProtocol(isHTTPS(listenerConfig) ? "https" : "http");
-                }
-            }
-        }
-    }*/
-
-    /*private boolean isHTTPS(List<BLangRecordLiteral.BLangRecordKeyValue> listenerConfig) {
-        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : listenerConfig) {
-            String key = keyValue.getKey().toString();
-            if ("secureSocket".equals(key)) {
-                return true;
-            }
-        }
-
-        return false;
-    }*/
-
-    /*private KnativeContainerModel getServiceModelFromAnnotation(AnnotationAttachmentNode attachmentNode) throws
-            KubernetesPluginException {
-        KnativeContainerModel serviceModel = new KnativeContainerModel();
-        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
-        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
-            KnativeServiceAnnotationProcessor.KnativeServiceConfiguration knativeServiceConfiguration =
-                    KnativeServiceAnnotationProcessor.KnativeServiceConfiguration.valueOf(keyValue.getKey().toString());
-            switch (knativeServiceConfiguration) {
-                case name:
-                    serviceModel.setName(KnativeUtils.getValidName(KnativeUtils.getStringValue(keyValue.getValue())));
-                    break;
-                case labels:
-                    serviceModel.setLabels(KnativeUtils.getMap(keyValue.getValue()));
-                    break;
-                case annotations:
-                    serviceModel.setAnnotations(KnativeUtils.getMap(keyValue.getValue()));
-                    break;
-                case serviceType:
-                    serviceModel.setServiceType(KubernetesConstants.ServiceType.valueOf(
-                            KnativeUtils.getStringValue(keyValue.getValue())).name());
-                    break;
-                case portName:
-                    serviceModel.setPortName(KnativeUtils.getStringValue(keyValue.getValue()));
-                    break;
-                case port:
-                    serviceModel.setPort(KnativeUtils.getIntValue(keyValue.getValue()));
-                    break;
-                case targetPort:
-                    serviceModel.setTargetPort(KnativeUtils.getIntValue(keyValue.getValue()));
-                    break;
-                case sessionAffinity:
-                    serviceModel.setSessionAffinity(KnativeUtils.getStringValue(keyValue.getValue()));
-                    break;
-                default:
-                    break;
-            }
-        }
-        return serviceModel;
-    }*/
-
-
     /**
      * Enum class for DeploymentConfiguration.
      */
@@ -481,16 +375,5 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
         effect,
         tolerationSeconds
     }
-    /*private enum KnativeServiceConfiguration {
-        name,
-        labels,
-        annotations,
-        serviceType,
-        portName,
-        port,
-        targetPort,
-        sessionAffinity
-    }*/
-
     }
 
