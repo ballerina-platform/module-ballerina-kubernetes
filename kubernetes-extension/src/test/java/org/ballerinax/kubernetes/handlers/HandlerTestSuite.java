@@ -19,9 +19,6 @@
 package org.ballerinax.kubernetes.handlers;
 
 import org.ballerinalang.model.elements.PackageID;
-import org.ballerinax.kubernetes.models.DeploymentModel;
-import org.ballerinax.kubernetes.models.KubernetesContext;
-import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.wso2.ballerinalang.compiler.util.Name;

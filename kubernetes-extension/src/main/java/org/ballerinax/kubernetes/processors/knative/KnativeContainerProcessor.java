@@ -14,7 +14,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- */
+ *//*
+
 package org.ballerinax.kubernetes.processors.knative;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
@@ -44,9 +45,11 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 
+*/
 /**
  *  Knative ConfigMap annotation processor.
- */
+ *//*
+
 public class KnativeContainerProcessor extends AbstractAnnotationProcessor {
 
     @Override
@@ -200,3 +203,4 @@ public class KnativeContainerProcessor extends AbstractAnnotationProcessor {
     }
 
 }
+*/

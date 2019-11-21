@@ -43,11 +43,11 @@ import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
 import static org.ballerinax.kubernetes.KubernetesConstants.SECRET_POSTFIX;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.getBooleanValue;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
+import static org.ballerinax.kubernetes.utils.KnativeUtils.getBooleanValue;
+import static org.ballerinax.kubernetes.utils.KnativeUtils.getMap;
+import static org.ballerinax.kubernetes.utils.KnativeUtils.getStringValue;
+import static org.ballerinax.kubernetes.utils.KnativeUtils.getValidName;
+import static org.ballerinax.kubernetes.utils.KnativeUtils.isBlank;
 
 /**
  * Secrets annotation processor knative.

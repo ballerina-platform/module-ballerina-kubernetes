@@ -51,7 +51,7 @@ import java.util.Set;
 import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
+import static org.ballerinax.kubernetes.utils.KnativeUtils.printError;
 
 /**
  * Compiler plugin to generate kubernetes artifacts.

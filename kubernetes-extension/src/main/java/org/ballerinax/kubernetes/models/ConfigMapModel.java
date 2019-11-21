@@ -14,15 +14,18 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- */
+ *//*
+
 package org.ballerinax.kubernetes.models;
 
 import java.util.Map;
 import java.util.Objects;
 
+*/
 /**
  * Model class to hold kubernetes config map data.
- */
+ *//*
+
 public class ConfigMapModel extends KubernetesModel {
     private Map<String, String> data;
     private String mountPath;
@@ -82,3 +85,4 @@ public class ConfigMapModel extends KubernetesModel {
         return Objects.hash(getMountPath());
     }
 }
+*/

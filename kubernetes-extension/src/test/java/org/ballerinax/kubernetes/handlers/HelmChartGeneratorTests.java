@@ -19,8 +19,6 @@ package org.ballerinax.kubernetes.handlers;
 
 import org.ballerinax.docker.generator.models.DockerModel;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.KubernetesContext;
-import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

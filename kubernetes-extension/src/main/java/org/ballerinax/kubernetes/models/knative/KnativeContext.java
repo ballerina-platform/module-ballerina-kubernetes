@@ -27,7 +27,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
+import static org.ballerinax.kubernetes.utils.KnativeUtils.isBlank;
 
 /**
  * Class to hold Kubernetes data holder against package id.

@@ -37,14 +37,10 @@ public class KnativeAnnotationProcessorFactory {
         switch (knativeAnnotation) {
             case Service:
                 return new KnativeServiceAnnotationProcessor();
-            case HPA:
-                return new HPAAnnotationProcessor();
             case Secret:
                 return new KnativeSecretAnnotationProcesser();
             case ConfigMap:
                 return new KnativeConfigMapAnnotationProcessor();
-            case ResourceQuota:
-                return new ResourceQuotaAnnotationPreprocessor();
             default:
                 KnativeContext.getInstance().getDataHolder().setCanProcess(false);
                 throw new KubernetesPluginException("error while getting annotation processor for type: " + type);

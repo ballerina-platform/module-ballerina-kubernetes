@@ -22,7 +22,6 @@ import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.knative.KnativeConfigMapHandler;
 import org.ballerinax.kubernetes.handlers.knative.KnativeContainerHandler;
 import org.ballerinax.kubernetes.handlers.knative.KnativeDockerHandler;
-import org.ballerinax.kubernetes.handlers.knative.KnativeHPAHandler;
 import org.ballerinax.kubernetes.handlers.knative.KnativeResourceQuotaHandler;
 import org.ballerinax.kubernetes.handlers.knative.KnativeSecretHandler;
 import org.ballerinax.kubernetes.handlers.knative.KnativeServiceHandler;
@@ -38,9 +37,9 @@ import java.util.Map;
 import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_LATEST_TAG;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
-import static org.ballerinax.kubernetes.utils.KubernetesUtils.printInstruction;
+import static org.ballerinax.kubernetes.utils.KnativeUtils.getValidName;
+import static org.ballerinax.kubernetes.utils.KnativeUtils.isBlank;
+import static org.ballerinax.kubernetes.utils.KnativeUtils.printInstruction;
 
 /**
  * Generate and write artifacts to files.
@@ -69,7 +68,6 @@ public class KnativeArtifactManager {
             new KnativeResourceQuotaHandler().createArtifacts();
             new KnativeConfigMapHandler().createArtifacts();
             new KnativeServiceHandler().createArtifacts();
-            new KnativeHPAHandler().createArtifacts();
             new KnativeDockerHandler().createArtifacts();
 
 

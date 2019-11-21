@@ -22,7 +22,6 @@ import me.snowdrop.istio.api.networking.v1alpha3.Gateway;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.istio.IstioGatewayHandler;
-import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
 import org.ballerinax.kubernetes.models.istio.IstioPortModel;
 import org.ballerinax.kubernetes.models.istio.IstioServerModel;
