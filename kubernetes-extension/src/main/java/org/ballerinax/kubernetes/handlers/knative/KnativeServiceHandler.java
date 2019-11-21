@@ -17,16 +17,7 @@
  */
 package org.ballerinax.kubernetes.handlers.knative;
 
-//import io.fabric8.kubernetes.api.model.apps.Deployment;
-//import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
 
-//import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
-//import io.fabric8.kubernetes.api.model.LocalObjectReference;
-//import io.fabric8.kubernetes.api.model.LocalObjectReferenceBuilder;
-//import io.fabric8.kubernetes.api.model.Toleration;
-//import io.fabric8.kubernetes.api.model.TolerationBuilder;
-//import io.fabric8.kubernetes.api.model.ServiceSpec;
-//import io.fabric8.kubernetes.api.model.ServiceSpecBuilder;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
 import io.fabric8.kubernetes.api.model.ContainerPort;
@@ -41,17 +32,12 @@ import io.fabric8.kubernetes.api.model.Volume;
 import io.fabric8.kubernetes.api.model.VolumeBuilder;
 import io.fabric8.kubernetes.api.model.VolumeMount;
 import io.fabric8.kubernetes.api.model.VolumeMountBuilder;
-//import io.fabric8.kubernetes.api.model.apps.Deployment;
-//import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
-//import io.fabric8.kubernetes.api.model.apps.DeploymentSpec;
-//import io.fabric8.kubernetes.api.model.apps.DeploymentSpecBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import org.ballerinax.docker.generator.exceptions.DockerGenException;
 import org.ballerinax.docker.generator.models.DockerModel;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.knative.ConfigMapModel;
-//import org.ballerinax.kubernetes.models.knative.KnativeContainerModel;
 import org.ballerinax.kubernetes.models.knative.KnativeContext;
 import org.ballerinax.kubernetes.models.knative.KnativeService;
 import org.ballerinax.kubernetes.models.knative.ProbeModel;
@@ -74,11 +60,6 @@ import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_FILE_POST
 import static org.ballerinax.kubernetes.KubernetesConstants.EXECUTABLE_JAR;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.populateEnvVar;
-
-//import org.ballerinax.kubernetes.models.knative.PodTolerationModel;
-//import java.util.LinkedList;
-
-//import org.bouncycastle.asn1.cms.MetaData;
 
 /**
  * Generates knative service from annotations.
@@ -238,15 +219,6 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
                 .build();
                  KnativeService knativeServiceBuild = new KnativeService();
                  knativeServiceBuild.setMetadata(metaData);
-        /*DeploymentSpec deploymentSpec = new DeploymentSpecBuilder()
-                .withNewTemplate()
-                .withNewSpec()
-                .withContainers(container)
-                .withInitContainers(generateInitContainer(serviceModel))
-                .withVolumes(populateVolume(serviceModel))
-                .endSpec()
-                .endTemplate()
-                .build();*/
         KnativeServiceSpec knativeServiceSpec = new KnativeServiceSpec();
         KnativePodSpec knativePodSpec = new KnativePodSpec();
         knativePodSpec.setContainerConcurrency(100);
@@ -258,9 +230,6 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
         knativePodTemplateSpec.setSpec(knativePodSpec);
         knativeServiceSpec.setTemplate(knativePodTemplateSpec);
         knativeServiceBuild.setSpec(knativeServiceSpec);
-
-
-
 
         try {
             String deploymentContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(knativeServiceBuild);
