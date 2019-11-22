@@ -46,6 +46,7 @@ public class ServiceModel extends KnativeModel {
     private String registry;
     private List<PodTolerationModel> podTolerations;
     private int containerConcurrency;
+    private int timeoutSeconds;
 
     public ServiceModel() {
         this.replicas = 1;
@@ -69,6 +70,7 @@ public class ServiceModel extends KnativeModel {
         this.commandArgs = "";
         this.registry = "";
         this.containerConcurrency = 100;
+        this.timeoutSeconds = 60;
     }
 
     public int getPort() {
@@ -334,6 +336,14 @@ public class ServiceModel extends KnativeModel {
 
     public void setContainerConcurrency(int containerConcurrency) {
         this.containerConcurrency = containerConcurrency;
+    }
+
+    public int getTimeoutSeconds() {
+        return timeoutSeconds;
+    }
+
+    public void setTimeoutSeconds(int timeoutSeconds) {
+        this.timeoutSeconds = timeoutSeconds;
     }
 
     @Override

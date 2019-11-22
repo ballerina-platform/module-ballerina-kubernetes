@@ -63,6 +63,7 @@ import javax.validation.Valid;
         "serviceAccount",
         "serviceAccountName",
         "tolerations",
+        "timeoutSeconds",
         "volumes"
 })
 @JsonDeserialize(using = com.fasterxml.jackson.databind.JsonDeserializer.None.class)
@@ -77,6 +78,14 @@ public class KnativePodSpec implements KubernetesResource {
     @JsonProperty("containerConcurrency")
     @Valid
     private java.lang.Integer containerConcurrency;
+
+    /**
+     * Kubernetes service annotations model class.
+     * Knative PodSpec
+     */
+    @JsonProperty("timeoutSeconds")
+    @Valid
+    private java.lang.Integer timeoutSeconds;
 
     /**
      * Kubernetes service annotations model class.
@@ -182,7 +191,9 @@ public class KnativePodSpec implements KubernetesResource {
                           java.lang.String schedulerName, PodSecurityContext securityContext,
                           java.lang.String serviceAccount, java.lang.String serviceAccountName,
                           Boolean shareProcessNamespace, java.lang.String subdomain,
-                          Long terminationGracePeriodSeconds, List<Toleration> tolerations, List<Volume> volumes) {
+                          Long terminationGracePeriodSeconds, List<Toleration> tolerations,
+                          java.lang.Integer timeoutSeconds,
+                          List<Volume> volumes) {
         this.containerConcurrency = containerConcurrency;
         this.containers = containers;
         this.imagePullSecrets = imagePullSecrets;
@@ -193,6 +204,8 @@ public class KnativePodSpec implements KubernetesResource {
         this.serviceAccountName = serviceAccountName;
         this.tolerations = tolerations;
         this.volumes = volumes;
+        this.timeoutSeconds = timeoutSeconds;
+
     }
 
     /**
@@ -211,6 +224,24 @@ public class KnativePodSpec implements KubernetesResource {
     @JsonProperty("containerConcurrency")
     public void setContainerConcurrency(java.lang.Integer containerConcurrency) {
         this.containerConcurrency = containerConcurrency;
+    }
+
+    /**
+     * Knative  model class.
+     * Knative PodSpec
+     */
+    @JsonProperty("timeoutSeconds")
+    public java.lang.Integer getTimeOutSeconds() {
+        return timeoutSeconds;
+    }
+
+    /**
+     * Knative  model class.
+     * Knative PodSpec
+     */
+    @JsonProperty("timeoutSeconds")
+    public void setTimeOutSeconds(java.lang.Integer timeoutSeconds) {
+        this.timeoutSeconds = timeoutSeconds;
     }
 
     /**

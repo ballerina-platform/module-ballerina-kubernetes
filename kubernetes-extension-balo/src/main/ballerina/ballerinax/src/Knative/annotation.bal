@@ -173,6 +173,7 @@ public type PodTolerationConfiguration record {|
 # + dependsOn - Services this deployment depends on.
 # + imagePullSecrets - Image pull secrets.
 # + containerConcurrency - concurent request handle by one container instance
+# + timeoutSeconds - max time the instance is allowed for responding to a request
 public type ServiceConfiguration record{|
 
         *Metadata;
@@ -198,6 +199,7 @@ public type ServiceConfiguration record{|
         string[] dependsOn?;
         string[] imagePullSecrets?;
         int containerConcurrency=100;
+        int timeoutSeconds=60;
 |};
 
 public const annotation ServiceConfiguration Service on source service, source function, source listener;
