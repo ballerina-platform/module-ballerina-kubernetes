@@ -79,7 +79,7 @@ public class KnativeConfigMapHandler extends KnativeAbstractArtifactHandler {
                 knativeDataHolder.setServiceModel(serviceModel);
             }
             generate(configMapModel);
-            OUT.print("\t@Knative:ConfigMap \t\t\t - complete " + count + "/" + configMapModels.size() + "\r");
+            OUT.print("\t@knative:ConfigMap \t\t\t - complete " + count + "/" + configMapModels.size() + "\r");
         }
     }
 }
