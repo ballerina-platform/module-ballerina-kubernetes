@@ -1,17 +1,13 @@
 import ballerina/http;
 import ballerina/log;
-import ballerinax/Knative;
+import ballerina/kubernetes;
 
-
-
-
-@Knative:Service{
-    namespace: "knative",
-    containerConcurrency: 200
+@kubernetes:Service {
+    serviceType: "NodePort"
 }
-
-@Knative:ConfigMap {
-    conf: "./conf/micro-gw.conf"
+@kubernetes:Deployment {}
+@http:ServiceConfig {
+    basePath: "/helloWorld"
 }
 
 
