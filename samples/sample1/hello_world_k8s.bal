@@ -6,7 +6,8 @@ import ballerinax/Knative;
 
 
 @Knative:Service{
-    namespace: "default"
+    namespace: "knative",
+    containerConcurrency: 200
 }
 
 @Knative:ConfigMap {

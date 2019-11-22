@@ -210,6 +210,9 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
                 case imagePullSecrets:
                     serviceModel.setImagePullSecrets(getImagePullSecrets(keyValue));
                     break;
+                case containerConcurrency:
+                    serviceModel.setContainerConcurrency(getIntValue(keyValue.getValue()));
+                    break;
                 default:
                     break;
             }
@@ -360,6 +363,7 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
         buildExtension,
         dependsOn,
         imagePullSecrets,
+        containerConcurrency
     }
 
     private enum ProbeConfiguration {

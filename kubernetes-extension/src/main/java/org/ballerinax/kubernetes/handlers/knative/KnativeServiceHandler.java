@@ -192,7 +192,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
                  knativeServiceBuild.setMetadata(metaData);
         KnativeServiceSpec knativeServiceSpec = new KnativeServiceSpec();
         KnativePodSpec knativePodSpec = new KnativePodSpec();
-        knativePodSpec.setContainerConcurrency(100);
+        knativePodSpec.setContainerConcurrency(serviceModel.getContainerConcurrency());
         knativePodSpec.setContainers(Collections.singletonList(container));
         knativePodSpec.setInitContainers(generateInitContainer(serviceModel));
         knativePodSpec.setVolumes(populateVolume(serviceModel));
