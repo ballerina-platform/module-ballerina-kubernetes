@@ -14,18 +14,17 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *//*
+ */
 
-package org.ballerinax.kubernetes.processors.knative;
+package org.ballerinax.kubernetes.processors;
 
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.knative.KnativeContainerModel;
-import org.ballerinax.kubernetes.models.knative.KnativeContext;
-import org.ballerinax.kubernetes.processors.AbstractAnnotationProcessor;
+import org.ballerinax.kubernetes.models.KubernetesContext;
+import org.ballerinax.kubernetes.models.ServiceModel;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.BLangIdentifier;
 import org.wso2.ballerinalang.compiler.tree.BLangService;
@@ -45,12 +44,10 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 
-*/
 /**
- *  Knative ConfigMap annotation processor.
- *//*
-
-public class KnativeContainerProcessor extends AbstractAnnotationProcessor {
+ * Service annotation processor.
+ */
+public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
 
     @Override
     public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode) throws
@@ -64,7 +61,7 @@ public class KnativeContainerProcessor extends AbstractAnnotationProcessor {
             }
 
         }
-        KnativeContainerModel serviceModel = getServiceModelFromAnnotation(attachmentNode);
+        ServiceModel serviceModel = getServiceModelFromAnnotation(attachmentNode);
         if (isBlank(serviceModel.getName())) {
             serviceModel.setName(getValidName(serviceNode.getName().getValue()) + SVC_POSTFIX);
         }
@@ -84,13 +81,14 @@ public class KnativeContainerProcessor extends AbstractAnnotationProcessor {
 
         setServiceProtocol(serviceModel, bListener);
 
-        KnativeContext.getInstance().getDataHolder().addBListenerToK8sServiceMap(serviceNode.getName().getValue(),
+        KubernetesContext.getInstance().getDataHolder().addBListenerToK8sServiceMap(serviceNode.getName().getValue(),
                 serviceModel);
     }
+
     @Override
     public void processAnnotation(SimpleVariableNode variableNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException {
-        KnativeContainerModel serviceModel = getServiceModelFromAnnotation(attachmentNode);
+        ServiceModel serviceModel = getServiceModelFromAnnotation(attachmentNode);
         if (isBlank(serviceModel.getName())) {
             serviceModel.setName(getValidName(variableNode.getName().getValue()) + SVC_POSTFIX);
         }
@@ -110,9 +108,10 @@ public class KnativeContainerProcessor extends AbstractAnnotationProcessor {
 
         setServiceProtocol(serviceModel, bListener);
 
-        KnativeContext.getInstance().getDataHolder().addBListenerToK8sServiceMap(variableNode.getName().getValue()
+        KubernetesContext.getInstance().getDataHolder().addBListenerToK8sServiceMap(variableNode.getName().getValue()
                 , serviceModel);
     }
+
     private int extractPort(BLangTypeInit bListener) throws KubernetesPluginException {
         try {
             return Integer.parseInt(bListener.argsExpr.get(0).toString());
@@ -121,7 +120,8 @@ public class KnativeContainerProcessor extends AbstractAnnotationProcessor {
                     bListener.argsExpr.get(0).toString());
         }
     }
-    private void setServiceProtocol(KnativeContainerModel serviceModel, BLangTypeInit bListener) {
+
+    private void setServiceProtocol(ServiceModel serviceModel, BLangTypeInit bListener) {
         if (null != bListener.userDefinedType) {
             serviceModel.setProtocol(bListener.userDefinedType.getPackageAlias().getValue());
         } else {
@@ -141,6 +141,7 @@ public class KnativeContainerProcessor extends AbstractAnnotationProcessor {
             }
         }
     }
+
     private boolean isHTTPS(List<BLangRecordLiteral.BLangRecordKeyValue> listenerConfig) {
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : listenerConfig) {
             String key = keyValue.getKey().toString();
@@ -151,14 +152,15 @@ public class KnativeContainerProcessor extends AbstractAnnotationProcessor {
 
         return false;
     }
-    private KnativeContainerModel getServiceModelFromAnnotation(AnnotationAttachmentNode attachmentNode) throws
+
+    private ServiceModel getServiceModelFromAnnotation(AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
-        KnativeContainerModel serviceModel = new KnativeContainerModel();
+        ServiceModel serviceModel = new ServiceModel();
         List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
-            KnativeContainerProcessor.ServiceConfiguration serviceConfiguration =
-                    KnativeContainerProcessor.ServiceConfiguration.valueOf(keyValue.getKey().toString());
+            ServiceConfiguration serviceConfiguration =
+                    ServiceConfiguration.valueOf(keyValue.getKey().toString());
             switch (serviceConfiguration) {
                 case name:
                     serviceModel.setName(getValidName(getStringValue(keyValue.getValue())));
@@ -191,6 +193,10 @@ public class KnativeContainerProcessor extends AbstractAnnotationProcessor {
         }
         return serviceModel;
     }
+
+    /**
+     * Enum for Service configurations.
+     */
     private enum ServiceConfiguration {
         name,
         labels,
@@ -201,6 +207,4 @@ public class KnativeContainerProcessor extends AbstractAnnotationProcessor {
         targetPort,
         sessionAffinity
     }
-
 }
-*/

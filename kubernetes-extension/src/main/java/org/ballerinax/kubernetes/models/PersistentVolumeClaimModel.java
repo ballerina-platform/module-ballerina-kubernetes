@@ -17,28 +17,20 @@
  */
 package org.ballerinax.kubernetes.models;
 
-import java.util.Map;
-import java.util.Objects;
+import java.util.HashMap;
 
 /**
- * Model class to hold kubernetes config map data.
+ * Model class to hold kubernetes Persistent Volume Claim.
  */
-public class ConfigMapModel extends KubernetesModel {
-    private Map<String, String> data;
+public class PersistentVolumeClaimModel extends KubernetesModel {
     private String mountPath;
     private boolean readOnly;
-    private String ballerinaConf;
+    private String accessMode;
+    private String volumeClaimSize;
 
-    public ConfigMapModel() {
-        this.readOnly = true;
-    }
-
-    public Map<String, String> getData() {
-        return data;
-    }
-
-    public void setData(Map<String, String> data) {
-        this.data = data;
+    public PersistentVolumeClaimModel() {
+        this.accessMode = "ReadWriteOnce";
+        this.setAnnotations(new HashMap<>());
     }
 
     public String getMountPath() {
@@ -57,28 +49,19 @@ public class ConfigMapModel extends KubernetesModel {
         this.readOnly = readOnly;
     }
 
-    public String getBallerinaConf() {
-        return ballerinaConf;
+    public String getAccessMode() {
+        return accessMode;
     }
 
-    public void setBallerinaConf(String ballerinaConf) {
-        this.ballerinaConf = ballerinaConf;
+    public void setAccessMode(String accessMode) {
+        this.accessMode = accessMode;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof ConfigMapModel)) {
-            return false;
-        }
-        ConfigMapModel that = (ConfigMapModel) o;
-        return Objects.equals(getMountPath(), that.getMountPath());
+    public String getVolumeClaimSize() {
+        return volumeClaimSize;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getMountPath());
+    public void setVolumeClaimSize(String volumeClaimSize) {
+        this.volumeClaimSize = volumeClaimSize;
     }
 }

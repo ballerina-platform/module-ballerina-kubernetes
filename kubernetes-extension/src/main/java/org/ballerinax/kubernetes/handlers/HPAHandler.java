@@ -14,8 +14,7 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *//*
-
+ */
 
 package org.ballerinax.kubernetes.handlers;
 
@@ -26,6 +25,9 @@ import io.fabric8.kubernetes.api.model.MetricSpecBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.DeploymentModel;
+import org.ballerinax.kubernetes.models.PodAutoscalerModel;
+import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
 
@@ -35,11 +37,9 @@ import static org.ballerinax.kubernetes.KubernetesConstants.HPA_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 
-*/
 /**
  * Generates kubernetes Horizontal Pod Autoscaler from annotations.
- *//*
-
+ */
 public class HPAHandler extends AbstractArtifactHandler {
 
     private void generate(PodAutoscalerModel podAutoscalerModel) throws KubernetesPluginException {
@@ -97,4 +97,3 @@ public class HPAHandler extends AbstractArtifactHandler {
         OUT.print("\t@kubernetes:HPA \t\t\t - complete 1/1");
     }
 }
-*/
