@@ -348,7 +348,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
         dockerModel.setUsername(deploymentModel.getUsername());
         dockerModel.setPassword(deploymentModel.getPassword());
         dockerModel.setPush(deploymentModel.isPush());
-        //dockerModel.setCmd(deploymentModel.getCmd());
+        dockerModel.setCmd(deploymentModel.getCmd());
         dockerModel.setUberJarFileName(extractUberJarName(dataHolder.getUberJarPath()) + EXECUTABLE_JAR);
         dockerModel.setPorts(deploymentModel.getPorts());
         dockerModel.setService(true);
