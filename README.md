@@ -41,7 +41,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |registry|Docker registry url|null|
 |username|Username for the docker registry|null|
 |password|Password for the docker registry|null|
-|baseImage|Base image to create the docker image|ballerina/ballerina-runtime:<BALLERINA_VERSION>|
+|baseImage|Base image to create the docker image|openjdk:8-jre-alpine|
 |image|Docker image with tag|<OUTPUT_FILE_NAME>:latest. If field `registry` is set then it will be prepended to the docker image name as <registry>/<OUTPUT_FILE_NAME>:latest|
 |buildImage|Building docker image|true|
 |push|Push docker image to registry. This will be effective if image buildImage field is true|false|
@@ -158,7 +158,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |registry|Docker registry url|null|
 |username|Username for the docker registry|null|
 |password|Password for the docker registry|null|
-|baseImage|Base image to create the docker image|ballerina/ballerina-runtime:<BALLERINA_VERSION>|
+|baseImage|Base image to create the docker image|openjdk:8-jre-alpine|
 |image|Docker image with tag|<OUTPUT_FILE_NAME>:latest. If field `registry` is set then it will be prepended to the docker image name as <registry>/<OUTPUT_FILE_NAME>:latest|
 |buildImage|Building docker image|true|
 |push|Push docker image to registry. This will be effective if image buildImage field is true|false|

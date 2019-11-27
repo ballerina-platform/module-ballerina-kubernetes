@@ -30,10 +30,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getCommand;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDockerImage;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 
 /**
  * Test creating kubernetes deployment artifacts.
@@ -144,6 +147,37 @@ public class DeploymentTest {
                 "NoSchedule", "Invalid toleration effect.");
         Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getTolerations().get(0).getTolerationSeconds()
                         .longValue(), 0L, "Invalid toleration seconds.");
+        
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
+    }
+    
+    /**
+     * Build bal file with CMD of Dockerfile overridden.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
+     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
+     */
+    @Test
+    public void overrideCMDTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "cmd_override.bal"), 0);
+        
+        // Check if docker image exists and correct
+        validateDockerfile();
+    
+        List<String> ports = getExposedPorts(DOCKER_IMAGE);
+        Assert.assertEquals(ports.size(), 1);
+        Assert.assertEquals(ports.get(0), "9090/tcp");
+        // Validate ballerina.conf in run command
+        Assert.assertEquals(getCommand(DOCKER_IMAGE).toString(),
+                "[/bin/sh, -c, java -jar cmd_override.jar --b7a.http.accesslog.console=true]");
+        
+        // Validate deployment yaml
+        File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("cmd_override_deployment.yaml").toFile();
+        Assert.assertTrue(deploymentYAML.exists());
         
         KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
         KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
