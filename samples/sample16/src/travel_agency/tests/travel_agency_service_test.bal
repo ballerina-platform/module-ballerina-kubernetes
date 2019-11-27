@@ -69,7 +69,7 @@ http:Client clientEP = new("http://localhost:9090/travel");
 
 // Function to test Travel agency service
 @test:Config{}
-function testTravelAgencyService() returns error? {
+function testTravelAgencyService() {
     airlineReservationEP = new("http://localhost:8080/airline");
     hotelReservationEP = new("http://localhost:7070/hotel");
     carRentalEP = new("http://localhost:6060/car");
@@ -91,11 +91,11 @@ function testTravelAgencyService() returns error? {
     };
 
     // Send a 'post' request and obtain the response
-    http:Response response = check clientEP -> post("/arrange", payload);
+    http:Response response = checkpanic clientEP -> post("/arrange", payload);
     // Expected response code is 200
     test:assertEquals(response.statusCode, 200, "Travel agency service did not respond with 200 OK signal!");
     // Check whether the response is as expected
-    json resPayload = check response.getJsonPayload();
+    json resPayload = checkpanic response.getJsonPayload();
     json expected = {
         Message: "Congratulations! Your journey is ready!!"
     };
