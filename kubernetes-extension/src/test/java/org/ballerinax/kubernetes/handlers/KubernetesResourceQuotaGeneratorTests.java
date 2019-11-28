@@ -20,6 +20,8 @@ package org.ballerinax.kubernetes.handlers;
 
 import io.fabric8.kubernetes.api.model.ResourceQuota;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.KubernetesContext;
+import org.ballerinax.kubernetes.models.ResourceQuotaModel;
 import org.ballerinax.kubernetes.utils.Utils;
 import org.testng.Assert;
 import org.testng.annotations.Test;

@@ -24,6 +24,7 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.openshift.api.model.Route;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
+import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
