@@ -37,6 +37,7 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -102,8 +103,11 @@ public class Sample1Test extends SampleTest {
     }
 
     @Test
-    public void validateDockerfile() {
+    public void validateDockerfile() throws IOException {
         File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
+        String dockerFileContent = new String(Files.readAllBytes(dockerFile.toPath()));
+        Assert.assertTrue(dockerFileContent.contains("adduser -S -s /bin/bash -g 'ballerina' -G troupe -D ballerina"));
+        Assert.assertTrue(dockerFileContent.contains("USER ballerina"));
         Assert.assertTrue(dockerFile.exists());
     }
 
@@ -115,7 +119,7 @@ public class Sample1Test extends SampleTest {
     }
 
     @AfterClass
-    public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
+    public void cleanUp() throws KubernetesPluginException {
         KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
         KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
