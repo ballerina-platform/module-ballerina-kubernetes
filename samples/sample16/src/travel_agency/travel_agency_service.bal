@@ -76,11 +76,30 @@ service travelAgencyService on travelAgencyEP {
         };
 
         // Send a post request to airlineReservationService with appropriate payload and get response
-        http:Response inResAirline = check airlineReservationEP->post("/reserve", <@untainted> outReqPayloadAirline);
+        http:Response|error inResAirline = airlineReservationEP->post("/reserve", <@untainted> outReqPayloadAirline);
+        if (inResAirline is error) {
+            outResponse.setJsonPayload({
+                Message: "Failed to reserve airline! Unable to connect to airline service."
+            });
+            var result = caller->respond(outResponse);
+            handleError(result);
+            return;
+        }
 
+        http:Response inResponseAirline = <http:Response>inResAirline;
         // Get the reservation status
-        var airlineResPayload = check inResAirline.getJsonPayload();
-        string airlineStatus = airlineResPayload.Status.toString();
+        json|error airlineResPayload = inResponseAirline.getJsonPayload();
+        if (airlineResPayload is error) {
+            outResponse.setJsonPayload({
+                Message: "Failed to reserve airline! Unable to get payload from response."
+            });
+            var result = caller->respond(outResponse);
+            handleError(result);
+            return;
+        }
+
+        json airlineJsonPayload = <json>airlineResPayload;
+        string airlineStatus = airlineJsonPayload.Status.toString();
         // If reservation status is negative, send a failure response to user
         if (stringutils:equalsIgnoreCase(airlineStatus, "Failed")) {
             outResponse.setJsonPayload({
@@ -101,11 +120,30 @@ service travelAgencyService on travelAgencyEP {
         };
 
         // Send a post request to hotelReservationService with appropriate payload and get response
-        http:Response inResHotel = check hotelReservationEP->post("/reserve", <@untainted> outReqPayloadHotel);
+        http:Response|error inResHotel = hotelReservationEP->post("/reserve", <@untainted> outReqPayloadHotel);
+        if (inResHotel is error) {
+            outResponse.setJsonPayload({
+                Message: "Failed to reserve hotel! Unable to connect to hotel service."
+            });
+            var result = caller->respond(outResponse);
+            handleError(result);
+            return;
+        }
 
+        http:Response inResponseHotel = <http:Response>inResHotel;
         // Get the reservation status
-        var hotelResPayload = check inResHotel.getJsonPayload();
-        string hotelStatus = hotelResPayload.Status.toString();
+        json|error hotelResPayload = inResponseHotel.getJsonPayload();
+        if (hotelResPayload is error) {
+            outResponse.setJsonPayload({
+                Message: "Failed to reserve hotel! Unable to get payload from response."
+            });
+            var result = caller->respond(outResponse);
+            handleError(result);
+            return;
+        }
+
+        json hotelJsonPayload = <json>hotelResPayload;
+        string hotelStatus = hotelJsonPayload.Status.toString();
         // If reservation status is negative, send a failure response to user
         if (stringutils:equalsIgnoreCase(hotelStatus, "Failed")) {
             outResponse.setJsonPayload({
@@ -126,11 +164,30 @@ service travelAgencyService on travelAgencyEP {
         };
 
         // Send a post request to carRentalService with appropriate payload and get response
-        http:Response inResCar = check carRentalEP->post("/rent", <@untainted> outReqPayloadCar);
+        http:Response|error inResCar = carRentalEP->post("/rent", <@untainted> outReqPayloadCar);
+        if (inResCar is error) {
+            outResponse.setJsonPayload({
+                Message: "Failed to rent car! Unable to connect to car service."
+            });
+            var result = caller->respond(outResponse);
+            handleError(result);
+            return;
+        }
 
+        http:Response inResponseCar = <http:Response>inResCar;
         // Get the rental status
-        var carResPayload = check inResCar.getJsonPayload();
-        string carRentalStatus = carResPayload.Status.toString();
+        json|error carResPayload = inResponseCar.getJsonPayload();
+        if (carResPayload is error) {
+            outResponse.setJsonPayload({
+                Message: "Failed to rent car! Unable to get payload from response."
+            });
+            var result = caller->respond(outResponse);
+            handleError(result);
+            return;
+        }
+
+        json carJsonPayload = <json>carResPayload;
+        string carRentalStatus = carJsonPayload.Status.toString();
         // If rental status is negative, send a failure response to user
         if (stringutils:equalsIgnoreCase(carRentalStatus, "Failed")) {
             outResponse.setJsonPayload({

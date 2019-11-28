@@ -6,7 +6,7 @@ http:Client clientEP = new("http://localhost:8080/airline");
 
 // Function to test Airline reservation service
 @test:Config{}
-function testAirlineReservationService() returns error? {
+function testAirlineReservationService() {
     // Test the 'reserveTicket' resource
     // Construct a request payload
     json payload = {
@@ -17,11 +17,11 @@ function testAirlineReservationService() returns error? {
     };
 
     // Send a 'post' request and obtain the response
-    http:Response response = check clientEP->post("/reserve", payload);
+    http:Response response = checkpanic clientEP->post("/reserve", payload);
     // Expected response code is 200
     test:assertEquals(response.statusCode, 200, "Airline reservation service did not respond with 200 OK signal!");
     // Check whether the response is as expected
-    json resPayload = check response.getJsonPayload();
+    json resPayload = checkpanic response.getJsonPayload();
     json expected = {
         Status: "Success"
     };
