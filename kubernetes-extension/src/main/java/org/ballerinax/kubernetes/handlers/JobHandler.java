@@ -154,6 +154,7 @@ public class JobHandler extends AbstractArtifactHandler {
         dockerModel.setUsername(jobModel.getUsername());
         dockerModel.setPassword(jobModel.getPassword());
         dockerModel.setPush(jobModel.isPush());
+        dockerModel.setCmd(jobModel.getCmd());
         dockerModel.setUberJarFileName(extractUberJarName(dataHolder.getUberJarPath()) + EXECUTABLE_JAR);
         dockerModel.setService(false);
         dockerModel.setDockerHost(jobModel.getDockerHost());

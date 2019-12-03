@@ -93,6 +93,9 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
                 case push:
                     jobModel.setPush(getBooleanValue(keyValue.getValue()));
                     break;
+                case cmd:
+                    jobModel.setCmd(getStringValue(keyValue.getValue()));
+                    break;
                 case buildImage:
                     jobModel.setBuildImage(getBooleanValue(keyValue.getValue()));
                     break;
@@ -157,6 +160,7 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
         image,
         imagePullPolicy,
         push,
+        cmd,
         dockerCertPath,
         copyFiles,
         singleYAML,

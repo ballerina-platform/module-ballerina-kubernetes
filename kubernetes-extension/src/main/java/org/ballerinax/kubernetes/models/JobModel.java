@@ -47,6 +47,7 @@ public class JobModel extends KubernetesModel {
     private String password;
     private String baseImage;
     private boolean push;
+    private String cmd;
     private String dockerCertPath;
     private Set<String> imagePullSecrets;
     private Set<CopyFileModel> copyFiles;
@@ -222,5 +223,13 @@ public class JobModel extends KubernetesModel {
     
     public String getRegistry() {
         return registry;
+    }
+    
+    public String getCmd() {
+        return cmd;
+    }
+    
+    public void setCmd(String cmd) {
+        this.cmd = cmd;
     }
 }

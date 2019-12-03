@@ -46,6 +46,7 @@ public class DeploymentModel extends KubernetesModel {
     private String username;
     private String password;
     private boolean push;
+    private String cmd;
     private String dockerHost;
     private String dockerCertPath;
     private Set<Integer> ports;
@@ -345,6 +346,14 @@ public class DeploymentModel extends KubernetesModel {
         this.podTolerations = podTolerations;
     }
     
+    public String getCmd() {
+        return cmd;
+    }
+    
+    public void setCmd(String cmd) {
+        this.cmd = cmd;
+    }
+    
     @Override
     public String toString() {
         return "DeploymentModel{" +
@@ -360,6 +369,7 @@ public class DeploymentModel extends KubernetesModel {
                ", username='" + username +
                ", password='" + password +
                ", push=" + push +
+               ", cmd=" + cmd +
                ", dockerHost='" + dockerHost +
                ", dockerCertPath='" + dockerCertPath +
                ", ports=" + ports +
