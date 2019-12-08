@@ -48,9 +48,10 @@ public class ServiceModel extends KnativeModel {
     private int containerConcurrency;
     private int timeoutSeconds;
 
+
     public ServiceModel() {
         this.replicas = 1;
-        this.port = -1;
+        this.port = 8080;
         this.buildImage = true;
         this.baseImage = OPENJDK_8_JRE_ALPINE_BASE_IMAGE;
         this.push = false;

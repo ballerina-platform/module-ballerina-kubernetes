@@ -57,7 +57,8 @@ import static org.ballerinax.kubernetes.utils.KnativeUtils.printError;
  * Compiler plugin to generate kubernetes artifacts.
  */
 @SupportedAnnotationPackages(
-        value = {"ballerinax/Knative:0.0.0"}
+        value = {"ballerina/knative"}
+        //should be changed as knative
 )
 
 public class KnativePlugin extends AbstractCompilerPlugin {

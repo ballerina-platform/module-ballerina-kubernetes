@@ -83,8 +83,16 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
         for (BLangExpression attachedExpr : bService.getAttachedExprs()) {
             // If not anonymous endpoint throw error.
             if (attachedExpr instanceof BLangSimpleVarRef) {
-                throw new KubernetesPluginException("adding @knative:Service{} annotation to a service is only " +
-                        "supported when the service has an anonymous listener");
+                //throw new KubernetesPluginException("adding @knative:Service{} annotation to a service is only " +
+                        //"supported when the service has an anonymous listener");
+                ServiceModel serviceModelAttched = processService(attachmentNode);
+                serviceModelAttched.addPort(serviceModelAttched.getPort());
+                if (KnativeUtils.isBlank(serviceModelAttched.getName())) {
+                    serviceModelAttched.setName(KnativeUtils.getValidName(serviceNode.getName().getValue())
+                            + SVC_POSTFIX);
+                }
+
+                return;
             }
 
         }
@@ -98,7 +106,7 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
         // If service annotation port is empty, then listener port is used for both port and target port of the k8s
         // svc.
         BLangTypeInit bListener = (BLangTypeInit) bService.getAttachedExprs().get(0);
-        if (serviceModel.getPort() == -1) {
+        if (serviceModel.getPort() == 8080) {
             serviceModel.addPort(extractPort(bListener));
         }
 
@@ -117,7 +125,7 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
         // If service annotation port is empty, then listener port is used for both port and target port of the k8s
         // svc.
         BLangTypeInit bListener = (BLangTypeInit) ((BLangSimpleVariable) variableNode).expr;
-        if (serviceModel.getPort() == -1) {
+        if (serviceModel.getPort() == 8080) {
             serviceModel.addPort(extractPort(bListener));
         }
 
@@ -215,6 +223,9 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
                     break;
                 case timeoutSeconds:
                     serviceModel.setTimeoutSeconds(getIntValue(keyValue.getValue()));
+                    break;
+                case port:
+                    serviceModel.setPort(getIntValue(keyValue.getValue()));
                     break;
                 default:
                     break;
@@ -351,6 +362,7 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
         baseImage,
         image,
         buildImage,
+        port,
         push,
         cmd,
         copyFiles,
