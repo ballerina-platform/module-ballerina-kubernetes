@@ -367,7 +367,6 @@ public class DeploymentModel extends KubernetesModel {
                ", baseImage='" + baseImage +
                ", env=" + env +
                ", username='" + username +
-               ", password='" + password +
                ", push=" + push +
                ", cmd=" + cmd +
                ", dockerHost='" + dockerHost +
