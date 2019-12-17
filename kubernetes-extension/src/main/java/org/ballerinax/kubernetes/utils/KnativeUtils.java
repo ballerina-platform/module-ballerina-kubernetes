@@ -309,7 +309,7 @@ public class KnativeUtils {
             Map<String, String> map = new LinkedHashMap<>();
             if (expr instanceof BLangRecordLiteral) {
                 BLangRecordLiteral fields = (BLangRecordLiteral) expr;
-                for (BLangRecordLiteral.BLangRecordKeyValueField keyValue : convertRecordFields(fields.getFields())) {
+                for (BLangRecordLiteral.BLangRecordKeyValue keyValue : fields.getKeyValuePairs()) {
                     map.put(keyValue.getKey().toString(), getStringValue(keyValue.getValue()));
                 }
             }
