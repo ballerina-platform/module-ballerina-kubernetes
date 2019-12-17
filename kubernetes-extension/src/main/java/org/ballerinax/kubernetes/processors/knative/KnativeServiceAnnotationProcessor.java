@@ -70,6 +70,7 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
             throw new KubernetesPluginException("@kubernetes:Deployment{} annotation cannot be attached to a non " +
                     "main function.");
         }
+
         processService(attachmentNode);
     }
 
@@ -88,13 +89,16 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
                     serviceModelAttched.setName(KnativeUtils.getValidName(serviceNode.getName().getValue())
                             + SVC_POSTFIX);
                 }
+
                 return;
             }
+
         }
         ServiceModel serviceModel = processService(attachmentNode);
         if (KnativeUtils.isBlank(serviceModel.getName())) {
             serviceModel.setName(KnativeUtils.getValidName(serviceNode.getName().getValue()) + SVC_POSTFIX);
         }
+
         // If service annotation port is not empty, then listener port is used for the k8s svc target port while
         // service annotation port is used for k8s port.
         // If service annotation port is empty, then listener port is used for both port and target port of the k8s
@@ -116,6 +120,7 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
         if (KnativeUtils.isBlank(serviceModel.getName())) {
             serviceModel.setName(KnativeUtils.getValidName(variableNode.getName().getValue()) + SVC_POSTFIX);
         }
+
         // If service annotation port is not empty, then listener port is used for the k8s svc target port while
         // service annotation port is used for k8s port.
         // If service annotation port is empty, then listener port is used for both port and target port of the k8s
@@ -276,6 +281,7 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
             }
             podTolerationModels.add(podTolerationModel);
         }
+
         return podTolerationModels;
     }
 
@@ -384,5 +390,5 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
         value,
         effect,
         tolerationSeconds
-        }
     }
+}

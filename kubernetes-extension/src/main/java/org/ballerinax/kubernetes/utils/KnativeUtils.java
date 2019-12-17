@@ -294,7 +294,7 @@ public class KnativeUtils {
             return scopeSet;
         }
     }
-
+    
     /**
      * Get a map from a ballerina expression.
      *
@@ -309,7 +309,7 @@ public class KnativeUtils {
             Map<String, String> map = new LinkedHashMap<>();
             if (expr instanceof BLangRecordLiteral) {
                 BLangRecordLiteral fields = (BLangRecordLiteral) expr;
-                for (BLangRecordLiteral.BLangRecordKeyValue keyValue : fields.getKeyValuePairs()) {
+                for (BLangRecordLiteral.BLangRecordKeyValueField keyValue : convertRecordFields(fields.getFields())) {
                     map.put(keyValue.getKey().toString(), getStringValue(keyValue.getValue()));
                 }
             }

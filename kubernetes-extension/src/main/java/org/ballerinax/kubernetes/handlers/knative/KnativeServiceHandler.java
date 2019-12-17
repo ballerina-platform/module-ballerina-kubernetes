@@ -15,7 +15,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.ballerinax.kubernetes.handlers.knative;
 
 import io.fabric8.kubernetes.api.model.Container;
@@ -124,6 +123,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
         if (null != dockerRegistry && !"".equals(dockerRegistry)) {
             deploymentImageName = dockerRegistry + REGISTRY_SEPARATOR + deploymentImageName;
         }
+
         return new ContainerBuilder()
                 .withName(serviceModel.getName())
                 .withImage(deploymentImageName)
@@ -222,7 +222,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
                 //set first port as liveness port
                 serviceModel.getLivenessProbe().setPort(serviceModel.getPorts().iterator().next());
             }
-
+    
             if (null != serviceModel.getReadinessProbe() && serviceModel.getReadinessProbe().getPort() == 0) {
                 //set first port as readiness port
                 serviceModel.getReadinessProbe().setPort(serviceModel.getPorts().iterator().next());

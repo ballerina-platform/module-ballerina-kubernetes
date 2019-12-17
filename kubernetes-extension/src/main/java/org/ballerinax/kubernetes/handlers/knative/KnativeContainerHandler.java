@@ -39,8 +39,8 @@ public class KnativeContainerHandler extends KnativeAbstractArtifactHandler {
      * @throws KubernetesPluginException If an error occurs while generating artifact.
      */
     private void generate(KnativeContainerModel serviceModel) throws KubernetesPluginException {
-    }
 
+    }
     @Override
     public void createArtifacts() throws KubernetesPluginException {
         // Service

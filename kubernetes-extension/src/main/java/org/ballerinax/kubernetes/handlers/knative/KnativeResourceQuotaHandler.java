@@ -53,6 +53,7 @@ public class KnativeResourceQuotaHandler extends KnativeAbstractArtifactHandler 
                 .withScopes(new ArrayList<>(resourceQuotaModel.getScopes()))
                 .endSpec()
                 .build();
+
         try {
             String resourceQuotaContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(resourceQuota);
             KnativeUtils.writeToFile(resourceQuotaContent, RESOURCE_QUOTA_FILE_POSTFIX + YAML);
@@ -90,5 +91,6 @@ public class KnativeResourceQuotaHandler extends KnativeAbstractArtifactHandler 
             generate(resourceQuotaModel);
             OUT.print("\t@kubernetes:ResourceQuota \t\t - complete " + count + "/" + resourceQuotas.size() + "\r");
         }
+
     }
 }

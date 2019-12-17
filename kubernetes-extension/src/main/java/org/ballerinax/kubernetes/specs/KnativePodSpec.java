@@ -202,6 +202,7 @@ public class KnativePodSpec implements KubernetesResource {
         this.tolerations = tolerations;
         this.volumes = volumes;
         this.timeoutSeconds = timeoutSeconds;
+
     }
 
     /**
@@ -411,4 +412,5 @@ public class KnativePodSpec implements KubernetesResource {
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
     }
+
 }

@@ -66,5 +66,6 @@ public class KnativeSecretHandler extends KnativeAbstractArtifactHandler {
             generate(secretModel);
             OUT.print("\t@kubernetes:Secret \t\t\t - complete " + count + "/" + secretModels.size() + "\r");
         }
+
     }
 }

@@ -18,6 +18,7 @@
 
 package org.ballerinax.kubernetes.models.knative;
 
+
 /**
  * Model class for an environment variable value.
  */
@@ -173,4 +174,5 @@ public class EnvVarValueModel {
             return "ConfigMapKeyValue{" + "key='" + key + '\'' + ", name='" + name + '\'' + '}';
         }
     }
+
 }

@@ -80,3 +80,4 @@ public abstract class KnativeModel {
         return Objects.hash(getName());
     }
 }
+

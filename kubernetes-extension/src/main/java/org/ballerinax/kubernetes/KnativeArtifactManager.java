@@ -29,6 +29,7 @@ import org.ballerinax.kubernetes.models.knative.KnativeContext;
 import org.ballerinax.kubernetes.models.knative.KnativeDataHolder;
 import org.ballerinax.kubernetes.models.knative.ServiceModel;
 
+
 import java.io.PrintStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -58,16 +59,18 @@ public class KnativeArtifactManager {
      *
      * @throws KubernetesPluginException if an error occurs while generating artifacts
      */
-    void createArtifacts() throws KubernetesPluginException {
+    void   createArtifacts() throws KubernetesPluginException {
         // add default kubernetes instructions.
         setDefaultKnativeInstructions();
         OUT.println("\nGenerating Knative artifacts...");
-        new KnativeContainerHandler().createArtifacts();
-        new KnativeSecretHandler().createArtifacts();
-        new KnativeResourceQuotaHandler().createArtifacts();
-        new KnativeConfigMapHandler().createArtifacts();
-        new KnativeServiceHandler().createArtifacts();
-        new KnativeDockerHandler().createArtifacts();
+            new KnativeContainerHandler().createArtifacts();
+            new KnativeSecretHandler().createArtifacts();
+            new KnativeResourceQuotaHandler().createArtifacts();
+            new KnativeConfigMapHandler().createArtifacts();
+            new KnativeServiceHandler().createArtifacts();
+            new KnativeDockerHandler().createArtifacts();
+
+
         printInstructions();
     }
 
