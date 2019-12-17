@@ -261,7 +261,7 @@
         <com.fasterxml.jackson.core.annotations.version>2.9.8</com.fasterxml.jackson.core.annotations.version>
         <com.fasterxml.jackson.dataformat.yaml.version>2.9.8</com.fasterxml.jackson.dataformat.yaml.version>
         <commons.codec.version>1.12</commons.codec.version>
-        <docker.generator.version>1.1.0-alpha</docker.generator.version>
+        <docker.generator.version>1.1.0-beta2</docker.generator.version>
         <fabric8.kubernetes.client.version>4.1.2</fabric8.kubernetes.client.version>
         <jackson.version>2.9.8</jackson.version>
         <maven.jacoco.plugin.version>0.8.3</maven.jacoco.plugin.version>
