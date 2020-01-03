@@ -24,7 +24,7 @@
     </parent>
 
     <groupId>org.ballerinax.kubernetes</groupId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.1-SNAPSHOT</version>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>kubernetes-extension-parent</artifactId>
     <name>Ballerinax - Kubernetes Extension Parent</name>
@@ -190,7 +190,7 @@
         <repository>
             <id>wso2.stage</id>
             <name>WSO2 Stage Repository</name>
-            <url>https://maven.wso2.org/nexus/content/repositories/orgballerinalang-1469/</url>
+            <url>https://maven.wso2.org/nexus/content/repositories/orgballerinalang-1509/</url>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>daily</updatePolicy>
@@ -256,12 +256,12 @@
     </scm>
 
     <properties>
-        <ballerina.lang.version>1.1.0-SNAPSHOT</ballerina.lang.version>
+        <ballerina.lang.version>1.1.0</ballerina.lang.version>
         <ballerina.source.directory>${project.build.directory}/../src/main/ballerina</ballerina.source.directory>
         <com.fasterxml.jackson.core.annotations.version>2.9.8</com.fasterxml.jackson.core.annotations.version>
         <com.fasterxml.jackson.dataformat.yaml.version>2.9.8</com.fasterxml.jackson.dataformat.yaml.version>
         <commons.codec.version>1.12</commons.codec.version>
-        <docker.generator.version>1.1.0-SNAPSHOT</docker.generator.version>
+        <docker.generator.version>1.1.0</docker.generator.version>
         <fabric8.kubernetes.client.version>4.1.2</fabric8.kubernetes.client.version>
         <jackson.version>2.9.8</jackson.version>
         <maven.jacoco.plugin.version>0.8.3</maven.jacoco.plugin.version>
