@@ -24,6 +24,7 @@ import io.fabric8.openshift.api.model.ImageStreamBuilder;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.AbstractArtifactHandler;
 import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
+import org.ballerinax.kubernetes.utils.DockerImageName;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
@@ -54,8 +55,7 @@ public class OpenShiftImageStreamHandler extends AbstractArtifactHandler {
                 buildConfigModel.getLabels().put("build", buildConfigModel.getName());
             }
             
-            String dockerImageName = dataHolder.getDockerModel().getName().substring(0,
-                    dataHolder.getDockerModel().getName().indexOf(":"));
+            String dockerImageName = new DockerImageName(dataHolder.getDockerModel().getName()).getRepository();
             
             ImageStream is = new ImageStreamBuilder()
                     .withNewMetadata()
