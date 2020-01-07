@@ -39,6 +39,6 @@ public abstract class SampleTest {
     abstract void compileSample() throws IOException, InterruptedException;
     
     @AfterClass
-    abstract void cleanUp() throws KubernetesPluginException, InterruptedException, DockerTestException;
+    abstract void cleanUp() throws KubernetesPluginException, InterruptedException, DockerTestException, IOException;
     
 }
