@@ -32,8 +32,11 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
@@ -46,9 +49,24 @@ public class Sample17Test extends SampleTest {
     private BuildConfig buildConfig;
     private ImageStream imageStream;
     private Route route;
+    private List<String> originalSourceContent;
     
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
+        Path sourcePath = SOURCE_DIR_PATH.resolve("hello_world_oc.bal");
+        
+        // save original source
+        Stream<String> lines = Files.lines(sourcePath);
+        this.originalSourceContent = lines.collect(Collectors.toList());
+        
+        // replace placeholders with mocks
+        lines = Files.lines(sourcePath);
+        List<String> replacedContent = lines.map(line -> line
+                .replaceAll("<MINISHIFT_IP>", "192.168.99.131")
+                .replaceAll("<MINISHIFT_DOCKER_REGISTRY_IP>", "172.30.1.1:5000"))
+                .collect(Collectors.toList());
+        Files.write(sourcePath, replacedContent);
+        
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "hello_world_oc.bal"), 0);
         File yamlFile = KUBERNETES_TARGET_PATH.resolve(OPENSHIFT).resolve("hello_world_oc.yaml").toFile();
         Assert.assertTrue(yamlFile.exists());
@@ -79,7 +97,7 @@ public class Sample17Test extends SampleTest {
         Assert.assertEquals(buildConfig.getSpec().getOutput().getTo().getKind(), "ImageStreamTag",
                 "Invalid output kind.");
         Assert.assertEquals(buildConfig.getSpec().getOutput().getTo().getName(),
-                "<MINISHIFT_DOCKER_REGISTRY_IP>/hello_world_oc:latest", "Invalid image stream name.");
+                "hello_world_oc:latest", "Invalid image stream name.");
         Assert.assertNotNull(buildConfig.getSpec().getSource());
         Assert.assertNotNull(buildConfig.getSpec().getSource().getBinary(), "Binary source is missing");
         Assert.assertNotNull(buildConfig.getSpec().getStrategy());
@@ -87,7 +105,7 @@ public class Sample17Test extends SampleTest {
         Assert.assertEquals(buildConfig.getSpec().getStrategy().getDockerStrategy().getBuildArgs().size(), 0,
                 "Invalid number of build args.");
         Assert.assertEquals(buildConfig.getSpec().getStrategy().getDockerStrategy().getDockerfilePath(),
-                "kubernetes/docker/Dockerfile", "Invalid docker path.");
+                "docker/Dockerfile", "Invalid docker path.");
         Assert.assertFalse(buildConfig.getSpec().getStrategy().getDockerStrategy().getForcePull(),
                 "Force pull image set to false");
         Assert.assertFalse(buildConfig.getSpec().getStrategy().getDockerStrategy().getNoCache(),
@@ -98,8 +116,7 @@ public class Sample17Test extends SampleTest {
     @Test
     public void validateImageStream() {
         Assert.assertNotNull(imageStream.getMetadata());
-        Assert.assertEquals(imageStream.getMetadata().getName(), "<MINISHIFT_DOCKER_REGISTRY_IP>/hello_world_oc",
-                "Invalid name found.");
+        Assert.assertEquals(imageStream.getMetadata().getName(), "hello_world_oc", "Invalid name found.");
         Assert.assertEquals(imageStream.getMetadata().getNamespace(), "bal-oc", "Invalid namespace found.");
         Assert.assertEquals(imageStream.getMetadata().getLabels().size(), 1, "Labels are missing");
         Assert.assertNotNull(imageStream.getMetadata().getLabels().get("build"), "'build' label is missing");
@@ -117,7 +134,7 @@ public class Sample17Test extends SampleTest {
         Assert.assertEquals(route.getMetadata().getNamespace(), "bal-oc", "Namespace is missing.");
     
         Assert.assertNotNull(route.getSpec(), "Spec is missing.");
-        Assert.assertEquals(route.getSpec().getHost(), "helloep-openshift-route-bal-oc.<MINISHIFT_IP>.nip.io",
+        Assert.assertEquals(route.getSpec().getHost(), "helloep-openshift-route-bal-oc.192.168.99.131.nip.io",
                 "Invalid host");
         Assert.assertNotNull(route.getSpec().getPort());
         Assert.assertEquals(route.getSpec().getPort().getTargetPort().getIntVal().intValue(), 9090,
@@ -135,8 +152,14 @@ public class Sample17Test extends SampleTest {
     }
     
     @AfterClass
-    public void cleanUp() throws KubernetesPluginException {
+    public void cleanUp() throws KubernetesPluginException, IOException {
         KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
         KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
+    
+        // replace with original source
+        if (null != this.originalSourceContent) {
+            Path sourcePath = SOURCE_DIR_PATH.resolve("hello_world_oc.bal");
+            Files.write(sourcePath, this.originalSourceContent);
+        }
     }
 }

@@ -82,11 +82,7 @@ public class Sample5Test extends SampleTest {
                 .KUBERNETES_SELECTOR_KEY), "pizzashack");
         Assert.assertEquals(podAutoscaler.getSpec().getMaxReplicas().intValue(), 2);
         Assert.assertEquals(podAutoscaler.getSpec().getMinReplicas().intValue(), 1);
-        Assert.assertEquals(podAutoscaler.getSpec().getMetrics().size(), 1, "CPU metric is missing.");
-        Assert.assertEquals(podAutoscaler.getSpec().getMetrics().get(0).getResource().getName(), "cpu",
-                "Invalid resource name.");
-        Assert.assertEquals(podAutoscaler.getSpec().getMetrics().get(0).getResource().getTargetAverageUtilization()
-                .intValue(), 50);
+        Assert.assertEquals(podAutoscaler.getSpec().getTargetCPUUtilizationPercentage().intValue(), 50);
         Assert.assertEquals(podAutoscaler.getSpec().getScaleTargetRef().getName(), "pizzashack-deployment");
     }
     
