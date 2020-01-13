@@ -98,11 +98,7 @@ public class KubernetesHPAGeneratorTests extends HandlerTestSuite {
                 .KUBERNETES_SELECTOR_KEY), selector);
         Assert.assertEquals(podAutoscaler.getSpec().getMaxReplicas().intValue(), maxReplicas);
         Assert.assertEquals(podAutoscaler.getSpec().getMinReplicas().intValue(), minReplicas);
-        Assert.assertEquals(podAutoscaler.getSpec().getMetrics().size(), 1, "CPU metric is missing.");
-        Assert.assertEquals(podAutoscaler.getSpec().getMetrics().get(0).getResource().getName(), "cpu",
-                "Invalid resource name.");
-        Assert.assertEquals(podAutoscaler.getSpec().getMetrics().get(0).getResource().getTargetAverageUtilization()
-                .intValue(), cpuPercentage);
+        Assert.assertEquals(podAutoscaler.getSpec().getTargetCPUUtilizationPercentage().intValue(), cpuPercentage);
         Assert.assertEquals(podAutoscaler.getSpec().getScaleTargetRef().getName(), deploymentName);
     }
 }

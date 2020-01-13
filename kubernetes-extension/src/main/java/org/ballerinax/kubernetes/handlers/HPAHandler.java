@@ -20,8 +20,6 @@ package org.ballerinax.kubernetes.handlers;
 
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscaler;
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscalerBuilder;
-import io.fabric8.kubernetes.api.model.MetricSpec;
-import io.fabric8.kubernetes.api.model.MetricSpecBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -43,14 +41,6 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
 public class HPAHandler extends AbstractArtifactHandler {
 
     private void generate(PodAutoscalerModel podAutoscalerModel) throws KubernetesPluginException {
-        MetricSpec metricSpec = new MetricSpecBuilder()
-                .withType("Resource")
-                .withNewResource()
-                .withName("cpu")
-                .withTargetAverageUtilization(podAutoscalerModel.getCpuPercentage())
-                .endResource()
-                .build();
-        
         HorizontalPodAutoscaler horizontalPodAutoscaler = new HorizontalPodAutoscalerBuilder()
                 .withNewMetadata()
                 .withName(podAutoscalerModel.getName())
@@ -60,7 +50,7 @@ public class HPAHandler extends AbstractArtifactHandler {
                 .withNewSpec()
                 .withMaxReplicas(podAutoscalerModel.getMaxReplicas())
                 .withMinReplicas(podAutoscalerModel.getMinReplicas())
-                .withMetrics(metricSpec)
+                .withTargetCPUUtilizationPercentage(podAutoscalerModel.getCpuPercentage())
                 .withNewScaleTargetRef("apps/v1", "Deployment", podAutoscalerModel.getDeployment())
                 .endSpec()
                 .build();

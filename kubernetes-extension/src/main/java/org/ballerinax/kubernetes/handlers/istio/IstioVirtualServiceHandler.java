@@ -23,10 +23,10 @@ import me.snowdrop.istio.api.Duration;
 import me.snowdrop.istio.api.DurationBuilder;
 import me.snowdrop.istio.api.networking.v1alpha3.Destination;
 import me.snowdrop.istio.api.networking.v1alpha3.DestinationBuilder;
-import me.snowdrop.istio.api.networking.v1alpha3.DestinationWeight;
-import me.snowdrop.istio.api.networking.v1alpha3.DestinationWeightBuilder;
 import me.snowdrop.istio.api.networking.v1alpha3.HTTPRoute;
 import me.snowdrop.istio.api.networking.v1alpha3.HTTPRouteBuilder;
+import me.snowdrop.istio.api.networking.v1alpha3.HTTPRouteDestination;
+import me.snowdrop.istio.api.networking.v1alpha3.HTTPRouteDestinationBuilder;
 import me.snowdrop.istio.api.networking.v1alpha3.PortSelectorBuilder;
 import me.snowdrop.istio.api.networking.v1alpha3.VirtualService;
 import me.snowdrop.istio.api.networking.v1alpha3.VirtualServiceBuilder;
@@ -167,7 +167,7 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
      * @param routeModels       The list of destination weights
      * @return A list of yaml maps.
      */
-    private List<DestinationWeight> populateRouteList(String serviceName, List<IstioDestinationWeight> routeModels) {
+    private List<HTTPRouteDestination> populateRouteList(String serviceName, List<IstioDestinationWeight> routeModels) {
         if (routeModels == null) {
             routeModels = new LinkedList<>();
         }
@@ -175,15 +175,16 @@ public class IstioVirtualServiceHandler extends AbstractArtifactHandler {
         if (routeModels.size() == 0) {
             routeModels.add(new IstioDestinationWeight());
         }
-        
-        List<DestinationWeight> destinationWeightList = new LinkedList<>();
+    
+
+        List<HTTPRouteDestination> destinationWeightList = new LinkedList<>();
         for (IstioDestinationWeight destinationWeightModel : routeModels) {
-            DestinationWeight destinationWeight = new DestinationWeightBuilder()
+            HTTPRouteDestination routeDestination = new HTTPRouteDestinationBuilder()
                     .withWeight(destinationWeightModel.getWeight())
                     .withDestination(populateDestination(serviceName, destinationWeightModel.getDestination()))
                     .build();
-                    
-            destinationWeightList.add(destinationWeight);
+    
+            destinationWeightList.add(routeDestination);
         }
         return destinationWeightList;
     }

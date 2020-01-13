@@ -25,6 +25,7 @@ import org.ballerinax.kubernetes.ArtifactManager;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.AbstractArtifactHandler;
 import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
+import org.ballerinax.kubernetes.utils.DockerImageName;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
@@ -32,7 +33,6 @@ import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT;
 import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT_BUILD_CONFIG_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
@@ -74,7 +74,9 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
             }
     
             // Generate docker artifacts
-            Path dockerOutputDir = dataHolder.getK8sArtifactOutputPath().resolve(DOCKER).resolve("Dockerfile");
+            Path dockerOutputDir = dataHolder.getDockerArtifactOutputPath().resolve("Dockerfile");
+    
+            DockerImageName dockerImageName = new DockerImageName(dataHolder.getDockerModel().getName());
             
             BuildConfig bc = new BuildConfigBuilder()
                     .withNewMetadata()
@@ -87,7 +89,7 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
                     .withNewOutput()
                     .withNewTo()
                     .withKind("ImageStreamTag")
-                    .withName(dataHolder.getDockerModel().getName())
+                    .withName(dockerImageName.getRepository() + ":" + dockerImageName.getTag())
                     .endTo()
                     .endOutput()
                     .withNewSource()
