@@ -44,8 +44,8 @@ service DrinkStoreAPI on drinkStoreEP {
             var msg = response.getJsonPayload();
             if (msg is json) {
                 log:printInfo(msg.toString());
-                response.setJsonPayload(untaint getHotDrinkPrice(msg), contentType = "application/json");
-            } else if (msg is error) {
+                response.setJsonPayload(<@untainted> getHotDrinkPrice(msg), contentType = "application/json");
+            } else {
                 log:printError("Invalid response received from hot drink server", msg);
             }
             log:printInfo("GET request:");
@@ -53,7 +53,7 @@ service DrinkStoreAPI on drinkStoreEP {
             if (responseResult is error) {
                 log:printError("error responding back to client.", responseResult);
             }
-        } else if (response is error) {
+        } else {
             log:printError("Error when getting hot drink menu", response);
         }
     }
@@ -68,8 +68,8 @@ service DrinkStoreAPI on drinkStoreEP {
             var msg = response.getJsonPayload();
             if (msg is json) {
                 log:printInfo(msg.toString());
-                response.setJsonPayload(untaint getCoolDrinkPrice(msg), contentType = "application/json");
-            } else if (msg is error) {
+                response.setJsonPayload(<@untainted> getCoolDrinkPrice(msg), contentType = "application/json");
+            } else {
                 log:printError("Invalid response received from cool drink server", msg);
             }
             log:printInfo("GET request: ");
@@ -77,7 +77,7 @@ service DrinkStoreAPI on drinkStoreEP {
             if (responseResult is error) {
                 log:printError("error responding back to client.", responseResult);
             }
-        } else if (response is error) {
+        } else {
             log:printError("Error getting cool drink menu", response);
         }
     }
@@ -90,9 +90,10 @@ service DrinkStoreAPI on drinkStoreEP {
         http:Response response = new;
         float celciusValue = roundFloat(getTempreatureInCelcius(),2);
         if (celciusValue > 15) {
-            response.setTextPayload("Tempreture in San Francisco: " + celciusValue + " clecius. Sunny."+"\n");
+            //response.setTextPayload("Tempreture in San Francisco: " + celciusValue + " clecius. Sunny."+"\n");
+            response.setTextPayload(string`Tempreture in San Francisco: ${celciusValue} clecius. Sunny.`);
          } else {
-             response.setTextPayload("Tempreture in San Francisco: " + celciusValue + " clecius. Cold."+"\n");
+             response.setTextPayload(string `Tempreture in San Francisco: ${celciusValue} clecius. Cold.`);
          }
         var responseResult = outboundEP->respond(response);
         if (responseResult is error) {
@@ -101,23 +102,25 @@ service DrinkStoreAPI on drinkStoreEP {
     }
 }
 
-function getCoolDrinkPrice(json payload) returns (json){
+function getCoolDrinkPrice(json payload) returns json {
     json[] items = <json[]>payload;
     float celciusValue = getTempreatureInCelcius();
     foreach json item in items {
         float|error result = <float>item.price;
         if (result is float) {
             float priceVariation = roundFloat(result * (celciusValue / 100), 2);
-            if (celciusValue > 15) {
-                // Increase Cooldrink price on hot days.
-                item.price = roundFloat((result + priceVariation), 2);
-                item.diff = "+" + priceVariation;
-            } else {
-                // Decrese Cooldrink price on cold days.
-                item.price = roundFloat((result - priceVariation), 2);
-                item.diff = "-" + priceVariation;
+            if (item is map<json>) {
+                if (celciusValue > 15) {
+                    // Increase Cooldrink price on hot days.
+                    item["price"] = roundFloat((result + priceVariation), 2);
+                    item ["diff"] = string`+ ${priceVariation}`;
+                } else {
+                    item["price"] = roundFloat((result + priceVariation), 2);
+                    item ["diff"] = string`- ${priceVariation}`;
+                    // Decrese Cooldrink price on cold days.
+                }
             }
-        } else if (result is error) {
+        }else {
             log:printError("Error while reading values.", result);
         }
     }
@@ -125,23 +128,29 @@ function getCoolDrinkPrice(json payload) returns (json){
     return items;
 }
 
-function getHotDrinkPrice(json payload) returns (json){
+function getHotDrinkPrice(json payload) returns json {
     json[] items = <json[]>payload;
     float celciusValue = getTempreatureInCelcius();
     foreach json item in items {
         float|error result = <float>item.price;
         if (result is float) {
             float priceVariation = roundFloat(result * (celciusValue / 100), 2);
-            if (celciusValue < 15) {
-                // Increase Hot drink price on cold days.
-                item.price = roundFloat((result + priceVariation), 2);
-                item.diff = "+" + priceVariation;
-            } else {
-                // Decrese Hot drink price on hot days.
-                item.price = roundFloat((result - priceVariation), 2);
-                item.diff = "-" + priceVariation;
+            if (item is map<json>) {
+                if (celciusValue < 15) {
+                    // Increase Hot drink price on cold days.
+                    item["price"] = roundFloat((result + priceVariation), 2);
+                    item ["diff"] = string`+ ${priceVariation}`;
+                } else {
+                    // Decrese Hot drink price on hot days.
+                    item["price"] = roundFloat((result + priceVariation), 2);
+                    item ["diff"] = string`- ${priceVariation}`;
+                    //item = {
+                    //    price : roundFloat((result - priceVariation), 2),
+                    //    diff : "-" + priceVariation
+                    //}
+                }
             }
-        } else if (result is error) {
+        } else {
             log:printError("Error while reading values.", result);
         }
     }
@@ -164,11 +173,11 @@ function getTempreatureInCelcius() returns (float) {
             float|error result = <float>msg.main.temp;
             if (result is float) {
                 celciusValue = result - 273.15;
-            } else if (result is error) {
+            } else {
                 log:printError("Error while reading values.", result);
             }
         }
-    } else if (response is error) {
+    } else {
         log:printError("Error occurred when getting weather data.", response);
     }
     return celciusValue;

@@ -70,7 +70,7 @@ See [here](https://istio.io/docs/setup/kubernetes/quick-start/) on how to instal
 
 1. Compile the ballerina project from `sample16` folder. Command to run kubernetes artifacts will be printed on success:
 ```bash
-$> ballerina build --skip-tests
+$> ballerina build -a --skip-tests
 Compiling source
     gogo/car_rental:1.0.0
     gogo/travel_agency:1.0.0

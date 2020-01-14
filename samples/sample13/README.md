@@ -33,7 +33,8 @@
   
     ```
 ### How to run:
-1. Go to `resource/docker` folder and run the build.sh file. This will generate two databases deployment in mysql namespace.
+1. Download `mysql-connector-java-8.0.11.jar` file and add it to a new folder named `libs` inside sample13 directory.
+2. Go to `resource/docker` folder and run the build.sh file. This will generate two databases deployment in mysql namespace.
 Verify pods and services are created. 
 
 ```bash
@@ -72,9 +73,9 @@ sample13$> ballerina init
 Ballerina project initialized
 ```
 
-1. Compile the project. Commands to run kubernetes artifacts will be printed on success:
+2. Compile the project. Commands to run kubernetes artifacts will be printed on success:
 ```bash
-$> ballerina build 
+$> ballerina build -a
 Compiling source
     anuruddha/cool_drink:0.0.1
     anuruddha/drink_store:0.0.1
@@ -126,7 +127,7 @@ Generating executables
 	kubectl apply -f /Users/anuruddha/workspace/ballerinax/kubernetes/samples/sample13/target/kubernetes/hot_drink
 ```
 
-2. .balx files, Dockerfile, docker image and kubernetes artifacts will be generated: 
+3. .balx files, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
 target/
@@ -150,7 +151,7 @@ target/
              └── hot_drink.yaml
 ```
 
-3. Verify the docker image is created:
+4. Verify the docker image is created:
 ```bash
 $> docker images
 REPOSITORY       TAG                 IMAGE ID            CREATED             SIZE

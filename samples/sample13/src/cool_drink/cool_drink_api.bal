@@ -1,7 +1,7 @@
 import ballerina/http;
 import ballerina/log;
 import ballerina/config;
-import ballerina/jdbc;
+import ballerinax/java.jdbc;
 import ballerina/kubernetes;
 
 @kubernetes:Service {
@@ -18,14 +18,14 @@ jdbc:Client coolDrinkDB = new({
 });
 
 @kubernetes:ConfigMap {
-    conf: "./cool_drink/ballerina.conf"
+    conf: "src/cool_drink/ballerina.conf"
 }
 @kubernetes:Deployment {
     replicas: 2,
     livenessProbe: true,
     copyFiles: [{
         target: "/ballerina/runtime/bre/lib",
-        sourceFile: "./resource/lib/mysql-connector-java-8.0.11.jar"
+        sourceFile: "./libs/mysql-connector-java-8.0.11.jar"
     }]
 }
 @http:ServiceConfig {
@@ -41,14 +41,14 @@ service cooldrinkAPI on coolDrinkEP {
 
         var selectRet = coolDrinkDB->select("SELECT * FROM cooldrink", CoolDrink);
         if (selectRet is table<CoolDrink>) {
-            var jsonConversionRet = json.convert(selectRet);
+            var jsonConversionRet = json.constructFrom(selectRet);
             if (jsonConversionRet is json) {
-                response.setJsonPayload(untaint jsonConversionRet);
-            } else if (jsonConversionRet is error) {
+                response.setJsonPayload(<@untainted> jsonConversionRet);
+            } else {
                 log:printError("Error in table to json conversion", jsonConversionRet);
                 response.setTextPayload("Error in table to json conversion");
             }
-        } else if (selectRet is error) {
+        } else {
             log:printError("Retrieving data from coolDrink table failed", selectRet);
             response.setTextPayload("Error in reading results");
         }
