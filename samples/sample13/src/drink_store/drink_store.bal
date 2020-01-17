@@ -120,7 +120,7 @@ function getCoolDrinkPrice(json payload) returns json {
                     // Decrese Cooldrink price on cold days.
                 }
             }
-        }else {
+        } else {
             log:printError("Error while reading values.", result);
         }
     }
@@ -144,10 +144,6 @@ function getHotDrinkPrice(json payload) returns json {
                     // Decrese Hot drink price on hot days.
                     item["price"] = roundFloat((result + priceVariation), 2);
                     item ["diff"] = string`- ${priceVariation}`;
-                    //item = {
-                    //    price : roundFloat((result - priceVariation), 2),
-                    //    diff : "-" + priceVariation
-                    //}
                 }
             }
         } else {

@@ -12,21 +12,15 @@
     $> tree
     ├── README.md
     ├── hello_world_gce.bal
-    ├── hello_world_gce.balx
+    ├── hello_world_gce.jar
+    ├── docker
+        └── Dockerfile
     └── kubernetes
-        ├── docker
-        │   └── Dockerfile
         ├── hello-world-gce-deployment
         │   ├── Chart.yaml
         │   └── templates
-        │       ├── hello_world_gce_deployment.yaml
-        │       ├── hello_world_gce_hpa.yaml
-        │       ├── hello_world_gce_ingress.yaml
-        │       └── hello_world_gce_svc.yaml
-        ├── hello_world_gce_deployment.yaml
-        ├── hello_world_gce_hpa.yaml
-        ├── hello_world_gce_ingress.yaml
-        └── hello_world_gce_svc.yaml
+        │       └── hello_world_gce.yaml
+        └── hello_world_gce.yaml
     ```
 ### How to run:
 
@@ -42,44 +36,42 @@ export DOCKER_PASSWORD=<password>
 ```bash
 $> ballerina build hello_world_gce.bal
 Compiling source
-    hello_world_gce.bal
-Generating executable
-    hello_world_gce.balx
-	@kubernetes:Service 			 - complete 1/1
-	@kubernetes:Ingress 			 - complete 1/1
-	@kubernetes:Deployment 			 - complete 1/1
-	@kubernetes:HPA 			 - complete 1/1
-	@kubernetes:Docker 			 - complete 3/3
-	@kubernetes:Helm 			 - complete 1/1
+        hello_world_gce.bal
 
-	Run the following command to deploy the Kubernetes artifacts:
-	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample6/kubernetes/
+Generating executables
+        hello_world_gce.jar
 
-	Run the following command to install the application using Helm:
-	helm install --name hello-world-gce-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample6/kubernetes/hello-world-gce-deployment
+Generating artifacts...
+
+        @kubernetes:Service                      - complete 1/1
+        @kubernetes:Ingress                      - complete 1/1
+        @kubernetes:Deployment                   - complete 1/1
+        @kubernetes:HPA                          - complete 1/1
+        @kubernetes:Docker                       - complete 3/3 
+        @kubernetes:Helm                         - complete 1/1
+
+        Run the following command to deploy the Kubernetes artifacts: 
+        kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample6/kubernetes
+
+        Run the following command to install the application using Helm: 
+        helm install --name hello-world-gce-deployment /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample6/kubernetes/hello-world-gce-deployment
 ```
 
-4. hello_world_gce.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
+4. hello_world_gce.jar, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
 .
 ├── README.md
 ├── hello_world_gce.bal
-├── hello_world_gce.balx
+├── hello_world_gce.jar
+├── docker
+    └── Dockerfile
 └── kubernetes
-    ├── docker
-    │   └── Dockerfile
     ├── hello-world-gce-deployment
     │   ├── Chart.yaml
     │   └── templates
-    │       ├── hello_world_gce_deployment.yaml
-    │       ├── hello_world_gce_hpa.yaml
-    │       ├── hello_world_gce_ingress.yaml
-    │       └── hello_world_gce_svc.yaml
-    ├── hello_world_gce_deployment.yaml
-    ├── hello_world_gce_hpa.yaml
-    ├── hello_world_gce_ingress.yaml
-    └── hello_world_gce_svc.yaml
+    │       └── hello_world_gce.yaml
+    └── hello_world_gce.yaml
 ```
 
 5. Verify the docker image is created:
@@ -92,11 +84,11 @@ hemikak/gce-sample        1.0                 88cabd203149        4 minutes ago 
 
 6. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample6/kubernetes/
-deployment "hello_world_gce-deployment" created
-horizontalpodautoscaler "helloworld" created
-ingress "helloworld" created
-service "helloworld" created
+$>  kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample6/kubernetes
+service/gcehelloworlddep-svc created
+ingress.extensions/gcehelloworlddep-ingress created
+deployment.apps/hello-world-gce-deployment created
+horizontalpodautoscaler.autoscaling/hello-world-gce-hpa created
 ```
 
 7. Verify kubernetes deployment,service and ingress is running:

@@ -2,7 +2,7 @@
 
 - This sample demonstrates how to build and deploy a ballerina service in OpenShift.
 - `@kubernetes:OpenShiftRoute` annotation generates a route to the generated kubernetes service.
-- This sample uses minishift for demonstration purposes. Hence make sure it is started up.
+- This sample uses minikube and minishift for demonstration purposes. Hence make sure they are started up.
 - The `hello_world_oc.bal` file has placeholders that needs to be filled prior building.
 - Use the value from `minishift ip` to fill in the `MINISHIFT_IP` placeholder. Make sure you dont remove the `nip.io` 
 from the value.
@@ -16,11 +16,12 @@ nginx-ingress/namespaces/nginx-ingress.yaml -Rf nginx-ingress` from the `samples
     $> tree
     ├── README.md
     ├── hello_world_oc.bal
-    ├── hello_world_oc.balx
+    ├── hello_world_oc.jar
+    ├── docker
+        └── Dockerfile
     └── kubernetes
-        ├── docker
-        │   ├── Dockerfile
-        │   └── hello_world_oc.balx
+        ├── openshift
+            └── hello_world_oc.yaml
         ├── hello-world-oc-deployment
         │   ├── Chart.yaml
         │   └── templates
@@ -34,40 +35,42 @@ nginx-ingress/namespaces/nginx-ingress.yaml -Rf nginx-ingress` from the `samples
 ```bash
 $> ballerina build hello_world_oc.bal
 Compiling source
-    hello_world_oc.bal
-Generating executable
-    hello_world_oc.balx
-	@kubernetes:Service 			 - complete 1/1
-	@kubernetes:Deployment 			 - complete 1/1
-	@kubernetes:Docker 			 - complete 3/3
-	@kubernetes:Helm 			 - complete 1/1
-	@kubernetes:OpenShiftBuildConfig 	 - complete 1/1
-	@kubernetes:OpenShiftImageStream 	 - complete 1/1
-	@kubernetes:OpenShiftRoute 		 - complete 1/1
+        hello_world_oc.bal
 
-	Run the following command to deploy the OpenShift artifacts:
-	oc apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample17/kubernetes/openshift
+Generating executables
+        hello_world_oc.jar
 
-	Run the following command to start a build:
-	oc start-build bc/hello-world-oc-openshift-bc --from-dir=. --follow
+Generating artifacts...
 
-	Run the following command to deploy the Kubernetes artifacts:
-	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample17/kubernetes
+        @kubernetes:Service                      - complete 1/1
+        @kubernetes:Deployment                   - complete 1/1
+        @kubernetes:Docker                       - complete 2/2 
+        @kubernetes:Helm                         - complete 1/1
+        @openshift:BuildConfig                   - complete 1/1
+        @openshift:ImageStream                   - complete 1/1
+        @openshift:Route                         - complete 1/1
+
+        Run the following command to deploy the OpenShift artifacts: 
+        oc apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample17/kubernetes/openshift
+
+        Run the following command to start a build: 
+        oc start-build bc/hello-world-oc-openshift-bc --from-dir=. --follow
+
+        Run the following command to deploy the Kubernetes artifacts: 
+        kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample17/kubernetes
 ```
 
 2. kubernetes and OpenShift artifacts are generated in the hello_world_oc.yaml: 
 ```bash
 $> tree kubernetes/
 kubernetes/
-├── docker
-│   ├── Dockerfile
-│   └── hello_world_oc.balx
-├── hello-world-oc-deployment
-│   ├── Chart.yaml
-│   └── templates
-│       └── hello_world_oc.yaml
-├── hello_world_oc.yaml
-└── openshift
+└── kubernetes
+    ├── openshift
+        └── hello_world_oc.yaml
+    ├── hello-world-oc-deployment
+    │   ├── Chart.yaml
+    │   └── templates
+    │       └── hello_world_oc.yaml
     └── hello_world_oc.yaml
 
 ```

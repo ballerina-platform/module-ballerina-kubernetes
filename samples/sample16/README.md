@@ -23,161 +23,280 @@ See [here](https://istio.io/docs/setup/kubernetes/quick-start/) on how to instal
     
     $> tree target/
     target/
-    ├── Ballerina.lock
-    ├── airline_reservation.balx
-    ├── book.details.balx
-    ├── book.reviews.balx
-    ├── book.shop.balx
-    ├── car_rental.balx
-    ├── hotel_reservation.balx
-    ├── kubernetes
+    ├── docker                                             
+    │   ├── airline_reservation
+    │   │       └── Dockerfile
+    │   ├── car_rental
+    │   │       └── Dockerfile
+    │   ├── hotel_reservation
+    │   │   ├── docker
+    │   │   │   └── Dockerfile
+    │   └── travel_agency
+    │       ├── docker
+    │       │   └── Dockerfile
+    ├── kubernetes                                         
     │   ├── airline_reservation
     │   │   ├── airline-reservation-deployment
     │   │   │   ├── Chart.yaml
     │   │   │   └── templates
     │   │   │       └── airline_reservation.yaml
     │   │   ├── airline_reservation.yaml
-    │   │   └── docker
-    │   │       └── Dockerfile
     │   ├── car_rental
     │   │   ├── car-rental-deployment
     │   │   │   ├── Chart.yaml
     │   │   │   └── templates
     │   │   │       └── car_rental.yaml
     │   │   ├── car_rental.yaml
-    │   │   └── docker
-    │   │       └── Dockerfile
     │   ├── hotel_reservation
-    │   │   ├── docker
-    │   │   │   └── Dockerfile
     │   │   ├── hotel-reservation-deployment
     │   │   │   ├── Chart.yaml
     │   │   │   └── templates
     │   │   │       └── hotel_reservation.yaml
     │   │   └── hotel_reservation.yaml
     │   └── travel_agency
-    │       ├── docker
-    │       │   └── Dockerfile
     │       ├── travel-agency-deployment
     │       │   ├── Chart.yaml
     │       │   └── templates
     │       │       └── travel_agency.yaml
-    │       └── travel_agency.yaml
-    └── travel_agency.balx
-  
+    │       └── travel_agency.yaml                               
+    ├── balo                                               
+        ├── airline_reservation-2019r3-any-1.0.0.balo    
+        ├── car_rental-2019r3-any-1.0.0.balo
+        ├── hotel_reservation-2019r3-any-1.0.0.balo          
+        └── travel_agency-2019r3-any-1.0.0.balo                   
+    ├── bin                                                
+        ├── airline_reservation.jar  
+        ├── car_rental.jar
+        ├── hotel_reservation.jar 
+        └── travel_agency.jar                                   
+    └── caches                                             
+        ├── bir_cache                                      
+        │   ├── gogo                                       
+        │   │   ├── airline_reservation                              
+        │   │   |   └── 1.0.0 
+        |   │   │   |   ├── airline_reservation.bir                        
+        │   │   |   |   └── airline_reservation-testable.bir                     
+        │   │   └── car_rental                                  
+        │   │   |   └── 1.0.0 
+        |   │   │   |   ├── car_rental.bir                        
+        │   │   |   |   └── car_rental-testable.bir 
+        │   │   ├── hotel_reservation                              
+        │   │   |   └── 1.0.0 
+        |   │   │   |   ├── hotel_reservation.bir                        
+        │   │   |   |   └── hotel_reservation-testable.bir                     
+        │   │   └── travel_agency                                  
+        │   │   |   └── 1.0.0 
+        |   │   │   |   ├── travel_agency.bir                        
+        │   │   |   |   └── travel_agency-testable.bir                           
+        └── jar_cache                                      
+            ├── ballerina                                       
+            |   |          
+            |   |            
+            |   └──                                
+            |   |        
+            |   |   
+            ├── ballerinax
+            |   |        
+            |   |   
+            └── gogo
+                |        
+                └──
     ```
 ### How to run:
 
 1. Compile the ballerina project from `sample16` folder. Command to run kubernetes artifacts will be printed on success:
 ```bash
-$> ballerina build -a --skip-tests
+$> ballerina build -a
 Compiling source
-    gogo/car_rental:1.0.0
-    gogo/travel_agency:1.0.0
-    gogo/hotel_reservation:1.0.0
-    gogo/airline_reservation:1.0.0
+        gogo/car_rental:1.0.0
+        gogo/travel_agency:1.0.0
+        gogo/hotel_reservation:1.0.0
+        gogo/airline_reservation:1.0.0
+
+Creating balos
+        target/balo/car_rental-2019r3-any-1.0.0.balo
+        target/balo/travel_agency-2019r3-any-1.0.0.balo
+        target/balo/hotel_reservation-2019r3-any-1.0.0.balo
+        target/balo/airline_reservation-2019r3-any-1.0.0.balo
+
+Running tests
+        gogo/airline_reservation:1.0.0
+[ballerina/http] started HTTP/WS listener 0.0.0.0:8080
+[ballerina/http] stopped HTTP/WS listener 0.0.0.0:8080
+        1 passing
+        0 failing
+        0 skipped
+        gogo/car_rental:1.0.0
+[ballerina/http] started HTTP/WS listener 0.0.0.0:6060
+[ballerina/http] stopped HTTP/WS listener 0.0.0.0:6060
+        1 passing
+        0 failing
+        0 skipped
+        gogo/hotel_reservation:1.0.0
+[ballerina/http] started HTTP/WS listener 0.0.0.0:7070
+[ballerina/http] stopped HTTP/WS listener 0.0.0.0:7070
+        1 passing
+        0 failing
+        0 skipped
+        gogo/travel_agency:1.0.0
+[ballerina/http] started HTTP/WS listener 0.0.0.0:9090
+[ballerina/http] started HTTP/WS listener 0.0.0.0:8080
+[ballerina/http] started HTTP/WS listener 0.0.0.0:7070
+[ballerina/http] started HTTP/WS listener 0.0.0.0:6060
+[ballerina/http] stopped HTTP/WS listener 0.0.0.0:8080
+[ballerina/http] stopped HTTP/WS listener 0.0.0.0:7070
+[ballerina/http] stopped HTTP/WS listener 0.0.0.0:6060
+[ballerina/http] stopped HTTP/WS listener 0.0.0.0:9090
+        1 passing
+        0 failing
+        0 skipped
 
 Generating executables
-    ./target/car_rental.balx
+        target/bin/car_rental.jar
+        target/bin/travel_agency.jar
+        target/bin/hotel_reservation.jar
+        target/bin/airline_reservation.jar
 
-	@kubernetes:Service 			 - complete 1/1
-	@kubernetes:Deployment 			 - complete 1/1
-	@kubernetes:Docker 			 - complete 3/3
-	@kubernetes:Helm 			 - complete 1/1
+Generating artifacts...
 
-	Run the following command to deploy the Kubernetes artifacts:
-	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/car_rental
+        @kubernetes:Service                      - complete 1/1
+        @kubernetes:Deployment                   - complete 1/1
+        @kubernetes:Docker                       - complete 2/2 
+        @kubernetes:Helm                         - complete 1/1
 
-	Run the following command to install the application using Helm:
-	helm install --name car-rental-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/car_rental/car-rental-deployment
+        Run the following command to deploy the Kubernetes artifacts: 
+        kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample16/target/kubernetes/car_rental
 
-    ./target/travel_agency.balx
+        Run the following command to install the application using Helm: 
+        helm install --name car-rental-deployment /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample16/target/kubernetes/car_rental/car-rental-deployment
 
-	@kubernetes:Service 			 - complete 1/1
-	@kubernetes:Deployment 			 - complete 1/1
-	@kubernetes:Docker 			 - complete 3/3
-	@kubernetes:Helm 			 - complete 1/1
-	@istio:Gateway 				 - complete 1/1
-	@istio:VirtualService 			 - complete 1/1
 
-	Run the following command to deploy the Kubernetes artifacts:
-	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/travel_agency
+Generating artifacts...
 
-	Run the following command to install the application using Helm:
-	helm install --name travel-agency-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/travel_agency/travel-agency-deployment
+        @kubernetes:Service                      - complete 1/1
+        @kubernetes:Deployment                   - complete 1/1
+        @kubernetes:Docker                       - complete 2/2 
+        @kubernetes:Helm                         - complete 1/1
+        @istio:Gateway                           - complete 1/1
+        @istio:VirtualService                    - complete 1/1
 
-    ./target/hotel_reservation.balx
+        Run the following command to deploy the Kubernetes artifacts: 
+        kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample16/target/kubernetes/travel_agency
 
-	@kubernetes:Service 			 - complete 1/1
-	@kubernetes:Deployment 			 - complete 1/1
-	@kubernetes:Docker 			 - complete 3/3
-	@kubernetes:Helm 			 - complete 1/1
+        Run the following command to install the application using Helm: 
+        helm install --name travel-agency-deployment /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample16/target/kubernetes/travel_agency/travel-agency-deployment
 
-	Run the following command to deploy the Kubernetes artifacts:
-	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/hotel_reservation
 
-	Run the following command to install the application using Helm:
-	helm install --name hotel-reservation-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/hotel_reservation/hotel-reservation-deployment
+Generating artifacts...
 
-    ./target/airline_reservation.balx
+        @kubernetes:Service                      - complete 1/1
+        @kubernetes:Deployment                   - complete 1/1
+        @kubernetes:Docker                       - complete 2/2 
+        @kubernetes:Helm                         - complete 1/1
 
-	@kubernetes:Service 			 - complete 1/1
-	@kubernetes:Deployment 			 - complete 1/1
-	@kubernetes:Docker 			 - complete 3/3
-	@kubernetes:Helm 			 - complete 1/1
+        Run the following command to deploy the Kubernetes artifacts: 
+        kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample16/target/kubernetes/hotel_reservation
 
-	Run the following command to deploy the Kubernetes artifacts:
-	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/airline_reservation
+        Run the following command to install the application using Helm: 
+        helm install --name hotel-reservation-deployment /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample16/target/kubernetes/hotel_reservation/hotel-reservation-deployment
 
-	Run the following command to install the application using Helm:
-	helm install --name airline-reservation-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample16/target/kubernetes/airline_reservation/airline-reservation-deployment
+
+Generating artifacts...
+
+        @kubernetes:Service                      - complete 1/1
+        @kubernetes:Deployment                   - complete 1/1
+        @kubernetes:Docker                       - complete 2/2 
+        @kubernetes:Helm                         - complete 1/1
+
+        Run the following command to deploy the Kubernetes artifacts: 
+        kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample16/target/kubernetes/airline_reservation
+
+        Run the following command to install the application using Helm: 
+        helm install --name airline-reservation-deployment /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample16/target/kubernetes/airline_reservation/airline-reservation-deployment
 ```
 
-2. book.details.balx, book.reviews.balx, book.shop.balx, Dockerfile, docker image, kubernetes and istio artifacts will be generated: 
+2. Relevant jar files, Dockerfile, docker image, kubernetes and istio artifacts will be generated: 
 ```bash
 $> tree target
 target/
-├── Ballerina.lock
-├── airline_reservation.balx
-├── book.details.balx
-├── book.reviews.balx
-├── book.shop.balx
-├── car_rental.balx
-├── hotel_reservation.balx
-├── kubernetes
+├── docker                                             
+│   ├── airline_reservation
+│   │       └── Dockerfile
+│   ├── car_rental
+│   │       └── Dockerfile
+│   ├── hotel_reservation
+│   │   ├── docker
+│   │   │   └── Dockerfile
+│   └── travel_agency
+│       ├── docker
+│       │   └── Dockerfile
+├── kubernetes                                         
 │   ├── airline_reservation
 │   │   ├── airline-reservation-deployment
 │   │   │   ├── Chart.yaml
 │   │   │   └── templates
 │   │   │       └── airline_reservation.yaml
 │   │   ├── airline_reservation.yaml
-│   │   └── docker
-│   │       └── Dockerfile
 │   ├── car_rental
 │   │   ├── car-rental-deployment
 │   │   │   ├── Chart.yaml
 │   │   │   └── templates
 │   │   │       └── car_rental.yaml
 │   │   ├── car_rental.yaml
-│   │   └── docker
-│   │       └── Dockerfile
 │   ├── hotel_reservation
-│   │   ├── docker
-│   │   │   └── Dockerfile
 │   │   ├── hotel-reservation-deployment
 │   │   │   ├── Chart.yaml
 │   │   │   └── templates
 │   │   │       └── hotel_reservation.yaml
 │   │   └── hotel_reservation.yaml
 │   └── travel_agency
-│       ├── docker
-│       │   └── Dockerfile
 │       ├── travel-agency-deployment
 │       │   ├── Chart.yaml
 │       │   └── templates
 │       │       └── travel_agency.yaml
-│       └── travel_agency.yaml
-└── travel_agency.balx
+│       └── travel_agency.yaml                               
+├── balo                                               
+    ├── airline_reservation-2019r3-any-1.0.0.balo    
+    ├── car_rental-2019r3-any-1.0.0.balo
+    ├── hotel_reservation-2019r3-any-1.0.0.balo          
+    └── travel_agency-2019r3-any-1.0.0.balo                   
+├── bin                                                
+    ├── airline_reservation.jar  
+    ├── car_rental.jar
+    ├── hotel_reservation.jar 
+    └── travel_agency.jar                                   
+└── caches                                             
+    ├── bir_cache                                      
+    │   ├── gogo                                       
+    │   │   ├── airline_reservation                              
+    │   │   |   └── 1.0.0 
+    |   │   │   |   ├── airline_reservation.bir                        
+    │   │   |   |   └── airline_reservation-testable.bir                     
+    │   │   └── car_rental                                  
+    │   │   |   └── 1.0.0 
+    |   │   │   |   ├── car_rental.bir                        
+    │   │   |   |   └── car_rental-testable.bir 
+    │   │   ├── hotel_reservation                              
+    │   │   |   └── 1.0.0 
+    |   │   │   |   ├── hotel_reservation.bir                        
+    │   │   |   |   └── hotel_reservation-testable.bir                     
+    │   │   └── travel_agency                                  
+    │   │   |   └── 1.0.0 
+    |   │   │   |   ├── travel_agency.bir                        
+    │   │   |   |   └── travel_agency-testable.bir                           
+    └── jar_cache                                      
+        ├── ballerina                                       
+        |   |          
+        |   |            
+        |   └──                                
+        |   |        
+        |   |   
+        ├── ballerinax
+        |   |        
+        |   |   
+        └── gogo
+            |        
+            └──
 
 ```
 

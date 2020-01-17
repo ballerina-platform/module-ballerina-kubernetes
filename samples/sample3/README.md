@@ -14,18 +14,14 @@
     ├── README.md
     ├── foodstore.bal
     ├── foodstore.balx
+    ├── docker
+        └── Dockerfile
     └── kubernetes
-        ├── docker
-        │   └── Dockerfile
         ├── foodstore
         │   ├── Chart.yaml
         │   └── templates
-        │       ├── foodstore_deployment.yaml
-        │       ├── foodstore_ingress.yaml
-        │       └── foodstore_svc.yaml
-        ├── foodstore_deployment.yaml
-        ├── foodstore_ingress.yaml
-        └── foodstore_svc.yaml
+        │       └── foodstore.yaml
+        └── foodstore.yaml
     ```
 ### How to run:
 
@@ -33,41 +29,42 @@
 ```bash
 $> ballerina build foodstore.bal
 Compiling source
-    foodstore.bal
-Generating executable
-    foodstore.balx
-	@kubernetes:Service 			 - complete 2/2
-	@kubernetes:Ingress 			 - complete 2/2
-	@kubernetes:Deployment 			 - complete 1/1
-	@kubernetes:Docker 			 - complete 3/3
-	@kubernetes:Helm 			 - complete 1/1
+        foodstore.bal
 
-	Run the following command to deploy the Kubernetes artifacts:
-	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample3/kubernetes/
+Generating executables
+        foodstore.jar
 
-	Run the following command to install the application using Helm:
-	helm install --name foodstore /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample3/kubernetes/foodstore
+Generating artifacts...
+
+        @kubernetes:Service                      - complete 1/2
+        @kubernetes:Service                      - complete 2/2
+        @kubernetes:Ingress                      - complete 2/2
+        @kubernetes:Deployment                   - complete 1/1
+        @kubernetes:Docker                       - complete 2/2 
+        @kubernetes:Helm                         - complete 1/1
+
+        Run the following command to deploy the Kubernetes artifacts: 
+        kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample3/kubernetes
+
+        Run the following command to install the application using Helm: 
+        helm install --name foodstore /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample3/kubernetes/foodstore
 ```
 
-2. foodstore.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
+2. foodstore.jar, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
 .
 ├── README.md
 ├── foodstore.bal
 ├── foodstore.balx
+├── docker
+    └── Dockerfile
 └── kubernetes
-    ├── docker
-    │   └── Dockerfile
     ├── foodstore
     │   ├── Chart.yaml
     │   └── templates
-    │       ├── foodstore_deployment.yaml
-    │       ├── foodstore_ingress.yaml
-    │       └── foodstore_svc.yaml
-    ├── foodstore_deployment.yaml
-    ├── foodstore_ingress.yaml
-    └── foodstore_svc.yaml
+    │       └── foodstore.yaml
+    └── foodstore.yaml
 ```
 
 3. Verify the docker image is created:
@@ -80,12 +77,12 @@ foodstore                   latest              df83ae43f69b        2 minutes ag
 
 4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample3/kubernetes/
-deployment "foodstore" created
-ingress "burgerapi-ingress" created
-ingress "pizzaapi-ingress" created
-service "pizzaep-svc" created
-service "burgerep-svc" created
+$> kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample3/kubernetes
+service/pizzaep-svc created
+service/burgerep-svc created
+ingress.extensions/pizzaep-ingress created
+ingress.extensions/burgerep-ingress created
+deployment.apps/foodstore created
 ```
 
 5. Verify kubernetes deployment,service and ingress is running (3 pods create as replica count is 3):

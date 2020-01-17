@@ -10,11 +10,11 @@
     $> tree
     ├── README.md
     ├── hello_world_job.bal
-    ├── hello_world_job.balx
+    ├── hello_world_job.jar
+    ├── docker
+        └── Dockerfile
     └── kubernetes
-        ├── docker
-        │   └── Dockerfile
-        └── hello_world_job_job.yaml
+        └── hello_world_job.yaml
     ```
 ### How to run:
 
@@ -22,31 +22,34 @@
 ```bash
 $> ballerina build hello_world_job.bal
 Compiling source
-    hello_world_job.bal
-Generating executable
-    hello_world_job.balx
+        hello_world_job.bal
 
-	@kubernetes:Job 			 - complete 1/1
-	@kubernetes:Docker 			 - complete 3/3
+Generating executables
+        hello_world_job.jar
 
-	Run the following command to deploy the Kubernetes artifacts:
-	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample11/kubernetes/
+Generating artifacts...
 
-	Run the following command to install the application using Helm:
-	helm install --name hello-world-job-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample11/kubernetes/hello-world-job-deployment
+        @kubernetes:Job                          - complete 1/1
+        @kubernetes:Docker                       - complete 2/2 
+
+        Run the following command to deploy the Kubernetes artifacts: 
+        kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample11/kubernetes
+
+        Run the following command to install the application using Helm: 
+        helm install --name hello-world-job-deployment /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample11/kubernetes/hello-world-job-deployment
 ```
 
-2. hello_world_job.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
+2. hello_world_job.jar, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
 .
 ├── README.md
 ├── hello_world_job.bal
-├── hello_world_job.balx
+├── hello_world_job.jar
+├── docker
+    └── Dockerfile
 └── kubernetes
-    ├── docker
-    │   └── Dockerfile
-    └── hello_world_job_job.yaml
+    └── hello_world_job.yaml
 ```
 
 3. Verify the docker image is created:
@@ -59,8 +62,8 @@ hello_world_job       latest              df83ae43f69b        2 minutes ago     
 
 4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample11/kubernetes/
-job.batch "hello-world-job-job" created
+$> kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample11/kubernetes
+job.batch/hello-world-job-job created
 ```
 
 5. Verify kubernetes pod is created.

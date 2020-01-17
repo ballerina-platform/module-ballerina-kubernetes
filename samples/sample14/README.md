@@ -9,10 +9,10 @@
     $> tree
     ├── README.md
     ├── hello_world_k8s_namespace.bal
-    ├── hello_world_k8s_namespace.balx
+    ├── hello_world_k8s_namespace.jar
+    ├── docker
+        └── Dockerfile
     └── kubernetes
-        ├── docker
-        │   └── Dockerfile
         ├── hello-world-k8s-namespace-deployment
         │   ├── Chart.yaml
         │   └── templates
@@ -25,32 +25,37 @@
 ```bash
 $> ballerina build hello_world_k8s_namespace.bal
 Compiling source
-    hello_world_k8s_namespace.bal
-Generating executable
-    hello_world_k8s_namespace.balx
-	@kubernetes:Service 			 - complete 1/1
-	@kubernetes:Ingress 			 - complete 1/1
-	@kubernetes:Deployment 			 - complete 1/1
-	@kubernetes:Docker 			 - complete 3/3
-	@kubernetes:Helm 			 - complete 1/1
+        hello_world_k8s_namespace.bal
 
-	Run the following command to deploy the Kubernetes artifacts:
-	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample14/kubernetes/
+Generating executables
+        hello_world_k8s_namespace.jar
 
-	Run the following command to install the application using Helm:
-	helm install --name hello-world-k8s-namespace-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample14/kubernetes/hello-world-k8s-namespace-deployment
+Generating artifacts...
+
+        @kubernetes:Service                      - complete 1/1
+        @kubernetes:Ingress                      - complete 1/1
+        @kubernetes:Deployment                   - complete 1/1
+        @kubernetes:Docker                       - complete 2/2 
+        @kubernetes:Helm                         - complete 1/1
+
+        Run the following command to deploy the Kubernetes artifacts: 
+        kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample14/kubernetes
+
+        Run the following command to install the application using Helm: 
+        helm install --name hello-world-k8s-namespace-deployment /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample14/kubernetes/hello-world-k8s-namespace-deployment
+
 ```
 
-2. hello_world_k8s_namespace.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
+2. hello_world_k8s_namespace.jar, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
 .
 ├── README.md
 ├── hello_world_k8s_namespace.bal
-├── hello_world_k8s_namespace.balx
+├── hello_world_k8s_namespace.jar
+├── docker
+    └── Dockerfile
 └── kubernetes
-    ├── docker
-    │   └── Dockerfile
     ├── hello-world-k8s-namespace-deployment
     │   ├── Chart.yaml
     │   └── templates
@@ -74,10 +79,10 @@ namespace "ballerina" created
 
 5. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample14/kubernetes/
-service "hello" created
-ingress.extensions "helloep-ingress" created
-deployment.extensions "hello-world-k8s-namespace-deployment" created
+$>  kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample14/kubernetes
+service/hello created
+ingress.extensions/helloep-ingress created
+deployment.apps/hello-world-k8s-namespace-deployment created
 ```
 
 6. Verify kubernetes deployment,service and ingress is running:
@@ -117,7 +122,7 @@ Hello, World from service helloWorld !
 $> kubectl delete -f ./kubernetes/
 service "hello" deleted
 ingress.extensions "helloep-ingress" deleted
-deployment.extensions "hello-world-k8s-namespace-deployment" deleted
+deployment.apps "hello-world-k8s-namespace-deployment" deleted
 $> kubectl delete namespace ballerina
 namespace "ballerina" deleted
 $> docker rmi hello_world_k8s_namespace

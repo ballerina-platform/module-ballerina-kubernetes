@@ -22,11 +22,7 @@ jdbc:Client coolDrinkDB = new({
 }
 @kubernetes:Deployment {
     replicas: 2,
-    livenessProbe: true,
-    copyFiles: [{
-        target: "/ballerina/runtime/bre/lib",
-        sourceFile: "./libs/mysql-connector-java-8.0.11.jar"
-    }]
+    livenessProbe: true
 }
 @http:ServiceConfig {
     basePath: "/coolDrink"
