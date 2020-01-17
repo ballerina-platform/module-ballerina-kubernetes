@@ -45,8 +45,11 @@ import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getCommand;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 
+/**
+ * Test cases for sample 19.
+ */
 public class Sample19Test extends SampleTest {
-
+    
     private static final Path SOURCE_DIR_PATH = SAMPLE_DIR.resolve("sample19");
     private static final Path DOCKER_TARGET_PATH = SOURCE_DIR_PATH.resolve(DOCKER);
     private static final Path KUBERNETES_TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
@@ -54,7 +57,7 @@ public class Sample19Test extends SampleTest {
     private ConfigMap ballerinaConf;
     private ConfigMap dataMap;
     private Service knativeService;
-
+    
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KnativeTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "hello_world_knative_config_map.bal")
@@ -87,7 +90,7 @@ public class Sample19Test extends SampleTest {
             }
         }
     }
-
+    
     @Test
     public void validateDeployment() {
         Assert.assertNotNull(knativeService);
@@ -95,38 +98,38 @@ public class Sample19Test extends SampleTest {
         Assert.assertEquals(knativeService.getSpec().getTemplate().getSpec().getContainerConcurrency().longValue(),
                 100);
         Assert.assertEquals(knativeService.getSpec().getTemplate().getSpec().getContainers().size(), 1);
-
+        
         // Assert Containers
         Container container = knativeService.getSpec().getTemplate().getSpec().getContainers().get(0);
         Assert.assertEquals(container.getVolumeMounts().size(), 2);
         Assert.assertEquals(container.getImage(), DOCKER_IMAGE);
         Assert.assertEquals(container.getPorts().size(), 1);
         Assert.assertEquals(container.getEnv().size(), 1);
-
+        
         Assert.assertEquals(knativeService.getSpec().getTemplate().getSpec().getVolumes().size(), 2);
         
         // Validate config file
         Assert.assertEquals(container.getEnv().get(0).getName(), "CONFIG_FILE");
         Assert.assertEquals(container.getEnv().get(0).getValue(), "/home/ballerina/conf/ballerina.conf");
     }
-
+    
     @Test
     public void validateConfigMap() {
         // Assert ballerina.conf config map
         Assert.assertNotNull(ballerinaConf);
         Assert.assertEquals(1, ballerinaConf.getData().size());
-
+        
         // Assert Data config map
         Assert.assertNotNull(dataMap);
         Assert.assertEquals(1, dataMap.getData().size());
     }
-
+    
     @Test
     public void validateDockerfile() {
         File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
-
+    
     @Test
     public void validateDockerImage() throws DockerTestException, InterruptedException {
         List<String> ports = getExposedPorts(DOCKER_IMAGE);
@@ -136,7 +139,7 @@ public class Sample19Test extends SampleTest {
         Assert.assertEquals(getCommand(DOCKER_IMAGE).toString(),
                 "[/bin/sh, -c, java -jar hello_world_knative_config_map.jar --b7a.config.file=${CONFIG_FILE}]");
     }
-
+    
     @AfterClass
     public void cleanUp() throws KubernetesPluginException {
         KnativeUtils.deleteDirectory(KUBERNETES_TARGET_PATH);

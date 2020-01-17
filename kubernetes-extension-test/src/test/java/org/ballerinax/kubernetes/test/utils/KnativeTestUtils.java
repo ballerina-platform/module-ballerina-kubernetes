@@ -266,6 +266,7 @@ public class KnativeTestUtils {
             log.info("ballerina-internal.log file found. content: ");
             log.info(FileUtils.readFileToString(ballerinaInternalLog.toFile(), Charset.defaultCharset()));
         }
+
         return exitCode;
     }
 
