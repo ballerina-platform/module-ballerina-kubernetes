@@ -3,12 +3,12 @@ import ballerina/http;
 import ballerina/log;
 import ballerina/kubernetes;
 
-//Add the `@kubernetes:Service` to a listner endpoint to expose the endpoint as a Kubernetes Service.
+//Add the `@kubernetes:Service` to a listener endpoint to expose the endpoint as a Kubernetes Service.
 @kubernetes:Service {
     //Service type is `NodePort`.
     serviceType: "NodePort"
 }
-//Add the `@kubernetes:Ingress` to a listner endpoint to expose the endpoint as a Kubernetes Ingress.
+//Add the `@kubernetes:Ingress` to a listener endpoint to expose the endpoint as a Kubernetes Ingress.
 @kubernetes:Ingress {
     //Hostname of the service is `abc.com`.
     hostname: "abc.com"
