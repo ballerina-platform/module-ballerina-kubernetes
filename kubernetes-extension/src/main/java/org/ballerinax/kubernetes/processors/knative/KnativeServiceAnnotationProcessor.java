@@ -107,6 +107,10 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
         // svc.
         BLangTypeInit bListener = (BLangTypeInit) bService.getAttachedExprs().get(0);
         if (serviceModel.getPort() == 8080) {
+            if (extractPort(bListener) == 9090 || extractPort(bListener) == 9091 || extractPort(bListener) == 8013
+            || extractPort(bListener) == 8012) {
+                throw new KubernetesPluginException("listner port is conflicts with knative port");
+            }
             serviceModel.addPort(extractPort(bListener));
         }
 
