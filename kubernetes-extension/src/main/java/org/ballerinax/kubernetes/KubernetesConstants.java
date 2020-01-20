@@ -78,6 +78,7 @@ public class KubernetesConstants {
     public static final String ISTIO_VIRTUAL_SERVICE_POSTFIX = "-istio-vs";
     public static final String OPENSHIFT_BUILD_CONFIG_POSTFIX = "-openshift-bc";
     public static final String OPENSHIFT_ROUTE_POSTFIX = "-openshift-route";
+    public static final String volume_define = "-volume";
 
     /**
      * Restart policy enum.
