@@ -19,18 +19,12 @@
 package org.ballerinax.kubernetes.test.samples;
 
 import io.fabric8.knative.serving.v1alpha1.Service;
-import io.fabric8.knative.serving.v1alpha1.ServiceBuilder;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.HasMetadata;
-import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.Handlers;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.kubernetes.client.ResourceHandler;
-import io.fabric8.kubernetes.client.Watch;
-import io.fabric8.kubernetes.client.Watcher;
-import okhttp3.OkHttpClient;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.ballerinax.kubernetes.test.utils.KnativeTestUtils;
@@ -45,8 +39,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
@@ -58,16 +50,16 @@ public class Sample19Test extends SampleTest {
     private static final Path SOURCE_DIR_PATH = SAMPLE_DIR.resolve("sample19");
     private static final Path DOCKER_TARGET_PATH = SOURCE_DIR_PATH.resolve(DOCKER);
     private static final Path KUBERNETES_TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
-    private static final String DOCKER_IMAGE = "hello_world_knative:latest";
+    private static final String DOCKER_IMAGE = "hello_world_knative_config_map:latest";
     private ConfigMap ballerinaConf;
     private ConfigMap dataMap;
     private Service knativeService;
 
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
-        Assert.assertEquals(KnativeTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "hello_world_knative.bal")
+        Assert.assertEquals(KnativeTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "hello_world_knative_config_map.bal")
                 , 0);
-        File artifactYaml = KUBERNETES_TARGET_PATH.resolve("hello_world_knative.yaml").toFile();
+        File artifactYaml = KUBERNETES_TARGET_PATH.resolve("hello_world_knative_config_map.yaml").toFile();
         Assert.assertTrue(artifactYaml.exists());
         Handlers.register(new KnativeTestUtils.ServiceHandler());
         KubernetesClient client = new DefaultKubernetesClient();
@@ -142,7 +134,7 @@ public class Sample19Test extends SampleTest {
         Assert.assertEquals(ports.get(0), "8080/tcp");
         // Validate ballerina.conf in run command
         Assert.assertEquals(getCommand(DOCKER_IMAGE).toString(),
-                "[/bin/sh, -c, java -jar hello_world_knative.jar --b7a.config.file=${CONFIG_FILE}]");
+                "[/bin/sh, -c, java -jar hello_world_knative_config_map.jar --b7a.config.file=${CONFIG_FILE}]");
     }
 
     @AfterClass
