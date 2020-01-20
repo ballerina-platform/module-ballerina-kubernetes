@@ -20,6 +20,7 @@ package org.ballerinax.kubernetes.test.samples;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import io.fabric8.kubernetes.client.Handlers;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -55,16 +56,14 @@ public class Sample18Test extends SampleTest {
         Assert.assertEquals(KnativeTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "hello_world_k8s.bal"), 0);
         File artifactYaml = KUBERNETES_TARGET_PATH.resolve("hello_world_k8s.yaml").toFile();
         Assert.assertTrue(artifactYaml.exists());
+        Handlers.register(new KnativeTestUtils.ServiceHandler());
         KubernetesClient client = new DefaultKubernetesClient();
         List<HasMetadata> k8sItems = client.load(new FileInputStream(artifactYaml)).get();
         for (HasMetadata data : k8sItems) {
-            switch (data.getKind()) {
-                case "Service":
-                    knativeService = (KnativeService) data;
-                    break;
-                default:
-                    Assert.fail("Unexpected k8s resource found: " + data.getKind());
-                    break;
+            if ("Service".equals(data.getKind())) {
+                knativeService = (KnativeService) data;
+            } else {
+                Assert.fail("Unexpected k8s resource found: " + data.getKind());
             }
         }
     }
@@ -97,10 +96,9 @@ public class Sample18Test extends SampleTest {
     }
 
     @AfterClass
-    public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
+    public void cleanUp() throws KubernetesPluginException {
         KnativeUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
         KnativeUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KnativeTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
-
 }

@@ -19,16 +19,14 @@
 package org.ballerinax.kubernetes.models.knative;
 
 
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.apps.DeploymentStatus;
-import io.fabric8.kubernetes.api.model.validators.CheckObjectMeta;
+import io.fabric8.kubernetes.client.CustomResource;
 import io.fabric8.kubernetes.model.annotation.ApiGroup;
 import io.fabric8.kubernetes.model.annotation.ApiVersion;
 import org.ballerinax.kubernetes.specs.KnativeServiceSpec;
@@ -49,7 +47,7 @@ import javax.validation.constraints.NotNull;
 @ApiGroup("apps")
 
 
-public class KnativeService implements HasMetadata {
+public class KnativeService extends CustomResource {
 
     private static final long serialVersionUID = 6106269076155338045L;
 
@@ -60,11 +58,6 @@ public class KnativeService implements HasMetadata {
     @JsonProperty("kind")
     private String kind = "Service";
     @JsonProperty("metadata")
-    @Valid
-    @CheckObjectMeta(
-            regexp = "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$",
-            max = 253
-    )
     private ObjectMeta metadata;
     @JsonProperty("spec")
     @Valid
