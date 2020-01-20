@@ -80,6 +80,7 @@ public class KnativeArtifactManager {
             printInstruction("");
         }
     }
+
     public void populateDeploymentModel() {
         ServiceModel serviceModel = knativeDataHolder.getServiceModel();
         knativeDataHolder.setServiceModel(serviceModel);
@@ -95,6 +96,7 @@ public class KnativeArtifactManager {
         serviceModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
         knativeDataHolder.setServiceModel(serviceModel);
     }
+
     /**setDeploymentModel
      * Returns print instructions.
      *

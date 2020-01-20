@@ -31,7 +31,6 @@ import static org.ballerinax.kubernetes.utils.KnativeUtils.isBlank;
 /**
  * Class to hold Kubernetes data holder against package id.
  */
-
 public class KnativeContext {
 
     private static KnativeContext instance;
@@ -93,5 +92,4 @@ public class KnativeContext {
         }
         throw new KubernetesPluginException("dependent listener " + dependsOn + " not found.");
     }
-
 }

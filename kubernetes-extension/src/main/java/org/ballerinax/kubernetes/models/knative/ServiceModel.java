@@ -33,7 +33,6 @@ import static org.ballerinax.docker.generator.DockerGenConstants.OPENJDK_8_JRE_A
 /**
  * Knative deployment annotations model class.
  */
-
 public class ServiceModel extends KnativeModel {
     private Map<String, String> podAnnotations;
     private int replicas;
@@ -65,7 +64,6 @@ public class ServiceModel extends KnativeModel {
     private List<PodTolerationModel> podTolerations;
     private int containerConcurrency;
     private int timeoutSeconds;
-
 
     public ServiceModel() {
         this.replicas = 1;
@@ -397,4 +395,3 @@ public class ServiceModel extends KnativeModel {
                 '}';
     }
 }
-

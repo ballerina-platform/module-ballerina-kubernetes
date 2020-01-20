@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.ballerinax.kubernetes.models.knative;
 
 import org.ballerinax.kubernetes.KubernetesConstants;
@@ -59,6 +60,7 @@ public class KnativeContainerModel extends KnativeModel {
     public void setPortName(String portName) {
         this.portName = portName;
     }
+
     public int getPort() {
         return port;
     }

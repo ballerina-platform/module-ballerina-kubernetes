@@ -18,7 +18,6 @@
 
 package org.ballerinax.kubernetes.models.knative;
 
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -37,7 +36,6 @@ import javax.validation.constraints.NotNull;
 /**
  * Generates knative service.
  */
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"apiVersion", "kind", "metadata", "spec", "status"})
 @JsonDeserialize(
@@ -45,7 +43,6 @@ import javax.validation.constraints.NotNull;
 )
 @ApiVersion("v1")
 @ApiGroup("apps")
-
 
 public class KnativeService extends CustomResource {
 
@@ -155,7 +152,6 @@ public class KnativeService extends CustomResource {
                 } else if (!metadata.equals(otherMetadata)) {
                     return false;
                 }
-
                 return true;
             }
         }
@@ -179,4 +175,3 @@ public class KnativeService extends CustomResource {
         return result;
     }
 }
-
