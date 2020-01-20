@@ -15,8 +15,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ballerinax.kubernetes.handlers.knative;
 
+package org.ballerinax.kubernetes.handlers.knative;
 
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -27,7 +27,6 @@ import org.ballerinax.kubernetes.models.knative.ServiceModel;
 import java.util.Map;
 
 import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
-
 
 /**
  * Generates kubernetes service from annotations.
@@ -42,6 +41,7 @@ public class KnativeContainerHandler extends KnativeAbstractArtifactHandler {
     private void generate(KnativeContainerModel serviceModel) throws KubernetesPluginException {
 
     }
+
     @Override
     public void createArtifacts() throws KubernetesPluginException {
         // Service

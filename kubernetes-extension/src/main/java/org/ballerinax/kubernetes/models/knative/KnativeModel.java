@@ -24,7 +24,6 @@ import java.util.Objects;
 /**
  * Knative Model class.
  */
-
 public abstract class KnativeModel {
 
     private String version;
@@ -81,4 +80,3 @@ public abstract class KnativeModel {
         return Objects.hash(getName());
     }
 }
-

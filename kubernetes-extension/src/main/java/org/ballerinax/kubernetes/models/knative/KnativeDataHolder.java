@@ -29,8 +29,8 @@ import java.util.Set;
 /**
  * Class to store kubernetes models.
  */
-
 public class KnativeDataHolder {
+
     private boolean canProcess;
     private ServiceModel serviceModel;
     private DockerModel dockerModel;

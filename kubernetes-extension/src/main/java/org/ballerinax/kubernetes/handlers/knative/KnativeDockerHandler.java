@@ -39,5 +39,4 @@ public class KnativeDockerHandler extends KnativeAbstractArtifactHandler {
             throw new KubernetesPluginException(e.getMessage(), e);
         }
     }
-
 }
