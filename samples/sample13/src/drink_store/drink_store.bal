@@ -1,8 +1,8 @@
-import ballerina/http;
-import ballerina/log;
 import ballerina/io;
-import ballerina/math;
+import ballerina/http;
 import ballerina/kubernetes;
+import ballerina/log;
+import ballerina/math;
 
 @kubernetes:Service {
     serviceType: "NodePort"
@@ -112,10 +112,10 @@ function getCoolDrinkPrice(json payload) returns json {
                 if (celciusValue > 15) {
                     // Increase Cooldrink price on hot days.
                     item["price"] = roundFloat((result + priceVariation), 2);
-                    item ["diff"] = string`+ ${priceVariation}`;
+                    item["diff"] = string`+ ${priceVariation}`;
                 } else {
                     item["price"] = roundFloat((result + priceVariation), 2);
-                    item ["diff"] = string`- ${priceVariation}`;
+                    item["diff"] = string`- ${priceVariation}`;
                     // Decrese Cooldrink price on cold days.
                 }
             }

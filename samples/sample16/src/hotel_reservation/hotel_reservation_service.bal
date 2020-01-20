@@ -1,7 +1,7 @@
 import ballerina/http;
-import ballerina/stringutils;
-import ballerina/log;
 import ballerina/kubernetes;
+import ballerina/log;
+import ballerina/stringutils;
 
 @kubernetes:Service {
     name: "hotel-reservation"

@@ -1,8 +1,8 @@
 import ballerina/config;
-import ballerina/http;
-import ballerina/log;
 import ballerina/io;
+import ballerina/http;
 import ballerina/kubernetes;
+import ballerina/log;
 
 @kubernetes:Service {}
 @kubernetes:Ingress {

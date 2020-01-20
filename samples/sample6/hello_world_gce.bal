@@ -1,6 +1,6 @@
 import ballerina/http;
-import ballerina/log;
 import ballerina/kubernetes;
+import ballerina/log;
 
 @kubernetes:Ingress {
     hostname: "abc.com"
