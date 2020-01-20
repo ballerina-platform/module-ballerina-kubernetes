@@ -58,8 +58,8 @@ import static org.ballerinax.docker.generator.DockerGenConstants.REGISTRY_SEPARA
 import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.EXECUTABLE_JAR;
+import static org.ballerinax.kubernetes.KubernetesConstants.VOLUME_DEFINE;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
-import static org.ballerinax.kubernetes.KubernetesConstants.volume_define;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.populateEnvVar;
 
 /**
@@ -67,7 +67,7 @@ import static org.ballerinax.kubernetes.utils.KnativeUtils.populateEnvVar;
  */
 public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
 
-    private static final String volume = "-volume";
+
 
     private List<ContainerPort> populatePorts(Set<Integer> ports) {
         List<ContainerPort> containerPorts = new ArrayList<>();
@@ -86,7 +86,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
         for (SecretModel secretModel : serviceModel.getSecretModels()) {
             VolumeMount volumeMount = new VolumeMountBuilder()
                     .withMountPath(secretModel.getMountPath())
-                    .withName(secretModel.getName() + volume_define)
+                    .withName(secretModel.getName() + VOLUME_DEFINE)
                     .withReadOnly(secretModel.isReadOnly())
                     .build();
             volumeMounts.add(volumeMount);
@@ -94,7 +94,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
         for (ConfigMapModel configMapModel : serviceModel.getConfigMapModels()) {
             VolumeMount volumeMount = new VolumeMountBuilder()
                     .withMountPath(configMapModel.getMountPath())
-                    .withName(configMapModel.getName() + volume_define)
+                    .withName(configMapModel.getName() + VOLUME_DEFINE)
                     .withReadOnly(configMapModel.isReadOnly())
                     .build();
             volumeMounts.add(volumeMount);
@@ -142,7 +142,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
         List<Volume> volumes = new ArrayList<>();
         for (SecretModel secretModel : serviceModel.getSecretModels()) {
             Volume volume = new VolumeBuilder()
-                    .withName(secretModel.getName() + volume_define)
+                    .withName(secretModel.getName() + VOLUME_DEFINE)
                     .withNewSecret()
                     .withSecretName(secretModel.getName())
                     .endSecret()
@@ -151,7 +151,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
         }
         for (ConfigMapModel configMapModel : serviceModel.getConfigMapModels()) {
             Volume volume = new VolumeBuilder()
-                    .withName(configMapModel.getName() + volume_define)
+                    .withName(configMapModel.getName() + VOLUME_DEFINE)
                     .withNewConfigMap()
                     .withName(configMapModel.getName())
                     .endConfigMap()
