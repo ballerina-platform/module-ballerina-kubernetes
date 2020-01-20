@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
@@ -18,18 +18,7 @@
 
 package org.ballerinax.kubernetes.utils;
 
-import io.fabric8.kubernetes.api.model.ConfigMapKeySelector;
-import io.fabric8.kubernetes.api.model.ConfigMapKeySelectorBuilder;
-import io.fabric8.kubernetes.api.model.EnvVar;
-import io.fabric8.kubernetes.api.model.EnvVarBuilder;
-import io.fabric8.kubernetes.api.model.EnvVarSource;
-import io.fabric8.kubernetes.api.model.EnvVarSourceBuilder;
-import io.fabric8.kubernetes.api.model.ObjectFieldSelector;
-import io.fabric8.kubernetes.api.model.ObjectFieldSelectorBuilder;
-import io.fabric8.kubernetes.api.model.ResourceFieldSelector;
-import io.fabric8.kubernetes.api.model.ResourceFieldSelectorBuilder;
-import io.fabric8.kubernetes.api.model.SecretKeySelector;
-import io.fabric8.kubernetes.api.model.SecretKeySelectorBuilder;
+import io.fabric8.kubernetes.api.model.*;
 import org.apache.commons.io.FileUtils;
 import org.ballerinalang.model.tree.NodeKind;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
@@ -42,11 +31,7 @@ import org.ballerinax.kubernetes.models.knative.KnativeDataHolder;
 import org.wso2.ballerinalang.compiler.semantics.model.symbols.BConstantSymbol;
 import org.wso2.ballerinalang.compiler.semantics.model.symbols.BSymbol;
 import org.wso2.ballerinalang.compiler.semantics.model.types.BFiniteType;
-import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
-import org.wso2.ballerinalang.compiler.tree.expressions.BLangListConstructorExpr;
-import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
-import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
-import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
+import org.wso2.ballerinalang.compiler.tree.expressions.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,16 +41,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
@@ -296,28 +272,28 @@ public class KnativeUtils {
         }
     }
 
-        /**
-         * Get a map from a ballerina expression.
-         *
-         * @param expr Ballerina record value.
-         * @return Map of key values.
-         * @throws KubernetesPluginException When the expression cannot be parsed.
-         */
-        public static Map<String, String> getMap(BLangExpression expr) throws KubernetesPluginException {
-            if (expr.getKind() != NodeKind.RECORD_LITERAL_EXPR) {
-                throw new KubernetesPluginException("unable to parse value: " + expr.toString());
-            } else {
-                Map<String, String> map = new LinkedHashMap<>();
-                if (expr instanceof BLangRecordLiteral) {
+    /**
+     * Get a map from a ballerina expression.
+     *
+     * @param expr Ballerina record value.
+     * @return Map of key values.
+     * @throws KubernetesPluginException When the expression cannot be parsed.
+     */
+    public static Map<String, String> getMap(BLangExpression expr) throws KubernetesPluginException {
+        if (expr.getKind() != NodeKind.RECORD_LITERAL_EXPR) {
+            throw new KubernetesPluginException("unable to parse value: " + expr.toString());
+        } else {
+            Map<String, String> map = new LinkedHashMap<>();
+            if (expr instanceof BLangRecordLiteral) {
                 BLangRecordLiteral fields = (BLangRecordLiteral) expr;
-                    for (BLangRecordLiteral.BLangRecordKeyValue keyValue : fields.getKeyValuePairs()) {
-                        map.put(keyValue.getKey().toString(), getStringValue(keyValue.getValue()));
-                    }
+                for (BLangRecordLiteral.BLangRecordKeyValue keyValue : fields.getKeyValuePairs()) {
+                    map.put(keyValue.getKey().toString(), getStringValue(keyValue.getValue()));
                 }
-                return map;
             }
-
+            return map;
         }
+
+    }
 
     /**
      * Get the boolean value from a ballerina expression.

@@ -131,7 +131,7 @@ public class KnativeTestUtils {
     }
 
     /**
-     * Delete a given Docker image and prune
+     * Delete a given Docker image and prune.
      *
      * @param imageName Docker image Name
      */
@@ -175,7 +175,7 @@ public class KnativeTestUtils {
     }
 
     /**
-     * Compile a ballerina file in a given directory
+     * Compile a ballerina file in a given directory.
      *
      * @param sourceDirectory Ballerina source directory
      * @param fileName        Ballerina source file name
@@ -215,7 +215,7 @@ public class KnativeTestUtils {
     }
 
     /**
-     * Compile a ballerina file in a given directory
+     * Compile a ballerina file in a given directory.
      *
      * @param sourceDirectory Ballerina source directory
      * @param fileName        Ballerina source file name
@@ -229,7 +229,7 @@ public class KnativeTestUtils {
     }
 
     /**
-     * Compile a ballerina project in a given directory
+     * Compile a ballerina project in a given directory.
      *
      * @param sourceDirectory Ballerina source directory
      * @return Exit code
@@ -273,7 +273,7 @@ public class KnativeTestUtils {
     }
 
     /**
-     * Compile a ballerina project in a given directory
+     * Compile a ballerina project in a given directory.
      *
      * @param sourceDirectory Ballerina source directory
      * @return Exit code

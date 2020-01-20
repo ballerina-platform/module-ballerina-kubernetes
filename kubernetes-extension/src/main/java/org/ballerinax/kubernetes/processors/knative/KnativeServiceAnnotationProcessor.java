@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -57,7 +57,6 @@ import static org.ballerinax.kubernetes.utils.KnativeUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.isBlank;
-
 
 
 /**
@@ -143,8 +142,7 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
                 ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
             ServiceConfiguration
-                    serviceConfiguration =
-                    ServiceConfiguration.valueOf(keyValue.getKey().toString());
+                    serviceConfiguration = ServiceConfiguration.valueOf(keyValue.getKey().toString());
             switch (serviceConfiguration) {
                 case name:
                     serviceModel.setName(getValidName(getStringValue(keyValue.getValue())));
