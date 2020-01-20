@@ -1,8 +1,9 @@
 import ballerina/config;
 import ballerina/http;
-import ballerina/log;
 import ballerina/io;
 import ballerina/knative;
+import ballerina/log;
+
 
 @knative:Service {}
 listener http:Listener helloWorldEP = new(8080, {
@@ -45,6 +46,7 @@ service helloWorld on helloWorldEP {
         if (responseResult is error) {
             log:printError("error responding back to client.", responseResult);
         }
+
     }
     @http:ResourceConfig {
         methods: ["GET"],
@@ -61,14 +63,14 @@ service helloWorld on helloWorldEP {
     }
 }
 
-function getConfigValue(string instanceId, string property) returns (string) {
+function getConfigValue(string instanceId, string property) returns string {
     string key = <@untainted> instanceId + "." + <@untainted> property;
     return config:getAsString(key, "Invalid User");
 }
 
 function readFile(string filePath) returns @tainted string {
-    io:ReadableByteChannel bchannel = checkpanic io:openReadableFile(filePath);
-    io:ReadableCharacterChannel cChannel = new io:ReadableCharacterChannel(bchannel, "UTF-8");
+    io:ReadableByteChannel bChannel = checkpanic io:openReadableFile(filePath);
+    io:ReadableCharacterChannel cChannel = new io:ReadableCharacterChannel(bChannel, "UTF-8");
 
     var readOutput = cChannel.read(50);
     if (readOutput is string) {

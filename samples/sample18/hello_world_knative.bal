@@ -1,6 +1,6 @@
 import ballerina/http;
-import ballerina/log;
 import ballerina/knative;
+import ballerina/log;
 
 @knative:Service {}
 @http:ServiceConfig {
