@@ -15,8 +15,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ballerinax.kubernetes.handlers.knative;
 
+package org.ballerinax.kubernetes.handlers.knative;
 
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
@@ -66,8 +66,6 @@ import static org.ballerinax.kubernetes.utils.KnativeUtils.populateEnvVar;
  * Generates knative service from annotations.
  */
 public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
-
-
 
     private List<ContainerPort> populatePorts(Set<Integer> ports) {
         List<ContainerPort> containerPorts = new ArrayList<>();
@@ -126,7 +124,6 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
         if (null != dockerRegistry && !"".equals(dockerRegistry)) {
             deploymentImageName = dockerRegistry + REGISTRY_SEPARATOR + deploymentImageName;
         }
-
         return new ContainerBuilder()
                 .withName(serviceModel.getName())
                 .withImage(deploymentImageName)
@@ -238,7 +235,6 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
             throw new KubernetesPluginException("error occurred creating docker image.", e);
         }
     }
-
 
     /**
      * Create docker artifacts.

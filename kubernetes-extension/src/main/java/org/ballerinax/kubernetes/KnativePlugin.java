@@ -118,7 +118,6 @@ public class KnativePlugin extends AbstractCompilerPlugin {
                 dlog.logDiagnostic(Diagnostic.Kind.ERROR, variableNode.getPosition(), e.getMessage());
             }
         }
-
     }
 
     @Override

@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.ballerinax.kubernetes.models.knative;
 
 /**
@@ -172,5 +173,4 @@ public class EnvVarValueModel {
             return "ConfigMapKeyValue{" + "key='" + key + '\'' + ", name='" + name + '\'' + '}';
         }
     }
-
 }

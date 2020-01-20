@@ -231,7 +231,6 @@ public class KnativeUtils {
         } catch (IOException e) {
             throw new KubernetesPluginException("unable to delete directory: " + path, e);
         }
-
     }
 
     /* Checks if a String is empty ("") or null.
@@ -316,7 +315,6 @@ public class KnativeUtils {
             }
             return map;
         }
-
     }
 
     /**
@@ -463,7 +461,6 @@ public class KnativeUtils {
                                 break;
                         }
                     }
-
                     envVarMap.put(envVarName, envVarValue);
                 }
             }
@@ -584,5 +581,4 @@ public class KnativeUtils {
         });
         return envVars;
     }
-
 }

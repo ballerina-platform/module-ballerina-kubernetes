@@ -23,7 +23,6 @@ import java.util.HashMap;
 /**
  * Knative Pod Autoscaler annotations model class.
  */
-
 public class PodAutoscalerModel extends KnativeModel {
 
     private int minReplicas;
