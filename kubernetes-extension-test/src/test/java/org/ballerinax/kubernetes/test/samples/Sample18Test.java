@@ -100,4 +100,5 @@ public class Sample18Test extends SampleTest {
         KnativeUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KnativeTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
+
 }

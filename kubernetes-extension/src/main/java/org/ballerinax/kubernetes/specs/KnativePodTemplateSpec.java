@@ -45,11 +45,6 @@ import javax.validation.Valid;
         "spec"
 })
 @JsonDeserialize(using = com.fasterxml.jackson.databind.JsonDeserializer.None.class)
-/*@ToString
-@EqualsAndHashCode
-@Buildable(editableEnabled = false, validationEnabled = true, generateBuilderPackage
-        = true, builderPackage = "io.fabric8.kubernetes.api.builder",
-        inline = @Inline(type = Doneable.class, prefix = "Doneable", value = "done"))*/
 public class KnativePodTemplateSpec implements KubernetesResource {
 
     private static final long serialVersionUID = 6106269076155338045L;

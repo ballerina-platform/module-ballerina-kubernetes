@@ -59,6 +59,11 @@ public class KnativeService extends CustomResource {
     private String kind = "Service";
 
     @JsonProperty("metadata")
+    @Valid
+    @CheckObjectMeta(
+            regexp = "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$",
+            max = 253
+    )
     private ObjectMeta metadata;
 
     @JsonProperty("spec")
