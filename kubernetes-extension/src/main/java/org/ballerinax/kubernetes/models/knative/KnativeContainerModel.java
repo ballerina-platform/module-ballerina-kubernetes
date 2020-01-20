@@ -113,6 +113,4 @@ public class KnativeContainerModel extends KnativeModel {
                 ", selector='" + selector + '\'' +
                 '}';
     }
-
-
 }

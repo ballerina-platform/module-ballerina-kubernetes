@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.ballerinax.kubernetes.handlers.knative;
 
 import io.fabric8.kubernetes.api.model.Container;
@@ -65,7 +66,7 @@ import static org.ballerinax.kubernetes.utils.KnativeUtils.populateEnvVar;
  * Generates knative service from annotations.
  */
 public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
-
+    
     private List<ContainerPort> populatePorts(Set<Integer> ports) {
         List<ContainerPort> containerPorts = new ArrayList<>();
         for (int port :ports) {
@@ -77,7 +78,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
         }
         return containerPorts;
     }
-
+    
     private List<VolumeMount> populateVolumeMounts(ServiceModel serviceModel) {
         List<VolumeMount> volumeMounts = new ArrayList<>();
         for (SecretModel secretModel : serviceModel.getSecretModels()) {
@@ -98,7 +99,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
         }
         return volumeMounts;
     }
-
+    
     private List<Container> generateInitContainer(ServiceModel serviceModel) throws KubernetesPluginException {
         List<Container> initContainers = new ArrayList<>();
         for (String dependsOn : serviceModel.getDependsOn()) {
@@ -115,7 +116,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
         }
         return initContainers;
     }
-
+    
     private Container generateContainer(ServiceModel serviceModel, List<ContainerPort> containerPorts)
             throws KubernetesPluginException {
         String dockerRegistry = serviceModel.getRegistry();
@@ -123,7 +124,6 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
         if (null != dockerRegistry && !"".equals(dockerRegistry)) {
             deploymentImageName = dockerRegistry + REGISTRY_SEPARATOR + deploymentImageName;
         }
-
         return new ContainerBuilder()
                 .withName(serviceModel.getName())
                 .withImage(deploymentImageName)
@@ -134,7 +134,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
                 .withReadinessProbe(generateProbe(serviceModel.getReadinessProbe()))
                 .build();
     }
-
+    
     private List<Volume> populateVolume(ServiceModel serviceModel) {
         List<Volume> volumes = new ArrayList<>();
         for (SecretModel secretModel : serviceModel.getSecretModels()) {
@@ -157,7 +157,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
         }
         return volumes;
     }
-
+    
     private Probe generateProbe(ProbeModel probeModel) {
         if (null == probeModel) {
             return null;
@@ -171,7 +171,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
                 .withTcpSocket(tcpSocketAction)
                 .build();
     }
-
+    
     /**
      * Generate kubernetes deployment definition from annotation.
      *
@@ -188,8 +188,8 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
                 .withName(serviceModel.getName())
                 .withNamespace(knativeDataHolder.getNamespace())
                 .build();
-                 KnativeService knativeServiceBuild = new KnativeService();
-                 knativeServiceBuild.setMetadata(metaData);
+        KnativeService knativeServiceBuild = new KnativeService();
+        knativeServiceBuild.setMetadata(metaData);
         KnativeServiceSpec knativeServiceSpec = new KnativeServiceSpec();
         KnativePodSpec knativePodSpec = new KnativePodSpec();
         knativePodSpec.setContainerConcurrency(serviceModel.getContainerConcurrency());
@@ -201,7 +201,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
         knativePodTemplateSpec.setSpec(knativePodSpec);
         knativeServiceSpec.setTemplate(knativePodTemplateSpec);
         knativeServiceBuild.setSpec(knativeServiceSpec);
-
+        
         try {
             String deploymentContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(knativeServiceBuild);
             KnativeUtils.writeToFile(deploymentContent, DEPLOYMENT_FILE_POSTFIX + YAML);
@@ -210,7 +210,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
             throw new KubernetesPluginException(errorMessage, e);
         }
     }
-
+    
     @Override
     public void createArtifacts() throws KubernetesPluginException {
         try {
@@ -222,7 +222,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
                 //set first port as liveness port
                 serviceModel.getLivenessProbe().setPort(serviceModel.getPorts().iterator().next());
             }
-    
+            
             if (null != serviceModel.getReadinessProbe() && serviceModel.getReadinessProbe().getPort() == 0) {
                 //set first port as readiness port
                 serviceModel.getReadinessProbe().setPort(serviceModel.getPorts().iterator().next());
@@ -235,7 +235,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
             throw new KubernetesPluginException("error occurred creating docker image.", e);
         }
     }
-
+    
     /**
      * Create docker artifacts.
      *

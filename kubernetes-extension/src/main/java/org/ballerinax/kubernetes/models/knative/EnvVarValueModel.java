@@ -18,7 +18,6 @@
 
 package org.ballerinax.kubernetes.models.knative;
 
-
 /**
  * Model class for an environment variable value.
  */

@@ -294,7 +294,7 @@ public class KnativeUtils {
             return scopeSet;
         }
     }
-    
+
     /**
      * Get a map from a ballerina expression.
      *
@@ -315,6 +315,7 @@ public class KnativeUtils {
             }
             return map;
         }
+
     }
 
     /**

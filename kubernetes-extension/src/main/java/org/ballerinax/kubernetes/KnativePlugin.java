@@ -216,6 +216,4 @@ public class KnativePlugin extends AbstractCompilerPlugin {
             }
         }
     }
-
-
 }
