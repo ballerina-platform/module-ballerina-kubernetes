@@ -17,14 +17,13 @@
  */
 package org.ballerinax.kubernetes.test.samples;
 
+import io.fabric8.knative.serving.v1alpha1.Service;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.Handlers;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.knative.KnativeService;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.ballerinax.kubernetes.test.utils.KnativeTestUtils;
 import org.ballerinax.kubernetes.utils.KnativeUtils;
@@ -48,38 +47,38 @@ public class Sample18Test extends SampleTest {
     private static final Path SOURCE_DIR_PATH = SAMPLE_DIR.resolve("sample18");
     private static final Path DOCKER_TARGET_PATH = SOURCE_DIR_PATH.resolve(DOCKER);
     private static final Path KUBERNETES_TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
-    private static final String DOCKER_IMAGE = "hello_world_k8s:latest";
-    private KnativeService knativeService;
+    private static final String DOCKER_IMAGE = "hello_world_knative:latest";
+    private Service knativeService;
 
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
-        Assert.assertEquals(KnativeTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "hello_world_k8s.bal"), 0);
-        File artifactYaml = KUBERNETES_TARGET_PATH.resolve("hello_world_k8s.yaml").toFile();
+        Assert.assertEquals(KnativeTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "hello_world_knative.bal"), 0);
+        File artifactYaml = KUBERNETES_TARGET_PATH.resolve("hello_world_knative.yaml").toFile();
         Assert.assertTrue(artifactYaml.exists());
         Handlers.register(new KnativeTestUtils.ServiceHandler());
         KubernetesClient client = new DefaultKubernetesClient();
         List<HasMetadata> k8sItems = client.load(new FileInputStream(artifactYaml)).get();
         for (HasMetadata data : k8sItems) {
             if ("Service".equals(data.getKind())) {
-                knativeService = (KnativeService) data;
+                knativeService = (Service) data;
             } else {
-                Assert.fail("Unexpected k8s resource found: " + data.getKind());
+                Assert.fail("Unexpected k8s/knative resource found: " + data.getKind());
             }
         }
     }
 
     @Test
     public void validateDeployment() {
-        Assert.assertNotNull(knativeService);
-        Assert.assertEquals(knativeService.getMetadata().getName(), "hello-world-knative-deployment");
-        Assert.assertEquals(knativeService.getSpec().getReplicas().intValue(), 1);
-        Assert.assertEquals(knativeService.getMetadata().getLabels().get(KubernetesConstants
-                .KUBERNETES_SELECTOR_KEY), "hello_world_knative");
-        Assert.assertEquals(knativeService.getSpec().getTemplate().getSpec().getContainers().size(), 1);
-        Container container = knativeService.getSpec().getTemplate().getSpec().getContainers().get(0);
+        Assert.assertNotNull(this.knativeService);
+        Assert.assertEquals(this.knativeService.getMetadata().getName(), "helloworld-svc");
+        Assert.assertEquals(this.knativeService.getSpec().getTemplate().getSpec().getContainerConcurrency().longValue(),
+                100);
+        Container container = this.knativeService.getSpec().getTemplate().getSpec().getContainers().get(0);
         Assert.assertEquals(container.getImage(), DOCKER_IMAGE);
         Assert.assertEquals(container.getPorts().size(), 1);
-        Assert.assertEquals(container.getEnv().size(), 0);
+        Assert.assertEquals(container.getPorts().get(0).getContainerPort().intValue(), 8080);
+        Assert.assertEquals(container.getPorts().get(0).getProtocol(), "TCP");
+        Assert.assertEquals(container.getName(), "helloworld-svc");
     }
 
     @Test
