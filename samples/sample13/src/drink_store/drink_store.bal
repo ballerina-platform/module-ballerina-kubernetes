@@ -90,8 +90,7 @@ service DrinkStoreAPI on drinkStoreEP {
         http:Response response = new;
         float celciusValue = roundFloat(getTempreatureInCelcius(),2);
         if (celciusValue > 15) {
-            //response.setTextPayload("Tempreture in San Francisco: " + celciusValue + " clecius. Sunny."+"\n");
-            response.setTextPayload(string`Tempreture in San Francisco: ${celciusValue} clecius. Sunny.`);
+            response.setTextPayload(string `Tempreture in San Francisco: ${celciusValue} clecius. Sunny.`);
          } else {
              response.setTextPayload(string `Tempreture in San Francisco: ${celciusValue} clecius. Cold.`);
          }

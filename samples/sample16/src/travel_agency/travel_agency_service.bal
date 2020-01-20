@@ -5,12 +5,8 @@ import ballerina/kubernetes;
 import ballerina/istio;
 
 @kubernetes:Service {}
-@istio:Gateway {
-    name: "Gateway"
-}
-@istio:VirtualService {
-    name: "VirtualService"
-}
+@istio:Gateway {}
+@istio:VirtualService {}
 listener http:Listener travelAgencyEP = new(9090);
 
 http:Client airlineReservationEP = new("http://airline-reservation:8080/airline");
