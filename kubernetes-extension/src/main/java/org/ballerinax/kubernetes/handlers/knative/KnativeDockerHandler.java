@@ -33,7 +33,7 @@ public class KnativeDockerHandler extends KnativeAbstractArtifactHandler {
             // Generate docker artifacts
             DockerArtifactHandler dockerArtifactHandler = new DockerArtifactHandler(knativeDataHolder.getDockerModel());
             OUT.println();
-            dockerArtifactHandler.createArtifacts(OUT, "\t@Knative:Docker \t\t\t", knativeDataHolder.getUberJarPath(),
+            dockerArtifactHandler.createArtifacts(OUT, "\t@knative:Docker \t\t\t", knativeDataHolder.getUberJarPath(),
                     knativeDataHolder.getDockerArtifactOutputPath());
         } catch (DockerGenException e) {
             throw new KubernetesPluginException(e.getMessage(), e);

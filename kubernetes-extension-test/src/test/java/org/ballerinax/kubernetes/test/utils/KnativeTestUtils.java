@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.ballerinax.kubernetes.test.utils;
 
 import com.google.common.base.Optional;
@@ -9,7 +27,14 @@ import com.spotify.docker.client.DockerHost;
 import com.spotify.docker.client.exceptions.DockerCertificateException;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.ImageInfo;
+import io.fabric8.knative.serving.v1alpha1.Service;
+import io.fabric8.knative.serving.v1alpha1.ServiceBuilder;
+import io.fabric8.kubernetes.client.Config;
+import io.fabric8.kubernetes.client.ResourceHandler;
+import io.fabric8.kubernetes.client.Watch;
+import io.fabric8.kubernetes.client.Watcher;
 import io.fabric8.kubernetes.client.utils.Serialization;
+import okhttp3.OkHttpClient;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.ballerinax.kubernetes.test.samples.SampleTest;
@@ -35,6 +60,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
+
 import javax.ws.rs.ext.RuntimeDelegate;
 
 public class KnativeTestUtils {
@@ -42,7 +70,7 @@ public class KnativeTestUtils {
     private static final Logger log = LoggerFactory.getLogger(SampleTest.class);
     private static final String JAVA_OPTS = "JAVA_OPTS";
     private static final Path DISTRIBUTION_PATH = Paths.get(FilenameUtils.separatorsToSystem(
-            System.getProperty("/home/uvindu/extracted-distribution/jballerina-tools-1.0.4")));
+            System.getProperty("ballerina.pack")));
     private static final String BALLERINA_COMMAND = DISTRIBUTION_PATH +
             File.separator + "bin" +
             File.separator +
@@ -288,5 +316,59 @@ public class KnativeTestUtils {
     public static <T> T loadYaml(File file) throws IOException {
         FileInputStream fileInputStream = FileUtils.openInputStream(file);
         return Serialization.unmarshal(fileInputStream, Collections.emptyMap());
+    }
+    
+    /**
+     * Knative service handler for parsing yamls.
+     */
+    public static class ServiceHandler implements ResourceHandler<Service, ServiceBuilder> {
+        @Override
+        public String getKind() {
+            return "Service";
+        }
+        @Override
+        public String getApiVersion() {
+            return "serving.knative.dev/v1alpha1";
+        }
+        @Override
+        public Service create(OkHttpClient okHttpClient, Config config, String s, Service service) {
+            return null;
+        }
+        @Override
+        public Service replace(OkHttpClient okHttpClient, Config config, String s, Service service) {
+            return null;
+        }
+        @Override
+        public Service reload(OkHttpClient okHttpClient, Config config, String s, Service service) {
+            return null;
+        }
+        @Override
+        public ServiceBuilder edit(Service service) {
+            return new ServiceBuilder(service);
+        }
+        @Override
+        public Boolean delete(OkHttpClient okHttpClient, Config config, String s, Boolean aBoolean, Service service) {
+            return null;
+        }
+        @Override
+        public Watch watch(OkHttpClient okHttpClient, Config config, String s, Service service,
+                           Watcher<Service> watcher) {
+            return null;
+        }
+        @Override
+        public Watch watch(OkHttpClient okHttpClient, Config config, String s, Service service, String s1,
+                           Watcher<Service> watcher) {
+            return null;
+        }
+        @Override
+        public Service waitUntilReady(OkHttpClient okHttpClient, Config config, String s, Service service, long l,
+                                      TimeUnit timeUnit) {
+            return null;
+        }
+        @Override
+        public Service waitUntilCondition(OkHttpClient okHttpClient, Config config, String s, Service service,
+                                          Predicate<Service> predicate, long l, TimeUnit timeUnit) {
+            return null;
+        }
     }
 }
