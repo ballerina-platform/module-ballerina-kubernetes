@@ -19,7 +19,12 @@
 package org.ballerinax.kubernetes;
 
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.handlers.knative.*;
+import org.ballerinax.kubernetes.handlers.knative.KnativeConfigMapHandler;
+import org.ballerinax.kubernetes.handlers.knative.KnativeContainerHandler;
+import org.ballerinax.kubernetes.handlers.knative.KnativeDockerHandler;
+import org.ballerinax.kubernetes.handlers.knative.KnativeResourceQuotaHandler;
+import org.ballerinax.kubernetes.handlers.knative.KnativeSecretHandler;
+import org.ballerinax.kubernetes.handlers.knative.KnativeServiceHandler;
 import org.ballerinax.kubernetes.models.knative.KnativeContext;
 import org.ballerinax.kubernetes.models.knative.KnativeDataHolder;
 import org.ballerinax.kubernetes.models.knative.ServiceModel;
@@ -31,7 +36,9 @@ import java.util.Map;
 import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_LATEST_TAG;
-import static org.ballerinax.kubernetes.utils.KnativeUtils.*;
+import static org.ballerinax.kubernetes.utils.KnativeUtils.getValidName;
+import static org.ballerinax.kubernetes.utils.KnativeUtils.isBlank;
+import static org.ballerinax.kubernetes.utils.KnativeUtils.printInstruction;
 
 /**
  * Generate and write artifacts to files.
