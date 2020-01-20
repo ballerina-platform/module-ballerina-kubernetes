@@ -315,7 +315,6 @@ public class KnativeUtils {
             }
             return map;
         }
-
     }
 
     /**

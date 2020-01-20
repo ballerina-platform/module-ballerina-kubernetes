@@ -202,7 +202,6 @@ public class KnativePodSpec implements KubernetesResource {
         this.tolerations = tolerations;
         this.volumes = volumes;
         this.timeoutSeconds = timeoutSeconds;
-
     }
 
     /**

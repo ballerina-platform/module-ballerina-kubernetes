@@ -97,5 +97,4 @@ public class KnativeContext {
         }
         throw new KubernetesPluginException("dependent listener " + dependsOn + " not found.");
     }
-
 }
