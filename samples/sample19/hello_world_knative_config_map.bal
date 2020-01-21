@@ -27,14 +27,17 @@ listener http:Listener helloWorldEP = new(8080, {
         }
     ]
 }
+
 @http:ServiceConfig {
     basePath: "/helloWorld"
 }
+
 service helloWorld on helloWorldEP {
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/config/{user}"
     }
+
     resource function getConfig(http:Caller outboundEP, http:Request request, string user) {
         http:Response response = new;
         string userId = getConfigValue(user, "userid");
@@ -47,10 +50,12 @@ service helloWorld on helloWorldEP {
         }
 
     }
+
     @http:ResourceConfig {
         methods: ["GET"],
         path: "/data"
     }
+
     resource function getData(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         string payload = <@untainted> readFile("./data/data.txt");
