@@ -90,17 +90,47 @@ See [here](https://istio.io/docs/setup/kubernetes/quick-start/) on how to instal
         │   │   |   |   └── travel_agency-testable.bir                           
         └── jar_cache                                      
             ├── ballerina                                       
-            |   |          
-            |   |            
-            |   └──                                
-            |   |        
-            |   |   
+            |   |   └── auth         
+            |   |   └── cache     
+            |   |   └── config                          
+            |   |   └── crypto
+            |   |   └── http
+            |   |   └── io     
+            |   |   └── lang.array       
+            |   |   └── lang.float                     
+            |   |   └── lang.int
+            |   |   └── lang.object
+            |   |   └── lang.string         
+            |   |   └── log
+            |   |   └── math                            
+            |   |   └── mime 
+            |   |   └── reflect
+            |   |   └── runtime         
+            |   |   └── stringutils  
+            |   |   └── system                    
+            |   |   └── task
+            |   |   └── test
+            |   |   └── time         
             ├── ballerinax
-            |   |        
-            |   |   
+            |   |    └── java    
+            |   |    |   └── 0.0.0
             └── gogo
-                |        
-                └──
+                ├── airline_reservation                              
+                |   └── 1.0.0 
+                │   |   ├── gogo-airline_reservation-1.0.0.jar                     
+                |   |   └── gogo-airline_reservation-1.0.0-testable.jar                     
+                └── car_rental                                  
+                |   └── 1.0.0 
+                │   |   ├── gogo-car_rental-1.0.0.jar                    
+                |   |   └── gogo-car_rental-1.0.0-testable.jar
+                ├── hotel_reservation                              
+                |   └── 1.0.0 
+                │   |   ├── gogo-hotel_reservation-1.0.0.jar                        
+                |   |   └── gogo-hotel_reservation-1.0.0-testable.jar               
+                └── travel_agency                                  
+                    └── 1.0.0 
+                        ├── gogo-hotel_reservation-1.0.0.jar                 
+                        └── gogo-hotel_reservation-1.0.0-testable.jar
     ```
 ### How to run:
 
