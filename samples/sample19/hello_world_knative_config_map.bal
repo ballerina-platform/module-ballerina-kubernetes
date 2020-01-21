@@ -4,7 +4,6 @@ import ballerina/io;
 import ballerina/knative;
 import ballerina/log;
 
-
 @knative:Service {}
 listener http:Listener helloWorldEP = new(8080, {
     secureSocket: {
