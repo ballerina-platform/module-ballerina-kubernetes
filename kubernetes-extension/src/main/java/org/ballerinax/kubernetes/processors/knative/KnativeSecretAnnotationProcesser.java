@@ -67,7 +67,6 @@ public class KnativeSecretAnnotationProcesser extends AbstractAnnotationProcesso
             throw new KubernetesPluginException("@kubernetes:Secret{} annotation cannot be attached to a non main " +
                     "function.");
         }
-
         processSecret(functionNode.getName(), attachmentNode);
     }
 

@@ -153,7 +153,6 @@ public class KnativeConfigMapAnnotationProcessor extends AbstractAnnotationProce
                     break;
                 default:
                     break;
-
             }
         }
         KnativeContext.getInstance().getDataHolder().addConfigMaps(configMapModels);
