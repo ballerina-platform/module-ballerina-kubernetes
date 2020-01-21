@@ -169,8 +169,6 @@ public class KnativeTestUtils {
         } catch (DockerCertificateException e) {
             throw new DockerTestException(e);
         }
-
-
         return dockerClient;
     }
 
@@ -268,7 +266,6 @@ public class KnativeTestUtils {
             log.info("ballerina-internal.log file found. content: ");
             log.info(FileUtils.readFileToString(ballerinaInternalLog.toFile(), Charset.defaultCharset()));
         }
-
         return exitCode;
     }
 
@@ -322,49 +319,60 @@ public class KnativeTestUtils {
      * Knative service handler for parsing yamls.
      */
     public static class ServiceHandler implements ResourceHandler<Service, ServiceBuilder> {
+
         @Override
         public String getKind() {
             return "Service";
         }
+
         @Override
         public String getApiVersion() {
             return "serving.knative.dev/v1alpha1";
         }
+
         @Override
         public Service create(OkHttpClient okHttpClient, Config config, String s, Service service) {
             return null;
         }
+
         @Override
         public Service replace(OkHttpClient okHttpClient, Config config, String s, Service service) {
             return null;
         }
+
         @Override
         public Service reload(OkHttpClient okHttpClient, Config config, String s, Service service) {
             return null;
         }
+
         @Override
         public ServiceBuilder edit(Service service) {
             return new ServiceBuilder(service);
         }
+
         @Override
         public Boolean delete(OkHttpClient okHttpClient, Config config, String s, Boolean aBoolean, Service service) {
             return null;
         }
+
         @Override
         public Watch watch(OkHttpClient okHttpClient, Config config, String s, Service service,
                            Watcher<Service> watcher) {
             return null;
         }
+
         @Override
         public Watch watch(OkHttpClient okHttpClient, Config config, String s, Service service, String s1,
                            Watcher<Service> watcher) {
             return null;
         }
+
         @Override
         public Service waitUntilReady(OkHttpClient okHttpClient, Config config, String s, Service service, long l,
                                       TimeUnit timeUnit) {
             return null;
         }
+
         @Override
         public Service waitUntilCondition(OkHttpClient okHttpClient, Config config, String s, Service service,
                                           Predicate<Service> predicate, long l, TimeUnit timeUnit) {

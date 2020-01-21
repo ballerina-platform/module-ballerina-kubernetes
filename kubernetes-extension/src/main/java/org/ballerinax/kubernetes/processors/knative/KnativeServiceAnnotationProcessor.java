@@ -384,5 +384,5 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
         value,
         effect,
         tolerationSeconds
-    }
+        }
     }
