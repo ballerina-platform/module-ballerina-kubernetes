@@ -39,7 +39,6 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangTypeInit;
 
-
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,7 +57,6 @@ import static org.ballerinax.kubernetes.utils.KnativeUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.isBlank;
-
 
 /**
  * Deployment Annotation processor.

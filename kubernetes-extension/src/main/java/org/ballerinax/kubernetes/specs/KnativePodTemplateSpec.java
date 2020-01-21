@@ -56,6 +56,7 @@ public class KnativePodTemplateSpec implements KubernetesResource {
     @JsonProperty("metadata")
     @Valid
     private ObjectMeta metadata;
+
     /**
      * Knative service annotations model class.
      * Knative PodTemplateSpec
@@ -65,12 +66,14 @@ public class KnativePodTemplateSpec implements KubernetesResource {
     private KnativePodSpec spec;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
     /**
      * Knative service annotations model class.
      * Knative PodTemplateSpec
      */
     public KnativePodTemplateSpec() {
     }
+
     /**
      * Knative service annotations model class.
      * Knative PodTemplateSpec

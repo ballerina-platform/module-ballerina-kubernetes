@@ -63,30 +63,35 @@ public class KnativeServiceSpec implements KubernetesResource {
      */
     @JsonProperty("minReadySeconds")
     private Integer minReadySeconds;
+
     /**
      * Knative service annotations model class.
      * Knative ServiceSpec
      */
     @JsonProperty("paused")
     private Boolean paused;
+
     /**
      * Knative service annotations model class.
      * Knative ServiceSpec
      */
     @JsonProperty("progressDeadlineSeconds")
     private Integer progressDeadlineSeconds;
+
     /**
      * Knative service annotations model class.
      * Knative ServiceSpec
      */
     @JsonProperty("replicas")
     private Integer replicas;
+
     /**
      * Knative service annotations model class.
      * Knative ServiceSpec
      */
     @JsonProperty("revisionHistoryLimit")
     private Integer revisionHistoryLimit;
+
     /**
      * Knative service annotations model class.
      * Knative ServiceSpec
@@ -94,6 +99,7 @@ public class KnativeServiceSpec implements KubernetesResource {
     @JsonProperty("selector")
     @Valid
     private LabelSelector selector;
+
     /**
      * Knative service annotations model class.
      * Knative ServiceSpec
@@ -101,6 +107,7 @@ public class KnativeServiceSpec implements KubernetesResource {
     @JsonProperty("strategy")
     @Valid
     private DeploymentStrategy strategy;
+
     /**
      * Knative service annotations model class.
      * Knative ServiceSpec
