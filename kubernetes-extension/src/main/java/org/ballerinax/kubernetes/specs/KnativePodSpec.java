@@ -93,7 +93,6 @@ public class KnativePodSpec implements KubernetesResource {
     @Valid
     private List<Container> containers = new ArrayList<Container>();
 
-
     /**
      * Kubernetes service annotations model class.
      * Knative PodSpec
