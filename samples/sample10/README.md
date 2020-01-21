@@ -51,7 +51,7 @@
     ```
 ### How to run:
 
-1. Compile the project. Command to run kubernetes artifacts will be printed on success:
+1. Compile the project. Command to deploy kubernetes artifacts will be printed on build success.
 ```bash
 sample10$> ballerina build -a
 Compiling source

@@ -22,7 +22,7 @@
     ```
 ### How to run:
 
-1. Compile the  hello_world_k8s_config.bal file. Command to run kubernetes artifacts will be printed on success:
+1. Compile the  hello_world_k8s_config.bal file. Command to deploy kubernetes artifacts will be printed on build success.
 ```bash
 $> ballerina build hello_world_k8s_config.bal
 Compiling source

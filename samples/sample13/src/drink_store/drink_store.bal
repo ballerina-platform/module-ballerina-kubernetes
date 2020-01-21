@@ -114,9 +114,9 @@ function getCoolDrinkPrice(json payload) returns json {
                     item["price"] = roundFloat((result + priceVariation), 2);
                     item["diff"] = string`+ ${priceVariation}`;
                 } else {
+                    // Decrease Cooldrink price on cold days.
                     item["price"] = roundFloat((result + priceVariation), 2);
                     item["diff"] = string`- ${priceVariation}`;
-                    // Decrese Cooldrink price on cold days.
                 }
             }
         } else {
@@ -138,11 +138,11 @@ function getHotDrinkPrice(json payload) returns json {
                 if (celciusValue < 15) {
                     // Increase Hot drink price on cold days.
                     item["price"] = roundFloat((result + priceVariation), 2);
-                    item ["diff"] = string`+ ${priceVariation}`;
+                    item["diff"] = string`+ ${priceVariation}`;
                 } else {
-                    // Decrese Hot drink price on hot days.
+                    // Decrease Hot drink price on hot days.
                     item["price"] = roundFloat((result + priceVariation), 2);
-                    item ["diff"] = string`- ${priceVariation}`;
+                    item["diff"] = string`- ${priceVariation}`;
                 }
             }
         } else {

@@ -30,7 +30,7 @@ hello_world_copy_file.bal)
     ```
 ### How to run:
 
-1. Compile the  hello_world_copy_file.bal file. Command to run kubernetes artifacts will be printed on success:
+1. Compile the  hello_world_copy_file.bal file. Command to deploy kubernetes artifacts will be printed on build success.
 ```bash
 $> ballerina build hello_world_copy_file.bal
 Compiling source

@@ -25,7 +25,7 @@
     ```
 ### How to run:
 
-1. Compile the  foodstore.bal file. Command to run kubernetes artifacts will be printed on success:
+1. Compile the  foodstore.bal file. Command to deploy kubernetes artifacts will be printed on build success.
 ```bash
 $> ballerina build foodstore.bal
 Compiling source

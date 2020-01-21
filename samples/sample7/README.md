@@ -33,7 +33,7 @@
     ```
 ### How to run:
 
-1. Compile the  hello_world_secret_mount_k8s.bal file. Command to run kubernetes artifacts will be printed on success:
+1. Compile the  hello_world_secret_mount_k8s.bal file. Command to deploy kubernetes artifacts will be printed on build success.
 ```bash
 $> ballerina build hello_world_secret_mount_k8s.bal
 Compiling source

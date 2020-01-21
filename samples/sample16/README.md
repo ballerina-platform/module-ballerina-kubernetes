@@ -104,7 +104,7 @@ See [here](https://istio.io/docs/setup/kubernetes/quick-start/) on how to instal
     ```
 ### How to run:
 
-1. Compile the ballerina project from `sample16` folder. Command to run kubernetes artifacts will be printed on success:
+1. Compile the ballerina project from `sample16` folder. Command to deploy kubernetes artifacts will be printed on build success.
 ```bash
 $> ballerina build -a
 Compiling source

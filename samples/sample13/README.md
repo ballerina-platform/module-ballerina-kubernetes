@@ -73,7 +73,7 @@
   
     ```
 ### How to run:
-1. Download [mysql-connector-java-8.0.11.jar](https://jar-download.com/artifacts/mysql/mysql-connector-java/8.0.11/source-code) and add it to a new folder named `libs` inside sample13 directory.2. Go to `resource/docker` folder and run the build.sh file. This will generate two databases deployment in mysql namespace.
+1. Download [mysql-connector-java-8.0.11.jar](https://jar-download.com/artifacts/mysql/mysql-connector-java/8.0.11/source-code) and add it to a new folder named `libs` inside sample13 directory.
 2. Go to `resource/docker` folder and run the build.sh file. This will generate two databases deployment in mysql namespace.
 Verify pods and services are created. 
 
@@ -107,7 +107,7 @@ cooldrink-mysql-deployment-587c466765-zs9ll   1/1       Running   0          39s
 hotdrink-mysql-deployment-77869db489-c8lcf    1/1       Running   0          39s
 ```
 
-1. Navigate to sample13 folder and build the project. Commands to deploy kubernetes artifacts will be printed on success:
+1. Navigate to sample13 folder and build the project. Commands to deploy kubernetes artifacts will be printed on build success.
 ```bash
 $> ballerina build -a
 Compiling source
