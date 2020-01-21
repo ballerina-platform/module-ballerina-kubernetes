@@ -15,8 +15,8 @@
 // under the License.
 
 import ballerina/http;
-import ballerina/log;
 import ballerina/kubernetes;
+import ballerina/log;
 import ballerina/openshift;
 
 @openshift:Route {
