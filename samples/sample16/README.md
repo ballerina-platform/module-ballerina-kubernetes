@@ -250,83 +250,113 @@ Generating artifacts...
 $> tree target
 target/
 ├── docker                                             
-│   ├── airline_reservation
-│   │       └── Dockerfile
-│   ├── car_rental
-│   │       └── Dockerfile
-│   ├── hotel_reservation
-│   │   ├── docker
-│   │   │   └── Dockerfile
-│   └── travel_agency
-│       ├── docker
-│       │   └── Dockerfile
-├── kubernetes                                         
-│   ├── airline_reservation
-│   │   ├── airline-reservation-deployment
-│   │   │   ├── Chart.yaml
-│   │   │   └── templates
-│   │   │       └── airline_reservation.yaml
-│   │   ├── airline_reservation.yaml
-│   ├── car_rental
-│   │   ├── car-rental-deployment
-│   │   │   ├── Chart.yaml
-│   │   │   └── templates
-│   │   │       └── car_rental.yaml
-│   │   ├── car_rental.yaml
-│   ├── hotel_reservation
-│   │   ├── hotel-reservation-deployment
-│   │   │   ├── Chart.yaml
-│   │   │   └── templates
-│   │   │       └── hotel_reservation.yaml
-│   │   └── hotel_reservation.yaml
-│   └── travel_agency
-│       ├── travel-agency-deployment
-│       │   ├── Chart.yaml
-│       │   └── templates
-│       │       └── travel_agency.yaml
-│       └── travel_agency.yaml                               
-├── balo                                               
-    ├── airline_reservation-2019r3-any-1.0.0.balo    
-    ├── car_rental-2019r3-any-1.0.0.balo
-    ├── hotel_reservation-2019r3-any-1.0.0.balo          
-    └── travel_agency-2019r3-any-1.0.0.balo                   
-├── bin                                                
-    ├── airline_reservation.jar  
-    ├── car_rental.jar
-    ├── hotel_reservation.jar 
-    └── travel_agency.jar                                   
-└── caches                                             
-    ├── bir_cache                                      
-    │   ├── gogo                                       
-    │   │   ├── airline_reservation                              
-    │   │   |   └── 1.0.0 
-    |   │   │   |   ├── airline_reservation.bir                        
-    │   │   |   |   └── airline_reservation-testable.bir                     
-    │   │   └── car_rental                                  
-    │   │   |   └── 1.0.0 
-    |   │   │   |   ├── car_rental.bir                        
-    │   │   |   |   └── car_rental-testable.bir 
-    │   │   ├── hotel_reservation                              
-    │   │   |   └── 1.0.0 
-    |   │   │   |   ├── hotel_reservation.bir                        
-    │   │   |   |   └── hotel_reservation-testable.bir                     
-    │   │   └── travel_agency                                  
-    │   │   |   └── 1.0.0 
-    |   │   │   |   ├── travel_agency.bir                        
-    │   │   |   |   └── travel_agency-testable.bir                           
-    └── jar_cache                                      
-        ├── ballerina                                       
-        |   |          
-        |   |            
-        |   └──                                
-        |   |        
-        |   |   
-        ├── ballerinax
-        |   |        
-        |   |   
-        └── gogo
-            |        
-            └──
+    │   ├── airline_reservation
+    │   │       └── Dockerfile
+    │   ├── car_rental
+    │   │       └── Dockerfile
+    │   ├── hotel_reservation
+    │   │   ├── docker
+    │   │   │   └── Dockerfile
+    │   └── travel_agency
+    │       ├── docker
+    │       │   └── Dockerfile
+    ├── kubernetes                                         
+    │   ├── airline_reservation
+    │   │   ├── airline-reservation-deployment
+    │   │   │   ├── Chart.yaml
+    │   │   │   └── templates
+    │   │   │       └── airline_reservation.yaml
+    │   │   ├── airline_reservation.yaml
+    │   ├── car_rental
+    │   │   ├── car-rental-deployment
+    │   │   │   ├── Chart.yaml
+    │   │   │   └── templates
+    │   │   │       └── car_rental.yaml
+    │   │   ├── car_rental.yaml
+    │   ├── hotel_reservation
+    │   │   ├── hotel-reservation-deployment
+    │   │   │   ├── Chart.yaml
+    │   │   │   └── templates
+    │   │   │       └── hotel_reservation.yaml
+    │   │   └── hotel_reservation.yaml
+    │   └── travel_agency
+    │       ├── travel-agency-deployment
+    │       │   ├── Chart.yaml
+    │       │   └── templates
+    │       │       └── travel_agency.yaml
+    │       └── travel_agency.yaml                               
+    ├── balo                                               
+        ├── airline_reservation-2019r3-any-1.0.0.balo    
+        ├── car_rental-2019r3-any-1.0.0.balo
+        ├── hotel_reservation-2019r3-any-1.0.0.balo          
+        └── travel_agency-2019r3-any-1.0.0.balo                   
+    ├── bin                                                
+        ├── airline_reservation.jar  
+        ├── car_rental.jar
+        ├── hotel_reservation.jar 
+        └── travel_agency.jar                                   
+    └── caches                                             
+        ├── bir_cache                                      
+        │   ├── gogo                                       
+        │   │   ├── airline_reservation                              
+        │   │   |   └── 1.0.0 
+        |   │   │   |   ├── airline_reservation.bir                        
+        │   │   |   |   └── airline_reservation-testable.bir                     
+        │   │   └── car_rental                                  
+        │   │   |   └── 1.0.0 
+        |   │   │   |   ├── car_rental.bir                        
+        │   │   |   |   └── car_rental-testable.bir 
+        │   │   ├── hotel_reservation                              
+        │   │   |   └── 1.0.0 
+        |   │   │   |   ├── hotel_reservation.bir                        
+        │   │   |   |   └── hotel_reservation-testable.bir                     
+        │   │   └── travel_agency                                  
+        │   │   |   └── 1.0.0 
+        |   │   │   |   ├── travel_agency.bir                        
+        │   │   |   |   └── travel_agency-testable.bir                           
+        └── jar_cache                                      
+            ├── ballerina                                       
+            |   |   └── auth         
+            |   |   └── cache     
+            |   |   └── config                          
+            |   |   └── crypto
+            |   |   └── http
+            |   |   └── io     
+            |   |   └── lang.array       
+            |   |   └── lang.float                     
+            |   |   └── lang.int
+            |   |   └── lang.object
+            |   |   └── lang.string         
+            |   |   └── log
+            |   |   └── math                            
+            |   |   └── mime 
+            |   |   └── reflect
+            |   |   └── runtime         
+            |   |   └── stringutils  
+            |   |   └── system                    
+            |   |   └── task
+            |   |   └── test
+            |   |   └── time         
+            ├── ballerinax
+            |   |    └── java    
+            |   |    |   └── 0.0.0
+            └── gogo
+                ├── airline_reservation                              
+                |   └── 1.0.0 
+                │   |   ├── gogo-airline_reservation-1.0.0.jar                     
+                |   |   └── gogo-airline_reservation-1.0.0-testable.jar                     
+                └── car_rental                                  
+                |   └── 1.0.0 
+                │   |   ├── gogo-car_rental-1.0.0.jar                    
+                |   |   └── gogo-car_rental-1.0.0-testable.jar
+                ├── hotel_reservation                              
+                |   └── 1.0.0 
+                │   |   ├── gogo-hotel_reservation-1.0.0.jar                        
+                |   |   └── gogo-hotel_reservation-1.0.0-testable.jar               
+                └── travel_agency                                  
+                    └── 1.0.0 
+                        ├── gogo-hotel_reservation-1.0.0.jar                 
+                        └── gogo-hotel_reservation-1.0.0-testable.jar
 
 ```
 
