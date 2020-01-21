@@ -51,17 +51,21 @@ public class KnativeService extends CustomResource {
     @NotNull
     @JsonProperty("apiVersion")
     private String apiVersion = "serving.knative.dev/v1alpha1";
+
     @NotNull
     @JsonProperty("kind")
     private String kind = "Service";
+
     @JsonProperty("metadata")
     private ObjectMeta metadata;
+
     @JsonProperty("spec")
     @Valid
     private KnativeServiceSpec spec;
 
     public KnativeService(){
     }
+
     public KnativeService(String apiVersion, String kind, ObjectMeta metadata,
                           KnativeServiceSpec spec, DeploymentStatus status) {
         this.apiVersion = apiVersion;
@@ -69,6 +73,7 @@ public class KnativeService extends CustomResource {
         this.metadata = metadata;
         this.spec = spec;
     }
+
     @JsonProperty("apiVersion")
     public String getApiVersion() {
         return this.apiVersion;
@@ -113,6 +118,7 @@ public class KnativeService extends CustomResource {
         return "Deployment(apiVersion=" + this.getApiVersion() + ", kind=" + this.getKind() + ", " +
                 "metadata=" + this.getMetadata() + ", spec=" + this.getSpec() + ")";
     }
+
     public boolean equals(Object o) {
         if (o == this) {
             return true;

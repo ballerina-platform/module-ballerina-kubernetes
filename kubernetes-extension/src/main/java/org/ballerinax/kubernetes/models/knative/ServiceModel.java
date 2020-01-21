@@ -339,6 +339,7 @@ public class ServiceModel extends KnativeModel {
     public void setPodTolerations(List<org.ballerinax.kubernetes.models.knative.PodTolerationModel> podTolerations) {
         this.podTolerations = podTolerations;
     }
+
     public String getCmd() {
         return cmd;
     }

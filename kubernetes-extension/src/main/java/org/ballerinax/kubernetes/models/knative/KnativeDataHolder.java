@@ -110,7 +110,6 @@ public class KnativeDataHolder {
         this.configMapModelSet.addAll(configMaps);
     }
 
-
     public Set<org.ballerinax.kubernetes.models.knative.ResourceQuotaModel> getResourceQuotaModels() {
         return resourceQuotaModels;
     }
@@ -179,5 +178,4 @@ public class KnativeDataHolder {
     public void setNamespace(String namespace) {
         this.namespace = namespace;
     }
-
 }
