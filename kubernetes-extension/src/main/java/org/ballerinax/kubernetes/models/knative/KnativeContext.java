@@ -49,10 +49,12 @@ public class KnativeContext {
         }
         return instance;
     }
+
     public void addDataHolder(PackageID packageID, Path sourcePath) {
         this.currentPackage = packageID;
         this.packageIDtoDataHolderMap.put(packageID, new KnativeDataHolder(sourcePath));
     }
+
     public void setCurrentPackage(PackageID packageID) {
         this.currentPackage = packageID;
     }
@@ -60,9 +62,11 @@ public class KnativeContext {
     public KnativeDataHolder getDataHolder() {
         return this.packageIDtoDataHolderMap.get(this.currentPackage);
     }
+
     public KnativeDataHolder getDataHolder(PackageID packageID) {
         return this.packageIDtoDataHolderMap.get(packageID);
     }
+
     public Map<PackageID, KnativeDataHolder> getPackageIDtoDataHolderMap() {
         return packageIDtoDataHolderMap;
     }
@@ -78,6 +82,7 @@ public class KnativeContext {
         throw new KubernetesPluginException("dependent listener " + dependsOn + " is not annotated with " +
                 "@kubernetes:Service{}");
     }
+
     public String getDeploymentNameFromListener(String dependsOn) throws KubernetesPluginException {
         if (isBlank(dependsOn) || !dependsOn.contains(Names.VERSION_SEPARATOR.value) || !(dependsOn.indexOf
                 (Names.VERSION_SEPARATOR.value) > 1)) {
