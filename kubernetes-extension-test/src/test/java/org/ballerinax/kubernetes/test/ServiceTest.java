@@ -143,7 +143,46 @@ public class ServiceTest {
         KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
-    
+
+    @Test
+    public void nodePortTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "node_port.bal"), 0);
+        File yamlFile = KUBERNETES_TARGET_PATH.resolve("node_port.yaml").toFile();
+        Assert.assertTrue(yamlFile.exists());
+        KubernetesClient client = new DefaultKubernetesClient();
+        List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
+        for (HasMetadata data : k8sItems) {
+            if ("Service".equals(data.getKind())) {
+                Service service = (Service) data;
+                Assert.assertNotNull(service);
+                Assert.assertEquals("hello", service.getMetadata().getName());
+                Assert.assertEquals("node_port", service.getMetadata().getLabels().get(KubernetesConstants
+                        .KUBERNETES_SELECTOR_KEY));
+                Assert.assertEquals(KubernetesConstants.ServiceType.NodePort.name(), service.getSpec().getType());
+                Assert.assertEquals(1, service.getSpec().getPorts().size());
+                Assert.assertEquals(31100, service.getSpec().getPorts().get(0).getNodePort().intValue());
+            }
+        }
+
+        validateDockerfile();
+        validateDockerImage(DOCKER_IMAGE);
+
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
+    }
+
+    /**
+     * NodePort cannot be set to a none NodePort type service.
+     * @throws IOException Error when loading the generated yaml.
+     * @throws InterruptedException Error when compiling the ballerina file.
+     */
+    @Test
+    public void invalidNodePort() throws IOException, InterruptedException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "invalid_node_port.bal"), 1);
+    }
+
     public void validateDockerfile() {
         File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());

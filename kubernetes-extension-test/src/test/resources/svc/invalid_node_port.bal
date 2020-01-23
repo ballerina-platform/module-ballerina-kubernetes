@@ -25,8 +25,7 @@ import ballerina/kubernetes;
 }
 @kubernetes:Service {
     name: "hello",
-    nodePort: 31100,
-    serviceType: "NodePort"
+    nodePort: 31100
 }
 listener http:Listener helloEP = new(9090);
 
