@@ -1,9 +1,8 @@
-import ballerina/http;
-import ballerina/io;
-import ballerina/log;
 import ballerina/config;
-import ballerina/jdbc;
+import ballerinax/java.jdbc;
+import ballerina/http;
 import ballerina/kubernetes;
+import ballerina/log;
 
 @kubernetes:Service {
     name: "hotdrink-backend"
@@ -20,12 +19,12 @@ listener http:Listener hotDrinkEP = new(9090);
 
 
 @kubernetes:ConfigMap {
-    conf: "./hot_drink/ballerina.conf"
+    conf: "src/hot_drink/ballerina.conf"
 }
 @kubernetes:Deployment {
-    copyFiles: [{ 
+    copyFiles: [{
         target: "/ballerina/runtime/bre/lib",
-        sourceFile: "./resource/lib/mysql-connector-java-8.0.11.jar"
+        sourceFile: "./libs/mysql-connector-java-8.0.11.jar"
     }]
 }
 @http:ServiceConfig {
@@ -41,14 +40,14 @@ service HotDrinksAPI on hotDrinkEP {
 
         var selectRet = hotdrinkDB->select("SELECT * FROM hotdrink", HotDrink);
         if (selectRet is table<HotDrink>) {
-            var jsonConversionRet = json.convert(selectRet);
+            var jsonConversionRet = json.constructFrom(selectRet);
             if (jsonConversionRet is json) {
                 response.setJsonPayload(<@untainted> jsonConversionRet);
-            } else if (jsonConversionRet is error) {
+            } else {
                 log:printError("Error in table to json conversion", jsonConversionRet);
                 response.setTextPayload("Error in table to json conversion");
             }
-        } else if (selectRet is error) {
+        } else {
             log:printError("Retrieving data from hotdrink table failed", selectRet);
             response.setTextPayload("Error in reading results");
         }

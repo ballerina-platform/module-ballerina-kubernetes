@@ -28,6 +28,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * Base test case for samples.
+ */
 public abstract class SampleTest {
     /**
      * Location of the samples directory.

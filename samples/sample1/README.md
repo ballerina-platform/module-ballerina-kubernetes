@@ -12,56 +12,56 @@
     $> tree
     ├── README.md
     ├── hello_world_k8s.bal
-    ├── hello_world_k8s.balx
+    ├── hello_world_k8s.jar
+    ├── docker
+        └── Dockerfile
     └── kubernetes
-        ├── docker
-        │   └── Dockerfile
         ├── hello-world-k8s-deployment
         │   ├── Chart.yaml
         │   └── templates
-        │       ├── hello_world_k8s_deployment.yaml
-        │       └── hello_world_k8s_svc.yaml
-        ├── hello_world_k8s_deployment.yaml
-        └── hello_world_k8s_svc.yaml
+        │       └── hello_world_k8s_deployment.yaml
+        └── hello_world_k8s.yaml
     ```
 ### How to run:
 
-1. Compile the  hello_world_k8s.bal file. Command to run kubernetes artifacts will be printed on success:
+1. Compile the  hello_world_k8s.bal file. Command to deploy kubernetes artifacts will be printed on build success.
 ```bash
 $> ballerina build hello_world_k8s.bal
 Compiling source
-    hello_world_k8s.bal
-Generating executable
-    hello_world_k8s.balx
-	@kubernetes:Service 			 - complete 1/1
-	@kubernetes:Deployment 			 - complete 1/1
-	@kubernetes:Docker 			 - complete 3/3
-	@kubernetes:Helm 			 - complete 1/1
+        hello_world_k8s.bal
 
-	Run the following command to deploy the Kubernetes artifacts:
-	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample1/kubernetes/
+Generating executables
+        hello_world_k8s.jar
 
-	Run the following command to install the application using Helm:
-	helm install --name hello-world-k8s-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample1/kubernetes/hello-world-k8s-deployment
+Generating artifacts...
+
+        @kubernetes:Service                      - complete 1/1
+        @kubernetes:Deployment                   - complete 1/1
+        @kubernetes:Docker                       - complete 2/2 
+        @kubernetes:Helm                         - complete 1/1
+
+        Run the following command to deploy the Kubernetes artifacts: 
+        kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample1/kubernetes
+
+        Run the following command to install the application using Helm: 
+        helm install --name hello-world-k8s-deployment /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample1/kubernetes/hello-world-k8s-deployment
 ```
 
-2. hello_world_k8s.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
+2. hello_world_k8s.jar, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
 .
 ├── README.md
 ├── hello_world_k8s.bal
-├── hello_world_k8s.balx
+├── hello_world_k8s.jar
+├── docker
+    └── Dockerfile
 └── kubernetes
-    ├── docker
-    │   └── Dockerfile
     ├── hello-world-k8s-deployment
     │   ├── Chart.yaml
     │   └── templates
-    │       ├── hello_world_k8s_deployment.yaml
-    │       └── hello_world_k8s_svc.yaml
-    ├── hello_world_k8s_deployment.yaml
-    └── hello_world_k8s_svc.yaml
+    │       └── hello_world_k8s_deployment.yaml
+    └── hello_world_k8s.yaml
 ```
 
 3. Verify the docker image is created:
@@ -74,9 +74,9 @@ hello_world_k8s       latest              df83ae43f69b        2 minutes ago     
 
 4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample1/kubernetes/
-service "helloworldep" created
-deployment "hello-world-k8s-deployment" created
+$> kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample1/kubernetes
+service/helloworld-svc created
+deployment.apps/hello-world-k8s-deployment created
 ```
 
 5. Verify kubernetes deployment,service and ingress is running:

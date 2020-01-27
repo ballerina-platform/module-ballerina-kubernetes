@@ -33,6 +33,9 @@ import java.nio.file.Paths;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 
+/**
+ * Test suite handler for all unit tests.
+ */
 public class HandlerTestSuite {
     static PackageID module = new PackageID(Names.ANON_ORG, new Name("my_pkg"), Names.DEFAULT_VERSION);
 

@@ -20,6 +20,7 @@ package org.ballerinax.kubernetes.handlers;
 
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceBuilder;
+import io.fabric8.kubernetes.api.model.ServicePortBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -50,7 +51,15 @@ public class ServiceHandler extends AbstractArtifactHandler {
         if (null == serviceModel.getPortName()) {
             serviceModel.setPortName(serviceModel.getProtocol() + "-" + serviceModel.getName());
         }
-        
+        ServicePortBuilder servicePortBuilder = new ServicePortBuilder()
+                .withName(serviceModel.getPortName())
+                .withProtocol(KubernetesConstants.KUBERNETES_SVC_PROTOCOL)
+                .withPort(serviceModel.getPort())
+                .withNewTargetPort(serviceModel.getTargetPort());
+
+        if (serviceModel.getNodePort() > 0) {
+            servicePortBuilder.withNodePort(serviceModel.getNodePort());
+        }
         Service service = new ServiceBuilder()
                 .withNewMetadata()
                 .withName(serviceModel.getName())
@@ -58,12 +67,7 @@ public class ServiceHandler extends AbstractArtifactHandler {
                 .addToLabels(serviceModel.getLabels())
                 .endMetadata()
                 .withNewSpec()
-                .addNewPort()
-                .withName(serviceModel.getPortName())
-                .withProtocol(KubernetesConstants.KUBERNETES_SVC_PROTOCOL)
-                .withPort(serviceModel.getPort())
-                .withNewTargetPort(serviceModel.getTargetPort())
-                .endPort()
+                .withPorts(servicePortBuilder.build())
                 .addToSelector(KubernetesConstants.KUBERNETES_SELECTOR_KEY, serviceModel.getSelector())
                 .withSessionAffinity(serviceModel.getSessionAffinity())
                 .withType(serviceModel.getServiceType())

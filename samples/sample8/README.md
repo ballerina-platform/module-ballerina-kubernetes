@@ -15,51 +15,49 @@
     ├── conf
     │   ├── ballerina.conf
     │   └── data.txt
+    ├── security
+    │   ├── ballerinaKeystore.p12
+    │   └── ballerinaTruststore.p12
     ├── hello_world_config_map_k8s.bal
-    ├── hello_world_config_map_k8s.balx
+    ├── hello_world_config_map_k8s.jar
+    ├── docker
+        └── Dockerfile
     └── kubernetes
-        ├── docker
-        │   └── Dockerfile
         ├── hello-world-config-map-k8s-deployment
         │   ├── Chart.yaml
         │   └── templates
-        │       ├── hello_world_config_map_k8s_config_map.yaml
-        │       ├── hello_world_config_map_k8s_deployment.yaml
-        │       ├── hello_world_config_map_k8s_ingress.yaml
-        │       ├── hello_world_config_map_k8s_secret.yaml
-        │       └── hello_world_config_map_k8s_svc.yaml
-        ├── hello_world_config_map_k8s_config_map.yaml
-        ├── hello_world_config_map_k8s_deployment.yaml
-        ├── hello_world_config_map_k8s_ingress.yaml
-        ├── hello_world_config_map_k8s_secret.yaml
-        └── hello_world_config_map_k8s_svc.yaml
+        │       └── hello_world_config_map_k8s.yaml
+        └── hello_world_config_map_k8s.yaml
 
     ```
 ### How to run:
 
-1. Compile the hello_world_config_map_k8s.bal file. Command to run kubernetes artifacts will be printed on success:
+1. Compile the hello_world_config_map_k8s.bal file. Command to deploy kubernetes artifacts will be printed on build success.
 ```bash
 $> ballerina build hello_world_config_map_k8s.bal
 Compiling source
-    hello_world_config_map_k8s.bal
-Generating executable
-    hello_world_config_map_k8s.balx
-	@kubernetes:Service 			 - complete 1/1
-	@kubernetes:Ingress 			 - complete 1/1
-	@kubernetes:Secret 			 - complete 1/1
-	@kubernetes:ConfigMap 			 - complete 2/2
-	@kubernetes:Deployment 			 - complete 1/1
-	@kubernetes:Docker 			 - complete 3/3
-	@kubernetes:Helm 			 - complete 1/1
+        hello_world_config_map_k8s.bal
 
-	Run the following command to deploy the Kubernetes artifacts:
-	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample8/kubernetes/
+Generating executables
+        hello_world_config_map_k8s.jar
 
-	Run the following command to install the application using Helm:
-	helm install --name hello-world-config-map-k8s-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample8/kubernetes/hello-world-config-map-k8s-deployment
-```
+Generating artifacts...
 
-2. hello_world_config_map_k8s.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
+        @kubernetes:Service                      - complete 1/1
+        @kubernetes:Ingress                      - complete 1/1
+        @kubernetes:Secret                       - complete 1/1
+        @kubernetes:ConfigMap                    - complete 2/2
+        @kubernetes:Deployment                   - complete 1/1
+        @kubernetes:Docker                       - complete 2/2 
+        @kubernetes:Helm                         - complete 1/1
+
+        Run the following command to deploy the Kubernetes artifacts: 
+        kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample8/kubernetes
+
+        Run the following command to install the application using Helm: 
+        helm install --name hello-world-config-map-k8s-deployment /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample8/kubernetes/hello-world-config-map-k8s-deployment```
+
+2. hello_world_config_map_k8s.jar, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
 .
@@ -67,24 +65,19 @@ $> tree
 ├── conf
 │   ├── ballerina.conf
 │   └── data.txt
+├── security
+│   ├── ballerinaKeystore.p12
+│   └── ballerinaTruststore.p12
 ├── hello_world_config_map_k8s.bal
-├── hello_world_config_map_k8s.balx
+├── hello_world_config_map_k8s.jar
+├── docker
+    └── Dockerfile
 └── kubernetes
-    ├── docker
-    │   └── Dockerfile
     ├── hello-world-config-map-k8s-deployment
     │   ├── Chart.yaml
     │   └── templates
-    │       ├── hello_world_config_map_k8s_config_map.yaml
-    │       ├── hello_world_config_map_k8s_deployment.yaml
-    │       ├── hello_world_config_map_k8s_ingress.yaml
-    │       ├── hello_world_config_map_k8s_secret.yaml
-    │       └── hello_world_config_map_k8s_svc.yaml
-    ├── hello_world_config_map_k8s_config_map.yaml
-    ├── hello_world_config_map_k8s_deployment.yaml
-    ├── hello_world_config_map_k8s_ingress.yaml
-    ├── hello_world_config_map_k8s_secret.yaml
-    └── hello_world_config_map_k8s_svc.yaml
+    │       └── hello_world_config_map_k8s.yaml
+    └── hello_world_config_map_k8s.yaml
 
 ```
 
@@ -97,13 +90,13 @@ hello_world_config_map_k8s     latest              53559c0cd4f4        55 second
 
 4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample8/kubernetes/
-configmap "helloworld-config-map" configured
-configmap "helloworld-ballerina-conf-config-map" configured
-deployment.extensions "hello-world-config-map-k8s-deployment" created
-ingress.extensions "helloworldep-ingress" created
-secret "helloworldep-secure-socket" created
-service "helloworldep-svc" created
+$> kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample8/kubernetes
+service/helloworldep-svc created
+ingress.extensions/helloworldep-ingress created
+secret/helloworldep-secure-socket created
+configmap/helloworld-config-map created
+configmap/helloworld-ballerina-conf-config-map created
+deployment.apps/hello-world-config-map-k8s-deployment created
 ```
 
 5. Verify kubernetes deployment,service,secrets and ingress is deployed:

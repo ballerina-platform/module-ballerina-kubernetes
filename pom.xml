@@ -16,7 +16,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>io.ballerina</groupId>
         <artifactId>ballerina</artifactId>
@@ -162,6 +163,12 @@
                 <artifactId>slf4j-log4j12</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <scope>provided</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -286,10 +293,12 @@
         <spotify.docker.client.version>8.15.0</spotify.docker.client.version>
         <testng.version>6.14.3</testng.version>
         <slf4j.version>1.7.26</slf4j.version>
+        <lombok.version>1.18.10</lombok.version>
     </properties>
 
     <modules>
         <module>kubernetes-extension</module>
+        <module>kubernetes-extension-annotations</module>
         <module>kubernetes-extension-test</module>
         <module>kubernetes-extension-examples</module>
         <module>kubernetes-extension-coverage-report</module>

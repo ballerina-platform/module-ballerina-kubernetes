@@ -2,3 +2,11 @@
 org-name = "kathy"
 version = "0.0.1"
 
+[platform]
+target = "java8"
+
+    [[platform.libraries]]
+    artifactId = "mysql-connector-java"
+    version = "8.0.11"
+    path = "./libs/mysql-connector-java-8.0.11.jar"
+    groupId = "mysql"

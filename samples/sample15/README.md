@@ -8,66 +8,58 @@
     
     $> tree
     ├── README.md
-    ├── hello_world_k8s.bal
-    ├── hello_world_k8s.balx
+    ├── hello_world_k8s_rq.bal
+    ├── hello_world_k8s_rq.jar
+    ├── docker
+        └── Dockerfile
     └── kubernetes
-        ├── docker
-        │   └── Dockerfile
-        ├── hello-world-k8s-deployment
+        ├── hello-world-k8s-rq-deployment
         │   ├── Chart.yaml
         │   └── templates
-        │       ├── hello_world_k8s_deployment.yaml
-        │       ├── hello_world_k8s_ingress.yaml
-        │       ├── hello_world_k8s_resource_quota.yaml
-        │       └── hello_world_k8s_svc.yaml
-        ├── hello_world_k8s_deployment.yaml
-        ├── hello_world_k8s_ingress.yaml
-        ├── hello_world_k8s_resource_quota.yaml
-        └── hello_world_k8s_svc.yaml
+        │       └── hello_world_k8s_rq.yaml
+        └── hello_world_k8s_rq.yaml
     ```
 ### How to run:
 
-1. Compile the hello_world_k8s_rq.bal file. Command to run kubernetes artifacts will be printed on success:
+1. Compile the hello_world_k8s_rq.bal file. Command to deploy kubernetes artifacts will be printed on build success.
 ```bash
 $> ballerina build hello_world_k8s_rq.bal
 Compiling source
-    hello_world_k8s_rq.bal
-Generating executable
-    hello_world_k8s_rq.balx
-	@kubernetes:Service 			 - complete 1/1
-	@kubernetes:Ingress 			 - complete 1/1
-	@kubernetes:ResourceQuota 		 - complete 1/1
-	@kubernetes:Deployment 			 - complete 1/1
-	@kubernetes:Docker 			 - complete 3/3
-	@kubernetes:Helm 			 - complete 1/1
+        hello_world_k8s_rq.bal
 
-	Run the following command to deploy the Kubernetes artifacts:
-	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample15/kubernetes/
+Generating executables
+        hello_world_k8s_rq.jar
 
-	Run the following command to install the application using Helm:
-	helm install --name hello-world-k8s-rq-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample15/kubernetes/hello-world-k8s-rq-deployment
+Generating artifacts...
+
+        @kubernetes:Service                      - complete 1/1
+        @kubernetes:Ingress                      - complete 1/1
+        @kubernetes:ResourceQuota                - complete 1/1
+        @kubernetes:Deployment                   - complete 1/1
+        @kubernetes:Docker                       - complete 2/2 
+        @kubernetes:Helm                         - complete 1/1
+
+        Run the following command to deploy the Kubernetes artifacts: 
+        kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample15/kubernetes
+
+        Run the following command to install the application using Helm: 
+        helm install --name hello-world-k8s-rq-deployment /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample15/kubernetes/hello-world-k8s-rq-deployment
 ```
 
-2. hello_world_k8s_rq.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
+2. hello_world_k8s_rq.jar, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
 ├── README.md
 ├── hello_world_k8s_rq.bal
-├── hello_world_k8s_rq.balx
+├── hello_world_k8s_rq.jar
+├── docker
+    └── Dockerfile
 └── kubernetes
-    ├── docker
-    │   └── Dockerfile
     ├── hello-world-k8s-rq-deployment
     │   ├── Chart.yaml
     │   └── templates
-    │       ├── hello_world_k8s_rq_deployment.yaml
-    │       ├── hello_world_k8s_rq_ingress.yaml
-    │       ├── hello_world_k8s_rq_resource_quota.yaml
-    │       └── hello_world_k8s_rq_svc.yaml
-    ├── hello_world_k8s_rq_deployment.yaml
-    ├── hello_world_k8s_rq_ingress.yaml
-    ├── hello_world_k8s_rq_resource_quota.yaml
-    └── hello_world_k8s_rq_svc.yaml
+    │       └── hello_world_k8s_rq.yaml
+    └── hello_world_k8s_rq.yaml
 ```
 
 3. Verify the docker image is created:
@@ -86,11 +78,12 @@ namespace/ballerina created
 
 5. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample15/kubernetes/ -n ballerina
-deployment.extensions/hello-world-k8s-rq-deployment created
+$> kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample15/kubernetes -n ballerina
+service/hello created
 ingress.extensions/helloep-ingress created
 resourcequota/pod-limit created
-service/hello created
+deployment.apps/hello-world-k8s-rq-deployment created
+deployment.apps/hello-world-k8s-rq-deployment created
 ```
 
 6. Verify kubernetes deployment is running:

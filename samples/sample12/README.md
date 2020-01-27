@@ -10,51 +10,52 @@ hello_world_copy_file.bal)
     
     $> tree
     ├── README.md
-    ├── data
-    │   └── data.txt
-    ├── hello_world_copy_file.bal
-    ├── hello_world_copy_file.balx
-    └── kubernetes
-        ├── docker
-        │   ├── Dockerfile
+        ├── data
         │   └── data.txt
-        ├── hello-world-copy-file-deployment
-        │   ├── Chart.yaml
-        │   └── templates
-        │       ├── hello_world_copy_file_deployment.yaml
-        │       ├── hello_world_copy_file_ingress.yaml
-        │       ├── hello_world_copy_file_secret.yaml
-        │       └── hello_world_copy_file_svc.yaml
-        ├── hello_world_copy_file_deployment.yaml
-        ├── hello_world_copy_file_ingress.yaml
-        ├── hello_world_copy_file_secret.yaml
-        └── hello_world_copy_file_svc.yaml
+        ├── hello_world_copy_file.bal
+        ├── hello_world_copy_file.jar
+        ├── security
+            ├── ballerinaKeystore.p12
+        │   └── ballerinaTruststore.p12
+        ├── docker
+            ├── Dockerfile
+        └── kubernetes
+            │   └── data.txt
+            ├── hello-world-copy-file-deployment
+            │   ├── Chart.yaml
+            │   └── templates
+            │       └── hello_world_copy_file.yaml
+            └── hello_world_copy_file.yaml
 
     ```
 ### How to run:
 
-1. Compile the  hello_world_copy_file.bal file. Command to run kubernetes artifacts will be printed on success:
+1. Compile the  hello_world_copy_file.bal file. Command to deploy kubernetes artifacts will be printed on build success.
 ```bash
 $> ballerina build hello_world_copy_file.bal
 Compiling source
-    hello_world_copy_file.bal
-Generating executable
-    hello_world_copy_file.balx
-	@kubernetes:Service 			 - complete 1/1
-	@kubernetes:Ingress 			 - complete 1/1
-	@kubernetes:Secret 			 - complete 1/1
-	@kubernetes:Deployment 			 - complete 1/1
-	@kubernetes:Docker 			 - complete 3/3
-	@kubernetes:Helm 			 - complete 1/1
+        hello_world_copy_file.bal
 
-	Run the following command to deploy the Kubernetes artifacts:
-	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample12/kubernetes/
+Generating executables
+        hello_world_copy_file.jar
 
-	Run the following command to install the application using Helm:
-	helm install --name hello-world-copy-file-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample12/kubernetes/hello-world-copy-file-deployment
+Generating artifacts...
+
+        @kubernetes:Service                      - complete 1/1
+        @kubernetes:Ingress                      - complete 1/1
+        @kubernetes:Secret                       - complete 1/1
+        @kubernetes:Deployment                   - complete 1/1
+        @kubernetes:Docker                       - complete 2/2 
+        @kubernetes:Helm                         - complete 1/1
+
+        Run the following command to deploy the Kubernetes artifacts: 
+        kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample12/kubernetes
+
+        Run the following command to install the application using Helm: 
+        helm install --name hello-world-copy-file-deployment /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample12/kubernetes/hello-world-copy-file-deployment
 ```
 
-2. hello_world_copy_file.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
+2. hello_world_copy_file.jar, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
     .
@@ -62,22 +63,19 @@ $> tree
     ├── data
     │   └── data.txt
     ├── hello_world_copy_file.bal
-    ├── hello_world_copy_file.balx
+    ├── hello_world_copy_file.jar
+    ├── security
+        ├── ballerinaKeystore.p12
+    │   └── ballerinaTruststore.p12
+    ├── docker
+        ├── Dockerfile
     └── kubernetes
-        ├── docker
-        │   ├── Dockerfile
         │   └── data.txt
         ├── hello-world-copy-file-deployment
         │   ├── Chart.yaml
         │   └── templates
-        │       ├── hello_world_copy_file_deployment.yaml
-        │       ├── hello_world_copy_file_ingress.yaml
-        │       ├── hello_world_copy_file_secret.yaml
-        │       └── hello_world_copy_file_svc.yaml
-        ├── hello_world_copy_file_deployment.yaml
-        ├── hello_world_copy_file_ingress.yaml
-        ├── hello_world_copy_file_secret.yaml
-        └── hello_world_copy_file_svc.yaml
+        │       └── hello_world_copy_file.yaml
+        └── hello_world_copy_file.yaml
 
 ```
 
@@ -90,11 +88,11 @@ hello_world_copy_file     latest              53559c0cd4f4        55 seconds ago
 
 4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample12/kubernetes/
-deployment.extensions "hello-world-copy-file-deployment" created
-ingress.extensions "helloworldep-ingress" created
-secret "helloworldep-secure-socket" created
-service "helloworldep-svc" created
+$>  kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample12/kubernetes
+service/helloworldep-svc configured
+ingress.extensions/helloworldep-ingress configured
+secret/helloworldep-secure-socket created
+deployment.apps/hello-world-copy-file-deployment created
 ```
 
 5. Verify kubernetes deployment,service,secrets and ingress is deployed:
