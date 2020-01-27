@@ -65,6 +65,9 @@ import java.util.function.Predicate;
 
 import javax.ws.rs.ext.RuntimeDelegate;
 
+/**
+ * Knative test utils.
+ */
 public class KnativeTestUtils {
 
     private static final Logger log = LoggerFactory.getLogger(SampleTest.class);
@@ -90,7 +93,7 @@ public class KnativeTestUtils {
     }
 
     /**
-     * Return a ImageInspect object for a given Docker Image name
+     * Return a ImageInspect object for a given Docker Image name.
      *
      * @param imageName Docker image Name
      * @return ImageInspect object
