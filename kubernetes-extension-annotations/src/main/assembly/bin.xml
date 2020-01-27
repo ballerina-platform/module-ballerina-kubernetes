@@ -50,6 +50,13 @@
             <outputDirectory>openshift</outputDirectory>
             <fileMode>755</fileMode>
         </fileSet>
+        <fileSet>
+            <directory>
+                ${project.basedir}/src/main/ballerina/target/caches/bir_cache/ballerina/knative
+            </directory>
+            <outputDirectory>knative</outputDirectory>
+            <fileMode>755</fileMode>
+        </fileSet>
     </fileSets>
 
     <files>
@@ -65,6 +72,11 @@
         </file>
         <file>
             <source>${project.basedir}/src/main/ballerina/target/caches/jar_cache/ballerina/openshift/openshift.jar</source>
+            <outputDirectory>.</outputDirectory>
+            <fileMode>755</fileMode>
+        </file>
+        <file>
+            <source>${project.basedir}/src/main/ballerina/target/caches/jar_cache/ballerina/knative/knative.jar</source>
             <outputDirectory>.</outputDirectory>
             <fileMode>755</fileMode>
         </file>
