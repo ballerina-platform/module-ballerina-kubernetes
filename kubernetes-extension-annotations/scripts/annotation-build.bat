@@ -33,14 +33,20 @@ cmd /C %EXECUTABLE% build -c -a --skip-tests
 ren %KUBERNETES_BALLERINA_PROJECT%target\caches\jar_cache\ballerina\kubernetes\ballerina-kubernetes-.jar kubernetes.jar
 ren %KUBERNETES_BALLERINA_PROJECT%target\caches\jar_cache\ballerina\istio\ballerina-istio-.jar istio.jar
 ren %KUBERNETES_BALLERINA_PROJECT%target\caches\jar_cache\ballerina\openshift\ballerina-openshift-.jar openshift.jar
+ren %KUBERNETES_BALLERINA_PROJECT%target\caches\jar_cache\ballerina\knative\ballerina-knative-.jar knative.jar
 popd
 
 COPY "%KUBERNETES_BALLERINA_PROJECT%target\caches\bir_cache\ballerina\kubernetes\kubernetes.bir" "%DISTRIBUTION_BIR_CACHE%kubernetes\0.0.0\"
 COPY "%KUBERNETES_BALLERINA_PROJECT%target\caches\bir_cache\ballerina\istio\istio.bir" "%DISTRIBUTION_BIR_CACHE%istio\0.0.0\"
 COPY "%KUBERNETES_BALLERINA_PROJECT%target\caches\bir_cache\ballerina\openshift\openshift.bir" "%DISTRIBUTION_BIR_CACHE%openshift\0.0.0\"
+COPY "%KUBERNETES_BALLERINA_PROJECT%target\caches\bir_cache\ballerina\knative\knative.bir" "%DISTRIBUTION_BIR_CACHE%knative\0.0.0\"
+
 COPY "%KUBERNETES_BALLERINA_PROJECT%Ballerina.toml" "%DISTRIBUTION_BIR_CACHE%kubernetes\0.0.0\"
 COPY "%KUBERNETES_BALLERINA_PROJECT%Ballerina.toml" "%DISTRIBUTION_BIR_CACHE%istio\0.0.0\"
 COPY "%KUBERNETES_BALLERINA_PROJECT%Ballerina.toml" "%DISTRIBUTION_BIR_CACHE%openshift\0.0.0\"
+COPY "%KUBERNETES_BALLERINA_PROJECT%Ballerina.toml" "%DISTRIBUTION_BIR_CACHE%knative\0.0.0\"
+
 COPY "%KUBERNETES_BALLERINA_PROJECT%target\caches\jar_cache\ballerina\kubernetes\kubernetes.jar" "%DISTRIBUTION_SYSTEM_LIB%"
 COPY "%KUBERNETES_BALLERINA_PROJECT%target\caches\jar_cache\ballerina\istio\istio.jar" "%DISTRIBUTION_SYSTEM_LIB%"
 COPY "%KUBERNETES_BALLERINA_PROJECT%target\caches\jar_cache\ballerina\openshift\openshift.jar" "%DISTRIBUTION_SYSTEM_LIB%"
+COPY "%KUBERNETES_BALLERINA_PROJECT%target\caches\jar_cache\ballerina\knative\knative.jar" "%DISTRIBUTION_SYSTEM_LIB%"
