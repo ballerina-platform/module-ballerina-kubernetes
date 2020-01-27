@@ -9,125 +9,145 @@
     
     $> tree target
     target
-    ├── Ballerina.lock
-    ├── burger.balx
+    ├── docker
+        └── Dockerfile
     ├── kubernetes
     │   ├── burger
     │   │   ├── burger-deployment
     │   │   │   ├── Chart.yaml
     │   │   │   └── templates
-    │   │   │       ├── burger_deployment.yaml
-    │   │   │       ├── burger_ingress.yaml
-    │   │   │       ├── burger_secret.yaml
-    │   │   │       └── burger_svc.yaml
-    │   │   ├── burger_deployment.yaml
-    │   │   ├── burger_ingress.yaml
-    │   │   ├── burger_secret.yaml
-    │   │   ├── burger_svc.yaml
-    │   │   └── docker
-    │   │       └── Dockerfile
+    │   │   │       └── burger.yaml
+    │   │   └── burger.yaml
     │   └── pizza
-    │       ├── docker
-    │       │   └── Dockerfile
-    │       ├── foodstore
-    │       │   ├── Chart.yaml
-    │       │   └── templates
-    │       │       ├── pizza_deployment.yaml
-    │       │       ├── pizza_ingress.yaml
-    │       │       └── pizza_svc.yaml
-    │       ├── pizza_deployment.yaml
-    │       ├── pizza_ingress.yaml
-    │       └── pizza_svc.yaml
-    └── pizza.balx
+            ├── foodstore
+            │   ├── Chart.yaml
+            │   └── templates
+            │       └── pizza.yaml
+            └── pizza.yaml
+    ├── balo
+        ├── burger-2019r3-any-0.0.1.balo
+        └── pizza-2019r3-any-0.0.1.balo
+    ├── bin
+        ├── burger.jar
+        └── pizza.jar
+    └── caches
+        ├── bir_cache
+        │   ├── john
+        │   │   ├── burger
+        │   │   |   └── 0.0.1
+        │   │   |   |   └── burger.bir
+        │   │   └── pizza
+        │   │   |   └── 0.0.1
+        │   │   |   |   └── pizza.bir
+        └── jar_cache
+            └── john
+                ├── burger
+                |   └── 0.0.1
+                |   |    └── john-burger-0.0.1.jar
+                └── pizza
+                    └── 0.0.1
+                        └── john-pizza-0.0.1.jar
   
     ```
 ### How to run:
 
-1. Initialize ballerina project.
+1. Compile the project. Command to deploy kubernetes artifacts will be printed on build success.
 ```bash
-sample10$> ballerina init
-Ballerina project initialized
-```
-
-2. Compile the project. Command to run kubernetes artifacts will be printed on success:
-```bash
-sample10$> ballerina build 
+sample10$> ballerina build -a
 Compiling source
-    john/burger:0.0.1
-    john/pizza:0.0.1
+        john/burger:0.0.1
+        john/pizza:0.0.1
+
+Creating balos
+        target/balo/burger-2019r3-any-0.0.1.balo
+        target/balo/pizza-2019r3-any-0.0.1.balo
 
 Running tests
-    john/burger:0.0.1
-	No tests found
+        john/burger:0.0.1
+        No tests found
 
-    john/pizza:0.0.1
-	No tests found
+        john/pizza:0.0.1
+        No tests found
+
 
 Generating executables
-    ./target/burger.balx
-	@kubernetes:Service 			 - complete 1/1
-	@kubernetes:Ingress 			 - complete 1/1
-	@kubernetes:Secret 			 - complete 1/1
-	@kubernetes:Deployment 			 - complete 1/1
-	@kubernetes:Docker 			 - complete 3/3
-	@kubernetes:Helm 			 - complete 1/1
+        target/bin/burger.jar
+        target/bin/pizza.jar
 
-	Run the following command to deploy the Kubernetes artifacts:
-	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample10/target/kubernetes/burger
+Generating artifacts...
 
-	Run the following command to install the application using Helm:
-	helm install --name burger-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample10/target/kubernetes/burger/burger-deployment
+        @kubernetes:Service                      - complete 1/1
+        @kubernetes:Ingress                      - complete 1/1
+        @kubernetes:Secret                       - complete 1/1
+        @kubernetes:Deployment                   - complete 1/1
+        @kubernetes:Docker                       - complete 2/2 
+        @kubernetes:Helm                         - complete 1/1
 
-    ./target/pizza.balx
-	@kubernetes:Service 			 - complete 1/1
-	@kubernetes:Ingress 			 - complete 1/1
-	@kubernetes:Deployment 			 - complete 1/1
-	@kubernetes:Docker 			 - complete 3/3
-	@kubernetes:Helm 			 - complete 1/1
+        Run the following command to deploy the Kubernetes artifacts: 
+        kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample10/target/kubernetes/burger
 
-	Run the following command to deploy the Kubernetes artifacts:
-	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample10/target/kubernetes/pizza
+        Run the following command to install the application using Helm: 
+        helm install --name burger-deployment /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample10/target/kubernetes/burger/burger-deployment
 
-	Run the following command to install the application using Helm:
-	helm install --name foodstore /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample10/target/kubernetes/pizza/foodstore
+
+Generating artifacts...
+
+        @kubernetes:Service                      - complete 1/1
+        @kubernetes:Ingress                      - complete 1/1
+        @kubernetes:Deployment                   - complete 1/1
+        @kubernetes:Docker                       - complete 2/2 
+        @kubernetes:Helm                         - complete 1/1
+
+        Run the following command to deploy the Kubernetes artifacts: 
+        kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample10/target/kubernetes/pizza
+
+        Run the following command to install the application using Helm: 
+        helm install --name foodstore /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample10/target/kubernetes/pizza/foodstore
+
 ```
 
-3. food_api_pkg.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
+2. burger.jar, pizza.jar, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree target
-target
-├── Ballerina.lock
-├── burger.balx
-├── kubernetes
-│   ├── burger
-│   │   ├── burger-deployment
-│   │   │   ├── Chart.yaml
-│   │   │   └── templates
-│   │   │       ├── burger_deployment.yaml
-│   │   │       ├── burger_ingress.yaml
-│   │   │       ├── burger_secret.yaml
-│   │   │       └── burger_svc.yaml
-│   │   ├── burger_deployment.yaml
-│   │   ├── burger_ingress.yaml
-│   │   ├── burger_secret.yaml
-│   │   ├── burger_svc.yaml
-│   │   └── docker
-│   │       └── Dockerfile
-│   └── pizza
-│       ├── docker
-│       │   └── Dockerfile
-│       ├── foodstore
-│       │   ├── Chart.yaml
-│       │   └── templates
-│       │       ├── pizza_deployment.yaml
-│       │       ├── pizza_ingress.yaml
-│       │       └── pizza_svc.yaml
-│       ├── pizza_deployment.yaml
-│       ├── pizza_ingress.yaml
-│       └── pizza_svc.yaml
-└── pizza.balx
-  
-
+target                                                 
+├── docker                                             
+    └── Dockerfile                                     
+├── kubernetes                                         
+│   ├── burger                                         
+│   │   ├── burger-deployment                          
+│   │   │   ├── Chart.yaml                             
+│   │   │   └── templates                              
+│   │   │       └── burger.yaml                        
+│   │   └── burger.yaml                                
+|   └── pizza                                          
+        ├── foodstore                                  
+        │   ├── Chart.yaml                             
+        │   └── templates                              
+        │       └── pizza.yaml                         
+        └── pizza.yaml                                 
+├── balo                                               
+    ├── burger-2019r3-any-0.0.1.balo                   
+    └── pizza-2019r3-any-0.0.1.balo                    
+├── bin                                                
+    ├── burger.jar                                     
+    └── pizza.jar                                      
+└── caches                                             
+    ├── bir_cache                                      
+    │   ├── john                                       
+    │   │   ├── burger                                 
+    │   │   |   └── 0.0.1                              
+    │   │   |   |   └── burger.bir                     
+    │   │   └── pizza                                  
+    │   │   |   └── 0.0.1                              
+    │   │   |   |   └── pizza.bir                      
+    └── jar_cache                                      
+        └── john                                       
+            ├── burger                                 
+            |   └── 0.0.1                              
+            |   |    └── john-burger-0.0.1.jar         
+            └── pizza                                  
+                └── 0.0.1                              
+                    └── john-pizza-0.0.1.jar           
 ```
 
 4. Verify the docker image is created:
@@ -140,16 +160,16 @@ burger                                                           latest         
 
 5. Run kubectl command to deploy artifacts (Use the command printed on screen in step 2):
 ```bash
-$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample10/target/kubernetes/burger
-deployment.extensions/burger-deployment created
+$> kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample10/target/kubernetes/burger
+service/burgerep-svc created
 ingress.extensions/burgerep-ingress created
 secret/burgerep-keystore created
-service/burgerep-svc created
+deployment.apps/burger-deployment created
 
-$ kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample10/target/kubernetes/pizza/
-deployment.extensions/foodstore created
-ingress.extensions/pizzaep-ingress created
+$ kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample10/target/kubernetes/pizza
 service/pizzaep-svc created
+ingress.extensions/pizzaep-ingress created
+deployment.apps/foodstore created
 ```
 
 6. Verify kubernetes deployment, service, secrets and ingress is deployed:

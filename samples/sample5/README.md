@@ -11,73 +11,66 @@
     
     $> tree
     ├── README.md
+    ├── docker
+        └── Dockerfile
+    ├── security
+        └── ballerinaKeystore.p12
     ├── kubernetes
-    │   ├── docker
-    │   │   └── Dockerfile
     │   ├── pizzashack-deployment
     │   │   ├── Chart.yaml
     │   │   └── templates
-    │   │       ├── pizzashack_deployment.yaml
-    │   │       ├── pizzashack_hpa.yaml
-    │   │       ├── pizzashack_ingress.yaml
-    │   │       ├── pizzashack_secret.yaml
-    │   │       └── pizzashack_svc.yaml
-    │   ├── pizzashack_deployment.yaml
-    │   ├── pizzashack_hpa.yaml
-    │   ├── pizzashack_ingress.yaml
-    │   ├── pizzashack_secret.yaml
-    │   └── pizzashack_svc.yaml
+    │   │       └── pizzashack.yaml
+    │   └── pizzashack.yaml
     ├── pizzashack.bal
-    └── pizzashack.balx
+    └── pizzashack.jar
     ```
 ### How to run:
 
-1. Compile the  pizzashack.bal file. Command to run kubernetes artifacts will be printed on success:
+1. Compile the  pizzashack.bal file. Command to deploy kubernetes artifacts will be printed on build success.
 ```bash
 $> ballerina build pizzashack.bal
 Compiling source
-    pizzashack.bal
-Generating executable
-    pizzashack.balx
-	@kubernetes:Service 			 - complete 2/2
-	@kubernetes:Ingress 			 - complete 2/2
-	@kubernetes:Secret 			 - complete 1/1
-	@kubernetes:Deployment 			 - complete 1/1
-	@kubernetes:HPA 			 - complete 1/1
-	@kubernetes:Docker 			 - complete 3/3
-	@kubernetes:Helm 			 - complete 1/1
+        pizzashack.bal
 
-	Run the following command to deploy the Kubernetes artifacts:
-	kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample5/kubernetes/
+Generating executables
+        pizzashack.jar
 
-	Run the following command to install the application using Helm:
-	helm install --name pizzashack-deployment /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample5/kubernetes/pizzashack-deployment
+Generating artifacts...
+
+        @kubernetes:Service                      - complete 1/2
+        @kubernetes:Service                      - complete 2/2
+        @kubernetes:Ingress                      - complete 2/2
+        @kubernetes:Secret                       - complete 1/1
+        @kubernetes:Deployment                   - complete 1/1
+        @kubernetes:HPA                          - complete 1/1
+        @kubernetes:Docker                       - complete 2/2 
+        @kubernetes:Helm                         - complete 1/1
+
+        Run the following command to deploy the Kubernetes artifacts: 
+        kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample5/kubernetes
+
+        Run the following command to install the application using Helm: 
+        helm install --name pizzashack-deployment /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample5/kubernetes/pizzashack-deployment
 
 ```
 
-2. pizzashack.balx, Dockerfile, docker image and kubernetes artifacts will be generated: 
+2. pizzashack.jar, Dockerfile, docker image and kubernetes artifacts will be generated: 
 ```bash
 $> tree
 .
 ├── README.md
+├── docker
+    └── Dockerfile
+├── security
+    └── ballerinaKeystore.p12
 ├── kubernetes
-│   ├── docker
-│   │   └── Dockerfile
 │   ├── pizzashack-deployment
 │   │   ├── Chart.yaml
 │   │   └── templates
-│   │       ├── pizzashack_deployment.yaml
-│   │       ├── pizzashack_hpa.yaml
-│   │       ├── pizzashack_ingress.yaml
-│   │       ├── pizzashack_secret.yaml
-│   │       └── pizzashack_svc.yaml
-│   ├── pizzashack_deployment.yaml
-│   ├── pizzashack_hpa.yaml
-│   ├── pizzashack_ingress.yaml
-│   ├── pizzashack_secret.yaml
-│   └── pizzashack_svc.yaml
+│   │       └── pizzashack.yaml
+│   └── pizzashack.yaml
 ├── pizzashack.bal
-└── pizzashack.balx
+└── pizzashack.jar
 ```
 
 3. Verify the docker image is created:
@@ -90,14 +83,14 @@ ballerina.com/pizzashack     2.1.0              df83ae43f69b        2 minutes ag
 
 4. Run kubectl command to deploy artifacts (Use the command printed on screen in step 1):
 ```bash
-$> kubectl apply -f /Users/hemikak/ballerina/dev/ballerinax/kubernetes/samples/sample5/kubernetes/
-deployment.extensions "pizzashack-deployment" created
-horizontalpodautoscaler.autoscaling "pizzashack-hpa" created
-ingress.extensions "pizzaep-ingress" created
-ingress.extensions "pizzaepsecured-ingress" created
-secret "pizzaepsecured-keystore" created
-service "pizzaepsecured-svc" created
-service "pizzaep-svc" created
+$> kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample5/kubernetes
+service/pizzaepsecured-svc created
+service/pizzaep-svc created
+ingress.extensions/pizzaep-ingress created
+ingress.extensions/pizzaepsecured-ingress created
+secret/pizzaepsecured-keystore created
+deployment.apps/pizzashack-deployment created
+horizontalpodautoscaler.autoscaling/pizzashack-hpa created
 
 ```
 

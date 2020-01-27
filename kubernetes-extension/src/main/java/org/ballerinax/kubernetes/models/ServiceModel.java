@@ -17,6 +17,8 @@
  */
 package org.ballerinax.kubernetes.models;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.ballerinax.kubernetes.KubernetesConstants;
 
 import java.util.HashMap;
@@ -24,91 +26,27 @@ import java.util.HashMap;
 /**
  * Kubernetes service annotations model class.
  */
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class ServiceModel extends KubernetesModel {
     private String serviceType;
     private int port;
+    private int nodePort;
     private int targetPort;
     private String selector;
     private String sessionAffinity;
     private String portName;
     private String protocol;
-    
+
     public ServiceModel() {
         serviceType = KubernetesConstants.ServiceType.ClusterIP.name();
         labels = new HashMap<>();
         port = -1;
         targetPort = -1;
+        nodePort = -1;
     }
-    
+
     public void addLabel(String key, String value) {
         this.labels.put(key, value);
-    }
-
-    public String getServiceType() {
-        return serviceType;
-    }
-
-    public void setServiceType(String serviceType) {
-        this.serviceType = serviceType;
-    }
-    
-    public String getPortName() {
-        return portName;
-    }
-    
-    public void setPortName(String portName) {
-        this.portName = portName;
-    }
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-    
-    public String getProtocol() {
-        return protocol;
-    }
-    
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
-    }
-    
-    public int getTargetPort() {
-        return targetPort;
-    }
-    
-    public void setTargetPort(int targetPort) {
-        this.targetPort = targetPort;
-    }
-    
-    public String getSelector() {
-        return selector;
-    }
-
-    public void setSelector(String selector) {
-        this.selector = selector;
-    }
-    
-    public String getSessionAffinity() {
-        return sessionAffinity;
-    }
-    
-    public void setSessionAffinity(String sessionAffinity) {
-        this.sessionAffinity = sessionAffinity;
-    }
-    
-    @Override
-    public String toString() {
-        return "ServiceModel{" +
-               "name='" + getName() + '\'' +
-               ", labels=" + labels +
-               ", serviceType='" + serviceType + '\'' +
-               ", sessionAffinity='" + sessionAffinity + '\'' +
-               ", portName='" + portName + '\'' +
-               ", port=" + port +
-               ", selector='" + selector + '\'' +
-               '}';
     }
 }

@@ -82,7 +82,7 @@ public class KubernetesTestUtils {
     }
 
     /**
-     * Return a ImageInspect object for a given Docker Image name
+     * Return a ImageInspect object for a given Docker Image name.
      *
      * @param imageName Docker image Name
      * @return ImageInspect object
@@ -123,7 +123,7 @@ public class KubernetesTestUtils {
     }
 
     /**
-     * Delete a given Docker image and prune
+     * Delete a given Docker image and prune.
      *
      * @param imageName Docker image Name
      */
@@ -167,7 +167,7 @@ public class KubernetesTestUtils {
     }
 
     /**
-     * Compile a ballerina file in a given directory
+     * Compile a ballerina file in a given directory.
      *
      * @param sourceDirectory Ballerina source directory
      * @param fileName        Ballerina source file name
@@ -207,7 +207,7 @@ public class KubernetesTestUtils {
     }
 
     /**
-     * Compile a ballerina file in a given directory
+     * Compile a ballerina file in a given directory.
      *
      * @param sourceDirectory Ballerina source directory
      * @param fileName        Ballerina source file name
@@ -221,7 +221,7 @@ public class KubernetesTestUtils {
     }
 
     /**
-     * Compile a ballerina project in a given directory
+     * Compile a ballerina project in a given directory.
      *
      * @param sourceDirectory Ballerina source directory
      * @return Exit code
@@ -265,7 +265,7 @@ public class KubernetesTestUtils {
     }
     
     /**
-     * Compile a ballerina project in a given directory
+     * Compile a ballerina project in a given directory.
      *
      * @param sourceDirectory Ballerina source directory
      * @return Exit code
