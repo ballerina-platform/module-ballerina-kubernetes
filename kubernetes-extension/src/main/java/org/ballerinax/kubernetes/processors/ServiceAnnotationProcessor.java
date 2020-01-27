@@ -57,34 +57,43 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
             // If not anonymous endpoint throw error.
             if (attachedExpr instanceof BLangSimpleVarRef) {
                 throw new KubernetesPluginException("adding @kubernetes:Service{} annotation to a service is only " +
-                                                    "supported when the service has an anonymous listener");
+                        "supported when the service has an anonymous listener");
             }
-            
         }
         ServiceModel serviceModel = getServiceModelFromAnnotation(attachmentNode);
         if (isBlank(serviceModel.getName())) {
             serviceModel.setName(getValidName(serviceNode.getName().getValue()) + SVC_POSTFIX);
         }
 
+        BLangTypeInit bListener = (BLangTypeInit) bService.getAttachedExprs().get(0);
+        validatePorts(serviceModel, bListener);
+
+        KubernetesContext.getInstance().getDataHolder().addBListenerToK8sServiceMap(serviceNode.getName().getValue(),
+                serviceModel);
+    }
+
+    private void validatePorts(ServiceModel serviceModel, BLangTypeInit bListener) throws KubernetesPluginException {
         // If service annotation port is not empty, then listener port is used for the k8s svc target port while
         // service annotation port is used for k8s port.
         // If service annotation port is empty, then listener port is used for both port and target port of the k8s
         // svc.
-        BLangTypeInit bListener = (BLangTypeInit) bService.getAttachedExprs().get(0);
         if (serviceModel.getPort() == -1) {
             serviceModel.setPort(extractPort(bListener));
         }
-        
+
         if (serviceModel.getTargetPort() == -1) {
             serviceModel.setTargetPort(extractPort(bListener));
         }
-    
         setServiceProtocol(serviceModel, bListener);
-    
-        KubernetesContext.getInstance().getDataHolder().addBListenerToK8sServiceMap(serviceNode.getName().getValue(),
-                serviceModel);
+
+        // Validate service type is set to NodePort when a NodePort is defined.
+        if (serviceModel.getNodePort() != -1 && !"NodePort".equals(serviceModel.getServiceType())) {
+            throw new KubernetesPluginException("NodePort [" + serviceModel.getNodePort() +
+                    "] defined without setting the service type to NodePort. " +
+                    "Found [" + serviceModel.getServiceType() + "]");
+        }
     }
-    
+
     @Override
     public void processAnnotation(SimpleVariableNode variableNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException {
@@ -92,35 +101,22 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         if (isBlank(serviceModel.getName())) {
             serviceModel.setName(getValidName(variableNode.getName().getValue()) + SVC_POSTFIX);
         }
-        
-        // If service annotation port is not empty, then listener port is used for the k8s svc target port while
-        // service annotation port is used for k8s port.
-        // If service annotation port is empty, then listener port is used for both port and target port of the k8s
-        // svc.
+
         BLangTypeInit bListener = (BLangTypeInit) ((BLangSimpleVariable) variableNode).expr;
-        if (serviceModel.getPort() == -1) {
-            serviceModel.setPort(extractPort(bListener));
-        }
-        
-        if (serviceModel.getTargetPort() == -1) {
-            serviceModel.setTargetPort(extractPort(bListener));
-        }
-        
-        setServiceProtocol(serviceModel, bListener);
-    
+        validatePorts(serviceModel, bListener);
         KubernetesContext.getInstance().getDataHolder().addBListenerToK8sServiceMap(variableNode.getName().getValue()
                 , serviceModel);
     }
-    
+
     private int extractPort(BLangTypeInit bListener) throws KubernetesPluginException {
         try {
             return Integer.parseInt(bListener.argsExpr.get(0).toString());
         } catch (NumberFormatException e) {
             throw new KubernetesPluginException("unable to parse port/targetPort for the service: " +
-                                            bListener.argsExpr.get(0).toString());
+                    bListener.argsExpr.get(0).toString());
         }
     }
-    
+
     private void setServiceProtocol(ServiceModel serviceModel, BLangTypeInit bListener) {
         if (null != bListener.userDefinedType) {
             serviceModel.setProtocol(bListener.userDefinedType.getPackageAlias().getValue());
@@ -141,7 +137,7 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
             }
         }
     }
-    
+
     private boolean isHTTPS(List<BLangRecordLiteral.BLangRecordKeyValue> listenerConfig) {
         for (BLangRecordLiteral.BLangRecordKeyValue keyValue : listenerConfig) {
             String key = keyValue.getKey().toString();
@@ -149,7 +145,7 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -184,6 +180,9 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
                 case targetPort:
                     serviceModel.setTargetPort(getIntValue(keyValue.getValue()));
                     break;
+                case nodePort:
+                    serviceModel.setNodePort(getIntValue(keyValue.getValue()));
+                    break;
                 case sessionAffinity:
                     serviceModel.setSessionAffinity(getStringValue(keyValue.getValue()));
                     break;
@@ -205,6 +204,7 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         portName,
         port,
         targetPort,
+        nodePort,
         sessionAffinity
     }
 }

@@ -69,6 +69,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |portName|Name for the port|The protocol of the listener|
 |port|Service port|Port of the ballerina service|
 |targetPort|Target pod(s) port|Port of the ballerina service|
+|nodePort|NodePort to expose service|None|
 |sessionAffinity|Pod session affinity|None|
 |serviceType|Service type of the service|ClusterIP|
 
