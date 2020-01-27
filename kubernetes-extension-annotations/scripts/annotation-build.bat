@@ -36,6 +36,11 @@ ren %KUBERNETES_BALLERINA_PROJECT%target\caches\jar_cache\ballerina\openshift\ba
 ren %KUBERNETES_BALLERINA_PROJECT%target\caches\jar_cache\ballerina\knative\ballerina-knative-.jar knative.jar
 popd
 
+if not exist "%DISTRIBUTION_BIR_CACHE%kubernetes\0.0.0\" mkdir %DISTRIBUTION_BIR_CACHE%kubernetes\0.0.0\
+if not exist "%DISTRIBUTION_BIR_CACHE%istio\0.0.0\" mkdir %DISTRIBUTION_BIR_CACHE%istio\0.0.0\
+if not exist "%DISTRIBUTION_BIR_CACHE%openshift\0.0.0\" mkdir %DISTRIBUTION_BIR_CACHE%openshift\0.0.0\
+if not exist "%DISTRIBUTION_BIR_CACHE%knative\0.0.0\" mkdir %DISTRIBUTION_BIR_CACHE%knative\0.0.0\
+
 COPY "%KUBERNETES_BALLERINA_PROJECT%target\caches\bir_cache\ballerina\kubernetes\kubernetes.bir" "%DISTRIBUTION_BIR_CACHE%kubernetes\0.0.0\"
 COPY "%KUBERNETES_BALLERINA_PROJECT%target\caches\bir_cache\ballerina\istio\istio.bir" "%DISTRIBUTION_BIR_CACHE%istio\0.0.0\"
 COPY "%KUBERNETES_BALLERINA_PROJECT%target\caches\bir_cache\ballerina\openshift\openshift.bir" "%DISTRIBUTION_BIR_CACHE%openshift\0.0.0\"
