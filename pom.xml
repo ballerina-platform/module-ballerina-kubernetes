@@ -277,6 +277,7 @@
 
     <modules>
         <module>kubernetes-extension</module>
+        <module>kubernetes-extension-annotations</module>
         <module>kubernetes-extension-test</module>
         <module>kubernetes-extension-examples</module>
         <module>kubernetes-extension-coverage-report</module>
