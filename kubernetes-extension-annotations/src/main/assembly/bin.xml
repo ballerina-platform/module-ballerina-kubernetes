@@ -28,38 +28,61 @@
         <format>zip</format>
     </formats>
 
+<!--    Copy BIR files-->
     <fileSets>
         <fileSet>
             <directory>
                 ${project.basedir}/src/main/ballerina/target/caches/bir_cache/ballerina/kubernetes
             </directory>
-            <outputDirectory>kubernetes</outputDirectory>
+            <outputDirectory>kubernetes/0.0.0</outputDirectory>
             <fileMode>755</fileMode>
         </fileSet>
         <fileSet>
             <directory>
                 ${project.basedir}/src/main/ballerina/target/caches/bir_cache/ballerina/istio
             </directory>
-            <outputDirectory>istio</outputDirectory>
+            <outputDirectory>istio/0.0.0</outputDirectory>
             <fileMode>755</fileMode>
         </fileSet>
         <fileSet>
             <directory>
                 ${project.basedir}/src/main/ballerina/target/caches/bir_cache/ballerina/openshift
             </directory>
-            <outputDirectory>openshift</outputDirectory>
+            <outputDirectory>openshift/0.0.0</outputDirectory>
             <fileMode>755</fileMode>
         </fileSet>
         <fileSet>
             <directory>
                 ${project.basedir}/src/main/ballerina/target/caches/bir_cache/ballerina/knative
             </directory>
-            <outputDirectory>knative</outputDirectory>
+            <outputDirectory>knative/0.0.0</outputDirectory>
             <fileMode>755</fileMode>
         </fileSet>
     </fileSets>
 
     <files>
+        <!--    Copy Ballerina.toml-->
+        <file>
+            <source>${project.basedir}/src/main/ballerina/Ballerina.toml</source>
+            <outputDirectory>kubernetes/0.0.0</outputDirectory>
+            <fileMode>755</fileMode>
+        </file>
+        <file>
+            <source>${project.basedir}/src/main/ballerina/Ballerina.toml</source>
+            <outputDirectory>istio/0.0.0</outputDirectory>
+            <fileMode>755</fileMode>
+        </file>
+        <file>
+            <source>${project.basedir}/src/main/ballerina/Ballerina.toml</source>
+            <outputDirectory>openshift/0.0.0</outputDirectory>
+            <fileMode>755</fileMode>
+        </file>
+        <file>
+            <source>${project.basedir}/src/main/ballerina/Ballerina.toml</source>
+            <outputDirectory>knative/0.0.0</outputDirectory>
+            <fileMode>755</fileMode>
+        </file>
+        <!--    Copy jars-->
         <file>
             <source>${project.basedir}/src/main/ballerina/target/caches/jar_cache/ballerina/kubernetes/kubernetes.jar</source>
             <outputDirectory>.</outputDirectory>
