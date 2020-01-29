@@ -44,7 +44,7 @@ public class ReadinessProbeTest {
     private static final Path DOCKER_TARGET_PATH = BAL_DIRECTORY.resolve(DOCKER);
     private static final Path KUBERNETES_TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
     private static final String DOCKER_IMAGE = "pizza-shop:latest";
-    
+
     /**
      * Build bal file with deployment having readiness disabled.
      *
@@ -56,11 +56,11 @@ public class ReadinessProbeTest {
     public void disabledTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "disabled.bal"), 0);
-        
+
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
-        
+
         // Validate deployment yaml
         File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("disabled_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
@@ -70,12 +70,12 @@ public class ReadinessProbeTest {
         Assert.assertNotNull(deployment.getSpec().getTemplate().getSpec());
         Assert.assertTrue(deployment.getSpec().getTemplate().getSpec().getContainers().size() > 0);
         Assert.assertNull(deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getReadinessProbe());
-        
+
         KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
         KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
-    
+
     /**
      * Build bal file with deployment having readiness enabled using a boolean.
      *
@@ -86,11 +86,11 @@ public class ReadinessProbeTest {
     @Test
     public void enabledTest() throws IOException, InterruptedException, KubernetesPluginException, DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "enabled.bal"), 0);
-        
+
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
-        
+
         // Validate deployment yaml
         File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("enabled_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
@@ -107,12 +107,23 @@ public class ReadinessProbeTest {
                 .getPeriodSeconds().intValue(), 1, "periodSeconds in readiness probe is missing.");
         Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getReadinessProbe()
                 .getTcpSocket().getPort().getIntVal().intValue(), 9090, "TCP port in readiness probe is missing.");
-        
+
         KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
         KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
-    
+
+    /**
+     * Build bal file with deployment having readiness enabled using a boolean.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
+     */
+    @Test
+    public void ftpListenerTest() throws IOException, InterruptedException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "ftp_invalid.bal"), 0);
+    }
+
     /**
      * Build bal file with deployment having readiness enabled using an empty record.
      *
@@ -124,11 +135,11 @@ public class ReadinessProbeTest {
     public void enabledWithEmptyRecordTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "enabled_with_record.bal"), 0);
-        
+
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
-        
+
         // Validate deployment yaml
         File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("enabled_with_record_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
@@ -145,12 +156,12 @@ public class ReadinessProbeTest {
                 .getPeriodSeconds().intValue(), 1, "periodSeconds in readiness probe is missing.");
         Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getReadinessProbe()
                 .getTcpSocket().getPort().getIntVal().intValue(), 9090, "TCP port in readiness probe is missing.");
-        
+
         KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
         KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
-    
+
     /**
      * Build bal file with deployment having readiness configured.
      *
@@ -162,11 +173,11 @@ public class ReadinessProbeTest {
     public void configuredTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "configured.bal"), 0);
-        
+
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
-        
+
         // Validate deployment yaml
         File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("configured_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
@@ -183,12 +194,12 @@ public class ReadinessProbeTest {
                 .getPeriodSeconds().intValue(), 10, "periodSeconds in readiness probe is missing.");
         Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getReadinessProbe()
                 .getTcpSocket().getPort().getIntVal().intValue(), 8080, "TCP port in readiness probe is missing.");
-        
+
         KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
         KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
-    
+
     /**
      * Validate if Dockerfile is created.
      */
@@ -196,7 +207,7 @@ public class ReadinessProbeTest {
         File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
-    
+
     /**
      * Validate contents of the Dockerfile.
      */

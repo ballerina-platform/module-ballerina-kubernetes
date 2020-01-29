@@ -63,7 +63,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     private static final Logger pluginLog = LoggerFactory.getLogger(KubernetesPlugin.class);
     private DiagnosticLog dlog;
     private SourceDirectory sourceDirectory;
-    
+
     @Override
     public void setCompilerContext(CompilerContext context) {
         this.sourceDirectory = context.get(SourceDirectory.class);
@@ -71,18 +71,18 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
             throw new IllegalArgumentException("source directory has not been initialized");
         }
     }
-    
+
     @Override
     public void init(DiagnosticLog diagnosticLog) {
         this.dlog = diagnosticLog;
     }
-    
+
     @Override
     public void process(PackageNode packageNode) {
         BLangPackage bPackage = (BLangPackage) packageNode;
         KubernetesContext.getInstance().addDataHolder(bPackage.packageID, sourceDirectory.getPath());
     }
-    
+
     @Override
     public void process(ServiceNode serviceNode, List<AnnotationAttachmentNode> annotations) {
         for (AnnotationAttachmentNode attachmentNode : annotations) {
@@ -139,20 +139,20 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                 Path kubernetesOutputPath = executableJarFile.getParent().resolve(KUBERNETES);
                 Path dockerOutputPath = executableJarFile.getParent().resolve(DOCKER);
                 if (null != executableJarFile.getParent().getParent().getParent() &&
-                    Files.exists(executableJarFile.getParent().getParent().getParent())) {
+                        Files.exists(executableJarFile.getParent().getParent().getParent())) {
                     // if executable came from a ballerina project
                     Path projectRoot = executableJarFile.getParent().getParent().getParent();
                     if (Files.exists(projectRoot.resolve("Ballerina.toml"))) {
                         dataHolder.setProject(true);
                         kubernetesOutputPath = projectRoot.resolve("target")
-                                        .resolve(KUBERNETES)
-                                        .resolve(extractUberJarName(executableJarFile));
+                                .resolve(KUBERNETES)
+                                .resolve(extractUberJarName(executableJarFile));
                         dockerOutputPath = projectRoot.resolve("target")
                                 .resolve(DOCKER)
                                 .resolve(extractUberJarName(executableJarFile));
                     }
                 }
-    
+
                 dataHolder.setUberJarPath(executableJarFile);
                 dataHolder.setK8sArtifactOutputPath(kubernetesOutputPath);
                 dataHolder.setDockerArtifactOutputPath(dockerOutputPath);
