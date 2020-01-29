@@ -14,38 +14,57 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/log;
-import wso2/ftp;
+import ballerina/http;
+import ballerina/'lang\.object as lang;
 import ballerina/kubernetes;
 
-listener ftp:Listener remoteServer = new({
-    protocol: ftp:FTP,
+listener MockListener remoteServer = new({
+    protocol: "FTP",
     host: "<The FTP host>",
-    secureSocket: {
-        basicAuth: {
-            username: "<The FTP username>",
-            password: "<The FTP passowrd>"
-        }
-    },
-    port: 9090,
-    path: "<The remote FTP direcotry location>",
-    pollingInterval: 5,
-    fileNamePattern: "<File type>"
+    port: 9090
 });
+
+public type MockListener object {
+    *lang:Listener;
+    private ListenerConfig config = {};
+
+    public function __init(ListenerConfig listenerConfig) {
+        self.config = listenerConfig;
+    }
+
+    public function __attach(service s, string? name = ()) returns error? {
+    }
+
+    public function __detach(service s) returns error? {
+    }
+
+    public function __start() returns error? {
+    }
+
+    public function __gracefulStop() returns error? {
+        return ();
+    }
+
+    public function __immediateStop() returns error? {
+        return ();
+    }
+};
+
+public type ListenerConfig record {|
+    string protocol = "FTP";
+    string host = "127.0.0.1";
+    int port = 21;
+|};
 
 @kubernetes:Deployment {
     image: "pizza-shop:latest",
     singleYAML: false,
-    readinessProbe: true
+    livenessProbe: true
 }
-service ftpServerConnector on remoteServer {
-    resource function onFileChange(ftp:WatchEvent fileEvent) {
-
-        foreach ftp:FileInfo addedFile in fileEvent.addedFiles {
-            log:printInfo("Added file path: " + addedFile.path);
-        }
-        foreach string deletedFile in fileEvent.deletedFiles {
-            log:printInfo("Deleted file path: " + deletedFile);
-        }
+service helloWorld on remoteServer {
+    resource function sayHello(http:Caller outboundEP, http:Request request) {
+        http:Response response = new;
+        response.setTextPayload("Hello, World from service helloWorld ! \n");
+        checkpanic outboundEP->respond(response);
     }
 }
