@@ -110,8 +110,8 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
 
     private int extractPort(BLangTypeInit bListener) throws KubernetesPluginException {
         try {
-            if ("ballerina/http:Listener".equals(bListener.type.toString())) {
-                // http listener
+            if ("int".equals(bListener.argsExpr.get(0).expectedType.toString())) {
+                // Listener with port as the first argument. eg:- http listener
                 return Integer.parseInt(bListener.argsExpr.get(0).toString());
             } else {
                 // other listeners with port as an attribute
