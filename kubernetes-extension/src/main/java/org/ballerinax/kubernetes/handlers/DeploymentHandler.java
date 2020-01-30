@@ -311,8 +311,8 @@ public class DeploymentHandler extends AbstractArtifactHandler {
             if (null != deploymentModel.getLivenessProbe() && deploymentModel.getLivenessProbe().getPort() == 0) {
                 //set first port as liveness port
                 if (deploymentModel.getPorts().size() == 0) {
-                    throw new KubernetesPluginException("Unable to detect port for Liveness probe." +
-                            "Unable to extract port form @kubernetes:Service annotation.");
+                    throw new KubernetesPluginException("unable to detect port for liveness probe." +
+                            "missing @kubernetes:Service annotation on listener.");
                 }
                 deploymentModel.getLivenessProbe().setPort(deploymentModel.getPorts().iterator().next());
             }
@@ -320,8 +320,8 @@ public class DeploymentHandler extends AbstractArtifactHandler {
             if (null != deploymentModel.getReadinessProbe() && deploymentModel.getReadinessProbe().getPort() == 0) {
                 //set first port as readiness port
                 if (deploymentModel.getPorts().size() == 0) {
-                    throw new KubernetesPluginException("Unable to detect port for Readiness probe. " +
-                            "Missing @kubernetes:Service annotation on listener.");
+                    throw new KubernetesPluginException("unable to detect port for readiness probe. " +
+                            "missing @kubernetes:Service annotation on listener.");
                 }
                 deploymentModel.getReadinessProbe().setPort(deploymentModel.getPorts().iterator().next());
             }
