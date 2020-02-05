@@ -39,13 +39,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
-import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deleteK8s;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deployK8s;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.readFromURL;

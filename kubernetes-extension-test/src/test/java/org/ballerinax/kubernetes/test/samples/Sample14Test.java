@@ -40,7 +40,6 @@ import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
-import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deleteK8s;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deployK8s;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.executeK8sCommand;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;

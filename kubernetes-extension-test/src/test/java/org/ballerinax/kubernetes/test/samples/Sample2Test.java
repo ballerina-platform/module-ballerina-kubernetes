@@ -136,8 +136,7 @@ public class Sample2Test extends SampleTest {
         Assert.assertEquals(0, deployK8s(KUBERNETES_TARGET_PATH));
         Assert.assertTrue(readFromURL("http://abc.com/helloWorld/sayHello",
                 "Hello, World from service helloWorld !"));
-        Assert.assertEquals(0, deleteK8s(KUBERNETES_TARGET_PATH));
-        KubernetesTestUtils.deleteK8s(KUBERNETES_TARGET_PATH);
+        deleteK8s(KUBERNETES_TARGET_PATH);
     }
 
     @Test

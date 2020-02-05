@@ -49,7 +49,6 @@ import org.glassfish.jersey.internal.RuntimeDelegateImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.ext.RuntimeDelegate;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -75,6 +74,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import javax.ws.rs.ext.RuntimeDelegate;
 
 /**
  * Kubernetes test utils.
@@ -243,13 +243,33 @@ public class KubernetesTestUtils {
         int exitCode = process.waitFor();
         logOutput(process.getInputStream());
         logOutput(process.getErrorStream());
-        log.info(EXIT_CODE + exitCode);
         Thread.sleep(10000);
+        log.info("Deployment " + EXIT_CODE + exitCode);
         return exitCode;
     }
 
     /**
-     * Deploys k8s artifacts in a given directory
+     * Load docker image to kind
+     *
+     * @param dockerImage Docker image tag to be exposed
+     * @return Exit code
+     * @throws InterruptedException if an error occurs while compiling
+     * @throws IOException          if an error occurs while writing file
+     */
+    public static int loadImage(String dockerImage) throws InterruptedException, IOException {
+        ProcessBuilder pb = new ProcessBuilder("kind", "load", "docker-image", dockerImage);
+        log.info("Loading docker image: " + dockerImage);
+        log.debug(EXECUTING_COMMAND + pb.command());
+        Process process = pb.start();
+        int exitCode = process.waitFor();
+        logOutput(process.getInputStream());
+        logOutput(process.getErrorStream());
+        log.info("Docker image loading " + EXIT_CODE + exitCode);
+        return exitCode;
+    }
+
+    /**
+     * Execute k8s command
      *
      * @param args kubectl arguments
      * @return Exit code
@@ -289,7 +309,7 @@ public class KubernetesTestUtils {
                         host.equalsIgnoreCase("pizzashack.com") ||
                         host.equalsIgnoreCase("burger.com")) {
                     // If host is matching return the IP address we want, not what is in DNS
-                    return new InetAddress[]{InetAddress.getByName("127.0.0.1")};
+                    return new InetAddress[]{InetAddress.getByName("172.17.0.2")};
                 } else {
                     // Else, resolve from the DNS
                     return super.resolve(host);
@@ -327,7 +347,7 @@ public class KubernetesTestUtils {
         HttpEntity entity = httpResponse.getEntity();
         if (entity != null) {
             String result = EntityUtils.toString(entity);
-            log.info(result);
+            log.info("Response from service: " + result);
             return result.contains(message);
         }
         return false;
