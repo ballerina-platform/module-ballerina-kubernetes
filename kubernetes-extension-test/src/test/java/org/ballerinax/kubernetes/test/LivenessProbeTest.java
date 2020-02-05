@@ -188,7 +188,44 @@ public class LivenessProbeTest {
         KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
-    
+
+    /**
+     * Build bal file with deployment having liveness enabled using a boolean.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
+     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
+     */
+    @Test
+    public void ftpTest() throws IOException, InterruptedException, KubernetesPluginException, DockerTestException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "ftp.bal"), 0);
+
+        // Check if docker image exists and correct
+        validateDockerfile();
+        validateDockerImage();
+
+        // Validate deployment yaml
+        File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("ftp_deployment.yaml").toFile();
+        Assert.assertTrue(deploymentYAML.exists());
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
+        Assert.assertNotNull(deployment.getSpec());
+        Assert.assertNotNull(deployment.getSpec().getTemplate());
+        Assert.assertNotNull(deployment.getSpec().getTemplate().getSpec());
+        Assert.assertTrue(deployment.getSpec().getTemplate().getSpec().getContainers().size() > 0);
+        Assert.assertNotNull(deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getLivenessProbe(),
+                "Liveness probe is missing.");
+        Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getLivenessProbe()
+                .getInitialDelaySeconds().intValue(), 10, "initialDelay in liveness probe is missing.");
+        Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getLivenessProbe()
+                .getPeriodSeconds().intValue(), 5, "periodSeconds in liveness probe is missing.");
+        Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getLivenessProbe()
+                .getTcpSocket().getPort().getIntVal().intValue(), 9090, "TCP port in liveness probe is missing.");
+
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
+    }
+
     /**
      * Validate if Dockerfile is created.
      */

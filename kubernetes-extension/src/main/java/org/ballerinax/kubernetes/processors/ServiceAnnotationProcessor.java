@@ -110,7 +110,20 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
 
     private int extractPort(BLangTypeInit bListener) throws KubernetesPluginException {
         try {
-            return Integer.parseInt(bListener.argsExpr.get(0).toString());
+            if ("int".equals(bListener.argsExpr.get(0).expectedType.toString())) {
+                // Listener with port as the first argument. eg:- http listener
+                return Integer.parseInt(bListener.argsExpr.get(0).toString());
+            } else {
+                // other listeners with port as an attribute
+                for (BLangRecordLiteral.BLangRecordKeyValue arg :
+                        ((BLangRecordLiteral) bListener.argsExpr.get(0)).getKeyValuePairs()) {
+                    if ("port".equals(arg.getKey().toString())) {
+                        return Integer.parseInt(arg.getValue().toString());
+                    }
+                }
+            }
+            throw new KubernetesPluginException("unable extract port from the listener " +
+                    bListener.argsExpr.get(0).toString());
         } catch (NumberFormatException e) {
             throw new KubernetesPluginException("unable to parse port/targetPort for the service: " +
                     bListener.argsExpr.get(0).toString());
