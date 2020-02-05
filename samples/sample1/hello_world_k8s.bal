@@ -3,7 +3,8 @@ import ballerina/kubernetes;
 import ballerina/log;
 
 @kubernetes:Service {
-    serviceType: "NodePort"
+    serviceType: "NodePort",
+    nodePort: 32001
 }
 @kubernetes:Deployment {}
 @http:ServiceConfig {

@@ -39,7 +39,9 @@ import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deployK8s;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.readFromURL;
 
 /**
  * Test cases for sample 9.
@@ -52,11 +54,11 @@ public class Sample9Test extends SampleTest {
     private static final String DOCKER_IMAGE = "hello_world_persistence_volume_k8s:latest";
     private Deployment deployment;
     private PersistentVolumeClaim volumeClaim;
-    
+
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(SOURCE_DIR_PATH,
-                "hello_world_persistence_volume_k8s.bal") , 0);
+                "hello_world_persistence_volume_k8s.bal"), 0);
         File yamlFile = KUBERNETES_TARGET_PATH.resolve("hello_world_persistence_volume_k8s.yaml").toFile();
         Assert.assertTrue(yamlFile.exists());
         List<HasMetadata> k8sItems = KubernetesTestUtils.loadYaml(yamlFile);
@@ -98,7 +100,7 @@ public class Sample9Test extends SampleTest {
         Assert.assertEquals(volumeClaim.getMetadata().getName(), "local-pv-2");
         Assert.assertEquals(volumeClaim.getSpec().getAccessModes().size(), 1);
     }
-    
+
     @Test
     public void validateDockerfile() {
         File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
@@ -110,6 +112,16 @@ public class Sample9Test extends SampleTest {
         List<String> ports = getExposedPorts(DOCKER_IMAGE);
         Assert.assertEquals(ports.size(), 1);
         Assert.assertEquals(ports.get(0), "9090/tcp");
+    }
+
+    @Test(groups = {"integration"})
+    public void deploySample() throws IOException, InterruptedException {
+        Assert.assertEquals(0, deployK8s(SOURCE_DIR_PATH.resolve("volumes")));
+        Assert.assertEquals(0, deployK8s(KUBERNETES_TARGET_PATH));
+        Assert.assertTrue(readFromURL("https://abc.com/helloWorld/sayHello",
+                "Hello World"));
+        KubernetesTestUtils.deleteK8s(KUBERNETES_TARGET_PATH);
+        KubernetesTestUtils.deleteK8s(SOURCE_DIR_PATH.resolve("volumes"));
     }
 
     @AfterClass

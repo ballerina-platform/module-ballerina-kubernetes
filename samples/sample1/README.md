@@ -87,7 +87,7 @@ hello-world-k8s-deployment-bf8f98c7c-twwf9   1/1       Running   0          0s
 
 $> kubectl get svc
 NAME                    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
-helloworldep           NodePort    10.96.118.214    <none>        9090:32045/TCP   1m
+helloworldep           NodePort    10.96.118.214    <none>        9090:32001/TCP   1m
 
 ```
 
@@ -97,7 +97,7 @@ helloworldep           NodePort    10.96.118.214    <none>        9090:32045/TCP
 
 Note that the node port is derived from `kubectl get svc` output.
 ```bash
-$> curl http://localhost:32045/helloWorld/sayHello
+$> curl http://localhost:32001/helloWorld/sayHello
 Hello, World from service helloWorld !
 ```
 

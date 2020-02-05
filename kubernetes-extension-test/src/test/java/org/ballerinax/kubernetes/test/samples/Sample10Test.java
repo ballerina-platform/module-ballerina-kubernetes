@@ -38,10 +38,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deleteK8s;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deployK8s;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.readFromURL;
 
 /**
  * Test cases for sample 10.
@@ -66,7 +70,7 @@ public class Sample10Test extends SampleTest {
     private Ingress burgerIngress;
     private Ingress pizzaIngress;
     private Secret burgerSecret;
-    
+
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaProject(SOURCE_DIR_PATH), 0);
@@ -91,7 +95,7 @@ public class Sample10Test extends SampleTest {
                     break;
             }
         }
-        
+
         File pizzaYamlFile = PIZZA_PKG_K8S_TARGET_PATH.resolve("pizza.yaml").toFile();
         Assert.assertTrue(pizzaYamlFile.exists());
         k8sItems = KubernetesTestUtils.loadYaml(pizzaYamlFile);
@@ -117,12 +121,12 @@ public class Sample10Test extends SampleTest {
         Assert.assertTrue(BURGER_PKG_K8S_TARGET_PATH.resolve("burger-deployment").resolve("Chart.yaml").toFile()
                 .exists());
     }
-    
+
     @Test
     public void validateHelmChartTemplates() {
         File templateDir = BURGER_PKG_K8S_TARGET_PATH.resolve("burger-deployment").resolve("templates").toFile();
         Assert.assertTrue(templateDir.isDirectory());
-        Assert.assertTrue(templateDir.list().length > 0);
+        Assert.assertTrue(Objects.requireNonNull(templateDir.list()).length > 0);
     }
 
     @Test
@@ -161,7 +165,7 @@ public class Sample10Test extends SampleTest {
         Assert.assertEquals(container.getPorts().size(), 1);
         Assert.assertEquals(container.getEnv().size(), 2);
     }
-    
+
     @Test
     public void validateBurgerSVC() {
         Assert.assertNotNull(burgerService);
@@ -183,7 +187,7 @@ public class Sample10Test extends SampleTest {
         Assert.assertEquals(pizzaService.getSpec().getPorts().size(), 1);
         Assert.assertEquals(pizzaService.getSpec().getPorts().get(0).getPort().intValue(), 9099);
     }
-    
+
     @Test
     public void validateBurgerIngress() {
         Assert.assertNotNull(burgerIngress);
@@ -191,10 +195,10 @@ public class Sample10Test extends SampleTest {
         Assert.assertEquals(burgerIngress.getMetadata().getLabels().get(KubernetesConstants
                 .KUBERNETES_SELECTOR_KEY), BURGER_SELECTOR);
         Assert.assertEquals(burgerIngress.getSpec().getRules().get(0).getHost(), "burger.com");
-        Assert.assertEquals(burgerIngress.getSpec().getRules().get(0).getHttp().getPaths().get(0).getPath(), "/");
+        Assert.assertEquals(burgerIngress.getSpec().getRules().get(0).getHttp().getPaths().get(0).getPath(), "/(.*)");
         Assert.assertTrue(burgerIngress.getMetadata().getAnnotations().containsKey(
                 "nginx.ingress.kubernetes.io/ssl-passthrough"));
-        Assert.assertTrue(Boolean.valueOf(burgerIngress.getMetadata().getAnnotations().get(
+        Assert.assertTrue(Boolean.parseBoolean(burgerIngress.getMetadata().getAnnotations().get(
                 "nginx.ingress.kubernetes.io/ssl-passthrough")));
         Assert.assertEquals(burgerIngress.getSpec().getTls().size(), 1);
         Assert.assertEquals(burgerIngress.getSpec().getTls().get(0).getHosts().size(), 1);
@@ -209,10 +213,10 @@ public class Sample10Test extends SampleTest {
                 .KUBERNETES_SELECTOR_KEY), PIZZA_SELECTOR);
         Assert.assertEquals(pizzaIngress.getSpec().getRules().get(0).getHost(), "pizza.com");
         Assert.assertEquals(pizzaIngress.getSpec().getRules().get(0).getHttp().getPaths().get(0).getPath(),
-                "/pizzastore");
+                "/pizzastore(/|$)(.*)");
         Assert.assertTrue(pizzaIngress.getMetadata().getAnnotations().containsKey(
                 "nginx.ingress.kubernetes.io/ssl-passthrough"));
-        Assert.assertFalse(Boolean.valueOf(pizzaIngress.getMetadata().getAnnotations().get(
+        Assert.assertFalse(Boolean.parseBoolean(pizzaIngress.getMetadata().getAnnotations().get(
                 "nginx.ingress.kubernetes.io/ssl-passthrough")));
         Assert.assertEquals(pizzaIngress.getSpec().getTls().size(), 0);
     }
@@ -223,25 +227,35 @@ public class Sample10Test extends SampleTest {
         Assert.assertEquals(burgerSecret.getMetadata().getName(), "burgerep-keystore");
         Assert.assertEquals(burgerSecret.getData().size(), 1);
     }
-    
+
     @Test
     public void validateDockerfile() {
         Assert.assertTrue(BURGER_PKG_DOCKER_TARGET_PATH.resolve("Dockerfile").toFile().exists());
         Assert.assertTrue(PIZZA_PKG_DOCKER_TARGET_PATH.resolve("Dockerfile").toFile().exists());
     }
-    
+
     @Test
     public void validateDockerImageBurger() throws DockerTestException, InterruptedException {
         List<String> ports = getExposedPorts(BURGER_DOCKER_IMAGE);
         Assert.assertEquals(ports.size(), 1);
         Assert.assertEquals(ports.get(0), "9096/tcp");
     }
-    
+
     @Test
     public void validateDockerImagePizza() throws DockerTestException, InterruptedException {
         List<String> ports = getExposedPorts(PIZZA_DOCKER_IMAGE);
         Assert.assertEquals(ports.size(), 1);
         Assert.assertEquals(ports.get(0), "9099/tcp");
+    }
+
+    @Test(groups = {"integration"})
+    public void deploySample() throws IOException, InterruptedException {
+        Assert.assertEquals(0, deployK8s(BURGER_PKG_K8S_TARGET_PATH));
+        Assert.assertEquals(0, deployK8s(PIZZA_PKG_K8S_TARGET_PATH));
+        Assert.assertTrue(readFromURL("http://pizza.com/pizzastore/pizza/menu", "Pizza menu"));
+//        Assert.assertTrue(readFromURL("https://burger.com/menu", "Burger menu"));
+        deleteK8s(BURGER_PKG_K8S_TARGET_PATH);
+        deleteK8s(PIZZA_PKG_K8S_TARGET_PATH);
     }
 
     @AfterClass

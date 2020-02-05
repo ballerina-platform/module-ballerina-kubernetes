@@ -5,8 +5,8 @@ import ballerina/log;
 @kubernetes:Service {}
 @kubernetes:Ingress {
     hostname: "burger.com",
-    path: "/",
-    targetPath: "/burger"
+    path: "/(.*)",
+    targetPath: "/burger/$1"
 }
 listener http:Listener burgerEP = new(9096, {
     secureSocket: {

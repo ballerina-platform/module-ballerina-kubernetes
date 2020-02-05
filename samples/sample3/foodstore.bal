@@ -4,8 +4,8 @@ import ballerina/log;
 
 @kubernetes:Ingress {
     hostname: "pizza.com",
-    path: "/pizzastore",
-    targetPath: "/"
+    path: "/pizzastore(/|$)(.*)",
+    targetPath: "/$2"
 }
 @kubernetes:Service {
     sessionAffinity: "ClientIP"
@@ -42,8 +42,8 @@ service PizzaAPI on pizzaEP {
 
 @kubernetes:Ingress {
     hostname: "burger.com",
-    path: "/",
-    targetPath: "/burger"
+    path: "/(.*)",
+    targetPath: "/burger/$1"
 }
 @kubernetes:Service {}
 listener http:Listener burgerEP = new(9096);

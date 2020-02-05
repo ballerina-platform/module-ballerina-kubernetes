@@ -40,7 +40,9 @@ import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deployK8s;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.readFromURL;
 
 /**
  * Test cases for sample 5.
@@ -93,6 +95,16 @@ public class Sample5Test extends SampleTest {
     public void validateDockerfile() {
         File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
+    }
+
+    @Test(groups = {"integration"})
+    public void deploySample() throws IOException, InterruptedException {
+        Assert.assertEquals(0, deployK8s(KUBERNETES_TARGET_PATH));
+        Assert.assertTrue(readFromURL("http://internal.pizzashack.com/customer",
+                "Get Customer resource !!!!"));
+        Assert.assertTrue(readFromURL("https://pizzashack.com/customer",
+                "Get Customer resource !!!!"));
+        KubernetesTestUtils.deleteK8s(KUBERNETES_TARGET_PATH);
     }
     
     @Test

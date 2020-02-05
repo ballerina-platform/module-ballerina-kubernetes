@@ -4,8 +4,8 @@ import ballerina/log;
 
 @kubernetes:Ingress {
     hostname: "pizza.com",
-    path: "/pizzastore",
-    targetPath: "/"
+    path: "/pizzastore(/|$)(.*)",
+    targetPath: "/$2"
 }
 @kubernetes:Service {}
 listener http:Listener pizzaEP = new(9099);

@@ -169,6 +169,11 @@
                 <version>${lombok.version}</version>
                 <scope>provided</scope>
             </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${apache.http.client.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -294,6 +299,7 @@
         <testng.version>6.14.3</testng.version>
         <slf4j.version>1.7.26</slf4j.version>
         <lombok.version>1.18.10</lombok.version>
+        <apache.http.client.version>4.5.10</apache.http.client.version>
     </properties>
 
     <modules>
