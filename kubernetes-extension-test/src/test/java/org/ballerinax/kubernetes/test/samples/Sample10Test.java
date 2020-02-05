@@ -134,14 +134,13 @@ public class Sample10Test extends SampleTest {
         Assert.assertNotNull(burgerDeployment);
         Assert.assertEquals(burgerDeployment.getMetadata().getName(), "burger-deployment");
         Assert.assertEquals(burgerDeployment.getSpec().getReplicas().intValue(), 1);
-        Assert.assertEquals(burgerDeployment.getSpec().getTemplate().getSpec().getVolumes().size(), 1);
         Assert.assertEquals(burgerDeployment.getMetadata().getLabels().get(KubernetesConstants
                 .KUBERNETES_SELECTOR_KEY), BURGER_SELECTOR);
         Assert.assertEquals(burgerDeployment.getSpec().getTemplate().getSpec().getContainers().size(), 1);
 
         // Assert Containers
         Container container = burgerDeployment.getSpec().getTemplate().getSpec().getContainers().get(0);
-        Assert.assertEquals(container.getVolumeMounts().size(), 1);
+        Assert.assertEquals(container.getVolumeMounts().size(), 0);
         Assert.assertEquals(container.getImage(), BURGER_DOCKER_IMAGE);
         Assert.assertEquals(container.getImagePullPolicy(), KubernetesConstants.ImagePullPolicy.IfNotPresent.name());
         Assert.assertEquals(container.getPorts().size(), 1);
@@ -196,13 +195,6 @@ public class Sample10Test extends SampleTest {
                 .KUBERNETES_SELECTOR_KEY), BURGER_SELECTOR);
         Assert.assertEquals(burgerIngress.getSpec().getRules().get(0).getHost(), "burger.com");
         Assert.assertEquals(burgerIngress.getSpec().getRules().get(0).getHttp().getPaths().get(0).getPath(), "/(.*)");
-        Assert.assertTrue(burgerIngress.getMetadata().getAnnotations().containsKey(
-                "nginx.ingress.kubernetes.io/ssl-passthrough"));
-        Assert.assertTrue(Boolean.parseBoolean(burgerIngress.getMetadata().getAnnotations().get(
-                "nginx.ingress.kubernetes.io/ssl-passthrough")));
-        Assert.assertEquals(burgerIngress.getSpec().getTls().size(), 1);
-        Assert.assertEquals(burgerIngress.getSpec().getTls().get(0).getHosts().size(), 1);
-        Assert.assertEquals(burgerIngress.getSpec().getTls().get(0).getHosts().get(0), "burger.com");
     }
 
     @Test
@@ -221,12 +213,6 @@ public class Sample10Test extends SampleTest {
         Assert.assertEquals(pizzaIngress.getSpec().getTls().size(), 0);
     }
 
-    @Test
-    public void validateBurgerSecret() {
-        Assert.assertNotNull(burgerSecret);
-        Assert.assertEquals(burgerSecret.getMetadata().getName(), "burgerep-keystore");
-        Assert.assertEquals(burgerSecret.getData().size(), 1);
-    }
 
     @Test
     public void validateDockerfile() {
@@ -253,7 +239,7 @@ public class Sample10Test extends SampleTest {
         Assert.assertEquals(0, deployK8s(BURGER_PKG_K8S_TARGET_PATH));
         Assert.assertEquals(0, deployK8s(PIZZA_PKG_K8S_TARGET_PATH));
         Assert.assertTrue(readFromURL("http://pizza.com/pizzastore/pizza/menu", "Pizza menu"));
-//        Assert.assertTrue(readFromURL("https://burger.com/menu", "Burger menu"));
+        Assert.assertTrue(readFromURL("http://burger.com/menu", "Burger menu"));
         deleteK8s(BURGER_PKG_K8S_TARGET_PATH);
         deleteK8s(PIZZA_PKG_K8S_TARGET_PATH);
     }

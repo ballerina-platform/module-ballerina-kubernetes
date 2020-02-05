@@ -8,14 +8,7 @@ import ballerina/log;
     path: "/(.*)",
     targetPath: "/burger/$1"
 }
-listener http:Listener burgerEP = new(9096, {
-    secureSocket: {
-        keyStore: {
-            path: "src/burger/resources/ballerinaKeystore.p12",
-            password: "ballerina"
-        }
-    }
-});
+listener http:Listener burgerEP = new(9096);
 
 
 @kubernetes:Deployment {}

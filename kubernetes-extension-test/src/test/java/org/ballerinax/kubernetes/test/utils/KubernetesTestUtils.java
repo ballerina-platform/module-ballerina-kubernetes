@@ -66,6 +66,8 @@ import java.nio.file.Paths;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -243,6 +245,28 @@ public class KubernetesTestUtils {
         logOutput(process.getErrorStream());
         log.info(EXIT_CODE + exitCode);
         Thread.sleep(10000);
+        return exitCode;
+    }
+
+    /**
+     * Deploys k8s artifacts in a given directory
+     *
+     * @param args kubectl arguments
+     * @return Exit code
+     * @throws InterruptedException if an error occurs while compiling
+     * @throws IOException          if an error occurs while writing file
+     */
+    public static int executeK8sCommand(String... args) throws InterruptedException, IOException {
+        List<String> command = new ArrayList<>();
+        command.add(KUBECTL);
+        command.addAll(Arrays.asList(args));
+        ProcessBuilder pb = new ProcessBuilder(command);
+        log.debug(EXECUTING_COMMAND + pb.command());
+        Process process = pb.start();
+        int exitCode = process.waitFor();
+        logOutput(process.getInputStream());
+        logOutput(process.getErrorStream());
+        log.info(EXIT_CODE + exitCode);
         return exitCode;
     }
 
