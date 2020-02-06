@@ -44,6 +44,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deployK8s;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.loadImage;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.readFromURL;
 
 /**
@@ -146,6 +147,7 @@ public class Sample7Test extends SampleTest {
 
     @Test(groups = {"integration"})
     public void deploySample() throws IOException, InterruptedException {
+        Assert.assertEquals(0, loadImage(DOCKER_IMAGE));
         Assert.assertEquals(0, deployK8s(KUBERNETES_TARGET_PATH));
         Assert.assertTrue(readFromURL("https://abc.com/helloWorld/secret1",
                 "Secret1 resource: Secret1"));

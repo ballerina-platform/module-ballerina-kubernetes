@@ -42,7 +42,11 @@ import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deleteK8s;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deployK8s;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDockerImage;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.loadImage;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.readFromURL;
 
 /**
  * Test cases for sample 11.
@@ -94,6 +98,13 @@ public class Sample11Test extends SampleTest {
     public void validateDockerImage() throws DockerTestException, InterruptedException {
         ImageInfo imageInspect = getDockerImage(DOCKER_IMAGE);
         Assert.assertNotNull(imageInspect.config());
+    }
+
+    @Test(groups = {"integration"})
+    public void deploySample() throws IOException, InterruptedException {
+        Assert.assertEquals(0, loadImage(DOCKER_IMAGE));
+        Assert.assertEquals(0, deployK8s(KUBERNETES_TARGET_PATH));
+        deleteK8s(KUBERNETES_TARGET_PATH);
     }
 
     @AfterClass

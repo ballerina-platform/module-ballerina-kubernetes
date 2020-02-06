@@ -248,7 +248,7 @@ public class KubernetesTestUtils {
     }
 
     /**
-     * Load docker image to kind
+     * Load docker image to kind k8s cluster
      *
      * @param dockerImage Docker image tag to be exposed
      * @return Exit code
@@ -300,15 +300,17 @@ public class KubernetesTestUtils {
      */
     public static boolean readFromURL(String url, String message) throws IOException {
         // Custom DNS resolver
+        log.info("Accessing URL: " + url);
         DnsResolver dnsResolver = new SystemDefaultDnsResolver() {
             @Override
             public InetAddress[] resolve(final String host) throws UnknownHostException {
                 if (host.equalsIgnoreCase("abc.com") ||
                         host.equalsIgnoreCase("pizza.com") ||
                         host.equalsIgnoreCase("pizzashack.com") ||
+                        host.equalsIgnoreCase("internal.pizzashack.com") ||
                         host.equalsIgnoreCase("burger.com")) {
                     // If host is matching return the IP address we want, not what is in DNS
-                    return new InetAddress[]{InetAddress.getByName("172.17.0.2")};
+                    return new InetAddress[]{InetAddress.getByName("127.0.0.1")};
                 } else {
                     // Else, resolve from the DNS
                     return super.resolve(host);
@@ -344,6 +346,7 @@ public class KubernetesTestUtils {
         HttpGet httpRequest = new HttpGet(url);
         HttpResponse httpResponse = httpClient.execute(httpRequest);
         HttpEntity entity = httpResponse.getEntity();
+        log.info(httpResponse.getStatusLine().toString());
         if (entity != null) {
             String result = EntityUtils.toString(entity);
             log.info("Response from service: " + result);
