@@ -46,7 +46,7 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deployK8s
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getCommand;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.loadImage;
-import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.readFromURL;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.validateService;
 
 /**
  * Test cases for sample 8.
@@ -151,11 +151,11 @@ public class Sample8Test extends SampleTest {
     public void deploySample() throws IOException, InterruptedException {
         Assert.assertEquals(0, loadImage(DOCKER_IMAGE));
         Assert.assertEquals(0, deployK8s(KUBERNETES_TARGET_PATH));
-        Assert.assertTrue(readFromURL("https://abc.com/helloWorld/config/john",
+        Assert.assertTrue(validateService("https://abc.com/helloWorld/config/john",
                 "{userId: john@ballerina.com, groups: apim,esb}"));
-        Assert.assertTrue(readFromURL("https://abc.com/helloWorld/config/jane",
+        Assert.assertTrue(validateService("https://abc.com/helloWorld/config/jane",
                 "{userId: jane3@ballerina.com, groups: esb}"));
-        Assert.assertTrue(readFromURL("https://abc.com/helloWorld/data",
+        Assert.assertTrue(validateService("https://abc.com/helloWorld/data",
                 "Data: Lorem ipsum dolor sit amet."));
         KubernetesTestUtils.deleteK8s(KUBERNETES_TARGET_PATH);
     }

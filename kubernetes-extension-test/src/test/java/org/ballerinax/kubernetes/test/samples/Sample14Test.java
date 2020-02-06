@@ -44,7 +44,7 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deployK8s
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.executeK8sCommand;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.loadImage;
-import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.readFromURL;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.validateService;
 
 /**
  * Test cases for sample 14.
@@ -142,7 +142,8 @@ public class Sample14Test extends SampleTest {
         Assert.assertEquals(0, loadImage(DOCKER_IMAGE));
         Assert.assertEquals(0, executeK8sCommand("create", "namespace", "ballerina"));
         Assert.assertEquals(0, deployK8s(KUBERNETES_TARGET_PATH));
-        Assert.assertTrue(readFromURL("http://abc.com/helloWorld/sayHello", "Hello, World from service helloWorld !"));
+        Assert.assertTrue(validateService("http://abc.com/helloWorld/sayHello",
+                "Hello, World from service helloWorld !"));
         Assert.assertEquals(0, executeK8sCommand("delete", "namespace", "ballerina"));
     }
 

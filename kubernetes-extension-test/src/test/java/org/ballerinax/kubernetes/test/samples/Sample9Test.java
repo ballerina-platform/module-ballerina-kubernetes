@@ -42,7 +42,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deployK8s;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.loadImage;
-import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.readFromURL;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.validateService;
 
 /**
  * Test cases for sample 9.
@@ -120,7 +120,7 @@ public class Sample9Test extends SampleTest {
         Assert.assertEquals(0, loadImage(DOCKER_IMAGE));
         Assert.assertEquals(0, deployK8s(SOURCE_DIR_PATH.resolve("volumes")));
         Assert.assertEquals(0, deployK8s(KUBERNETES_TARGET_PATH));
-        Assert.assertTrue(readFromURL("https://abc.com/helloWorld/sayHello",
+        Assert.assertTrue(validateService("https://abc.com/helloWorld/sayHello",
                 "Hello World"));
         KubernetesTestUtils.deleteK8s(KUBERNETES_TARGET_PATH);
         KubernetesTestUtils.deleteK8s(SOURCE_DIR_PATH.resolve("volumes"));

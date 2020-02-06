@@ -45,7 +45,7 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deleteK8s
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deployK8s;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.loadImage;
-import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.readFromURL;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.validateService;
 
 /**
  * Test cases for sample 12.
@@ -115,7 +115,7 @@ public class Sample12Test extends SampleTest {
     public void deploySample() throws IOException, InterruptedException {
         Assert.assertEquals(0, loadImage(DOCKER_IMAGE));
         Assert.assertEquals(0, deployK8s(KUBERNETES_TARGET_PATH));
-        Assert.assertTrue(readFromURL("https://abc.com/helloWorld/data", "Data: Lorem ipsum dolor sit amet"));
+        Assert.assertTrue(validateService("https://abc.com/helloWorld/data", "Data: Lorem ipsum dolor sit amet"));
         deleteK8s(KUBERNETES_TARGET_PATH);
     }
 
