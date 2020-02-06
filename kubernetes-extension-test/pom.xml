@@ -110,7 +110,7 @@
                         <jacoco.agent.argLine>${jacoco.agent.argLine}</jacoco.agent.argLine>
                     </systemPropertyVariables>
                     <suiteXmlFiles>
-                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+                        <suiteXmlFile>${testng.config}</suiteXmlFile>
                     </suiteXmlFiles>
                 </configuration>
             </plugin>

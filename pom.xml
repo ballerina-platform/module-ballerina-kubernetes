@@ -32,6 +32,28 @@
     <packaging>pom</packaging>
     <url>https://ballerina.io/</url>
 
+    <profiles>
+        <!-- this profile is active by default and won't run k8s integration tests-->
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <testng.config>src/test/resources/testng.xml</testng.config>
+            </properties>
+        </profile>
+
+        <!-- this profile runs integration tests with k8s cluster on travis -->
+        <profile>
+            <id>travis</id>
+            <properties>
+                <testng.config>src/test/resources/testng-travis.xml</testng.config>
+            </properties>
+        </profile>
+
+    </profiles>
+
     <build>
         <pluginManagement>
             <plugins>

@@ -226,7 +226,7 @@ public class KubernetesTestUtils {
     }
 
     /**
-     * Deploys k8s artifacts in a given directory
+     * Deploys k8s artifacts in a given directory.
      *
      * @param sourceDirectory K8s artifacts directory
      * @return Exit code
@@ -249,7 +249,7 @@ public class KubernetesTestUtils {
     }
 
     /**
-     * Load docker image to kind k8s cluster
+     * Load docker image to kind k8s cluster.
      *
      * @param dockerImage Docker image tag to be exposed
      * @return Exit code
@@ -269,7 +269,7 @@ public class KubernetesTestUtils {
     }
 
     /**
-     * Execute k8s command
+     * Execute k8s command.
      *
      * @param args kubectl arguments
      * @return Exit code
@@ -299,7 +299,7 @@ public class KubernetesTestUtils {
      * @return true if the message contains expected message
      * @throws IOException if unable to connect to service
      */
-    public static boolean readFromURL(String url, String message) throws IOException {
+    public static boolean validateService(String url, String message) throws IOException {
         // Custom DNS resolver
         log.info("Accessing URL: " + url);
         DnsResolver dnsResolver = new SystemDefaultDnsResolver() {
@@ -357,7 +357,7 @@ public class KubernetesTestUtils {
     }
 
     /**
-     * Delete k8s artifacts from k8s cluster in a given directory
+     * Delete k8s artifacts from k8s cluster in a given directory.
      *
      * @param sourceDirectory K8s artifacts directory
      * @return Exit code
