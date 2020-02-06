@@ -75,7 +75,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import javax.ws.rs.ext.RuntimeDelegate;
-
 /**
  * Kubernetes test utils.
  */
@@ -334,7 +333,7 @@ public class KubernetesTestUtils {
                     dnsResolver  // Custom DnsResolver
             );
         } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
-            log.error(e.getMessage(), e);
+            log.error("error occurred while accession URL: " + url, e);
         }
 
         // build HttpClient that will use our DnsResolver

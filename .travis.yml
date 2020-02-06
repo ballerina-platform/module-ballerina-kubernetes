@@ -63,7 +63,7 @@ script:
       - containerPort: 443
         hostPort: 443
         protocol: TCP' >>${file}
-        kind create cluster --config=
+        kind create cluster --config="config.yaml"
         export KUBECONFIG="$(kind get kubeconfig-path)"
         kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.27.0/deploy/static/mandatory.yaml
         kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.27.0/deploy/static/provider/baremetal/service-nodeport.yaml
