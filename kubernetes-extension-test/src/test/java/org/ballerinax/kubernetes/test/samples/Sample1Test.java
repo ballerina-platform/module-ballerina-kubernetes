@@ -129,7 +129,7 @@ public class Sample1Test extends SampleTest {
     public void deploySample() throws IOException, InterruptedException {
         Assert.assertEquals(0, loadImage(DOCKER_IMAGE));
         Assert.assertEquals(0, deployK8s(KUBERNETES_TARGET_PATH));
-        Assert.assertTrue(readFromURL("http://172.0.0.2:32001/helloWorld/sayHello",
+        Assert.assertTrue(readFromURL("http://172.17.0.2:32001/helloWorld/sayHello",
                 "Hello, World from service helloWorld !"));
         Assert.assertEquals(0, deleteK8s(KUBERNETES_TARGET_PATH));
     }

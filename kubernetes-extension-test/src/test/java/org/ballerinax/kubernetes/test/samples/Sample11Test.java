@@ -46,7 +46,6 @@ import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deleteK8s
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deployK8s;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getDockerImage;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.loadImage;
-import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.readFromURL;
 
 /**
  * Test cases for sample 11.
@@ -58,7 +57,7 @@ public class Sample11Test extends SampleTest {
     private static final Path KUBERNETES_TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
     private static final String DOCKER_IMAGE = "hello_world_job:latest";
     private Job job;
-    
+
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "hello_world_job.bal"), 0);
@@ -80,20 +79,20 @@ public class Sample11Test extends SampleTest {
         Assert.assertNotNull(job);
         Assert.assertEquals("hello-world-job-job", job.getMetadata().getName());
         Assert.assertEquals(job.getSpec().getTemplate().getSpec().getContainers().size(), 1);
-        
+
         Container container = job.getSpec().getTemplate().getSpec().getContainers().get(0);
         Assert.assertEquals(container.getImage(), DOCKER_IMAGE);
         Assert.assertEquals(container.getImagePullPolicy(), KubernetesConstants.ImagePullPolicy.IfNotPresent.name());
         Assert.assertEquals(job.getSpec().getTemplate().getSpec()
                 .getRestartPolicy(), KubernetesConstants.RestartPolicy.Never.name());
     }
-    
+
     @Test
     public void validateDockerfile() {
         File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
-    
+
     @Test
     public void validateDockerImage() throws DockerTestException, InterruptedException {
         ImageInfo imageInspect = getDockerImage(DOCKER_IMAGE);
