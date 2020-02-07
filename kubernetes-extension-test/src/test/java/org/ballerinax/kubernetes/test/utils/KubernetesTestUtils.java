@@ -30,7 +30,21 @@ import com.spotify.docker.client.messages.ImageInfo;
 import io.fabric8.kubernetes.client.utils.Serialization;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.ballerinax.kubernetes.test.samples.SampleTest;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.DnsResolver;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.http.impl.conn.SystemDefaultDnsResolver;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.util.EntityUtils;
 import org.glassfish.jersey.internal.RuntimeDelegateImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,11 +55,18 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +80,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
  * Kubernetes test utils.
  */
 public class KubernetesTestUtils {
-    private static final Logger log = LoggerFactory.getLogger(SampleTest.class);
+    private static final Logger log = LoggerFactory.getLogger(KubernetesTestUtils.class);
     private static final String JAVA_OPTS = "JAVA_OPTS";
     private static final Path DISTRIBUTION_PATH = Paths.get(FilenameUtils.separatorsToSystem(
             System.getProperty("ballerina.pack")));
@@ -72,11 +93,10 @@ public class KubernetesTestUtils {
     private static final String EXECUTING_COMMAND = "Executing command: ";
     private static final String COMPILING = "Compiling: ";
     private static final String EXIT_CODE = "Exit code: ";
+    private static final String KUBECTL = "kubectl";
 
     private static void logOutput(InputStream inputStream) throws IOException {
-        try (
-                BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))
-        ) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
             br.lines().forEach(log::info);
         }
     }
@@ -176,8 +196,7 @@ public class KubernetesTestUtils {
      * @throws IOException          if an error occurs while writing file
      */
     public static int compileBallerinaFile(Path sourceDirectory, String fileName, Map<String, String> envVar)
-            throws InterruptedException,
-            IOException {
+            throws InterruptedException, IOException {
         Path ballerinaInternalLog = Paths.get(sourceDirectory.toAbsolutePath().toString(), "ballerina-internal.log");
         if (ballerinaInternalLog.toFile().exists()) {
             log.warn("Deleting already existing ballerina-internal.log file.");
@@ -203,6 +222,159 @@ public class KubernetesTestUtils {
             log.error("ballerina-internal.log file found. content: ");
             log.error(FileUtils.readFileToString(ballerinaInternalLog.toFile(), Charset.defaultCharset()));
         }
+        return exitCode;
+    }
+
+    /**
+     * Deploys k8s artifacts in a given directory.
+     *
+     * @param sourceDirectory K8s artifacts directory
+     * @return Exit code
+     * @throws InterruptedException if an error occurs while compiling
+     * @throws IOException          if an error occurs while writing file
+     */
+    public static int deployK8s(Path sourceDirectory) throws InterruptedException, IOException {
+        ProcessBuilder pb = new ProcessBuilder(KUBECTL, "apply", "-f", sourceDirectory
+                .toAbsolutePath().toString());
+        log.info("Deploying artifacts: " + sourceDirectory.normalize());
+        log.debug(EXECUTING_COMMAND + pb.command());
+        pb.directory(sourceDirectory.toFile());
+        Process process = pb.start();
+        int exitCode = process.waitFor();
+        logOutput(process.getInputStream());
+        logOutput(process.getErrorStream());
+        Thread.sleep(10000);
+        log.info("Deployment " + EXIT_CODE + exitCode);
+        return exitCode;
+    }
+
+    /**
+     * Load docker image to kind k8s cluster.
+     *
+     * @param dockerImage Docker image tag to be exposed
+     * @return Exit code
+     * @throws InterruptedException if an error occurs while compiling
+     * @throws IOException          if an error occurs while writing file
+     */
+    public static int loadImage(String dockerImage) throws InterruptedException, IOException {
+        ProcessBuilder pb = new ProcessBuilder("kind", "load", "docker-image", dockerImage);
+        log.info("Loading docker image: " + dockerImage);
+        log.debug(EXECUTING_COMMAND + pb.command());
+        Process process = pb.start();
+        int exitCode = process.waitFor();
+        logOutput(process.getInputStream());
+        logOutput(process.getErrorStream());
+        log.info("Docker image loading " + EXIT_CODE + exitCode);
+        return exitCode;
+    }
+
+    /**
+     * Execute k8s command.
+     *
+     * @param args kubectl arguments
+     * @return Exit code
+     * @throws InterruptedException if an error occurs while compiling
+     * @throws IOException          if an error occurs while writing file
+     */
+    public static int executeK8sCommand(String... args) throws InterruptedException, IOException {
+        List<String> command = new ArrayList<>();
+        command.add(KUBECTL);
+        command.addAll(Arrays.asList(args));
+        ProcessBuilder pb = new ProcessBuilder(command);
+        log.debug(EXECUTING_COMMAND + pb.command());
+        Process process = pb.start();
+        int exitCode = process.waitFor();
+        logOutput(process.getInputStream());
+        logOutput(process.getErrorStream());
+        log.info(EXIT_CODE + exitCode);
+        return exitCode;
+    }
+
+
+    /**
+     * Send a request to URL and validate the message.
+     *
+     * @param url     Service URL
+     * @param message expected Response message
+     * @return true if the message contains expected message
+     * @throws IOException if unable to connect to service
+     */
+    public static boolean validateService(String url, String message) throws IOException {
+        // Custom DNS resolver
+        log.info("Accessing URL: " + url);
+        DnsResolver dnsResolver = new SystemDefaultDnsResolver() {
+            @Override
+            public InetAddress[] resolve(final String host) throws UnknownHostException {
+                if (host.equalsIgnoreCase("abc.com") ||
+                        host.equalsIgnoreCase("pizza.com") ||
+                        host.equalsIgnoreCase("pizzashack.com") ||
+                        host.equalsIgnoreCase("internal.pizzashack.com") ||
+                        host.equalsIgnoreCase("burger.com")) {
+                    // If host is matching return the IP address we want, not what is in DNS
+                    return new InetAddress[]{InetAddress.getByName("127.0.0.1")};
+                } else {
+                    // Else, resolve from the DNS
+                    return super.resolve(host);
+                }
+            }
+        };
+
+        // HttpClientConnectionManager allows us to use custom DnsResolver
+        BasicHttpClientConnectionManager connManager = null;
+        try {
+            connManager = new BasicHttpClientConnectionManager(
+                    // create a SocketFactory with trusting all the certs and ignoring certificate mismatch.
+                    RegistryBuilder.<ConnectionSocketFactory>create()
+                            .register("http", PlainConnectionSocketFactory.getSocketFactory())
+                            .register("https", new SSLConnectionSocketFactory(new SSLContextBuilder()
+                                    .loadTrustMaterial(null, (x509CertChain, authType) -> true)
+                                    .build(),
+                                    NoopHostnameVerifier.INSTANCE))
+                            .build(),
+                    null, // Default ConnectionFactory
+                    null, // Default SchemePortResolver
+                    dnsResolver  // Custom DnsResolver
+            );
+        } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
+            log.error("error occurred while accession URL: " + url, e);
+        }
+
+        // build HttpClient that will use our DnsResolver
+        HttpClient httpClient = HttpClientBuilder.create()
+                .setConnectionManager(connManager)
+                .build();
+
+        HttpGet httpRequest = new HttpGet(url);
+        HttpResponse httpResponse = httpClient.execute(httpRequest);
+        HttpEntity entity = httpResponse.getEntity();
+        log.info(httpResponse.getStatusLine().toString());
+        if (entity != null) {
+            String result = EntityUtils.toString(entity);
+            log.info("Response from service: " + result);
+            return result.contains(message);
+        }
+        return false;
+    }
+
+    /**
+     * Delete k8s artifacts from k8s cluster in a given directory.
+     *
+     * @param sourceDirectory K8s artifacts directory
+     * @return Exit code
+     * @throws InterruptedException if an error occurs while compiling
+     * @throws IOException          if an error occurs while writing file
+     */
+    public static int deleteK8s(Path sourceDirectory) throws InterruptedException, IOException {
+        ProcessBuilder pb = new ProcessBuilder(KUBECTL, "delete", "-f", sourceDirectory
+                .toAbsolutePath().toString());
+        log.info("Deleting resources" + sourceDirectory.normalize());
+        log.debug(EXECUTING_COMMAND + pb.command());
+        pb.directory(sourceDirectory.toFile());
+        Process process = pb.start();
+        int exitCode = process.waitFor();
+        log.info(EXIT_CODE + exitCode);
+        logOutput(process.getInputStream());
+        logOutput(process.getErrorStream());
         return exitCode;
     }
 
@@ -235,20 +407,20 @@ public class KubernetesTestUtils {
             log.warn("Deleting already existing ballerina-internal.log file.");
             FileUtils.deleteQuietly(ballerinaInternalLog.toFile());
         }
-    
+
         ProcessBuilder pb;
         if (skipTests) {
             pb = new ProcessBuilder(BALLERINA_COMMAND, BUILD, "-a", "--skip-tests");
         } else {
             pb = new ProcessBuilder(BALLERINA_COMMAND, BUILD, "-a");
         }
-    
+
         log.info(COMPILING + sourceDirectory.normalize());
         log.debug(EXECUTING_COMMAND + pb.command());
         pb.directory(sourceDirectory.toFile());
         Map<String, String> environment = pb.environment();
         addJavaAgents(environment);
-    
+
         Process process = pb.start();
         int exitCode = process.waitFor();
         log.info(EXIT_CODE + exitCode);
@@ -263,7 +435,7 @@ public class KubernetesTestUtils {
 
         return exitCode;
     }
-    
+
     /**
      * Compile a ballerina project in a given directory.
      *

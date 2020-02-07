@@ -77,8 +77,7 @@ Generating executables
 Generating artifacts...
 
         @kubernetes:Service                      - complete 1/1
-        @kubernetes:Ingress                      - complete 1/1
-        @kubernetes:Secret                       - complete 1/1
+        @kubernetes:Ingress                      - complete 1/1      
         @kubernetes:Deployment                   - complete 1/1
         @kubernetes:Docker                       - complete 2/2 
         @kubernetes:Helm                         - complete 1/1
@@ -163,7 +162,6 @@ burger                                                           latest         
 $> kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample10/target/kubernetes/burger
 service/burgerep-svc created
 ingress.extensions/burgerep-ingress created
-secret/burgerep-keystore created
 deployment.apps/burger-deployment created
 
 $ kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample10/target/kubernetes/pizza
@@ -204,7 +202,7 @@ from `kubectl get ingress` command.)_
 $> curl http://pizza.com/pizzastore/pizza/menu
 Pizza menu
 
-$> curl https://burger.com/menu -k
+$> curl http://burger.com/menu -k
 Burger menu
 ```
 

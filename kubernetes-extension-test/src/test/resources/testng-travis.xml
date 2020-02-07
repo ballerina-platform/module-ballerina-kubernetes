@@ -19,11 +19,6 @@
 
 <suite name="Ballerina-Kubernetes-Test-Suite">
     <test name="ballerina-kubernetes-sample-tests" parallel="false">
-        <groups>
-            <run>
-                <exclude name="integration"/>
-            </run>
-        </groups>
         <classes>
             <class name="org.ballerinax.kubernetes.test.samples.Sample1Test"/>
             <class name="org.ballerinax.kubernetes.test.samples.Sample2Test"/>

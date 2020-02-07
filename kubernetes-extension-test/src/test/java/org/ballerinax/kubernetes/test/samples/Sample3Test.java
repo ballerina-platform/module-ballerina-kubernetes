@@ -42,7 +42,10 @@ import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deployK8s;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.loadImage;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.validateService;
 
 /**
  * Test cases for sample 3.
@@ -59,7 +62,7 @@ public class Sample3Test extends SampleTest {
     private Service burgerSvc;
     private Ingress pizzaIngress;
     private Ingress burgerIngress;
-    
+
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "foodstore.bal"), 0);
@@ -149,7 +152,7 @@ public class Sample3Test extends SampleTest {
         Assert.assertEquals(burgerIngress.getMetadata().getLabels().get(KubernetesConstants
                 .KUBERNETES_SELECTOR_KEY), SELECTOR_APP);
         Assert.assertEquals(burgerIngress.getSpec().getRules().get(0).getHost(), "burger.com");
-        Assert.assertEquals(burgerIngress.getSpec().getRules().get(0).getHttp().getPaths().get(0).getPath(), "/");
+        Assert.assertEquals(burgerIngress.getSpec().getRules().get(0).getHttp().getPaths().get(0).getPath(), "/(.*)");
         Assert.assertEquals(burgerSvc.getMetadata().getName(), burgerIngress.getSpec().getRules().get(0).getHttp()
                 .getPaths()
                 .get(0).getBackend()
@@ -167,7 +170,7 @@ public class Sample3Test extends SampleTest {
                 .KUBERNETES_SELECTOR_KEY), SELECTOR_APP);
         Assert.assertEquals(pizzaIngress.getSpec().getRules().get(0).getHost(), "pizza.com");
         Assert.assertEquals(pizzaIngress.getSpec().getRules().get(0).getHttp().getPaths().get(0).getPath(),
-                "/pizzastore");
+                "/pizzastore(/|$)(.*)");
         Assert.assertEquals(pizzaSvc.getMetadata().getName(), pizzaIngress.getSpec().getRules().get(0).getHttp()
                 .getPaths()
                 .get(0).getBackend()
@@ -178,19 +181,28 @@ public class Sample3Test extends SampleTest {
                 .getServicePort().getIntVal().intValue());
         Assert.assertEquals(pizzaIngress.getMetadata().getAnnotations().size(), 3);
     }
-    
+
     @Test
     public void validateDockerfile() {
         File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
-    
+
     @Test
     public void validateDockerImage() throws DockerTestException, InterruptedException {
         List<String> ports = getExposedPorts(DOCKER_IMAGE);
         Assert.assertEquals(ports.size(), 2);
         Assert.assertEquals(ports.get(0), "9096/tcp");
         Assert.assertEquals(ports.get(1), "9099/tcp");
+    }
+
+    @Test(groups = {"integration"})
+    public void deploySample() throws IOException, InterruptedException {
+        Assert.assertEquals(0, loadImage(DOCKER_IMAGE));
+        Assert.assertEquals(0, deployK8s(KUBERNETES_TARGET_PATH));
+        Assert.assertTrue(validateService("http://pizza.com/pizzastore/pizza/menu", "Pizza menu"));
+        Assert.assertTrue(validateService("http://burger.com/menu", "Burger menu"));
+        KubernetesTestUtils.deleteK8s(KUBERNETES_TARGET_PATH);
     }
 
     @AfterClass

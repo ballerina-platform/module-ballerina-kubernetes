@@ -16,7 +16,7 @@
 # under the License.
 #
 #!/bin/bash
-
+set -e
 DISTRIBUTION_PATH=${1}
 KUBERNETES_BALO_MAVEN_PROJECT_ROOT=${2}
 

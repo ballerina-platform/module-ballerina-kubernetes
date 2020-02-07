@@ -5,17 +5,10 @@ import ballerina/log;
 @kubernetes:Service {}
 @kubernetes:Ingress {
     hostname: "burger.com",
-    path: "/",
-    targetPath: "/burger"
+    path: "/(.*)",
+    targetPath: "/burger/$1"
 }
-listener http:Listener burgerEP = new(9096, {
-    secureSocket: {
-        keyStore: {
-            path: "src/burger/resources/ballerinaKeystore.p12",
-            password: "ballerina"
-        }
-    }
-});
+listener http:Listener burgerEP = new(9096);
 
 
 @kubernetes:Deployment {}

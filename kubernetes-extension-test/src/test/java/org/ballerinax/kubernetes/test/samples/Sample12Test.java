@@ -41,7 +41,11 @@ import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deleteK8s;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deployK8s;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.loadImage;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.validateService;
 
 /**
  * Test cases for sample 12.
@@ -52,7 +56,7 @@ public class Sample12Test extends SampleTest {
     private static final Path KUBERNETES_TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
     private static final String DOCKER_IMAGE = "hello_world_copy_file:latest";
     private Deployment deployment;
-    
+
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "hello_world_copy_file.bal"), 0);
@@ -93,18 +97,26 @@ public class Sample12Test extends SampleTest {
         Assert.assertEquals(container.getImagePullPolicy(), KubernetesConstants.ImagePullPolicy.IfNotPresent.name());
         Assert.assertEquals(container.getPorts().size(), 1);
     }
-    
+
     @Test
     public void validateDockerfile() {
         File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
-    
+
     @Test
     public void validateDockerImage() throws DockerTestException, InterruptedException {
         List<String> ports = getExposedPorts(DOCKER_IMAGE);
         Assert.assertEquals(ports.size(), 1);
         Assert.assertEquals(ports.get(0), "9090/tcp");
+    }
+
+    @Test(groups = {"integration"})
+    public void deploySample() throws IOException, InterruptedException {
+        Assert.assertEquals(0, loadImage(DOCKER_IMAGE));
+        Assert.assertEquals(0, deployK8s(KUBERNETES_TARGET_PATH));
+        Assert.assertTrue(validateService("https://abc.com/helloWorld/data", "Data: Lorem ipsum dolor sit amet"));
+        deleteK8s(KUBERNETES_TARGET_PATH);
     }
 
     @AfterClass

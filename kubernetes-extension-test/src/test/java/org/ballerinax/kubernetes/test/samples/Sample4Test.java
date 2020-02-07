@@ -43,7 +43,10 @@ import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deployK8s;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.loadImage;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.validateService;
 
 /**
  * Test cases for sample 4.
@@ -58,7 +61,7 @@ public class Sample4Test extends SampleTest {
     private Deployment deployment;
     private Secret secret;
     private Ingress ingress;
-    
+
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "hello_world_ssl_k8s.bal"), 0);
@@ -125,19 +128,28 @@ public class Sample4Test extends SampleTest {
         Assert.assertEquals(ingress.getSpec().getRules().get(0).getHttp().getPaths().get(0).getPath(), "/");
         Assert.assertTrue(ingress.getMetadata().getAnnotations().containsKey(
                 "nginx.ingress.kubernetes.io/ssl-passthrough"));
-        Assert.assertTrue(Boolean.valueOf(ingress.getMetadata().getAnnotations().get(
+        Assert.assertTrue(Boolean.parseBoolean(ingress.getMetadata().getAnnotations().get(
                 "nginx.ingress.kubernetes.io/ssl-passthrough")));
         Assert.assertEquals(ingress.getSpec().getTls().size(), 1);
         Assert.assertEquals(ingress.getSpec().getTls().get(0).getHosts().size(), 1);
         Assert.assertEquals(ingress.getSpec().getTls().get(0).getHosts().get(0), "abc.com");
     }
-    
+
     @Test
     public void validateDockerfile() {
         File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
-    
+
+    @Test(groups = {"integration"})
+    public void deploySample() throws IOException, InterruptedException {
+        Assert.assertEquals(0, loadImage(DOCKER_IMAGE));
+        Assert.assertEquals(0, deployK8s(KUBERNETES_TARGET_PATH));
+        Assert.assertTrue(validateService("https://abc.com/helloWorld/sayHello",
+                "Hello, World from secured service !"));
+        KubernetesTestUtils.deleteK8s(KUBERNETES_TARGET_PATH);
+    }
+
     @Test
     public void validateDockerImage() throws DockerTestException, InterruptedException {
         List<String> ports = getExposedPorts(DOCKER_IMAGE);
@@ -146,7 +158,7 @@ public class Sample4Test extends SampleTest {
     }
 
     @AfterClass
-    public void cleanUp() throws KubernetesPluginException, DockerTestException, InterruptedException {
+    public void cleanUp() throws KubernetesPluginException {
         KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
         KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);

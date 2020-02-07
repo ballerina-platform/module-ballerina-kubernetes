@@ -42,8 +42,11 @@ import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deployK8s;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getCommand;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.loadImage;
+import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.validateService;
 
 /**
  * Test cases for sample 8.
@@ -57,7 +60,7 @@ public class Sample8Test extends SampleTest {
     private Deployment deployment;
     private ConfigMap ballerinaConf;
     private ConfigMap dataMap;
-    
+
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "hello_world_config_map_k8s.bal")
@@ -141,7 +144,20 @@ public class Sample8Test extends SampleTest {
         Assert.assertEquals(ports.get(0), "9090/tcp");
         // Validate ballerina.conf in run command
         Assert.assertEquals(getCommand(DOCKER_IMAGE).toString(),
-                    "[/bin/sh, -c, java -jar hello_world_config_map_k8s.jar --b7a.config.file=${CONFIG_FILE}]");
+                "[/bin/sh, -c, java -jar hello_world_config_map_k8s.jar --b7a.config.file=${CONFIG_FILE}]");
+    }
+
+    @Test(groups = {"integration"})
+    public void deploySample() throws IOException, InterruptedException {
+        Assert.assertEquals(0, loadImage(DOCKER_IMAGE));
+        Assert.assertEquals(0, deployK8s(KUBERNETES_TARGET_PATH));
+        Assert.assertTrue(validateService("https://abc.com/helloWorld/config/john",
+                "{userId: john@ballerina.com, groups: apim,esb}"));
+        Assert.assertTrue(validateService("https://abc.com/helloWorld/config/jane",
+                "{userId: jane3@ballerina.com, groups: esb}"));
+        Assert.assertTrue(validateService("https://abc.com/helloWorld/data",
+                "Data: Lorem ipsum dolor sit amet."));
+        KubernetesTestUtils.deleteK8s(KUBERNETES_TARGET_PATH);
     }
 
     @AfterClass
