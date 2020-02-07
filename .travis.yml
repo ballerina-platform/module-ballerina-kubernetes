@@ -12,19 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-language: java
-
-sudo: required
+language: shell
 
 services:
   - docker
+
+os: linux
 
 jobs:
   include:
     - stage: "build"
       name: "Windows Build"
       os: windows
-      language: bash
+      language: shell
       install:
         - choco install jdk8 -params 'installdir=c:\\java8'
         - export JAVA_HOME="c:\\java8"\\
@@ -38,9 +38,7 @@ jobs:
 
 script:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then mvn clean install -B -V; fi
-  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then cmd.exe /C '"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" amd64'; fi
-  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then cmd.exe /C 'refreshenv'; fi
-  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then cmd.exe /C 'mvn clean install -Dmaven.test.skip=true -B -V'; fi
+  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then powershell -C 'mvn clean install "-Dmaven.test.skip=true" -B -V'; fi
 
 cache:
   directories:

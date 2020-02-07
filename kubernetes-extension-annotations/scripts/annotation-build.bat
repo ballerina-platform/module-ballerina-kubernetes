@@ -23,8 +23,8 @@ set KUBERNETES_BALLERINA_PROJECT=%KUBERNETES_ANNOTATIONS_MAVEN_PROJECT_ROOT%\src
 set DISTRIBUTION_BIR_CACHE=%DISTRIBUTION_PATH%\bir-cache\ballerina\
 set DISTRIBUTION_SYSTEM_LIB=%DISTRIBUTION_PATH%\bre\lib\
 
-if not exist "%DISTRIBUTION_BIR_CACHE%" mkdir %DISTRIBUTION_BIR_CACHE%
-if not exist "%DISTRIBUTION_SYSTEM_LIB%" mkdir %DISTRIBUTION_SYSTEM_LIB%
+if not exist "%DISTRIBUTION_BIR_CACHE%" mkdir "%DISTRIBUTION_BIR_CACHE%"
+if not exist "%DISTRIBUTION_SYSTEM_LIB%" mkdir "%DISTRIBUTION_SYSTEM_LIB%"
 
 pushd %KUBERNETES_BALLERINA_PROJECT%
 cmd /C %EXECUTABLE% clean
@@ -36,10 +36,10 @@ ren %KUBERNETES_BALLERINA_PROJECT%target\caches\jar_cache\ballerina\openshift\ba
 ren %KUBERNETES_BALLERINA_PROJECT%target\caches\jar_cache\ballerina\knative\ballerina-knative-.jar knative.jar
 popd
 
-if not exist "%DISTRIBUTION_BIR_CACHE%kubernetes\0.0.0\" mkdir %DISTRIBUTION_BIR_CACHE%kubernetes\0.0.0\
-if not exist "%DISTRIBUTION_BIR_CACHE%istio\0.0.0\" mkdir %DISTRIBUTION_BIR_CACHE%istio\0.0.0\
-if not exist "%DISTRIBUTION_BIR_CACHE%openshift\0.0.0\" mkdir %DISTRIBUTION_BIR_CACHE%openshift\0.0.0\
-if not exist "%DISTRIBUTION_BIR_CACHE%knative\0.0.0\" mkdir %DISTRIBUTION_BIR_CACHE%knative\0.0.0\
+if not exist "%DISTRIBUTION_BIR_CACHE%kubernetes\0.0.0\" mkdir "%DISTRIBUTION_BIR_CACHE%kubernetes\0.0.0\"
+if not exist "%DISTRIBUTION_BIR_CACHE%istio\0.0.0\" mkdir "%DISTRIBUTION_BIR_CACHE%istio\0.0.0\"
+if not exist "%DISTRIBUTION_BIR_CACHE%openshift\0.0.0\" mkdir "%DISTRIBUTION_BIR_CACHE%openshift\0.0.0\"
+if not exist "%DISTRIBUTION_BIR_CACHE%knative\0.0.0\" mkdir "%DISTRIBUTION_BIR_CACHE%knative\0.0.0\"
 
 COPY "%KUBERNETES_BALLERINA_PROJECT%target\caches\bir_cache\ballerina\kubernetes\kubernetes.bir" "%DISTRIBUTION_BIR_CACHE%kubernetes\0.0.0\"
 COPY "%KUBERNETES_BALLERINA_PROJECT%target\caches\bir_cache\ballerina\istio\istio.bir" "%DISTRIBUTION_BIR_CACHE%istio\0.0.0\"
