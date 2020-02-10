@@ -30,6 +30,7 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.convertRecordFields;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getIntValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
@@ -59,9 +60,9 @@ public class HPAAnnotationProcessor extends AbstractAnnotationProcessor {
     
     private void processHPA(AnnotationAttachmentNode attachmentNode) throws KubernetesPluginException {
         PodAutoscalerModel podAutoscalerModel = new PodAutoscalerModel();
-        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
-        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
+        List<BLangRecordLiteral.BLangRecordKeyValueField> keyValues =
+            convertRecordFields(((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getFields());
+        for (BLangRecordLiteral.BLangRecordKeyValueField keyValue : keyValues) {
             PodAutoscalerConfiguration podAutoscalerConfiguration =
                     PodAutoscalerConfiguration.valueOf(keyValue.getKey().toString());
             switch (podAutoscalerConfiguration) {

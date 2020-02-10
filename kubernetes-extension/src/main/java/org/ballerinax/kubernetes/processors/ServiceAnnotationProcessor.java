@@ -38,6 +38,7 @@ import org.wso2.ballerinalang.compiler.tree.types.BLangUserDefinedType;
 import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.SVC_POSTFIX;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.convertRecordFields;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getIntValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
@@ -115,8 +116,8 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
                 return Integer.parseInt(bListener.argsExpr.get(0).toString());
             } else {
                 // other listeners with port as an attribute
-                for (BLangRecordLiteral.BLangRecordKeyValue arg :
-                        ((BLangRecordLiteral) bListener.argsExpr.get(0)).getKeyValuePairs()) {
+                for (BLangRecordLiteral.BLangRecordKeyValueField arg :
+                        convertRecordFields(((BLangRecordLiteral) bListener.argsExpr.get(0)).getFields())) {
                     if ("port".equals(arg.getKey().toString())) {
                         return Integer.parseInt(arg.getValue().toString());
                     }
@@ -143,16 +144,16 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
             if (bListener.argsExpr.size() == 2) {
                 if (bListener.argsExpr.get(1) instanceof BLangRecordLiteral) {
                     BLangRecordLiteral bConfigRecordLiteral = (BLangRecordLiteral) bListener.argsExpr.get(1);
-                    List<BLangRecordLiteral.BLangRecordKeyValue> listenerConfig =
-                            bConfigRecordLiteral.getKeyValuePairs();
+                    List<BLangRecordLiteral.BLangRecordKeyValueField> listenerConfig =
+                            convertRecordFields(bConfigRecordLiteral.getFields());
                     serviceModel.setProtocol(isHTTPS(listenerConfig) ? "https" : "http");
                 }
             }
         }
     }
 
-    private boolean isHTTPS(List<BLangRecordLiteral.BLangRecordKeyValue> listenerConfig) {
-        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : listenerConfig) {
+    private boolean isHTTPS(List<BLangRecordLiteral.BLangRecordKeyValueField> listenerConfig) {
+        for (BLangRecordLiteral.BLangRecordKeyValueField keyValue : listenerConfig) {
             String key = keyValue.getKey().toString();
             if ("secureSocket".equals(key)) {
                 return true;
@@ -165,9 +166,9 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
     private ServiceModel getServiceModelFromAnnotation(AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         ServiceModel serviceModel = new ServiceModel();
-        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
-        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
+        BLangRecordLiteral recordLiteral = (BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr;
+        List<BLangRecordLiteral.BLangRecordKeyValueField> keyValues = convertRecordFields(recordLiteral.getFields());
+        for (BLangRecordLiteral.BLangRecordKeyValueField keyValue : keyValues) {
             ServiceConfiguration serviceConfiguration =
                     ServiceConfiguration.valueOf(keyValue.getKey().toString());
             switch (serviceConfiguration) {

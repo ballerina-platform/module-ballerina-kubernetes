@@ -70,6 +70,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
@@ -319,7 +320,7 @@ public class KubernetesUtils {
         } else {
             BLangRecordLiteral fields = (BLangRecordLiteral) expr;
             Map<String, String> map = new LinkedHashMap<>();
-            for (BLangRecordLiteral.BLangRecordKeyValue keyValue : fields.getKeyValuePairs()) {
+            for (BLangRecordLiteral.BLangRecordKeyValueField keyValue : convertRecordFields(fields.getFields())) {
                 map.put(keyValue.getKey().toString(), getStringValue(keyValue.getValue()));
             }
             return map;
@@ -410,12 +411,13 @@ public class KubernetesUtils {
                 return new OpenShiftBuildExtensionModel();
             }
         } else if (buildExtensionValue.getKind() == NodeKind.RECORD_LITERAL_EXPR) {
-            List<BLangRecordLiteral.BLangRecordKeyValue> buildExtensionRecord =
-                    ((BLangRecordLiteral) buildExtensionValue).keyValuePairs;
+            List<BLangRecordLiteral.BLangRecordKeyValueField> buildExtensionRecord =
+                    convertRecordFields(((BLangRecordLiteral) buildExtensionValue).getFields());
             BLangExpression buildExtensionType = buildExtensionRecord.get(0).getKey();
             if ("openshift".equals(buildExtensionType.toString())) {
                 BLangRecordLiteral openShiftField = (BLangRecordLiteral) buildExtensionRecord.get(0).getValue();
-                return OpenShiftBuildExtensionProcessor.processBuildExtension(openShiftField.getKeyValuePairs());
+                return OpenShiftBuildExtensionProcessor.processBuildExtension(
+                        convertRecordFields(openShiftField.getFields()));
             }
         }
         throw new KubernetesPluginException("unknown build extension found");
@@ -431,7 +433,8 @@ public class KubernetesUtils {
             throws KubernetesPluginException {
         Map<String, EnvVarValueModel> envVarMap = new LinkedHashMap<>();
         if (envVarValues.getKind() == NodeKind.RECORD_LITERAL_EXPR) {
-            for (BLangRecordLiteral.BLangRecordKeyValue envVar : ((BLangRecordLiteral) envVarValues).keyValuePairs) {
+            for (BLangRecordLiteral.BLangRecordKeyValueField envVar :
+                    convertRecordFields(((BLangRecordLiteral) envVarValues).getFields())) {
                 String envVarName = envVar.getKey().toString();
                 EnvVarValueModel envVarValue = null;
                 if (envVar.getValue().getKind() == NodeKind.LITERAL) {
@@ -439,20 +442,21 @@ public class KubernetesUtils {
                     envVarValue = new EnvVarValueModel(getStringValue(envVar.getValue()));
                 } else if (envVar.getValue().getKind() == NodeKind.RECORD_LITERAL_EXPR) {
                     BLangRecordLiteral valueFrom = (BLangRecordLiteral) envVar.getValue();
-                    BLangRecordLiteral.BLangRecordKeyValue bRefType = valueFrom.getKeyValuePairs().get(0);
+                    BLangRecordLiteral.BLangRecordKeyValueField bRefType =
+                            (BLangRecordLiteral.BLangRecordKeyValueField) valueFrom.getFields().get(0);
                     BLangSimpleVarRef refType = (BLangSimpleVarRef) bRefType.getKey();
                     switch (refType.variableName.toString()) {
                         case "fieldRef":
-                            BLangRecordLiteral.BLangRecordKeyValue fieldRefValue =
-                                    ((BLangRecordLiteral) bRefType.getValue()).getKeyValuePairs().get(0);
+                            BLangRecordLiteral.BLangRecordKeyValueField fieldRefValue =
+                                    convertRecordFields(((BLangRecordLiteral) bRefType.getValue()).getFields()).get(0);
                             EnvVarValueModel.FieldRef fieldRefModel = new EnvVarValueModel.FieldRef();
                             fieldRefModel.setFieldPath(getStringValue(fieldRefValue.getValue()));
                             envVarValue = new EnvVarValueModel(fieldRefModel);
                             break;
                         case "secretKeyRef":
                             EnvVarValueModel.SecretKeyRef secretKeyRefModel = new EnvVarValueModel.SecretKeyRef();
-                            for (BLangRecordLiteral.BLangRecordKeyValue secretKeyRefFields :
-                                    ((BLangRecordLiteral) bRefType.getValue()).getKeyValuePairs()) {
+                            for (BLangRecordLiteral.BLangRecordKeyValueField secretKeyRefFields :
+                                    convertRecordFields(((BLangRecordLiteral) bRefType.getValue()).getFields())) {
                                 if (secretKeyRefFields.getKey().toString().equals("key")) {
                                     secretKeyRefModel.setKey(getStringValue(secretKeyRefFields.getValue()));
                                 } else if (secretKeyRefFields.getKey().toString().equals("name")) {
@@ -464,8 +468,8 @@ public class KubernetesUtils {
                         case "resourceFieldRef":
                             EnvVarValueModel.ResourceFieldRef resourceFieldRefModel =
                                     new EnvVarValueModel.ResourceFieldRef();
-                            for (BLangRecordLiteral.BLangRecordKeyValue resourceFieldRefFields :
-                                    ((BLangRecordLiteral) bRefType.getValue()).getKeyValuePairs()) {
+                            for (BLangRecordLiteral.BLangRecordKeyValueField resourceFieldRefFields :
+                                    convertRecordFields(((BLangRecordLiteral) bRefType.getValue()).getFields())) {
                                 if (resourceFieldRefFields.getKey().toString().equals("containerName")) {
                                     resourceFieldRefModel.setContainerName(
                                             getStringValue(resourceFieldRefFields.getValue()));
@@ -479,8 +483,8 @@ public class KubernetesUtils {
                         case "configMapKeyRef":
                             EnvVarValueModel.ConfigMapKeyValue configMapKeyRefModel =
                                     new EnvVarValueModel.ConfigMapKeyValue();
-                            for (BLangRecordLiteral.BLangRecordKeyValue configMapKeyRefFields :
-                                    ((BLangRecordLiteral) bRefType.getValue()).getKeyValuePairs()) {
+                            for (BLangRecordLiteral.BLangRecordKeyValueField configMapKeyRefFields :
+                                    convertRecordFields(((BLangRecordLiteral) bRefType.getValue()).getFields())) {
                                 if (configMapKeyRefFields.getKey().toString().equals("key")) {
                                     configMapKeyRefModel.setKey(getStringValue(configMapKeyRefFields.getValue()));
                                 } else if (configMapKeyRefFields.getKey().toString().equals("name")) {
@@ -506,7 +510,7 @@ public class KubernetesUtils {
      * @param keyValue Value of imagePullSecret field of Job annotation.
      * @return A set of image pull secrets.
      */
-    public static Set<String> getImagePullSecrets(BLangRecordLiteral.BLangRecordKeyValue keyValue) throws
+    public static Set<String> getImagePullSecrets(BLangRecordLiteral.BLangRecordKeyValueField keyValue) throws
             KubernetesPluginException {
         Set<String> imagePullSecrets = new HashSet<>();
         List<BLangExpression> configAnnotation = ((BLangListConstructorExpr) keyValue.valueExpr).exprs;
@@ -524,15 +528,15 @@ public class KubernetesUtils {
      * @return A set of external files
      * @throws KubernetesPluginException if an error occur while getting the paths
      */
-    public static Set<CopyFileModel> getExternalFileMap(BLangRecordLiteral.BLangRecordKeyValue keyValue) throws
+    public static Set<CopyFileModel> getExternalFileMap(BLangRecordLiteral.BLangRecordKeyValueField keyValue) throws
             KubernetesPluginException {
         Set<CopyFileModel> externalFiles = new HashSet<>();
         List<BLangExpression> configAnnotation = ((BLangListConstructorExpr) keyValue.valueExpr).exprs;
         for (BLangExpression bLangExpression : configAnnotation) {
-            List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
-                    ((BLangRecordLiteral) bLangExpression).getKeyValuePairs();
+            List<BLangRecordLiteral.BLangRecordKeyValueField> annotationValues =
+                    convertRecordFields(((BLangRecordLiteral) bLangExpression).getFields());
             CopyFileModel externalFileModel = new CopyFileModel();
-            for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
+            for (BLangRecordLiteral.BLangRecordKeyValueField annotation : annotationValues) {
                 switch (annotation.getKey().toString()) {
                     case "sourceFile":
                         externalFileModel.setSource(getStringValue(annotation.getValue()));
@@ -613,5 +617,10 @@ public class KubernetesUtils {
             }
         });
         return envVars;
+    }
+    
+    public static List<BLangRecordLiteral.BLangRecordKeyValueField> convertRecordFields(
+            List<BLangRecordLiteral.RecordField> fields) {
+        return fields.stream().map(f -> (BLangRecordLiteral.BLangRecordKeyValueField) f).collect(Collectors.toList());
     }
 }

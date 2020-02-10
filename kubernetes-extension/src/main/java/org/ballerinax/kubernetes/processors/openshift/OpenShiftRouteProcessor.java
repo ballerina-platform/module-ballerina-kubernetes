@@ -33,6 +33,7 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT_ROUTE_POSTFIX;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.convertRecordFields;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
@@ -64,11 +65,11 @@ public class OpenShiftRouteProcessor extends AbstractAnnotationProcessor {
     private void processRouteAnnotation(IdentifierNode identifierNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException {
     
-        List<BLangRecordLiteral.BLangRecordKeyValue> bcFields =
-                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
+        List<BLangRecordLiteral.BLangRecordKeyValueField> bcFields =
+            convertRecordFields(((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getFields());
         
         OpenShiftRouteModel openShiftRoute = new OpenShiftRouteModel();
-        for (BLangRecordLiteral.BLangRecordKeyValue bcField : bcFields) {
+        for (BLangRecordLiteral.BLangRecordKeyValueField bcField : bcFields) {
             switch (OpenShiftRouteFields.valueOf(bcField.getKey().toString())) {
                 case name:
                     openShiftRoute.setName(getValidName(getStringValue(bcField.getValue())));
@@ -82,7 +83,8 @@ public class OpenShiftRouteProcessor extends AbstractAnnotationProcessor {
                 case host:
                     if (bcField.getValue().getKind() == NodeKind.RECORD_LITERAL_EXPR) {
                         BLangRecordLiteral hostRecord = (BLangRecordLiteral) bcField.getValue();
-                        openShiftRoute.setDomain(getStringValue(hostRecord.getKeyValuePairs().get(0).getValue()));
+                        openShiftRoute.setDomain(getStringValue(
+                                convertRecordFields(hostRecord.getFields()).get(0).getValue()));
                     } else {
                         openShiftRoute.setHost(getStringValue(bcField.getValue()));
                     }

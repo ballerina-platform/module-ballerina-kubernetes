@@ -37,6 +37,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.ISTIO_VIRTUAL_SERVICE_POSTFIX;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.convertRecordFields;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getIntValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getList;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getLongValue;
@@ -55,8 +56,8 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
     @Override
     public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException {
-        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
+        List<BLangRecordLiteral.BLangRecordKeyValueField> keyValues =
+            convertRecordFields(((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getFields());
     
         IstioVirtualServiceModel vsModel = this.processIstioVSAnnotation(keyValues);
     
@@ -72,8 +73,8 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
     @Override
     public void processAnnotation(SimpleVariableNode variableNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException {
-        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
+        List<BLangRecordLiteral.BLangRecordKeyValueField> keyValues =
+            convertRecordFields(((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getFields());
     
         IstioVirtualServiceModel vsModel = this.processIstioVSAnnotation(keyValues);
         if (isBlank(vsModel.getName())) {
@@ -104,10 +105,11 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
      * @param vsFields Fields of the virtual service annotation.
      * @throws KubernetesPluginException Unable to process annotations.
      */
-    private IstioVirtualServiceModel processIstioVSAnnotation(List<BLangRecordLiteral.BLangRecordKeyValue> vsFields)
+    private IstioVirtualServiceModel processIstioVSAnnotation(
+            List<BLangRecordLiteral.BLangRecordKeyValueField> vsFields)
             throws KubernetesPluginException {
         IstioVirtualServiceModel vsModel = new IstioVirtualServiceModel();
-        for (BLangRecordLiteral.BLangRecordKeyValue vsField : vsFields) {
+        for (BLangRecordLiteral.BLangRecordKeyValueField vsField : vsFields) {
             switch (VSConfig.valueOf(vsField.getKey().toString())) {
                 case name:
                     vsModel.setName(getValidName(getStringValue(vsField.getValue())));
@@ -150,7 +152,7 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
         for (ExpressionNode expression : httpArray.getExpressions()) {
             BLangRecordLiteral httpFields = (BLangRecordLiteral) expression;
             IstioHttpRoute httpRoute = new IstioHttpRoute();
-            for (BLangRecordLiteral.BLangRecordKeyValue httpField : httpFields.getKeyValuePairs()) {
+            for (BLangRecordLiteral.BLangRecordKeyValueField httpField : convertRecordFields(httpFields.getFields())) {
                 switch (HttpRouteConfig.valueOf(httpField.getKey().toString())) {
                     case route:
                         BLangListConstructorExpr routeFields = (BLangListConstructorExpr)  httpField.getValue();
@@ -185,7 +187,8 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
         for (ExpressionNode expression : routeArray.getExpressions()) {
             BLangRecordLiteral routeFields = (BLangRecordLiteral) expression;
             IstioDestinationWeight destinationWeight = new IstioDestinationWeight();
-            for (BLangRecordLiteral.BLangRecordKeyValue routeField : routeFields.getKeyValuePairs()) {
+            for (BLangRecordLiteral.BLangRecordKeyValueField routeField :
+                    convertRecordFields(routeFields.getFields())) {
                 switch (DestinationWeightConfig.valueOf(routeField.getKey().toString())) {
                     case destination:
                         BLangRecordLiteral destinationFields = (BLangRecordLiteral) routeField.getValue();
@@ -216,7 +219,8 @@ public class IstioVirtualServiceAnnotationProcessor extends AbstractAnnotationPr
     private IstioDestination processDestinationAnnotation(BLangRecordLiteral destinationFields)
             throws KubernetesPluginException {
         IstioDestination destination = new IstioDestination();
-        for (BLangRecordLiteral.BLangRecordKeyValue destinationField : destinationFields.getKeyValuePairs()) {
+        for (BLangRecordLiteral.BLangRecordKeyValueField destinationField :
+                convertRecordFields((destinationFields.getFields()))) {
             switch (DestinationConfig.valueOf(destinationField.getKey().toString())) {
                 case host:
                     destination.setHost(getStringValue(destinationField.getValue()));

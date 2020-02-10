@@ -49,6 +49,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_HOME;
 import static org.ballerinax.kubernetes.KubernetesConstants.INGRESS_HOSTNAME_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.INGRESS_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.LISTENER_PATH_VARIABLE;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.convertRecordFields;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getBooleanValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
@@ -76,14 +77,16 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
         BLangTypeInit bListener = (BLangTypeInit) ((BLangSimpleVariable) variableNode).expr;
         if (bListener.argsExpr.size() == 2) {
             if (bListener.argsExpr.get(1) instanceof BLangRecordLiteral) {
-                BLangRecordLiteral bConfigRecordLiteral = (BLangRecordLiteral) bListener.argsExpr.get(1);
-                List<BLangRecordLiteral.BLangRecordKeyValue> listenerConfig = bConfigRecordLiteral.getKeyValuePairs();
+                BLangRecordLiteral recordLiteral = (BLangRecordLiteral) bListener.argsExpr.get(1);
+                List<BLangRecordLiteral.BLangRecordKeyValueField> listenerConfig =
+                        convertRecordFields(recordLiteral.getFields());
                 processListener(listenerName, listenerConfig);
             } else if (bListener.argsExpr.get(1) instanceof BLangNamedArgsExpression) {
                 // expression is in config = {} format.
-                List<BLangRecordLiteral.BLangRecordKeyValue> listenerConfig =
-                        ((BLangRecordLiteral) ((BLangNamedArgsExpression) bListener.argsExpr.get(1)).expr)
-                                .getKeyValuePairs();
+                BLangRecordLiteral recordFields =
+                        (BLangRecordLiteral) ((BLangNamedArgsExpression) bListener.argsExpr.get(1)).expr;
+                List<BLangRecordLiteral.BLangRecordKeyValueField> listenerConfig = convertRecordFields(
+                        recordFields.getFields());
                 processListener(listenerName, listenerConfig);
             }
         }
@@ -99,11 +102,11 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
      * @return List of @{@link SecretModel} objects
      */
     private Set<SecretModel> processSecureSocketAnnotation(String listenerName, List<BLangRecordLiteral
-            .BLangRecordKeyValue> secureSocketKeyValues) throws KubernetesPluginException {
+            .BLangRecordKeyValueField> secureSocketKeyValues) throws KubernetesPluginException {
         Set<SecretModel> secrets = new HashSet<>();
         String keyStoreFile = null;
         String trustStoreFile = null;
-        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : secureSocketKeyValues) {
+        for (BLangRecordLiteral.BLangRecordKeyValueField keyValue : secureSocketKeyValues) {
             //extract file paths.
             String key = keyValue.getKey().toString();
             if ("keyStore".equals(key)) {
@@ -176,10 +179,10 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
         return String.valueOf(Paths.get(mountPath).getParent());
     }
 
-    private String extractFilePath(BLangRecordLiteral.BLangRecordKeyValue keyValue) {
-        List<BLangRecordLiteral.BLangRecordKeyValue> keyStoreConfigs = ((BLangRecordLiteral) keyValue
-                .valueExpr).getKeyValuePairs();
-        for (BLangRecordLiteral.BLangRecordKeyValue keyStoreConfig : keyStoreConfigs) {
+    private String extractFilePath(BLangRecordLiteral.BLangRecordKeyValueField keyValue) {
+        List<BLangRecordLiteral.BLangRecordKeyValueField> keyStoreConfigs =
+                convertRecordFields(((BLangRecordLiteral) keyValue.valueExpr).getFields());
+        for (BLangRecordLiteral.BLangRecordKeyValueField keyStoreConfig : keyStoreConfigs) {
             String configKey = keyStoreConfig.getKey().toString();
             if (LISTENER_PATH_VARIABLE.equals(configKey)) {
                 return keyStoreConfig.getValue().toString();
@@ -191,9 +194,9 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
     private IngressModel getIngressModelFromAnnotation(AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         IngressModel ingressModel = new IngressModel();
-        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
-        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
+        List<BLangRecordLiteral.BLangRecordKeyValueField> keyValues =
+            convertRecordFields(((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getFields());
+        for (BLangRecordLiteral.BLangRecordKeyValueField keyValue : keyValues) {
             IngressConfiguration ingressConfiguration =
                     IngressConfiguration.valueOf(keyValue.getKey().toString());
             switch (ingressConfiguration) {
@@ -228,13 +231,13 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
         return ingressModel;
     }
 
-    private void processListener(String listenerName, List<BLangRecordLiteral.BLangRecordKeyValue> listenerConfig)
+    private void processListener(String listenerName, List<BLangRecordLiteral.BLangRecordKeyValueField> listenerConfig)
             throws KubernetesPluginException {
-        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : listenerConfig) {
+        for (BLangRecordLiteral.BLangRecordKeyValueField keyValue : listenerConfig) {
             String key = keyValue.getKey().toString();
             if ("secureSocket".equals(key)) {
-                List<BLangRecordLiteral.BLangRecordKeyValue> sslKeyValues =
-                        ((BLangRecordLiteral) keyValue.valueExpr).getKeyValuePairs();
+                List<BLangRecordLiteral.BLangRecordKeyValueField> sslKeyValues =
+                        convertRecordFields(((BLangRecordLiteral) keyValue.valueExpr).getFields());
                 Set<SecretModel> secretModels = processSecureSocketAnnotation(listenerName, sslKeyValues);
                 KubernetesContext.getInstance().getDataHolder().addListenerSecret(listenerName, secretModels);
                 KubernetesContext.getInstance().getDataHolder().addSecrets(secretModels);
@@ -271,8 +274,8 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
                 if (bListener.argsExpr.size() == 2) {
                     if (bListener.argsExpr.get(1) instanceof BLangRecordLiteral) {
                         BLangRecordLiteral bConfigRecordLiteral = (BLangRecordLiteral) bListener.argsExpr.get(1);
-                        List<BLangRecordLiteral.BLangRecordKeyValue> listenerConfig =
-                                bConfigRecordLiteral.getKeyValuePairs();
+                        List<BLangRecordLiteral.BLangRecordKeyValueField> listenerConfig =
+                                convertRecordFields(bConfigRecordLiteral.getFields());
                         processListener(listenerName, listenerConfig);
                     }
                 }

@@ -36,6 +36,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.ISTIO_GATEWAY_POSTFIX;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.convertRecordFields;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getList;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
@@ -51,8 +52,8 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
     @Override
     public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException {
-        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
+        List<BLangRecordLiteral.BLangRecordKeyValueField> keyValues =
+            convertRecordFields(((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getFields());
     
         IstioGatewayModel gwModel = this.processIstioGatewayAnnotation(keyValues);
         if (isBlank(gwModel.getName())) {
@@ -66,8 +67,8 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
     @Override
     public void processAnnotation(SimpleVariableNode variableNode, AnnotationAttachmentNode attachmentNode)
             throws KubernetesPluginException {
-        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
+        List<BLangRecordLiteral.BLangRecordKeyValueField> keyValues =
+            convertRecordFields(((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getFields());
     
         IstioGatewayModel gwModel = this.processIstioGatewayAnnotation(keyValues);
         if (isBlank(gwModel.getName())) {
@@ -112,10 +113,11 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
      * @param gatewayFields Fields of the gateway annotation.
      * @throws KubernetesPluginException Unable to process annotations.
      */
-    private IstioGatewayModel processIstioGatewayAnnotation(List<BLangRecordLiteral.BLangRecordKeyValue> gatewayFields)
+    private IstioGatewayModel processIstioGatewayAnnotation(
+            List<BLangRecordLiteral.BLangRecordKeyValueField> gatewayFields)
             throws KubernetesPluginException {
         IstioGatewayModel gatewayModel = new IstioGatewayModel();
-        for (BLangRecordLiteral.BLangRecordKeyValue gatewayField : gatewayFields) {
+        for (BLangRecordLiteral.BLangRecordKeyValueField gatewayField : gatewayFields) {
             switch (GatewayConfig.valueOf(gatewayField.getKey().toString())) {
                 case name:
                     gatewayModel.setName(getValidName(getStringValue(gatewayField.getValue())));
@@ -156,18 +158,19 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
             if (serverRecord instanceof BLangRecordLiteral) {
                 BLangRecordLiteral serverFieldRecord = (BLangRecordLiteral) serverRecord;
                 IstioServerModel server = new IstioServerModel();
-                for (BLangRecordLiteral.BLangRecordKeyValue serverField : serverFieldRecord.getKeyValuePairs()) {
+                for (BLangRecordLiteral.BLangRecordKeyValueField serverField :
+                        convertRecordFields(serverFieldRecord.getFields())) {
                     switch (ServerConfig.valueOf(serverField.getKey().toString())) {
                         case port:
                             BLangRecordLiteral portRecord = (BLangRecordLiteral) serverField.getValue();
-                            processIstioGatewayPortAnnotation(server, portRecord.getKeyValuePairs());
+                            processIstioGatewayPortAnnotation(server, convertRecordFields(portRecord.getFields()));
                             break;
                         case hosts:
                             server.setHosts(getList(serverField.getValue()));
                             break;
                         case tls:
                             BLangRecordLiteral tlsRecord = (BLangRecordLiteral) serverField.getValue();
-                            processIstioGatewayTLSAnnotation(server, tlsRecord.getKeyValuePairs());
+                            processIstioGatewayTLSAnnotation(server, convertRecordFields(tlsRecord.getFields()));
                             break;
                         default:
                             throw new KubernetesPluginException("unknown field found for istio gateway server.");
@@ -187,10 +190,10 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
      * @throws KubernetesPluginException Unable to process annotation
      */
     private void processIstioGatewayPortAnnotation(IstioServerModel server,
-                                                   List<BLangRecordLiteral.BLangRecordKeyValue> portFields)
+                                                   List<BLangRecordLiteral.BLangRecordKeyValueField> portFields)
             throws KubernetesPluginException {
         IstioPortModel portModel = new IstioPortModel();
-        for (BLangRecordLiteral.BLangRecordKeyValue portField : portFields) {
+        for (BLangRecordLiteral.BLangRecordKeyValueField portField : portFields) {
             switch (PortConfig.valueOf(portField.getKey().toString())) {
                 case number:
                     portModel.setNumber(Integer.parseInt(portField.getValue().toString()));
@@ -216,10 +219,10 @@ public class IstioGatewayAnnotationProcessor extends AbstractAnnotationProcessor
      * @throws KubernetesPluginException Unable to process annotation
      */
     private void processIstioGatewayTLSAnnotation(IstioServerModel server,
-                                                  List<BLangRecordLiteral.BLangRecordKeyValue> tlsFields)
+                                                  List<BLangRecordLiteral.BLangRecordKeyValueField> tlsFields)
             throws KubernetesPluginException {
         IstioServerModel.TLSOptions tlsOptions = new IstioServerModel.TLSOptions();
-        for (BLangRecordLiteral.BLangRecordKeyValue tlsField : tlsFields) {
+        for (BLangRecordLiteral.BLangRecordKeyValueField tlsField : tlsFields) {
             switch (TLSOptionConfig.valueOf(tlsField.getKey().toString())) {
                 case httpsRedirect:
                     tlsOptions.setHttpsRedirect(Boolean.parseBoolean(tlsField.getValue().toString()));
