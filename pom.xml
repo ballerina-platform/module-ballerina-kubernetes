@@ -93,9 +93,9 @@
                 <version>${fabric8.kubernetes.client.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.spotify</groupId>
-                <artifactId>docker-client</artifactId>
-                <version>${spotify.docker.client.version}</version>
+                <groupId>com.github.docker-java</groupId>
+                <artifactId>docker-java</artifactId>
+                <version>${docker.java.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
@@ -301,27 +301,27 @@
     </scm>
 
     <properties>
+        <apache.http.client.version>4.5.10</apache.http.client.version>
         <ballerina.lang.version>1.2.0-SNAPSHOT</ballerina.lang.version>
         <ballerina.source.directory>${project.build.directory}/../src/main/ballerina</ballerina.source.directory>
         <com.fasterxml.jackson.core.annotations.version>2.9.8</com.fasterxml.jackson.core.annotations.version>
         <com.fasterxml.jackson.dataformat.yaml.version>2.9.8</com.fasterxml.jackson.dataformat.yaml.version>
         <commons.codec.version>1.12</commons.codec.version>
         <docker.generator.version>1.2.0-SNAPSHOT</docker.generator.version>
+        <docker.java.version>3.1.5</docker.java.version>
         <fabric8.knative.client.version>4.6.4</fabric8.knative.client.version>
         <fabric8.kubernetes.client.version>4.6.4</fabric8.kubernetes.client.version>
         <jackson.version>2.9.8</jackson.version>
         <javax.validation.api.version>2.0.0.Final</javax.validation.api.version>
+        <lombok.version>1.18.10</lombok.version>
         <maven.jacoco.plugin.version>0.8.3</maven.jacoco.plugin.version>
         <mvn.processor.plugin.version>2.2.4</mvn.processor.plugin.version>
         <mvn.shade.plugin.version>3.2.1</mvn.shade.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <snowdrop.istio.model.version>1.1.1</snowdrop.istio.model.version>
-        <spotify.docker.client.version>8.15.0</spotify.docker.client.version>
         <testng.version>6.14.3</testng.version>
         <slf4j.version>1.7.26</slf4j.version>
-        <lombok.version>1.18.10</lombok.version>
-        <apache.http.client.version>4.5.10</apache.http.client.version>
     </properties>
 
     <modules>

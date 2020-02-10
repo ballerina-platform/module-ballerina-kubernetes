@@ -53,8 +53,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.spotify</groupId>
-            <artifactId>docker-client</artifactId>
+            <groupId>com.github.docker-java</groupId>
+            <artifactId>docker-java</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

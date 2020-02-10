@@ -48,6 +48,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_CERT_PATH;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_HOST;
 import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
 import static org.ballerinax.kubernetes.KubernetesConstants.SVC_POSTFIX;
+import static org.ballerinax.kubernetes.utils.KnativeUtils.convertRecordFields;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.getBooleanValue;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.getEnvVarMap;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.getExternalFileMap;
@@ -128,9 +129,9 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
 
     private ServiceModel processService(AnnotationAttachmentNode attachmentNode) throws KubernetesPluginException {
         ServiceModel serviceModel = new ServiceModel();
-        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
-        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
+        List<BLangRecordLiteral.BLangRecordKeyValueField> keyValues =
+            convertRecordFields(((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getFields());
+        for (BLangRecordLiteral.BLangRecordKeyValueField keyValue : keyValues) {
             ServiceConfiguration
                     serviceConfiguration = ServiceConfiguration.valueOf(keyValue.getKey().toString());
             switch (serviceConfiguration) {
@@ -247,10 +248,10 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
         List<PodTolerationModel> podTolerationModels = new LinkedList<>();
         List<BLangExpression> podTolerations = ((BLangListConstructorExpr) podTolerationValues).exprs;
         for (BLangExpression podTolerationFieldsAsExpression : podTolerations) {
-            List<BLangRecordLiteral.BLangRecordKeyValue> podTolerationFields =
-                    ((BLangRecordLiteral) podTolerationFieldsAsExpression).keyValuePairs;
+            List<BLangRecordLiteral.BLangRecordKeyValueField> podTolerationFields =
+                    convertRecordFields(((BLangRecordLiteral) podTolerationFieldsAsExpression).getFields());
             PodTolerationModel podTolerationModel = new PodTolerationModel();
-            for (BLangRecordLiteral.BLangRecordKeyValue podTolerationField : podTolerationFields) {
+            for (BLangRecordLiteral.BLangRecordKeyValueField podTolerationField : podTolerationFields) {
                 PodTolerationConfiguration podTolerationFieldName =
                         PodTolerationConfiguration.valueOf(podTolerationField.getKey().toString());
                 switch (podTolerationFieldName) {
@@ -292,10 +293,10 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
             return new ProbeModel();
         } else {
             if (probeValue instanceof BLangRecordLiteral) {
-                List<BLangRecordLiteral.BLangRecordKeyValue> buildExtensionRecord =
-                        ((BLangRecordLiteral) probeValue).keyValuePairs;
+                List<BLangRecordLiteral.BLangRecordKeyValueField> buildExtensionRecord =
+                        convertRecordFields(((BLangRecordLiteral) probeValue).getFields());
                 ProbeModel probeModel = new ProbeModel();
-                for (BLangRecordLiteral.BLangRecordKeyValue probeField : buildExtensionRecord) {
+                for (BLangRecordLiteral.BLangRecordKeyValueField probeField : buildExtensionRecord) {
                     ProbeConfiguration probeConfiguration =
                             ProbeConfiguration.valueOf(probeField.getKey().toString());
                     switch (probeConfiguration) {
@@ -319,7 +320,7 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
         return null;
     }
 
-    private Set<String> getDependsOn(BLangRecordLiteral.BLangRecordKeyValue keyValue) {
+    private Set<String> getDependsOn(BLangRecordLiteral.BLangRecordKeyValueField keyValue) {
         Set<String> dependsOnList = new HashSet<>();
         List<BLangExpression> configAnnotation = ((BLangListConstructorExpr) keyValue.valueExpr).exprs;
         for (BLangExpression bLangExpression : configAnnotation) {

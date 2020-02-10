@@ -17,7 +17,6 @@
  */
 package org.ballerinax.kubernetes.models;
 
-import com.spotify.docker.client.DockerHost;
 import org.ballerinax.docker.generator.models.CopyFileModel;
 import org.ballerinax.kubernetes.KubernetesConstants;
 
@@ -75,8 +74,6 @@ public class DeploymentModel extends KubernetesModel {
         this.dependsOn = new HashSet<>();
 
         // Configure Docker Host based on operating system.
-        this.setDockerHost(DockerHost.fromEnv().host());
-        this.setDockerCertPath(DockerHost.fromEnv().dockerCertPath());
         this.ports = new HashSet<>();
         this.secretModels = new HashSet<>();
         this.configMapModels = new HashSet<>();

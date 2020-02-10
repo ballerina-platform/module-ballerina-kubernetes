@@ -18,7 +18,6 @@
 
 package org.ballerinax.kubernetes.models;
 
-import com.spotify.docker.client.DockerHost;
 import org.ballerinax.docker.generator.models.CopyFileModel;
 import org.ballerinax.kubernetes.KubernetesConstants;
 
@@ -65,8 +64,6 @@ public class JobModel extends KubernetesModel {
         this.labels = new HashMap<>();
         this.setEnv(new HashMap<>());
         this.setImagePullPolicy("IfNotPresent");
-        this.setDockerHost(DockerHost.fromEnv().host());
-        this.setDockerCertPath(DockerHost.fromEnv().dockerCertPath());
         
         this.activeDeadlineSeconds = 20;
         this.imagePullSecrets = new HashSet<>();

@@ -18,7 +18,7 @@
 
 package org.ballerinax.kubernetes.test;
 
-import com.spotify.docker.client.messages.ImageInfo;
+import com.github.dockerjava.api.command.InspectImageResponse;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
@@ -197,7 +197,7 @@ public class DeploymentTest {
      * Validate contents of the Dockerfile.
      */
     public void validateDockerImage() throws DockerTestException, InterruptedException {
-        ImageInfo imageInspect = getDockerImage(DOCKER_IMAGE);
-        Assert.assertNotEquals(imageInspect, null, "Image not found");
+        InspectImageResponse imageInspect = getDockerImage(DOCKER_IMAGE);
+        Assert.assertNotNull(imageInspect.getConfig(), "Image not found");
     }
 }

@@ -43,6 +43,7 @@ import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
 import static org.ballerinax.kubernetes.KubernetesConstants.SECRET_POSTFIX;
+import static org.ballerinax.kubernetes.utils.KnativeUtils.convertRecordFields;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.getBooleanValue;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.getStringValue;
@@ -73,15 +74,15 @@ public class KnativeSecretAnnotationProcesser extends AbstractAnnotationProcesso
     private void processSecret(IdentifierNode nodeID, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         Set<SecretModel> secrets = new HashSet<>();
-        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
-        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
+        List<BLangRecordLiteral.BLangRecordKeyValueField> keyValues =
+            convertRecordFields(((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getFields());
+        for (BLangRecordLiteral.BLangRecordKeyValueField keyValue : keyValues) {
             List<BLangExpression> secretAnnotation = ((BLangListConstructorExpr) keyValue.valueExpr).exprs;
             for (BLangExpression bLangExpression : secretAnnotation) {
                 SecretModel secretModel = new SecretModel();
-                List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
-                        ((BLangRecordLiteral) bLangExpression).getKeyValuePairs();
-                for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
+                List<BLangRecordLiteral.BLangRecordKeyValueField> annotationValues =
+                        convertRecordFields(((BLangRecordLiteral) bLangExpression).getFields());
+                for (BLangRecordLiteral.BLangRecordKeyValueField annotation : annotationValues) {
                     SecretMountConfig secretMountConfig =
                             SecretMountConfig.valueOf(annotation.getKey().toString());
                     switch (secretMountConfig) {

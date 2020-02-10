@@ -18,7 +18,7 @@
 
 package org.ballerinax.kubernetes.test.samples;
 
-import com.spotify.docker.client.messages.ImageInfo;
+import com.github.dockerjava.api.command.InspectImageResponse;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.batch.Job;
@@ -95,8 +95,8 @@ public class Sample11Test extends SampleTest {
 
     @Test
     public void validateDockerImage() throws DockerTestException, InterruptedException {
-        ImageInfo imageInspect = getDockerImage(DOCKER_IMAGE);
-        Assert.assertNotNull(imageInspect.config());
+        InspectImageResponse imageInspect = getDockerImage(DOCKER_IMAGE);
+        Assert.assertNotNull(imageInspect.getConfig(), "Image not found");
     }
 
     @Test(groups = {"integration"})

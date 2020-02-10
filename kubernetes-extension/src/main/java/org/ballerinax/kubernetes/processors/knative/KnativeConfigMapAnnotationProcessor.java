@@ -48,6 +48,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_HOME;
 import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_RUNTIME;
 import static org.ballerinax.kubernetes.KubernetesConstants.CONFIG_MAP_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
+import static org.ballerinax.kubernetes.utils.KnativeUtils.convertRecordFields;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.getBooleanValue;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.getStringValue;
@@ -79,18 +80,18 @@ public class KnativeConfigMapAnnotationProcessor extends AbstractAnnotationProce
     private void processConfigMaps(IdentifierNode nodeID, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         Set<ConfigMapModel> configMapModels = new HashSet<>();
-        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
-        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
+        List<BLangRecordLiteral.BLangRecordKeyValueField> keyValues =
+            convertRecordFields(((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getFields());
+        for (BLangRecordLiteral.BLangRecordKeyValueField keyValue : keyValues) {
             String key = keyValue.getKey().toString();
             switch (key) {
                 case "configMaps":
                     List<BLangExpression> configAnnotation = ((BLangListConstructorExpr) keyValue.valueExpr).exprs;
                     for (BLangExpression bLangExpression : configAnnotation) {
                         ConfigMapModel configMapModel = new ConfigMapModel();
-                        List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
-                                ((BLangRecordLiteral) bLangExpression).getKeyValuePairs();
-                        for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
+                        List<BLangRecordLiteral.BLangRecordKeyValueField> annotationValues =
+                                convertRecordFields(((BLangRecordLiteral) bLangExpression).getFields());
+                        for (BLangRecordLiteral.BLangRecordKeyValueField annotation : annotationValues) {
                             ConfigMapMountConfig volumeMountConfig =
                                     ConfigMapMountConfig.
                                             valueOf(annotation.getKey().toString());

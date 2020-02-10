@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.convertRecordFields;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getList;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
@@ -71,15 +72,15 @@ public class ResourceQuotaAnnotationPreprocessor extends AbstractAnnotationProce
     private void processResourceQuotaAnnotation(BLangAnnotationAttachment attachmentNode)
             throws KubernetesPluginException {
         Set<ResourceQuotaModel> resourceQuotaModels = new HashSet<>();
-        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                ((BLangRecordLiteral) attachmentNode.expr).getKeyValuePairs();
-        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
+        List<BLangRecordLiteral.BLangRecordKeyValueField> keyValues =
+                convertRecordFields(((BLangRecordLiteral) attachmentNode.expr).getFields());
+        for (BLangRecordLiteral.BLangRecordKeyValueField keyValue : keyValues) {
             List<BLangExpression> secretAnnotation = ((BLangListConstructorExpr) keyValue.valueExpr).exprs;
             for (BLangExpression bLangExpression : secretAnnotation) {
                 ResourceQuotaModel resourceQuotaModel = new ResourceQuotaModel();
-                List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
-                        ((BLangRecordLiteral) bLangExpression).getKeyValuePairs();
-                for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
+                List<BLangRecordLiteral.BLangRecordKeyValueField> annotationValues =
+                        convertRecordFields(((BLangRecordLiteral) bLangExpression).getFields());
+                for (BLangRecordLiteral.BLangRecordKeyValueField annotation : annotationValues) {
                     ResourceQuotaConfig resourceQuotaConfig =
                             ResourceQuotaConfig.valueOf(annotation.getKey().toString());
                     switch (resourceQuotaConfig) {

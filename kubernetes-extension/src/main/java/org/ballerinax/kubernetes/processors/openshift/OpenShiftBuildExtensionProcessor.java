@@ -38,10 +38,10 @@ public class OpenShiftBuildExtensionProcessor {
      * @throws KubernetesPluginException Unknown field found.
      */
     public static OpenShiftBuildExtensionModel processBuildExtension(
-            List<BLangRecordLiteral.BLangRecordKeyValue> bcFields)
+            List<BLangRecordLiteral.BLangRecordKeyValueField> bcFields)
             throws KubernetesPluginException {
         OpenShiftBuildExtensionModel buildExtension = new OpenShiftBuildExtensionModel();
-        for (BLangRecordLiteral.BLangRecordKeyValue bcField : bcFields) {
+        for (BLangRecordLiteral.BLangRecordKeyValueField bcField : bcFields) {
             switch (OpenShiftBuildExtensionFields.valueOf(bcField.getKey().toString())) {
                 case forcePullDockerImage:
                     buildExtension.setForcePullDockerImage(getBooleanValue(bcField.getValue()));

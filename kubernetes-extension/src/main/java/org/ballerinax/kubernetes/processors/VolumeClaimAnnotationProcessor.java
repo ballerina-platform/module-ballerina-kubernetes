@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.convertRecordFields;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getBooleanValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
@@ -82,15 +83,15 @@ public class VolumeClaimAnnotationProcessor extends AbstractAnnotationProcessor 
      */
     private void processVolumeClaims(AnnotationAttachmentNode attachmentNode) throws KubernetesPluginException {
         Set<PersistentVolumeClaimModel> volumeClaimModels = new HashSet<>();
-        List<BLangRecordLiteral.BLangRecordKeyValue> keyValues =
-                ((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getKeyValuePairs();
-        for (BLangRecordLiteral.BLangRecordKeyValue keyValue : keyValues) {
+        List<BLangRecordLiteral.BLangRecordKeyValueField> keyValues =
+            convertRecordFields(((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getFields());
+        for (BLangRecordLiteral.BLangRecordKeyValueField keyValue : keyValues) {
             List<BLangExpression> secretAnnotation = ((BLangListConstructorExpr) keyValue.valueExpr).exprs;
             for (BLangExpression bLangExpression : secretAnnotation) {
                 PersistentVolumeClaimModel claimModel = new PersistentVolumeClaimModel();
-                List<BLangRecordLiteral.BLangRecordKeyValue> annotationValues =
-                        ((BLangRecordLiteral) bLangExpression).getKeyValuePairs();
-                for (BLangRecordLiteral.BLangRecordKeyValue annotation : annotationValues) {
+                List<BLangRecordLiteral.BLangRecordKeyValueField> annotationValues =
+                        convertRecordFields(((BLangRecordLiteral) bLangExpression).getFields());
+                for (BLangRecordLiteral.BLangRecordKeyValueField annotation : annotationValues) {
                     VolumeClaimConfig volumeMountConfig =
                             VolumeClaimConfig.valueOf(annotation.getKey().toString());
                     switch (volumeMountConfig) {
