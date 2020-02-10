@@ -18,15 +18,11 @@
 
 package org.ballerinax.kubernetes.test.utils;
 
-import com.google.common.base.Optional;
-import com.spotify.docker.client.DefaultDockerClient;
-import com.spotify.docker.client.DockerCertificates;
-import com.spotify.docker.client.DockerCertificatesStore;
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.DockerHost;
-import com.spotify.docker.client.exceptions.DockerCertificateException;
-import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.messages.ImageInfo;
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.InspectImageResponse;
+import com.github.dockerjava.api.model.ExposedPort;
+import com.github.dockerjava.core.DefaultDockerClientConfig;
+import com.github.dockerjava.core.DockerClientBuilder;
 import io.fabric8.kubernetes.client.utils.Serialization;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -45,7 +41,6 @@ import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.impl.conn.SystemDefaultDnsResolver;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
-import org.glassfish.jersey.internal.RuntimeDelegateImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +51,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.URI;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -72,9 +66,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import javax.ws.rs.ext.RuntimeDelegate;
+import java.util.stream.Collectors;
 
 /**
  * Kubernetes test utils.
@@ -100,90 +92,60 @@ public class KubernetesTestUtils {
             br.lines().forEach(log::info);
         }
     }
-
+    
+    public static DockerClient getDockerClient() {
+        DefaultDockerClientConfig.Builder dockerClientConfig = DefaultDockerClientConfig.createDefaultConfigBuilder();
+        return DockerClientBuilder.getInstance(dockerClientConfig.build()).build();
+    }
+    
     /**
      * Return a ImageInspect object for a given Docker Image name.
      *
      * @param imageName Docker image Name
      * @return ImageInspect object
      */
-    public static ImageInfo getDockerImage(String imageName) throws DockerTestException, InterruptedException {
-        try {
-            DockerClient client = getDockerClient();
-            return client.inspectImage(imageName);
-        } catch (DockerException e) {
-            throw new DockerTestException(e);
-        }
+    public static InspectImageResponse getDockerImage(String imageName) {
+        return getDockerClient().inspectImageCmd(imageName).exec();
     }
-
+    
     /**
      * Get the list of exposed ports of the docker image.
      *
      * @param imageName The docker image name.
      * @return Exposed ports.
-     * @throws DockerTestException  If issue occurs inspecting docker image
-     * @throws InterruptedException If issue occurs inspecting docker image
      */
-    public static List<String> getExposedPorts(String imageName) throws DockerTestException, InterruptedException {
-        ImageInfo dockerImage = getDockerImage(imageName);
-        return Objects.requireNonNull(dockerImage.config().exposedPorts()).asList();
+    public static List<String> getExposedPorts(String imageName) {
+        InspectImageResponse dockerImage = getDockerImage(imageName);
+        if (null == dockerImage.getConfig()) {
+            return new ArrayList<>();
+        }
+        
+        ExposedPort[] exposedPorts = dockerImage.getConfig().getExposedPorts();
+        return Arrays.stream(exposedPorts).map(ExposedPort::toString).collect(Collectors.toList());
     }
-
+    
     /**
      * Get the list of commands of the docker image.
      *
      * @param imageName The docker image name.
      * @return The list of commands.
-     * @throws DockerTestException  If issue occurs inspecting docker image
-     * @throws InterruptedException If issue occurs inspecting docker image
      */
-    public static List<String> getCommand(String imageName) throws DockerTestException, InterruptedException {
-        ImageInfo dockerImage = getDockerImage(imageName);
-        return dockerImage.config().cmd();
+    public static List<String> getCommand(String imageName) {
+        InspectImageResponse dockerImage = getDockerImage(imageName);
+        if (null == dockerImage.getConfig() || null == dockerImage.getConfig().getCmd()) {
+            return new ArrayList<>();
+        }
+        
+        return Arrays.asList(dockerImage.getConfig().getCmd());
     }
-
+    
     /**
      * Delete a given Docker image and prune.
      *
      * @param imageName Docker image Name
      */
     public static void deleteDockerImage(String imageName) {
-        // using a thread to make tests run faster
-        CompletableFuture.runAsync(() -> {
-            try {
-                DockerClient client = getDockerClient();
-                client.removeImage(imageName, true, false);
-            } catch (DockerException | InterruptedException | DockerTestException e) {
-                log.error(e.getMessage());
-            }
-        });
-    }
-
-    public static DockerClient getDockerClient() throws DockerTestException {
-        RuntimeDelegate.setInstance(new RuntimeDelegateImpl());
-        URI dockerURI = DockerHost.fromEnv().uri();
-        DockerClient dockerClient = DefaultDockerClient.builder().uri(dockerURI).build();
-
-        try {
-            String dockerCertPath = DockerHost.fromEnv().dockerCertPath();
-            if (null != dockerCertPath && !"".equals(dockerCertPath)) {
-                Optional<DockerCertificatesStore> certOptional =
-                        DockerCertificates.builder()
-                                .dockerCertPath(Paths.get(dockerCertPath))
-                                .build();
-                if (certOptional.isPresent()) {
-                    dockerClient = DefaultDockerClient.builder()
-                            .uri(dockerURI)
-                            .dockerCertificates(certOptional.get())
-                            .build();
-                }
-            }
-        } catch (DockerCertificateException e) {
-            throw new DockerTestException(e);
-        }
-
-
-        return dockerClient;
+        getDockerClient().removeImageCmd(imageName).withForce(true).withNoPrune(false).exec();
     }
 
     /**
