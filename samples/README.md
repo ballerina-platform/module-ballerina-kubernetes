@@ -22,10 +22,15 @@
     
 #### Setting up nginx
 
-1. Run the following command to deploy nginx backend and controller.
+1. Run the following command to deploy nginx ingress controller.
 ##### Docker for mac users:
+```bash
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.27.0/deploy/static/mandatory.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.27.0/deploy/static/provider/cloud-generic.yaml
 ```
-kubectl apply -f nginx-ingress/namespaces/nginx-ingress.yaml -Rf nginx-ingress
+2. Run the following command to enable ssl pass-through.
+```bash
+kubectl patch deployments -n ingress-nginx nginx-ingress-controller -p '{"spec":{"template":{"spec":{"containers":[{"name":"nginx-ingress-controller","args":["\/nginx-ingress-controller","--configmap=$(POD_NAMESPACE)\/nginx-configuration","--tcp-services-configmap=$(POD_NAMESPACE)\/tcp-services","--udp-services-configmap=$(POD_NAMESPACE)\/udp-services","--publish-service=$(POD_NAMESPACE)\/ingress-nginx","--annotations-prefix=nginx.ingress.kubernetes.io","--annotations-prefix=nginx.ingress.kubernetes.io","--enable-ssl-passthrough"]}]}}}}'
 ```
 
 ##### minikube users:
