@@ -20,7 +20,7 @@
 
     <parent>
         <groupId>org.ballerinax.kubernetes</groupId>
-        <version>1.1.2</version>
+        <version>1.1.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
         <artifactId>kubernetes-extension-parent</artifactId>
     </parent>

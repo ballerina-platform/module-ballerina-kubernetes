@@ -24,7 +24,7 @@
     </parent>
 
     <groupId>org.ballerinax.kubernetes</groupId>
-    <version>1.1.2</version>
+    <version>1.1.3-SNAPSHOT</version>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>kubernetes-extension-parent</artifactId>
     <name>Ballerinax - Kubernetes Extension Parent</name>
@@ -252,7 +252,7 @@
         <url>https://github.com/ballerinax/kubernetes.git</url>
         <developerConnection>scm:git:https://github.com/ballerinax/kubernetes.git</developerConnection>
         <connection>scm:git:https://github.com/ballerinax/kubernetes.git</connection>
-        <tag>v1.1.2</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
