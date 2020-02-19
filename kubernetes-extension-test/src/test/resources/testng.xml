@@ -32,7 +32,6 @@
             <class name="org.ballerinax.kubernetes.test.samples.Sample11Test"/>
             <class name="org.ballerinax.kubernetes.test.samples.Sample12Test"/>
             <!--<class name="org.ballerinax.kubernetes.test.samples.Sample13Test"/> Need jdbc connector-->
-            <class name="org.ballerinax.kubernetes.test.samples.Sample18Test"/>
             <class name="org.ballerinax.kubernetes.test.samples.Sample14Test"/>
             <class name="org.ballerinax.kubernetes.test.samples.Sample15Test"/>
             <class name="org.ballerinax.kubernetes.test.samples.Sample16Test"/>
