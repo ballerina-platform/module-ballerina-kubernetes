@@ -126,9 +126,20 @@
                 <version>${docker.generator.version}</version>
             </dependency>
             <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${javax.validation.api.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>me.snowdrop</groupId>
                 <artifactId>istio-model</artifactId>
                 <version>${snowdrop.istio.model.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.fabric8</groupId>
+                <artifactId>knative-client</artifactId>
+                <version>${fabric8.knative.client.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.testng</groupId>
@@ -262,8 +273,10 @@
         <com.fasterxml.jackson.dataformat.yaml.version>2.9.8</com.fasterxml.jackson.dataformat.yaml.version>
         <commons.codec.version>1.12</commons.codec.version>
         <docker.generator.version>1.1.2</docker.generator.version>
+        <fabric8.knative.client.version>4.6.4</fabric8.knative.client.version>
         <fabric8.kubernetes.client.version>4.6.4</fabric8.kubernetes.client.version>
         <jackson.version>2.9.8</jackson.version>
+        <javax.validation.api.version>2.0.0.Final</javax.validation.api.version>
         <maven.jacoco.plugin.version>0.8.3</maven.jacoco.plugin.version>
         <mvn.processor.plugin.version>2.2.4</mvn.processor.plugin.version>
         <mvn.shade.plugin.version>3.2.1</mvn.shade.plugin.version>

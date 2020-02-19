@@ -1,0 +1,27 @@
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  annotations: {}
+  labels:
+    app: "disabled"
+  name: "disabled-deployment"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "disabled"
+  template:
+    metadata:
+      annotations: {}
+      labels:
+        app: "disabled"
+    spec:
+      containers:
+      - image: "pizza-shop:latest"
+        imagePullPolicy: "IfNotPresent"
+        name: "disabled-deployment"
+        ports:
+        - containerPort: 9090
+          protocol: "TCP"
+      nodeSelector: {}
