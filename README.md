@@ -58,6 +58,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |buildExtension|Extension for building docker images and artifacts|null|
 |dependsOn|Listeners this deployment Depends on|null|
 |imagePullSecrets|Image pull secrets value|null|
+|strategy|Update strategy|null|
 
 ### @kubernetes:Service{}
 - Supported with ballerina services and listeners.

@@ -274,6 +274,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                 .withNewSelector()
                 .withMatchLabels(deploymentModel.getLabels())
                 .endSelector()
+                .withStrategy(deploymentModel.getStrategy())
                 .withReplicas(deploymentModel.getReplicas())
                 .withNewTemplate()
                 .withNewMetadata()
