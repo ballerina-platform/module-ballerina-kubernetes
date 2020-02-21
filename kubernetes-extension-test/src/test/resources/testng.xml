@@ -55,6 +55,7 @@
             <class name="org.ballerinax.kubernetes.test.MainFunctionDeploymentTest"/>
             <class name="org.ballerinax.kubernetes.test.ServiceTest"/>
             <class name="org.ballerinax.kubernetes.test.DeploymentTest"/>
+            <class name="org.ballerinax.kubernetes.test.StrategyTest"/>
             <class name="org.ballerinax.kubernetes.test.LivenessProbeTest"/>
             <class name="org.ballerinax.kubernetes.test.ReadinessProbeTest"/>
             <class name="org.ballerinax.kubernetes.test.IstioGatewayTest"/>
