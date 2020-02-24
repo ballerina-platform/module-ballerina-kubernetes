@@ -18,6 +18,10 @@
         <Bug pattern="DMI_HARDCODED_ABSOLUTE_FILENAME"/>
     </Match>
     <Match>
+        <Class name="org.ballerinax.kubernetes.processors.SecretAnnotationProcessor"/>
+        <Bug pattern="DMI_HARDCODED_ABSOLUTE_FILENAME"/>
+    </Match>
+    <Match>
         <Class name="org.ballerinax.kubernetes.processors.knative.KnativeConfigMapAnnotationProcessor"/>
         <Bug pattern="DMI_HARDCODED_ABSOLUTE_FILENAME"/>
     </Match>

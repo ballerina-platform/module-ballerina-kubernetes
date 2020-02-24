@@ -95,7 +95,7 @@ public class KubernetesUtils {
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
         writeToFile(dataHolder.getK8sArtifactOutputPath(), context, outputFileName);
     }
-
+    
     /**
      * Write content to a File. Create the required directories if they don't not exists.
      *
@@ -278,9 +278,9 @@ public class KubernetesUtils {
             int endIndex = value.indexOf("}", startIndex);
             if (endIndex > 0) {
                 String varName = value.substring(startIndex + 5, endIndex).trim();
-                String resolvedVar = Optional.ofNullable(System.getenv(varName)).orElseThrow(() ->
-                        new KubernetesPluginException("error resolving value: " + varName +
-                                " is not set in the environment."));
+                String resolvedVar = Optional.ofNullable(System.getenv(varName)).orElseThrow(() -> 
+                    new KubernetesPluginException("error resolving value: " + varName + 
+                            " is not set in the environment."));
                 String rest = (value.length() > endIndex + 1) ? resolveValue(value.substring(endIndex + 1)) : "";
                 return value.substring(0, startIndex) + resolvedVar + rest;
             }

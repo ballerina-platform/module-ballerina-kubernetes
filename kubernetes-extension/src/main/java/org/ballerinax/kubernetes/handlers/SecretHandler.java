@@ -22,14 +22,18 @@ import io.fabric8.kubernetes.api.model.Secret;
 import io.fabric8.kubernetes.api.model.SecretBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.ballerinax.kubernetes.models.DeploymentModel;
+import org.ballerinax.kubernetes.models.EnvVarValueModel;
 import org.ballerinax.kubernetes.models.SecretModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
 import java.util.Collection;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_CONF_FILE_NAME;
 import static org.ballerinax.kubernetes.KubernetesConstants.SECRET_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 
 /**
  * Generates kubernetes secret.
@@ -65,6 +69,17 @@ public class SecretHandler extends AbstractArtifactHandler {
         }
         for (SecretModel secretModel : secretModels) {
             count++;
+            if (!isBlank(secretModel.getBallerinaConf())) {
+                if (secretModel.getData().size() != 1) {
+                    throw new KubernetesPluginException("there can be only 1 ballerina config file");
+                }
+                DeploymentModel deploymentModel = dataHolder.getDeploymentModel();
+                deploymentModel.setCommandArgs(" --b7a.config.file=${CONFIG_FILE}");
+                EnvVarValueModel envVarValueModel = new EnvVarValueModel(secretModel.getMountPath() +
+                        BALLERINA_CONF_FILE_NAME);
+                deploymentModel.addEnv("CONFIG_FILE", envVarValueModel);
+                dataHolder.setDeploymentModel(deploymentModel);
+            }
             generate(secretModel);
             OUT.print("\t@kubernetes:Secret \t\t\t - complete " + count + "/" + secretModels.size() + "\r");
         }
