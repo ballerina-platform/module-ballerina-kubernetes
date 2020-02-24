@@ -18,7 +18,7 @@ import ballerina/http;
 import ballerina/kubernetes;
 
 @kubernetes:Deployment {
-    strategy:"RollingUpdate",
+    updateStrategy: kubernetes:STRATEGY_ROLLING_UPDATE,
     image: "strategy:v1",
     singleYAML: false
 }

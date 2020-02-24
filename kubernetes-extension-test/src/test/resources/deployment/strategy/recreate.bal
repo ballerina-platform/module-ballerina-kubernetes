@@ -18,7 +18,7 @@ import ballerina/http;
 import ballerina/kubernetes;
 
 @kubernetes:Deployment {
-    strategy:"Recreate",
+    updateStrategy: kubernetes:STRATEGY_RECREATE,
     image: "strategy:v1",
     singleYAML: false
 }

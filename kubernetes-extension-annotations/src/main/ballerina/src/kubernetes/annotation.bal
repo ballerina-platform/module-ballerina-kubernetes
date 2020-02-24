@@ -156,7 +156,7 @@ public type PodTolerationConfiguration record {|
 # + buildImage - Docker image to be build or not. Default is `true`.
 # + push - Enable pushing docker image to registry. Field `buildImage` must be set to `true` to be effective. Default value is `false`.
 # + cmd - Value for CMD for the generated Dockerfile. Default is `CMD java -jar ${APP} [--b7a.config.file=${CONFIG_FILE}] [--debug]`.
-# + strategy - Deployment strategy.
+# + updateStrategy - Deployment strategy.
 # + copyFiles - Array of [External files](kubernetes#FileConfig) for docker image.
 # + singleYAML - Generate a single yaml file with all kubernetes artifacts (services, deployment, ingress and etc). Default is `true`.
 # + namespace - Kubernetes namespace to be used on all artifacts.
@@ -182,7 +182,7 @@ public type DeploymentConfiguration record {|
     boolean buildImage = true;
     boolean push = false;
     string cmd?;
-    StrategyType|RollingUpdateConfig strategy?;
+    StrategyType|RollingUpdateConfig updateStrategy?;
     FileConfig[] copyFiles?;
     boolean singleYAML = true;
     string namespace?;
@@ -198,8 +198,11 @@ public type DeploymentConfiguration record {|
     string[] imagePullSecrets?;
 |};
 
-# Strategy type field for deployment.
-public type StrategyType "Recreate"| "RollingUpdate";
+public const STRATEGY_RECREATE = "Recreate";
+
+public const STRATEGY_ROLLING_UPDATE = "RollingUpdate";
+
+public type StrategyType STRATEGY_RECREATE| STRATEGY_ROLLING_UPDATE;
 
 # Rolling Update config type field for deployment.
 public type RollingUpdateConfig record{|

@@ -172,7 +172,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 case imagePullSecrets:
                     deploymentModel.setImagePullSecrets(getImagePullSecrets(keyValue));
                     break;
-                case strategy:
+                case updateStrategy:
                     deploymentModel.setStrategy(getStrategy(keyValue));
                     break;
                 default:
@@ -359,7 +359,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         buildExtension,
         dependsOn,
         imagePullSecrets,
-        strategy,
+        updateStrategy,
     }
 
     private enum ProbeConfiguration {

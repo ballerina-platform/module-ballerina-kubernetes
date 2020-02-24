@@ -18,7 +18,7 @@ import ballerina/http;
 import ballerina/kubernetes;
 
 @kubernetes:Deployment {
-    strategy:{
+    updateStrategy:{
         maxUnavailable: 3,
         maxSurge: "45%"
     },
