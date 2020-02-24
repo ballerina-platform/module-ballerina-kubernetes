@@ -18,12 +18,12 @@ import ballerina/http;
 import ballerina/kubernetes;
 
 @kubernetes:Deployment {
-    strategy: "RollingInvalid",
+    updateStrategy: "RollingInvalid",
     image: "strategy:v1",
     singleYAML: false
 }
 @kubernetes:Service {}
-listener http:Listener helloEP = new(9090);
+listener http:Listener helloEP = new (9090);
 
 @http:ServiceConfig {
     basePath: "/helloWorld"

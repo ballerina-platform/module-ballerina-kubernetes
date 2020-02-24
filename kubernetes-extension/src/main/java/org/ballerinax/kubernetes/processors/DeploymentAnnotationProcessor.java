@@ -24,6 +24,7 @@ import org.ballerinalang.model.tree.AnnotationAttachmentNode;
 import org.ballerinalang.model.tree.FunctionNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.SimpleVariableNode;
+import org.ballerinalang.model.types.TypeKind;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
@@ -33,7 +34,6 @@ import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangListConstructorExpr;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
-import org.wso2.ballerinalang.compiler.tree.expressions.BLangNumericLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
 
@@ -280,13 +280,13 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
      * Get Deployment strategy.
      *
      * @param keyValue Value of strategy field of deployment annotation.
-     * @return  DeploymentStrategy..
+     * @return DeploymentStrategy..
      */
     private DeploymentStrategy getStrategy(BLangRecordLiteral.BLangRecordKeyValueField keyValue)
             throws KubernetesPluginException {
         DeploymentStrategy strategy = new DeploymentStrategy();
 
-        if ("string".equals(keyValue.getValue().type.toString())) {
+        if (keyValue.getValue().type.getKind() == TypeKind.FINITE) {
             // Rolling Update for Recreate with default values
             strategy.setType((getStringValue(keyValue.getValue())));
             return strategy;
@@ -298,14 +298,14 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         for (BLangRecordLiteral.BLangRecordKeyValueField strategyField : buildExtensionRecord) {
             switch (strategyField.getKey().toString()) {
                 case "maxUnavailable":
-                    if (strategyField.getValue() instanceof BLangNumericLiteral) {
+                    if (strategyField.getValue().type.getKind() == TypeKind.INT) {
                         rollingParams.setMaxUnavailable(new IntOrString(getIntValue(strategyField.getValue())));
                     } else {
                         rollingParams.setMaxUnavailable(new IntOrString(getStringValue(strategyField.getValue())));
                     }
                     break;
                 case "maxSurge":
-                    if (strategyField.getValue() instanceof BLangNumericLiteral) {
+                    if (strategyField.getValue().type.getKind() == TypeKind.INT) {
                         rollingParams.setMaxSurge(new IntOrString(getIntValue(strategyField.getValue())));
                     } else {
                         rollingParams.setMaxSurge(new IntOrString(getStringValue(strategyField.getValue())));

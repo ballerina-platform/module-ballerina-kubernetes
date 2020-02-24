@@ -26,7 +26,7 @@ import ballerina/kubernetes;
     singleYAML: false
 }
 @kubernetes:Service {}
-listener http:Listener helloEP = new(9090);
+listener http:Listener helloEP = new (9090);
 
 @http:ServiceConfig {
     basePath: "/helloWorld"
