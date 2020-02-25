@@ -286,29 +286,30 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
             throws KubernetesPluginException {
         DeploymentStrategy strategy = new DeploymentStrategy();
 
-        if (keyValue.getValue().type.getKind() == TypeKind.FINITE) {
+        if (keyValue.getValue().type.getKind() == TypeKind.STRING) {
             // Rolling Update for Recreate with default values
             strategy.setType((getStringValue(keyValue.getValue())));
             return strategy;
         }
-        List<BLangRecordLiteral.BLangRecordKeyValueField> buildExtensionRecord =
-                convertRecordFields(((BLangRecordLiteral) keyValue.getValue()).getFields());
         RollingUpdateDeployment rollingParams = new RollingUpdateDeployment();
         strategy.setType("RollingUpdate");
-        for (BLangRecordLiteral.BLangRecordKeyValueField strategyField : buildExtensionRecord) {
-            switch (strategyField.getKey().toString()) {
+        for (BLangRecordLiteral.RecordField strategyField : ((BLangRecordLiteral) keyValue.valueExpr).fields) {
+            BLangRecordLiteral.BLangRecordKeyValueField strategyKeyValueField =
+                    ((BLangRecordLiteral.BLangRecordKeyValueField) strategyField);
+            switch (strategyKeyValueField.getKey().toString()) {
                 case "maxUnavailable":
-                    if (strategyField.getValue().type.getKind() == TypeKind.INT) {
-                        rollingParams.setMaxUnavailable(new IntOrString(getIntValue(strategyField.getValue())));
+                    if (strategyKeyValueField.getValue().type.getKind() == TypeKind.INT) {
+                        rollingParams.setMaxUnavailable(new IntOrString(getIntValue(strategyKeyValueField.getValue())));
                     } else {
-                        rollingParams.setMaxUnavailable(new IntOrString(getStringValue(strategyField.getValue())));
+                        rollingParams.setMaxUnavailable(new IntOrString(
+                                getStringValue(strategyKeyValueField.getValue())));
                     }
                     break;
                 case "maxSurge":
-                    if (strategyField.getValue().type.getKind() == TypeKind.INT) {
-                        rollingParams.setMaxSurge(new IntOrString(getIntValue(strategyField.getValue())));
+                    if (strategyKeyValueField.getValue().type.getKind() == TypeKind.INT) {
+                        rollingParams.setMaxSurge(new IntOrString(getIntValue(strategyKeyValueField.getValue())));
                     } else {
-                        rollingParams.setMaxSurge(new IntOrString(getStringValue(strategyField.getValue())));
+                        rollingParams.setMaxSurge(new IntOrString(getStringValue(strategyKeyValueField.getValue())));
                     }
                     break;
                 default:

@@ -19,6 +19,7 @@ import ballerina/kubernetes;
 
 @kubernetes:Deployment {
     updateStrategy:{
+        strategyType: kubernetes:STRATEGY_ROLLING_UPDATE,
         maxUnavailable: 3,
         maxSurge: "45%"
     },

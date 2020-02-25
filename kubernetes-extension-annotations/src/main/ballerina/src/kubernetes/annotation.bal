@@ -201,11 +201,13 @@ public type DeploymentConfiguration record {|
 public const STRATEGY_RECREATE = "Recreate";
 
 public const STRATEGY_ROLLING_UPDATE = "RollingUpdate";
+public type StrategyRollingType STRATEGY_ROLLING_UPDATE;
 
 public type StrategyType STRATEGY_RECREATE| STRATEGY_ROLLING_UPDATE;
 
 # Rolling Update config type field for deployment.
 public type RollingUpdateConfig record{|
+    StrategyRollingType strategyType;
     string|int maxUnavailable = "25%";
     string|int maxSurge = "25%";
 |};
