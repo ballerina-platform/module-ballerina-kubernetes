@@ -95,7 +95,7 @@ public class KubernetesUtils {
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
         writeToFile(dataHolder.getK8sArtifactOutputPath(), context, outputFileName);
     }
-    
+
     /**
      * Write content to a File. Create the required directories if they don't not exists.
      *
@@ -114,7 +114,7 @@ public class KubernetesUtils {
             artifactFileName = outputDir.resolve(extractUberJarName(dataHolder.getUberJarPath()) + YAML);
         } else if (jobModel == null && deploymentModel != null && deploymentModel.isSingleYAML()) {
             artifactFileName = outputDir.resolve(extractUberJarName(dataHolder.getUberJarPath()) + YAML);
-            
+
         }
         File newFile = artifactFileName.toFile();
         // append if file exists
@@ -176,8 +176,8 @@ public class KubernetesUtils {
             throw new KubernetesPluginException("error while copying file", e);
         }
     }
-    
-    
+
+
     /**
      * Prints an Information message.
      *
@@ -186,7 +186,7 @@ public class KubernetesUtils {
     public static void printInfo(String msg) {
         OUT.println(msg);
     }
-    
+
     /**
      * Prints an Error message.
      *
@@ -206,7 +206,7 @@ public class KubernetesUtils {
             OUT.println("debug [k8s plugin]: " + msg);
         }
     }
-    
+
     /**
      * Print warning message.
      *
@@ -224,7 +224,7 @@ public class KubernetesUtils {
     public static void printInstruction(String msg) {
         OUT.println(msg);
     }
-    
+
     /**
      * Deletes a given directory.
      *
@@ -244,7 +244,7 @@ public class KubernetesUtils {
         } catch (IOException e) {
             throw new KubernetesPluginException("unable to delete directory: " + path, e);
         }
-    
+
     }
 
     /* Checks if a String is empty ("") or null.
@@ -278,16 +278,16 @@ public class KubernetesUtils {
             int endIndex = value.indexOf("}", startIndex);
             if (endIndex > 0) {
                 String varName = value.substring(startIndex + 5, endIndex).trim();
-                String resolvedVar = Optional.ofNullable(System.getenv(varName)).orElseThrow(() -> 
-                    new KubernetesPluginException("error resolving value: " + varName + 
-                            " is not set in the environment."));
+                String resolvedVar = Optional.ofNullable(System.getenv(varName)).orElseThrow(() ->
+                        new KubernetesPluginException("error resolving value: " + varName +
+                                " is not set in the environment."));
                 String rest = (value.length() > endIndex + 1) ? resolveValue(value.substring(endIndex + 1)) : "";
                 return value.substring(0, startIndex) + resolvedVar + rest;
             }
         }
         return value;
     }
-    
+
     /**
      * Generate array of string using a {@link BLangListConstructorExpr}.
      *
@@ -306,7 +306,7 @@ public class KubernetesUtils {
             return scopeSet;
         }
     }
-    
+
     /**
      * Get a map from a ballerina expression.
      *
@@ -326,7 +326,7 @@ public class KubernetesUtils {
             return map;
         }
     }
-    
+
     /**
      * Get the boolean value from a ballerina expression.
      *
@@ -337,7 +337,7 @@ public class KubernetesUtils {
     public static boolean getBooleanValue(BLangExpression expr) throws KubernetesPluginException {
         return Boolean.parseBoolean(getStringValue(expr));
     }
-    
+
     /**
      * Get the long value from a ballerina expression.
      *
@@ -348,7 +348,7 @@ public class KubernetesUtils {
     public static long getLongValue(BLangExpression expr) throws KubernetesPluginException {
         return Long.parseLong(getStringValue(expr));
     }
-    
+
     /**
      * Get the integer value from a ballerina expression.
      *
@@ -359,7 +359,7 @@ public class KubernetesUtils {
     public static int getIntValue(BLangExpression expr) throws KubernetesPluginException {
         return Integer.parseInt(getStringValue(expr));
     }
-    
+
     /**
      * Get the string value from a ballerina expression.
      *
@@ -395,7 +395,7 @@ public class KubernetesUtils {
     public static String getValidName(String name) {
         return name.toLowerCase(Locale.getDefault()).replace("_", "-").replace(".", "-");
     }
-    
+
     /**
      * Parse build extension of @kubernetes:Deployment annotation.
      *
@@ -405,8 +405,8 @@ public class KubernetesUtils {
      */
     public static DeploymentBuildExtension parseBuildExtension(BLangExpression buildExtensionValue)
             throws KubernetesPluginException {
-        if (buildExtensionValue.getKind() == NodeKind.SIMPLE_VARIABLE_REF ||
-                                                                    buildExtensionValue.getKind() == NodeKind.LITERAL) {
+        if (buildExtensionValue.getKind() == NodeKind.CONSTANT_REF ||
+                buildExtensionValue.getKind() == NodeKind.LITERAL) {
             if ("openshift".equals(getStringValue(buildExtensionValue))) {
                 return new OpenShiftBuildExtensionModel();
             }
@@ -618,7 +618,7 @@ public class KubernetesUtils {
         });
         return envVars;
     }
-    
+
     public static List<BLangRecordLiteral.BLangRecordKeyValueField> convertRecordFields(
             List<BLangRecordLiteral.RecordField> fields) {
         return fields.stream().map(f -> (BLangRecordLiteral.BLangRecordKeyValueField) f).collect(Collectors.toList());
