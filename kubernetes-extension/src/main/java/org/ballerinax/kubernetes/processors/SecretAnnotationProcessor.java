@@ -32,7 +32,6 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangListConstructorExpr;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -45,7 +44,6 @@ import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_CONF_FILE_
 import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_CONF_MOUNT_PATH;
 import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_HOME;
 import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_RUNTIME;
-import static org.ballerinax.kubernetes.KubernetesConstants.CONFIG_MAP_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
 import static org.ballerinax.kubernetes.KubernetesConstants.SECRET_POSTFIX;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.convertRecordFields;
@@ -141,7 +139,7 @@ public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
                             }
                         }
                         if (isBlank(secretModel.getName())) {
-                            secretModel.setName(getValidName(nodeID.getValue()) + CONFIG_MAP_POSTFIX);
+                            secretModel.setName(getValidName(nodeID.getValue()) + SECRET_POSTFIX);
                         }
                         if (secretModel.getData() != null && secretModel.getData().size() > 0) {
                             secrets.add(secretModel);
@@ -171,7 +169,7 @@ public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
             dataFilePath = KubernetesContext.getInstance().getDataHolder().getSourceRoot().resolve(dataFilePath)
                     .normalize();
         }
-        String content = new String(KubernetesUtils.readFileContent(dataFilePath), StandardCharsets.UTF_8);
+        String content = Base64.encodeBase64String(KubernetesUtils.readFileContent(dataFilePath));
         Map<String, String> dataMap = new HashMap<>();
         dataMap.put(BALLERINA_CONF_FILE_NAME, content);
         secretModel.setData(dataMap);

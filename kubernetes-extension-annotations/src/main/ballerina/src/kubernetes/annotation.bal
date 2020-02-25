@@ -206,6 +206,7 @@ public type StrategyRollingType STRATEGY_ROLLING_UPDATE;
 public type StrategyType STRATEGY_RECREATE| STRATEGY_ROLLING_UPDATE;
 
 # Rolling Update config type field for deployment.
+# + strategyType - strategy type rolling update
 # + maxUnavailable - max unavailable pods
 # + maxSurge - desired number of Pods are up
 public type RollingUpdateConfig record{|
