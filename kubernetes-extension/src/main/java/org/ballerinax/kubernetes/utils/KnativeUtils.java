@@ -367,8 +367,8 @@ public class KnativeUtils {
                         if (constantSymbol.type instanceof BFiniteType) {
                                 // Parse compile time constant
                                 BFiniteType compileConst = (BFiniteType) constantSymbol.type;
-                                if (compileConst.valueSpace.size() > 0) {
-                                    return resolveValue(compileConst.valueSpace.iterator().next().toString());
+                                if (compileConst.getValueSpace().size() > 0) {
+                                    return resolveValue(compileConst.getValueSpace().iterator().next().toString());
                                 }
                         }
                 }
