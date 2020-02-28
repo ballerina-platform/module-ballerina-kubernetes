@@ -40,6 +40,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_CONF_FILE_NAME;
+import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_CONF_MOUNT_PATH;
+import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_HOME;
+import static org.ballerinax.kubernetes.KubernetesConstants.BALLERINA_RUNTIME;
 import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
 import static org.ballerinax.kubernetes.KubernetesConstants.SECRET_POSTFIX;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.convertRecordFields;
@@ -59,63 +63,119 @@ public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
             KubernetesPluginException {
         processSecret(serviceNode.getName(), attachmentNode);
     }
-    
+
     @Override
     public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         if (!MAIN_FUNCTION_NAME.equals(functionNode.getName().getValue())) {
             throw new KubernetesPluginException("@kubernetes:Secret{} annotation cannot be attached to a non main " +
-                                                "function.");
+                    "function.");
         }
-        
+
         processSecret(functionNode.getName(), attachmentNode);
     }
-    
+
     private void processSecret(IdentifierNode nodeID, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         Set<SecretModel> secrets = new HashSet<>();
         List<BLangRecordLiteral.BLangRecordKeyValueField> keyValues =
-            convertRecordFields(((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getFields());
+                convertRecordFields(((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr)
+                        .getFields());
         for (BLangRecordLiteral.BLangRecordKeyValueField keyValue : keyValues) {
-            List<BLangExpression> secretAnnotation = ((BLangListConstructorExpr) keyValue.valueExpr).exprs;
-            for (BLangExpression bLangExpression : secretAnnotation) {
-                SecretModel secretModel = new SecretModel();
-                List<BLangRecordLiteral.BLangRecordKeyValueField> annotationValues =
-                        convertRecordFields(((BLangRecordLiteral) bLangExpression).getFields());
-                for (BLangRecordLiteral.BLangRecordKeyValueField annotation : annotationValues) {
-                    SecretMountConfig secretMountConfig =
-                            SecretMountConfig.valueOf(annotation.getKey().toString());
-                    switch (secretMountConfig) {
-                        case name:
-                            secretModel.setName(getValidName(getStringValue(annotation.getValue())));
-                            break;
-                        case labels:
-                            secretModel.setLabels(getMap(keyValue.getValue()));
-                            break;
-                        case annotations:
-                            secretModel.setAnnotations(getMap(keyValue.getValue()));
-                            break;
-                        case mountPath:
-                            secretModel.setMountPath(getStringValue(annotation.getValue()));
-                            break;
-                        case data:
-                            List<BLangExpression> data = ((BLangListConstructorExpr) annotation.valueExpr).exprs;
-                            secretModel.setData(getDataForSecret(data));
-                            break;
-                        case readOnly:
-                            secretModel.setReadOnly(getBooleanValue(annotation.getValue()));
-                            break;
-                        default:
-                            break;
+            String key = keyValue.getKey().toString();
+            switch (key) {
+                case "secrets":
+                    List<BLangExpression> configAnnotation = ((BLangListConstructorExpr) keyValue.valueExpr).exprs;
+                    for (BLangExpression bLangExpression : configAnnotation) {
+                        SecretModel secretModel = new SecretModel();
+                        List<BLangRecordLiteral.BLangRecordKeyValueField> annotationValues =
+                                convertRecordFields(((BLangRecordLiteral) bLangExpression).getFields());
+                        for (BLangRecordLiteral.BLangRecordKeyValueField annotation : annotationValues) {
+                            SecretMountConfig volumeMountConfig =
+                                    SecretMountConfig.valueOf(annotation.getKey().toString());
+                            switch (volumeMountConfig) {
+                                case name:
+                                    secretModel.setName(getValidName(getStringValue(annotation.getValue())));
+                                    break;
+                                case labels:
+                                    secretModel.setLabels(getMap(keyValue.getValue()));
+                                    break;
+                                case annotations:
+                                    secretModel.setAnnotations(getMap(keyValue.getValue()));
+                                    break;
+                                case mountPath:
+                                    // validate mount path is not set to ballerina home or ballerina runtime
+                                    final Path mountPath = Paths.get(getStringValue(annotation.getValue()));
+                                    final Path homePath = Paths.get(BALLERINA_HOME);
+                                    final Path runtimePath = Paths.get(BALLERINA_RUNTIME);
+                                    final Path confPath = Paths.get(BALLERINA_CONF_MOUNT_PATH);
+                                    if (mountPath.equals(homePath)) {
+                                        throw new KubernetesPluginException("@kubernetes:Secret{} mount path " +
+                                                "cannot be ballerina home: " +
+                                                BALLERINA_HOME);
+                                    }
+                                    if (mountPath.equals(runtimePath)) {
+                                        throw new KubernetesPluginException("@kubernetes:Secret{} mount path " +
+                                                "cannot be ballerina runtime: " +
+                                                BALLERINA_RUNTIME);
+                                    }
+                                    if (mountPath.equals(confPath)) {
+                                        throw new KubernetesPluginException("@kubernetes:Secret{} mount path " +
+                                                "cannot be ballerina conf file mount " +
+                                                "path: " + BALLERINA_CONF_MOUNT_PATH);
+                                    }
+                                    secretModel.setMountPath(getStringValue(annotation.getValue()));
+                                    break;
+                                case data:
+                                    List<BLangExpression> data =
+                                            ((BLangListConstructorExpr) annotation.valueExpr).exprs;
+                                    secretModel.setData(getDataForSecret(data));
+                                    break;
+                                case readOnly:
+                                    secretModel.setReadOnly(getBooleanValue(annotation.getValue()));
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        if (isBlank(secretModel.getName())) {
+                            secretModel.setName(getValidName(nodeID.getValue()) + SECRET_POSTFIX);
+                        }
+                        if (secretModel.getData() != null && secretModel.getData().size() > 0) {
+                            secrets.add(secretModel);
+                        }
                     }
-                }
-                if (isBlank(secretModel.getName())) {
-                    secretModel.setName(getValidName(nodeID.getValue()) + SECRET_POSTFIX);
-                }
-                secrets.add(secretModel);
+                    break;
+                case "conf":
+                    //create a new secret model with ballerina conf and add it to data holder.
+                    secrets.add(getBallerinaConfSecret(keyValue.getValue().toString(), nodeID.getValue()));
+                    break;
+                default:
+                    break;
+
             }
         }
         KubernetesContext.getInstance().getDataHolder().addSecrets(secrets);
+    }
+
+    private SecretModel getBallerinaConfSecret(String configFilePath, String serviceName) throws
+            KubernetesPluginException {
+        //create a new config map model with ballerina conf
+        SecretModel secretModel = new SecretModel();
+        secretModel.setName(getValidName(serviceName) + "-ballerina-conf" + SECRET_POSTFIX);
+        secretModel.setMountPath(BALLERINA_CONF_MOUNT_PATH);
+        Path dataFilePath = Paths.get(configFilePath);
+        if (!dataFilePath.isAbsolute()) {
+            dataFilePath = KubernetesContext.getInstance().getDataHolder().getSourceRoot().resolve(dataFilePath)
+                    .normalize();
+        }
+        String content = Base64.encodeBase64String(KubernetesUtils.readFileContent(dataFilePath));
+        Map<String, String> dataMap = new HashMap<>();
+        dataMap.put(BALLERINA_CONF_FILE_NAME, content);
+        secretModel.setData(dataMap);
+        secretModel.setBallerinaConf(configFilePath);
+        secretModel.setReadOnly(false);
+        return secretModel;
     }
 
     private Map<String, String> getDataForSecret(List<BLangExpression> data) throws KubernetesPluginException {
@@ -138,6 +198,7 @@ public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
         annotations,
         mountPath,
         readOnly,
-        data
+        data,
+        conf
     }
 }

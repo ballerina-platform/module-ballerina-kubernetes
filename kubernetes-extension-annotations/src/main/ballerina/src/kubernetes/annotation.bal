@@ -206,6 +206,9 @@ public type StrategyRollingType STRATEGY_ROLLING_UPDATE;
 public type StrategyType STRATEGY_RECREATE| STRATEGY_ROLLING_UPDATE;
 
 # Rolling Update config type field for deployment.
+# + strategyType - strategy type rolling update
+# + maxUnavailable - max unavailable pods
+# + maxSurge - desired number of Pods are up
 public type RollingUpdateConfig record{|
     StrategyRollingType strategyType;
     string|int maxUnavailable = "25%";
@@ -295,11 +298,13 @@ public type Secret record {|
     string[] data;
 |};
 
-#Secret volume mount configurations for kubernetes.
+# Secret volume mount configurations for kubernetes.
 #
+# + conf - path to ballerina configuration file
 # + secrets - Array of [Secret](kubernetes.html#Secret)
 public type SecretMount record {|
-    Secret[] secrets;
+    string conf?;
+    Secret[] secrets?;
 |};
 
 # @kubernetes:Secret annotation to configure secrets.
@@ -317,7 +322,7 @@ public type ConfigMap record {|
     string[] data;
 |};
 
-# Secret volume mount configurations for kubernetes.
+# ConfigMap volume mount configurations for kubernetes.
 #
 # + conf - path to ballerina configuration file
 # + configMaps - Array of [ConfigMap](kubernetes.html#ConfigMap)

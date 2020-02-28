@@ -60,7 +60,8 @@ public class Sample7Test extends SampleTest {
     private Secret sslSecret;
     private Secret privateSecret;
     private Secret publicSecret;
-    
+    private Secret ballerinaConf;
+
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(SOURCE_DIR_PATH,
@@ -85,6 +86,9 @@ public class Sample7Test extends SampleTest {
                         case "public":
                             publicSecret = (Secret) data;
                             break;
+                        case "helloworld-ballerina-conf-secret":
+                            ballerinaConf = (Secret) data;
+                            break;
                         default:
                             break;
                     }
@@ -104,14 +108,14 @@ public class Sample7Test extends SampleTest {
         Assert.assertNotNull(deployment);
         Assert.assertEquals(deployment.getMetadata().getName(), "hello-world-secret-mount-k8s-deployment");
         Assert.assertEquals(deployment.getSpec().getReplicas().intValue(), 1);
-        Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getVolumes().size(), 3);
+        Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getVolumes().size(), 4);
         Assert.assertEquals(deployment.getMetadata().getLabels().get(KubernetesConstants
                 .KUBERNETES_SELECTOR_KEY), "hello_world_secret_mount_k8s");
         Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getContainers().size(), 1);
 
         // Assert Containers
         Container container = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);
-        Assert.assertEquals(container.getVolumeMounts().size(), 3);
+        Assert.assertEquals(container.getVolumeMounts().size(), 4);
         Assert.assertEquals(container.getImage(), DOCKER_IMAGE);
         Assert.assertEquals(container.getImagePullPolicy(), KubernetesConstants.ImagePullPolicy.IfNotPresent.name());
         Assert.assertEquals(container.getPorts().size(), 1);
@@ -130,14 +134,18 @@ public class Sample7Test extends SampleTest {
         // Assert public secrets
         Assert.assertNotNull(publicSecret);
         Assert.assertEquals(publicSecret.getData().size(), 2);
+
+        // Assert ballerina conf secret
+        Assert.assertNotNull(ballerinaConf);
+        Assert.assertEquals(ballerinaConf.getData().size(), 1);
     }
-    
+
     @Test
     public void validateDockerfile() {
         File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
-    
+
     @Test
     public void validateDockerImage() throws DockerTestException, InterruptedException {
         List<String> ports = getExposedPorts(DOCKER_IMAGE);
@@ -155,6 +163,8 @@ public class Sample7Test extends SampleTest {
                 "Secret2 resource: Secret2"));
         Assert.assertTrue(validateService("https://abc.com/helloWorld/secret3",
                 "Secret3 resource: Secret3"));
+        Assert.assertTrue(validateService("https://abc.com/helloWorld/config/john",
+                "{userId: john@ballerina.com, groups: apim,esb}"));
         KubernetesTestUtils.deleteK8s(KUBERNETES_TARGET_PATH);
     }
 
