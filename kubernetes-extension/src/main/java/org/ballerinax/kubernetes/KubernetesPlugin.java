@@ -27,6 +27,8 @@ import org.ballerinalang.model.tree.FunctionNode;
 import org.ballerinalang.model.tree.PackageNode;
 import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.SimpleVariableNode;
+import org.ballerinalang.model.tree.TopLevelNode;
+import org.ballerinalang.model.tree.expressions.ExpressionNode;
 import org.ballerinalang.util.diagnostic.Diagnostic;
 import org.ballerinalang.util.diagnostic.DiagnosticLog;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -38,19 +40,27 @@ import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.ballerinalang.compiler.SourceDirectory;
+import org.wso2.ballerinalang.compiler.tree.BLangImportPackage;
 import org.wso2.ballerinalang.compiler.tree.BLangPackage;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangTypeInit;
 import org.wso2.ballerinalang.compiler.util.CompilerContext;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.createAnnotation;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.printError;
 
 /**
@@ -81,6 +91,64 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     public void process(PackageNode packageNode) {
         BLangPackage bPackage = (BLangPackage) packageNode;
         KubernetesContext.getInstance().addDataHolder(bPackage.packageID, sourceDirectory.getPath());
+    
+        // Get the imports with alias _
+        List<BLangImportPackage> kubernetesImports = bPackage.getImports().stream()
+                .filter(i -> i.symbol.toString().equals("ballerina/kubernetes") && i.getAlias().toString().equals("_"))
+                .collect(Collectors.toList());
+    
+        if (kubernetesImports.size() > 0) {
+            for (BLangImportPackage kubernetesImport : kubernetesImports) {
+                // Get the units of the file which has kubernetes import as _
+                List<TopLevelNode> topLevelNodes = bPackage.getCompilationUnits().stream()
+                        .filter(cu -> cu.getName().equals(kubernetesImport.compUnit.getValue()))
+                        .flatMap(cu -> cu.getTopLevelNodes().stream())
+                        .collect(Collectors.toList());
+            
+                // Filter out the services
+                List<ServiceNode> serviceNodes = topLevelNodes.stream()
+                        .filter(tln -> tln instanceof ServiceNode)
+                        .map(tln -> (ServiceNode) tln)
+                        .collect(Collectors.toList());
+            
+                // Generate artifacts for services for all services
+                serviceNodes.forEach(sn -> process(sn, Collections.singletonList(createAnnotation("Deployment"))));
+                
+                // Filter services with 'new Listener()' and generate services
+                for (ServiceNode serviceNode : serviceNodes) {
+                    Optional<? extends ExpressionNode> initListener = serviceNode.getAttachedExprs().stream()
+                            .filter(aex -> aex instanceof BLangTypeInit)
+                            .findAny();
+                    
+                    if (initListener.isPresent()) {
+                        serviceNodes.forEach(sn -> process(sn, Collections.singletonList(createAnnotation("Service"))));
+                    }
+                }
+                
+                // Get the variable names of the listeners attached to services
+                List<String> listenerNamesToExpose = serviceNodes.stream()
+                        .map(ServiceNode::getAttachedExprs)
+                        .flatMap(Collection::stream)
+                        .filter(aex -> aex instanceof BLangSimpleVarRef)
+                        .map(aex -> (BLangSimpleVarRef) aex)
+                        .map(BLangSimpleVarRef::toString)
+                        .collect(Collectors.toList());
+            
+                // Generate artifacts for listeners attached to services
+                topLevelNodes.stream()
+                        .filter(tln -> tln instanceof SimpleVariableNode)
+                        .map(tln -> (SimpleVariableNode) tln)
+                        .filter(listener -> listenerNamesToExpose.contains(listener.getName().getValue()))
+                        .forEach(listener -> process(listener, Collections.singletonList(createAnnotation("Service"))));
+            
+                // Generate artifacts for main functions
+                topLevelNodes.stream()
+                        .filter(tln -> tln instanceof FunctionNode)
+                        .map(tln -> (FunctionNode) tln)
+                        .filter(fn -> "main".equals(fn.getName().getValue()))
+                        .forEach(fn -> process(fn, Collections.singletonList(createAnnotation("Job"))));
+            }
+        }
     }
 
     @Override
