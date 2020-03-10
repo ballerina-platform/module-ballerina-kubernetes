@@ -31,6 +31,8 @@ import io.fabric8.kubernetes.api.model.ResourceFieldSelectorBuilder;
 import io.fabric8.kubernetes.api.model.SecretKeySelector;
 import io.fabric8.kubernetes.api.model.SecretKeySelectorBuilder;
 import org.apache.commons.io.FileUtils;
+import org.ballerinalang.model.tree.AnnotationAttachmentNode;
+import org.ballerinalang.model.tree.IdentifierNode;
 import org.ballerinalang.model.tree.NodeKind;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
 import org.ballerinax.docker.generator.models.CopyFileModel;
@@ -46,6 +48,8 @@ import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
 import org.ballerinax.kubernetes.processors.openshift.OpenShiftBuildExtensionProcessor;
 import org.wso2.ballerinalang.compiler.semantics.model.symbols.BConstantSymbol;
 import org.wso2.ballerinalang.compiler.semantics.model.types.BFiniteType;
+import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
+import org.wso2.ballerinalang.compiler.tree.BLangIdentifier;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangListConstructorExpr;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
@@ -622,5 +626,20 @@ public class KubernetesUtils {
     public static List<BLangRecordLiteral.BLangRecordKeyValueField> convertRecordFields(
             List<BLangRecordLiteral.RecordField> fields) {
         return fields.stream().map(f -> (BLangRecordLiteral.BLangRecordKeyValueField) f).collect(Collectors.toList());
+    }
+    
+    /**
+     * Create an annotation node.
+     *
+     * @param annotationName Name of the annotation node.
+     * @return The created node.
+     */
+    public static AnnotationAttachmentNode createAnnotation(String annotationName) {
+        AnnotationAttachmentNode configAnnotation = new BLangAnnotationAttachment();
+        IdentifierNode configIdentifier = new BLangIdentifier();
+        configIdentifier.setValue(annotationName);
+        configAnnotation.setAnnotationName(configIdentifier);
+        configAnnotation.setExpression(new BLangRecordLiteral());
+        return configAnnotation;
     }
 }
