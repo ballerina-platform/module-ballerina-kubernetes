@@ -133,7 +133,8 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
 
     private void setServiceProtocol(ServiceModel serviceModel, BLangTypeInit bListener) {
         if (null != bListener.userDefinedType) {
-            serviceModel.setProtocol(bListener.userDefinedType.getPackageAlias().getValue());
+            BLangUserDefinedType userDefinedType = (BLangUserDefinedType) bListener.userDefinedType;
+            serviceModel.setProtocol(userDefinedType.getPackageAlias().getValue());
         } else {
             BLangIdentifier packageAlias =
                     ((BLangUserDefinedType) ((BLangSimpleVariable) bListener.parent).typeNode).getPackageAlias();
