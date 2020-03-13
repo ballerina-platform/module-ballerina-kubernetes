@@ -41,7 +41,7 @@ then
     mv target/caches/jar_cache/ballerina/kubernetes/ballerina-kubernetes-.jar target/caches/jar_cache/ballerina/kubernetes/ballerina.kubernetes.jar
     mv target/caches/jar_cache/ballerina/istio/ballerina-istio-.jar target/caches/jar_cache/ballerina/istio/ballerina.istio.jar
     mv target/caches/jar_cache/ballerina/openshift/ballerina-openshift-.jar target/caches/jar_cache/ballerina/openshift/ballerina.openshift.jar
-    mv target/caches/jar_cache/ballerina/knative/ballerina-knative-.jar target/caches/jar_cache/ballerina/knative/ballerinaknative.jar
+    mv target/caches/jar_cache/ballerina/knative/ballerina-knative-.jar target/caches/jar_cache/ballerina/knative/ballerina.knative.jar
     cd -
 else
     pushd ${KUBERNETES_BALLERINA_PROJECT} /dev/null 2>&1
