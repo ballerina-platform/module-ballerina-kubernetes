@@ -84,22 +84,22 @@
         </file>
         <!--    Copy jars-->
         <file>
-            <source>${project.basedir}/src/main/ballerina/target/caches/jar_cache/ballerina/kubernetes/kubernetes.jar</source>
+            <source>${project.basedir}/src/main/ballerina/target/caches/jar_cache/ballerina/kubernetes/ballerina.kubernetes.jar</source>
             <outputDirectory>.</outputDirectory>
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>${project.basedir}/src/main/ballerina/target/caches/jar_cache/ballerina/istio/istio.jar</source>
+            <source>${project.basedir}/src/main/ballerina/target/caches/jar_cache/ballerina/istio/ballerina.istio.jar</source>
             <outputDirectory>.</outputDirectory>
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>${project.basedir}/src/main/ballerina/target/caches/jar_cache/ballerina/openshift/openshift.jar</source>
+            <source>${project.basedir}/src/main/ballerina/target/caches/jar_cache/ballerina/openshift/ballerina.openshift.jar</source>
             <outputDirectory>.</outputDirectory>
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>${project.basedir}/src/main/ballerina/target/caches/jar_cache/ballerina/knative/knative.jar</source>
+            <source>${project.basedir}/src/main/ballerina/target/caches/jar_cache/ballerina/knative/ballerina.knative.jar</source>
             <outputDirectory>.</outputDirectory>
             <fileMode>755</fileMode>
         </file>
