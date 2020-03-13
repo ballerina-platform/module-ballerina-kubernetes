@@ -96,8 +96,13 @@ public type ConfigMapKeyRef record {|
     ConfigMapKeyValue configMapKeyRef;
 |};
 
+# Pull image if it is not present for deployment or job.
 public const string IMAGE_PULL_POLICY_IF_NOT_PRESENT = "IfNotPresent";
+
+# Always pull the image for knative service for deployment or job.
 public const string IMAGE_PULL_POLICY_ALWAYS = "Always";
+
+# Never pull the image for deployment or job.
 public const string IMAGE_PULL_POLICY_NEVER = "Never";
 
 # Image pull policy type field for kubernetes deployment and jobs.
@@ -218,14 +223,22 @@ public type RollingUpdateConfig record{|
 # @kubernetes:Deployment annotation to configure deplyoment yaml.
 public const annotation DeploymentConfiguration Deployment on source service, source function, source listener;
 
+# Disable session affinity on pods.
 public const string SESSION_AFFINITY_NONE = "None";
+
+# Enable session affinity on pods.
 public const string SESSION_AFFINITY_CLIENT_IP = "ClientIP";
 
 # Session affinity field for kubernetes services.
 public type SessionAffinity "None"|"ClientIP";
 
+# Node port type service.
 public const string SERVICE_TYPE_NORD_PORT = "NodePort";
+
+# Cluster IP type service.
 public const string SERVICE_TYPE_CLUSTER_IP = "ClusterIP";
+
+# Load balancer type service.
 public const string SERVICE_TYPE_LOAD_BALANCER = "LoadBalancer";
 
 # Service type field for kubernetes services.
@@ -381,8 +394,13 @@ public type ResourceQuotas record {|
 # @kubernetes:ResourcesQuotas annotation to configure Resource Quotas.
 public const annotation ResourceQuotas ResourceQuota on source service, source function;
 
+# Restart on failure policy for jobs.
 public const string RESTART_POLICY_ON_FAILURE = "OnFailure";
+
+# Always restart policy when job is finished.
 public const string RESTART_POLICY_ALWAYS = "Always";
+
+# Never restart policy for jobs.
 public const string RESTART_POLICY_NEVER = "Never";
 
 # Restart policy type field for kubernetes jobs.
