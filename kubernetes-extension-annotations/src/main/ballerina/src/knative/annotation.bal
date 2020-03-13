@@ -98,8 +98,13 @@ public type ResourceFieldRef record {|
     ResourceFieldValue resourceFieldRef;
 |};
 
+# Pull image if it is not present for knative service.
 public const string IMAGE_PULL_POLICY_IF_NOT_PRESENT = "IfNotPresent";
+
+# Always pull the image for knative service.
 public const string IMAGE_PULL_POLICY_ALWAYS = "Always";
+
+# Never pull the image for knative service.
 public const string IMAGE_PULL_POLICY_NEVER = "Never";
 
 # Image pull policy type field for kubernetes deployment and jobs.

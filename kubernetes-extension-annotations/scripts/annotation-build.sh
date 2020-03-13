@@ -38,19 +38,19 @@ then
     cd ${KUBERNETES_BALLERINA_PROJECT}
     ${EXECUTABLE} clean
     JAVA_OPTS="-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true" ${EXECUTABLE} build -c -a --skip-tests
-    mv target/caches/jar_cache/ballerina/kubernetes/ballerina-kubernetes-.jar target/caches/jar_cache/ballerina/kubernetes/kubernetes.jar
-    mv target/caches/jar_cache/ballerina/istio/ballerina-istio-.jar target/caches/jar_cache/ballerina/istio/istio.jar
-    mv target/caches/jar_cache/ballerina/openshift/ballerina-openshift-.jar target/caches/jar_cache/ballerina/openshift/openshift.jar
-    mv target/caches/jar_cache/ballerina/knative/ballerina-knative-.jar target/caches/jar_cache/ballerina/knative/knative.jar
+    mv target/caches/jar_cache/ballerina/kubernetes/ballerina-kubernetes-.jar target/caches/jar_cache/ballerina/kubernetes/ballerina.kubernetes.jar
+    mv target/caches/jar_cache/ballerina/istio/ballerina-istio-.jar target/caches/jar_cache/ballerina/istio/ballerina.istio.jar
+    mv target/caches/jar_cache/ballerina/openshift/ballerina-openshift-.jar target/caches/jar_cache/ballerina/openshift/ballerina.openshift.jar
+    mv target/caches/jar_cache/ballerina/knative/ballerina-knative-.jar target/caches/jar_cache/ballerina/knative/ballerina.knative.jar
     cd -
 else
     pushd ${KUBERNETES_BALLERINA_PROJECT} /dev/null 2>&1
         ${EXECUTABLE} clean
         JAVA_OPTS="-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true" ${EXECUTABLE} build -c -a --skip-tests
-        mv target/caches/jar_cache/ballerina/kubernetes/ballerina-kubernetes-.jar target/caches/jar_cache/ballerina/kubernetes/kubernetes.jar
-        mv target/caches/jar_cache/ballerina/istio/ballerina-istio-.jar target/caches/jar_cache/ballerina/istio/istio.jar
-        mv target/caches/jar_cache/ballerina/openshift/ballerina-openshift-.jar target/caches/jar_cache/ballerina/openshift/openshift.jar
-        mv target/caches/jar_cache/ballerina/knative/ballerina-knative-.jar target/caches/jar_cache/ballerina/knative/knative.jar
+        mv target/caches/jar_cache/ballerina/kubernetes/ballerina-kubernetes-.jar target/caches/jar_cache/ballerina/kubernetes/ballerina.kubernetes.jar
+        mv target/caches/jar_cache/ballerina/istio/ballerina-istio-.jar target/caches/jar_cache/ballerina/istio/ballerina.istio.jar
+        mv target/caches/jar_cache/ballerina/openshift/ballerina-openshift-.jar target/caches/jar_cache/ballerina/openshift/ballerina.openshift.jar
+        mv target/caches/jar_cache/ballerina/knative/ballerina-knative-.jar target/caches/jar_cache/ballerina/knative/ballerina.knative.jar
     popd > /dev/null 2>&1
 fi
 
@@ -71,7 +71,7 @@ cp ${KUBERNETES_BALLERINA_PROJECT}/Ballerina.toml ${DISTRIBUTION_BIR_CACHE}istio
 cp ${KUBERNETES_BALLERINA_PROJECT}/Ballerina.toml ${DISTRIBUTION_BIR_CACHE}openshift/0.0.0/
 cp ${KUBERNETES_BALLERINA_PROJECT}/Ballerina.toml ${DISTRIBUTION_BIR_CACHE}knative/0.0.0/
 
-cp ${KUBERNETES_BALLERINA_PROJECT}/target/caches/jar_cache/ballerina/kubernetes/kubernetes.jar ${DISTRIBUTION_SYSTEM_LIB}
-cp ${KUBERNETES_BALLERINA_PROJECT}/target/caches/jar_cache/ballerina/istio/istio.jar ${DISTRIBUTION_SYSTEM_LIB}
-cp ${KUBERNETES_BALLERINA_PROJECT}/target/caches/jar_cache/ballerina/openshift/openshift.jar ${DISTRIBUTION_SYSTEM_LIB}
-cp ${KUBERNETES_BALLERINA_PROJECT}/target/caches/jar_cache/ballerina/knative/knative.jar ${DISTRIBUTION_SYSTEM_LIB}
+cp ${KUBERNETES_BALLERINA_PROJECT}/target/caches/jar_cache/ballerina/kubernetes/ballerina.kubernetes.jar ${DISTRIBUTION_SYSTEM_LIB}
+cp ${KUBERNETES_BALLERINA_PROJECT}/target/caches/jar_cache/ballerina/istio/ballerina.istio.jar ${DISTRIBUTION_SYSTEM_LIB}
+cp ${KUBERNETES_BALLERINA_PROJECT}/target/caches/jar_cache/ballerina/openshift/ballerina.openshift.jar ${DISTRIBUTION_SYSTEM_LIB}
+cp ${KUBERNETES_BALLERINA_PROJECT}/target/caches/jar_cache/ballerina/knative/ballerina.knative.jar ${DISTRIBUTION_SYSTEM_LIB}
