@@ -1,4 +1,4 @@
-# Build the ballerina program
+# Build the Ballerina program.
 $ ballerina build knative_deployment.bal
 Compiling source
 	knative_deployment.bal
