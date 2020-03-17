@@ -27,7 +27,7 @@ Generating artifacts...
 	kubectl apply -f ./kubernetes
 
 	Run the following command to install the application using Helm: 
-	helm install --name kubernetes-deployment-deployment ./kubernetes-deployment-deployment
+	helm install --name kubernetes-deployment-deployment ./kubernetes/kubernetes-deployment-deployment
 
 
 # Verify the Docker image is generated
@@ -35,7 +35,7 @@ $ docker images
 REPOSITORY  TAG      IMAGE ID            CREATED             SIZE
 kubernetes  v1.0   6c0a26a62545        2 seconds ago       127MB
 
-# Run the generated Docker image
+# Apply the Kubernetes artifacts.
 $ kubectl apply -f ./kubernetes/
 service/helloworldep-svc created
 ingress.extensions/helloworldep-ingress created

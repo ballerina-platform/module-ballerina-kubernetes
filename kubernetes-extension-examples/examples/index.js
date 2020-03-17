@@ -11,6 +11,10 @@
             {
                 "name": "OpenShift Deployment",
                 "url": "openshift-deployment"
+            },
+            {
+                 "name": "Knative Deployment",
+                 "url": "knative-deployment"
             }
         ]
     }
