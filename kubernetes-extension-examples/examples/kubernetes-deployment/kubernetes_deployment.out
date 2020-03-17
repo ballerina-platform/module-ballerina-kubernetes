@@ -35,7 +35,7 @@ $ docker images
 REPOSITORY  TAG      IMAGE ID            CREATED             SIZE
 kubernetes  v1.0   6c0a26a62545        2 seconds ago       127MB
 
-# Apply the kubernetes artifacts
+# Apply the Kubernetes artifacts.
 $ kubectl apply -f ./kubernetes/
 service/helloworldep-svc created
 ingress.extensions/helloworldep-ingress created
