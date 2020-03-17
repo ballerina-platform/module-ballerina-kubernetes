@@ -27,7 +27,7 @@ knative_deployment   latest              85933f1c05b0        3 minutes ago      
 $ kubectl apply -f ./kubernetes/
 service.serving.knative.dev/helloworld-svc created
 
-# Wait for the hello-world-knative route to be ready
+# Wait for the `hello-world-knative` route to be ready.
 $ watch -n 1 kubectl get pod,ksvc,configuration,revision,route
 NAME                                            URL                                              READY   REASON
 route.serving.knative.dev/hello-world-knative   http://hello-world-knative.default.example.com   True
