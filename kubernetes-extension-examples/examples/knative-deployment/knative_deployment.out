@@ -32,6 +32,6 @@ $ watch -n 1 kubectl get pod,ksvc,configuration,revision,route
 NAME                                            URL                                              READY   REASON
 route.serving.knative.dev/hello-world-knative   http://hello-world-knative.default.example.com   True
 
-# Access the service
+# Access the service.
 $ curl -kv -H "Host: http://hello-world-knative.default.example.com" http://localhost/helloWorld/sayHello
 Hello, World from service helloWorld !
