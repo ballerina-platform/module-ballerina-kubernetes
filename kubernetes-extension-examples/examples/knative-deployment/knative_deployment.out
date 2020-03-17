@@ -1,0 +1,37 @@
+# Build the ballerina program
+$ ballerina build knative_deployment.bal
+Compiling source
+	knative_deployment.bal
+
+Generating executables
+	knative_deployment.jar
+
+Generating Knative artifacts...
+
+	@knative:Service 			 - complete 1/1
+	@knative:Docker 			 - complete 3/3
+
+	Run the following command to deploy the Knative artifacts:
+	kubectl apply -f ./kubernetes
+
+	Run the following command to install the application using Helm:
+	helm install --name helloworld-svc ./kubernetes/helloworld-svc
+
+
+# Verify the Docker image is generated
+$ docker images
+REPOSITORY           TAG                 IMAGE ID            CREATED             SIZE
+knative_deployment   latest              85933f1c05b0        3 minutes ago       133MB
+
+# Apply the knative artifacts
+$ kubectl apply -f ./kubernetes/
+service.serving.knative.dev/helloworld-svc created
+
+# Wait for the hello-world-knative route to be ready
+$ watch -n 1 kubectl get pod,ksvc,configuration,revision,route
+NAME                                            URL                                              READY   REASON
+route.serving.knative.dev/hello-world-knative   http://hello-world-knative.default.example.com   True
+
+# Access the service
+$ curl -kv -H "Host: http://hello-world-knative.default.example.com" http://localhost/helloWorld/sayHello
+Hello, World from service helloWorld !
