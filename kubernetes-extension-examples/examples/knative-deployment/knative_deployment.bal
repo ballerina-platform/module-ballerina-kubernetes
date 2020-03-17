@@ -2,7 +2,7 @@ import ballerina/http;
 import ballerina/knative;
 import ballerina/log;
 
-//Add the `@knative:Service` to a Ballerina service to generate a Knative Service artifact and push the docker image to docker hub
+//Add the `@knative:Service` to a Ballerina service to generate a Knative Service artifact and push the Docker image to Docker Hub.
 @knative:Service {
     //Enable pushing the docker image.
     push: true,
