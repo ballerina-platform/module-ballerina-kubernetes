@@ -8,7 +8,7 @@ import ballerina/log;
     push: true,
     //Set the name of the Docker image.
     name: "hello-world-knative",
-    //Sets username credential to push the docker image using `DOCKER_USERNAME` environment  variable.
+    //Sets the username credential to push the Docker image using the `DOCKER_USERNAME` environment  variable.
     username: "$env{DOCKER_USERNAME}",
     //Sets password credential to push the docker image using `DOCKER_PASSWORD` environment  variable.
     password: "$env{DOCKER_PASSWORD}",
