@@ -1,4 +1,4 @@
-# Build the ballerina program
+# Build the Ballerina program.
 $ ballerina build openshift_deployment.bal
 Compiling source
 	openshift_deployment.bal
