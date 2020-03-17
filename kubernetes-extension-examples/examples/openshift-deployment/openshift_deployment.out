@@ -3,7 +3,7 @@ $ ballerina build openshift_deployment.bal
 Compiling source
 	openshift_deployment.bal
 
-Generating executables
+Generating executables.
 	openshift_deployment.jar
 
 Generating artifacts...
