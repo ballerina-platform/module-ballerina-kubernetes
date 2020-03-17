@@ -12,7 +12,7 @@ import ballerina/log;
     username: "$env{DOCKER_USERNAME}",
     //Sets the password credential to push the Docker image using the `DOCKER_PASSWORD` environment  variable.
     password: "$env{DOCKER_PASSWORD}",
-    //Setting the registry url.
+    //Setting the registry URL.
     registry: "index.docker.io/$env{DOCKER_USERNAME}"
 }
 @http:ServiceConfig {
