@@ -34,7 +34,7 @@ buildconfig.build.openshift.io/openshift-openshift-bc-openshift-bc created
 imagestream.image.openshift.io/hello-service created
 route.route.openshift.io/helloep-openshift-route created
 
-# Trigger a build to create the Docker image
+# Trigger a build to create the Docker image.
 $ oc start-build bc/openshift-openshift-bc-openshift-bc --from-dir=. --follow
 Uploading directory "." as binary input for the build ...
 ..
