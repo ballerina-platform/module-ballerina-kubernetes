@@ -6,7 +6,7 @@ import ballerina/log;
 @knative:Service {
     //Enable pushing the Docker image.
     push: true,
-    //Set the name of the docker image.
+    //Set the name of the Docker image.
     name: "hello-world-knative",
     //Sets username credential to push the docker image using `DOCKER_USERNAME` environment  variable.
     username: "$env{DOCKER_USERNAME}",
