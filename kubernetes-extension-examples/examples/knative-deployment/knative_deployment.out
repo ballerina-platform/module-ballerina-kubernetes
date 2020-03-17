@@ -18,7 +18,7 @@ Generating Knative artifacts...
 	helm install --name helloworld-svc ./kubernetes/helloworld-svc
 
 
-# Verify the Docker image is generated
+# Verify if the Docker image is generated.
 $ docker images
 REPOSITORY           TAG                 IMAGE ID            CREATED             SIZE
 knative_deployment   latest              85933f1c05b0        3 minutes ago       133MB
