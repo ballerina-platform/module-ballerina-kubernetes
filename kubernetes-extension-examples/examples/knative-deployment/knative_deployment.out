@@ -32,6 +32,10 @@ $ watch -n 1 kubectl get pod,ksvc,configuration,revision,route
 NAME                                            URL                                              READY   REASON
 route.serving.knative.dev/hello-world-knative   http://hello-world-knative.default.example.com   True
 
+# Add DNS mapping for the `hello-world-knative` route's URL.
+$ sudo vim /etc/hosts
+127.0.0.1 hello-world-knative.default.example.com
+
 # Access the service.
-$ curl -kv -H "Host: http://hello-world-knative.default.example.com" http://localhost/helloWorld/sayHello
+$ curl -kv http://hello-world-knative.default.example.com/helloWorld/sayHello
 Hello, World from service helloWorld !
