@@ -16,12 +16,9 @@ import ballerina/log;
     registry: "index.docker.io/$env{DOCKER_USERNAME}"
 }
 @http:ServiceConfig {
-    basePath: "/*"
+    basePath: "/helloWorld"
 }
 service helloWorld on new http:Listener(8080) {
-    @http:ResourceConfig {
-        path: "/*"
-    }
     resource function sayHello(http:Caller outboundEP, http:Request request) {
         http:Response response = new;
         response.setTextPayload("Hello, World from service helloWorld ! \n");
