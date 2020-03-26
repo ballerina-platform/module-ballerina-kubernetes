@@ -48,6 +48,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
 import static org.ballerinax.kubernetes.KubernetesConstants.SECRET_POSTFIX;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.convertRecordFields;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getBooleanValue;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getIntValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
@@ -134,6 +135,9 @@ public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
                                 case readOnly:
                                     secretModel.setReadOnly(getBooleanValue(annotation.getValue()));
                                     break;
+                                case defaultMode:
+                                    secretModel.setDefaultMode(getIntValue(annotation.getValue()));
+                                    break;
                                 default:
                                     break;
                             }
@@ -199,6 +203,7 @@ public class SecretAnnotationProcessor extends AbstractAnnotationProcessor {
         mountPath,
         readOnly,
         data,
-        conf
+        conf,
+        defaultMode
     }
 }
