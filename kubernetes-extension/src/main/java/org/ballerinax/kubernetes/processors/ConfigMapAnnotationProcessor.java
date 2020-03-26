@@ -49,6 +49,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.CONFIG_MAP_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.convertRecordFields;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getBooleanValue;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.getIntValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getMap;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getStringValue;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
@@ -64,23 +65,24 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
             KubernetesPluginException {
         processConfigMaps(serviceNode.getName(), attachmentNode);
     }
-    
+
     @Override
     public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         if (!MAIN_FUNCTION_NAME.equals(functionNode.getName().getValue())) {
             throw new KubernetesPluginException("@kubernetes:ConfigMap{} annotation cannot be attached to a non main " +
-                                                "function.");
+                    "function.");
         }
-        
+
         processConfigMaps(functionNode.getName(), attachmentNode);
     }
-    
+
     private void processConfigMaps(IdentifierNode nodeID, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         Set<ConfigMapModel> configMapModels = new HashSet<>();
         List<BLangRecordLiteral.BLangRecordKeyValueField> keyValues =
-            convertRecordFields(((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getFields());
+                convertRecordFields(((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr)
+                        .getFields());
         for (BLangRecordLiteral.BLangRecordKeyValueField keyValue : keyValues) {
             String key = keyValue.getKey().toString();
             switch (key) {
@@ -111,18 +113,18 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
                                     final Path confPath = Paths.get(BALLERINA_CONF_MOUNT_PATH);
                                     if (mountPath.equals(homePath)) {
                                         throw new KubernetesPluginException("@kubernetes:ConfigMap{} mount path " +
-                                                                            "cannot be ballerina home: " +
-                                                                            BALLERINA_HOME);
+                                                "cannot be ballerina home: " +
+                                                BALLERINA_HOME);
                                     }
                                     if (mountPath.equals(runtimePath)) {
                                         throw new KubernetesPluginException("@kubernetes:ConfigMap{} mount path " +
-                                                                            "cannot be ballerina runtime: " +
-                                                                            BALLERINA_RUNTIME);
+                                                "cannot be ballerina runtime: " +
+                                                BALLERINA_RUNTIME);
                                     }
                                     if (mountPath.equals(confPath)) {
                                         throw new KubernetesPluginException("@kubernetes:ConfigMap{} mount path " +
-                                                                            "cannot be ballerina conf file mount " +
-                                                                            "path: " + BALLERINA_CONF_MOUNT_PATH);
+                                                "cannot be ballerina conf file mount " +
+                                                "path: " + BALLERINA_CONF_MOUNT_PATH);
                                     }
                                     configMapModel.setMountPath(getStringValue(annotation.getValue()));
                                     break;
@@ -133,6 +135,9 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
                                     break;
                                 case readOnly:
                                     configMapModel.setReadOnly(getBooleanValue(annotation.getValue()));
+                                    break;
+                                case defaultMode:
+                                    configMapModel.setDefaultMode(getIntValue(annotation.getValue()));
                                     break;
                                 default:
                                     break;
@@ -152,7 +157,6 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
                     break;
                 default:
                     break;
-            
             }
         }
         KubernetesContext.getInstance().getDataHolder().addConfigMaps(configMapModels);
@@ -201,6 +205,7 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
         annotations,
         mountPath,
         readOnly,
-        data
+        data,
+        defaultMode
     }
 }
