@@ -303,11 +303,13 @@ public const annotation PodAutoscalerConfig HPA on source service, source functi
 #
 # + mountPath - Mount path.
 # + readOnly - Is mount read only. Default is `true`.
+# + defaultMode - Default permission mode.
 # + data - Paths to data files as an array.
 public type Secret record {|
     *Metadata;
     string mountPath;
     boolean readOnly = true;
+    int defaultMode?;
     string[] data;
 |};
 
@@ -327,11 +329,13 @@ public const annotation SecretMount Secret on source service, source function;
 #
 # + mountPath - Mount path.
 # + readOnly - Is mount read only. Default is `true`.
+# + defaultMode - Default permission mode.
 # + data - Paths to data files.
 public type ConfigMap record {|
     *Metadata;
     string mountPath;
     boolean readOnly = true;
+    int defaultMode?;
     string[] data;
 |};
 
@@ -340,7 +344,7 @@ public type ConfigMap record {|
 # + conf - path to ballerina configuration file
 # + configMaps - Array of [ConfigMap](kubernetes.html#ConfigMap)
 public type ConfigMapMount record {|
-    string conf;
+    string conf?;
     ConfigMap[] configMaps?;
 |};
 

@@ -57,6 +57,7 @@
             <class name="org.ballerinax.kubernetes.test.OpenShiftBuildConfigTest"/>
             <class name="org.ballerinax.kubernetes.test.OpenShiftRouteTest"/>
             <class name="org.ballerinax.kubernetes.test.NoAnnotationsTest"/>
+            <class name="org.ballerinax.kubernetes.test.DefaultModeTest"/>
         </classes>
     </test>
 
