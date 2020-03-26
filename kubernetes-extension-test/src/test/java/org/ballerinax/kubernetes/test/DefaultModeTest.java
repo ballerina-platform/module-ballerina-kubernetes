@@ -50,7 +50,7 @@ public class DefaultModeTest {
     private static final String DOCKER_IMAGE_CONFIG = "default_mode_config_map:latest";
 
     /**
-     * Build bal file with deployment having annotations.
+     * Build bal file with having secret annotation with defaultMode.
      *
      * @throws IOException               Error when loading the generated yaml.
      * @throws InterruptedException      Error when compiling the ballerina file.
@@ -85,7 +85,13 @@ public class DefaultModeTest {
         KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE_SECRET);
     }
-
+    /**
+     * Build bal file with having configMap annotation with defaultMode.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
+     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
+     */
     @Test
     public void defaultModeConfigTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
@@ -109,7 +115,7 @@ public class DefaultModeTest {
         Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getVolumes().size(), 1);
         Volume volume = deployment.getSpec().getTemplate().getSpec().getVolumes().get(0);
         Assert.assertEquals(volume.getConfigMap().getName(), "helloworld-config-map");
-        Assert.assertEquals(volume.getConfigMap().getDefaultMode().intValue(), 777);
+        Assert.assertEquals(volume.getConfigMap().getDefaultMode().intValue(), 755);
 
         KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
         KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
