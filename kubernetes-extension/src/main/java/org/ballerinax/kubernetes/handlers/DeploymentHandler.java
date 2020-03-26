@@ -185,6 +185,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                     .withSecretName(secretModel.getName())
                     .endSecret()
                     .build();
+
             if (secretModel.getDefaultMode() > 0) {
                 volume.getSecret().setDefaultMode(secretModel.getDefaultMode());
             }
@@ -197,6 +198,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                     .withName(configMapModel.getName())
                     .endConfigMap()
                     .build();
+            
             if (configMapModel.getDefaultMode() > 0) {
                 volume.getConfigMap().setDefaultMode(configMapModel.getDefaultMode());
             }

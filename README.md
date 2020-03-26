@@ -110,6 +110,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |annotations|Map of annotations|null|
 |mountPath|Path to mount on container|null|
 |readOnly|Is mount read only|true|
+|defaultMode|Default permission mode|null|
 |data|Paths to data files|null|
 
 ### @kubernetes:ConfigMap{}
@@ -120,6 +121,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |name|Name config map mount|<BALLERINA_SERVICE_NAME>-config-map|
 |mountPath|Path to mount on container|null|
 |readOnly|Is mount read only|true|
+|defaultMode|Default permission mode|null|
 |ballerinaConf|Ballerina conf file location|null|
 |data|Paths to data files|null|
 
