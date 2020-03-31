@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
@@ -47,7 +48,7 @@ public class DeploymentTest {
     private static final Path DOCKER_TARGET_PATH = BAL_DIRECTORY.resolve(DOCKER);
     private static final Path KUBERNETES_TARGET_PATH = BAL_DIRECTORY.resolve(KUBERNETES);
     private static final String DOCKER_IMAGE = "pizza-shop:latest";
-    
+
     /**
      * Build bal file with deployment having annotations.
      *
@@ -59,11 +60,11 @@ public class DeploymentTest {
     public void annotationsTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "dep_annotations.bal"), 0);
-        
+
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
-        
+
         // Validate deployment yaml
         File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("dep_annotations_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
@@ -74,12 +75,12 @@ public class DeploymentTest {
                 "Invalid annotation found.");
         Assert.assertEquals(deployment.getMetadata().getAnnotations().get("anno2"), "anno2Val",
                 "Invalid annotation found.");
-        
+
         KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
         KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
-    
+
     /**
      * Build bal file with deployment having pod annotations.
      *
@@ -91,11 +92,11 @@ public class DeploymentTest {
     public void podAnnotationsTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "pod_annotations.bal"), 0);
-        
+
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
-        
+
         // Validate deployment yaml
         File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("pod_annotations_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
@@ -106,12 +107,44 @@ public class DeploymentTest {
                 "Invalid annotation found.");
         Assert.assertEquals(deployment.getSpec().getTemplate().getMetadata().getAnnotations().get("anno2"), "anno2Val",
                 "Invalid annotation found.");
-        
+
         KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
         KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
-    
+
+    /**
+     * Build bal file with deployment having node selector annotations.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
+     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
+     */
+    @Test
+    public void nodeSelectorTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "node_selector.bal"), 0);
+
+        // Check if docker image exists and correct
+        validateDockerfile();
+        validateDockerImage();
+
+        // Validate deployment yaml
+        File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("node_selector_deployment.yaml").toFile();
+        Assert.assertTrue(deploymentYAML.exists());
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
+
+        //Validate node selector
+        Map<String, String> nodeSelectors = deployment.getSpec().getTemplate().getSpec().getNodeSelector();
+        Assert.assertEquals(nodeSelectors.size(), 2);
+        Assert.assertEquals(nodeSelectors.get("disktype"), "ssd");
+        Assert.assertEquals(nodeSelectors.get("kubernetes.io/hostname"), "pizza.com");
+
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
+    }
+
     /**
      * Build bal file with deployment having annotations.
      *
@@ -123,11 +156,11 @@ public class DeploymentTest {
     public void podTolerationsTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "pod_tolerations.bal"), 0);
-        
+
         // Check if docker image exists and correct
         validateDockerfile();
         validateDockerImage();
-        
+
         // Validate deployment yaml
         File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("pod_tolerations_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
@@ -147,13 +180,13 @@ public class DeploymentTest {
         Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getTolerations().get(0).getEffect(),
                 "NoSchedule", "Invalid toleration effect.");
         Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getTolerations().get(0).getTolerationSeconds()
-                        .longValue(), 0L, "Invalid toleration seconds.");
-        
+                .longValue(), 0L, "Invalid toleration seconds.");
+
         KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
         KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
-    
+
     /**
      * Build bal file with CMD of Dockerfile overridden.
      *
@@ -165,26 +198,26 @@ public class DeploymentTest {
     public void overrideCMDTest() throws IOException, InterruptedException, KubernetesPluginException,
             DockerTestException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "cmd_override.bal"), 0);
-        
+
         // Check if docker image exists and correct
         validateDockerfile();
-    
+
         List<String> ports = getExposedPorts(DOCKER_IMAGE);
         Assert.assertEquals(ports.size(), 1);
         Assert.assertEquals(ports.get(0), "9090/tcp");
         // Validate ballerina.conf in run command
         Assert.assertEquals(getCommand(DOCKER_IMAGE).toString(),
                 "[/bin/sh, -c, java -jar cmd_override.jar --b7a.http.accesslog.console=true]");
-        
+
         // Validate deployment yaml
         File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("cmd_override_deployment.yaml").toFile();
         Assert.assertTrue(deploymentYAML.exists());
-        
+
         KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
         KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
         KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
     }
-    
+
     /**
      * Validate if Dockerfile is created.
      */
@@ -192,7 +225,7 @@ public class DeploymentTest {
         File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
     }
-    
+
     /**
      * Validate contents of the Dockerfile.
      */
