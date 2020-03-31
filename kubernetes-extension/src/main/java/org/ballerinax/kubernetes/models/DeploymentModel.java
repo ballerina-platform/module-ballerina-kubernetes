@@ -67,6 +67,7 @@ public class DeploymentModel extends KubernetesModel {
     private DeploymentBuildExtension buildExtension;
     private List<PodTolerationModel> podTolerations;
     private DeploymentStrategy strategy;
+    private Map<String, String> nodeSelector;
 
     public DeploymentModel() {
         // Initialize with default values.
@@ -75,6 +76,7 @@ public class DeploymentModel extends KubernetesModel {
         this.baseImage = OPENJDK_8_JRE_ALPINE_BASE_IMAGE;
         this.push = false;
         this.labels = new LinkedHashMap<>();
+        this.nodeSelector = new LinkedHashMap<>();
         this.env = new LinkedHashMap<>();
         this.imagePullPolicy = KubernetesConstants.ImagePullPolicy.IfNotPresent.name();
         this.dependsOn = new HashSet<>();

@@ -17,68 +17,24 @@
  */
 package org.ballerinax.kubernetes.models;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Model class to hold kubernetes config map data.
  */
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class ConfigMapModel extends KubernetesModel {
     private Map<String, String> data;
     private String mountPath;
     private boolean readOnly;
     private String ballerinaConf;
+    private int defaultMode;
 
     public ConfigMapModel() {
         this.readOnly = true;
-    }
-
-    public Map<String, String> getData() {
-        return data;
-    }
-
-    public void setData(Map<String, String> data) {
-        this.data = data;
-    }
-
-    public String getMountPath() {
-        return mountPath;
-    }
-
-    public void setMountPath(String mountPath) {
-        this.mountPath = mountPath;
-    }
-
-    public boolean isReadOnly() {
-        return readOnly;
-    }
-
-    public void setReadOnly(boolean readOnly) {
-        this.readOnly = readOnly;
-    }
-
-    public String getBallerinaConf() {
-        return ballerinaConf;
-    }
-
-    public void setBallerinaConf(String ballerinaConf) {
-        this.ballerinaConf = ballerinaConf;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof ConfigMapModel)) {
-            return false;
-        }
-        ConfigMapModel that = (ConfigMapModel) o;
-        return Objects.equals(getMountPath(), that.getMountPath());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getMountPath());
     }
 }

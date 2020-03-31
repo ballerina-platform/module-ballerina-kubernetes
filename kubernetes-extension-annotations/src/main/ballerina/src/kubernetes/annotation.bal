@@ -175,6 +175,7 @@ public type PodTolerationConfiguration record {|
 # + buildExtension - Docker image build extensions.
 # + dependsOn - Services this deployment depends on.
 # + imagePullSecrets - Image pull secrets.
+# + nodeSelector - Node selector labels.
 public type DeploymentConfiguration record {|
     *Metadata;
     string dockerHost?;
@@ -201,6 +202,7 @@ public type DeploymentConfiguration record {|
     BuildExtension|string buildExtension?;
     string[] dependsOn?;
     string[] imagePullSecrets?;
+    map<string> nodeSelector?;
 |};
 
 public const STRATEGY_RECREATE = "Recreate";
@@ -303,11 +305,13 @@ public const annotation PodAutoscalerConfig HPA on source service, source functi
 #
 # + mountPath - Mount path.
 # + readOnly - Is mount read only. Default is `true`.
+# + defaultMode - Default permission mode.
 # + data - Paths to data files as an array.
 public type Secret record {|
     *Metadata;
     string mountPath;
     boolean readOnly = true;
+    int defaultMode?;
     string[] data;
 |};
 
@@ -327,11 +331,13 @@ public const annotation SecretMount Secret on source service, source function;
 #
 # + mountPath - Mount path.
 # + readOnly - Is mount read only. Default is `true`.
+# + defaultMode - Default permission mode.
 # + data - Paths to data files.
 public type ConfigMap record {|
     *Metadata;
     string mountPath;
     boolean readOnly = true;
+    int defaultMode?;
     string[] data;
 |};
 
@@ -340,7 +346,7 @@ public type ConfigMap record {|
 # + conf - path to ballerina configuration file
 # + configMaps - Array of [ConfigMap](kubernetes.html#ConfigMap)
 public type ConfigMapMount record {|
-    string conf;
+    string conf?;
     ConfigMap[] configMaps?;
 |};
 
@@ -430,6 +436,7 @@ public type RestartPolicy "OnFailure"|"Always"|"Never";
 # + activeDeadlineSeconds - Active deadline seconds. Default is `20`.
 # + schedule - Schedule for cron jobs.
 # + imagePullSecrets - Image pull secrets.
+# + nodeSelector - Node selector labels.
 public type JobConfig record {|
     *Metadata;
     string dockerHost?;
@@ -452,6 +459,7 @@ public type JobConfig record {|
     int activeDeadlineSeconds = 20;
     string schedule?;
     string[] imagePullSecrets?;
+    map<string> nodeSelector?;
 |};
 
 # @kubernetes:Job annotation to configure kubernetes jobs.
