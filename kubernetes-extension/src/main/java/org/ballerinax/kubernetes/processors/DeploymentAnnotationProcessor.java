@@ -175,6 +175,9 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 case updateStrategy:
                     deploymentModel.setStrategy(getStrategy(keyValue));
                     break;
+                case nodeSelector:
+                    deploymentModel.setNodeSelector(getMap(keyValue.getValue()));
+                    break;
                 default:
                     break;
             }
@@ -361,6 +364,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         dependsOn,
         imagePullSecrets,
         updateStrategy,
+        nodeSelector
     }
 
     private enum ProbeConfiguration {

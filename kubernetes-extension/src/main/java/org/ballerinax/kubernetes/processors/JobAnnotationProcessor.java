@@ -124,6 +124,9 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
                 case registry:
                     jobModel.setRegistry(getStringValue(keyValue.getValue()));
                     break;
+                case nodeSelector:
+                    jobModel.setNodeSelector(getMap(keyValue.getValue()));
+                    break;
                 default:
                     break;
             }
@@ -167,6 +170,7 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
         singleYAML,
         dependsOn,
         imagePullSecrets,
-        registry
+        registry,
+        nodeSelector
     }
 }

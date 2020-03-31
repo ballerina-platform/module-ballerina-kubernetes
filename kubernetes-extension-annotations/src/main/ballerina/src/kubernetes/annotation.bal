@@ -175,6 +175,7 @@ public type PodTolerationConfiguration record {|
 # + buildExtension - Docker image build extensions.
 # + dependsOn - Services this deployment depends on.
 # + imagePullSecrets - Image pull secrets.
+# + nodeSelector - Node selector labels.
 public type DeploymentConfiguration record {|
     *Metadata;
     string dockerHost?;
@@ -201,6 +202,7 @@ public type DeploymentConfiguration record {|
     BuildExtension|string buildExtension?;
     string[] dependsOn?;
     string[] imagePullSecrets?;
+    map<string> nodeSelector?;
 |};
 
 public const STRATEGY_RECREATE = "Recreate";
@@ -434,6 +436,7 @@ public type RestartPolicy "OnFailure"|"Always"|"Never";
 # + activeDeadlineSeconds - Active deadline seconds. Default is `20`.
 # + schedule - Schedule for cron jobs.
 # + imagePullSecrets - Image pull secrets.
+# + nodeSelector - Node selector labels.
 public type JobConfig record {|
     *Metadata;
     string dockerHost?;
@@ -456,6 +459,7 @@ public type JobConfig record {|
     int activeDeadlineSeconds = 20;
     string schedule?;
     string[] imagePullSecrets?;
+    map<string> nodeSelector?;
 |};
 
 # @kubernetes:Job annotation to configure kubernetes jobs.
