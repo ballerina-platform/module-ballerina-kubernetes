@@ -18,6 +18,8 @@
 
 package org.ballerinax.kubernetes.models;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.ballerinax.docker.generator.models.CopyFileModel;
 import org.ballerinax.kubernetes.KubernetesConstants;
 
@@ -32,7 +34,10 @@ import static org.ballerinax.docker.generator.DockerGenConstants.OPENJDK_8_JRE_A
 /**
  * Job model class.
  */
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class JobModel extends KubernetesModel {
+    protected Map<String, String> nodeSelector;
     private String restartPolicy;
     private int backoffLimit;
     private int activeDeadlineSeconds;
@@ -52,7 +57,7 @@ public class JobModel extends KubernetesModel {
     private Set<CopyFileModel> copyFiles;
     private boolean singleYAML;
     private String registry;
-    
+
     public JobModel() {
         this.labels = new HashMap<>();
         this.env = new LinkedHashMap<>();
@@ -61,10 +66,10 @@ public class JobModel extends KubernetesModel {
         this.setBaseImage(OPENJDK_8_JRE_ALPINE_BASE_IMAGE);
         this.setPush(false);
         this.buildImage = true;
-        this.labels = new HashMap<>();
+        this.nodeSelector = new HashMap<>();
         this.setEnv(new HashMap<>());
         this.setImagePullPolicy("IfNotPresent");
-        
+
         this.activeDeadlineSeconds = 20;
         this.imagePullSecrets = new HashSet<>();
         this.singleYAML = true;
@@ -72,161 +77,5 @@ public class JobModel extends KubernetesModel {
 
     public void addLabel(String key, String value) {
         this.labels.put(key, value);
-    }
-
-    public String getRestartPolicy() {
-        return restartPolicy;
-    }
-
-    public void setRestartPolicy(String restartPolicy) {
-        this.restartPolicy = restartPolicy;
-    }
-
-    public int getBackoffLimit() {
-        return backoffLimit;
-    }
-
-    public void setBackoffLimit(int backoffLimit) {
-        this.backoffLimit = backoffLimit;
-    }
-
-    public int getActiveDeadlineSeconds() {
-        return activeDeadlineSeconds;
-    }
-
-    public void setActiveDeadlineSeconds(int activeDeadlineSeconds) {
-        this.activeDeadlineSeconds = activeDeadlineSeconds;
-    }
-
-    public String getSchedule() {
-        return schedule;
-    }
-
-    public void setSchedule(String schedule) {
-        this.schedule = schedule;
-    }
-
-    public Map<String, EnvVarValueModel> getEnv() {
-        return env;
-    }
-
-    public void setEnv(Map<String, EnvVarValueModel> env) {
-        this.env = env;
-    }
-
-    public void addEnv(String key, EnvVarValueModel value) {
-        env.put(key, value);
-    }
-
-    public String getImagePullPolicy() {
-        return imagePullPolicy;
-    }
-
-    public void setImagePullPolicy(String imagePullPolicy) {
-        this.imagePullPolicy = imagePullPolicy;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public boolean isBuildImage() {
-        return buildImage;
-    }
-
-    public void setBuildImage(boolean buildImage) {
-        this.buildImage = buildImage;
-    }
-
-    public String getDockerHost() {
-        return dockerHost;
-    }
-
-    public void setDockerHost(String dockerHost) {
-        this.dockerHost = dockerHost;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getBaseImage() {
-        return baseImage;
-    }
-
-    public void setBaseImage(String baseImage) {
-        this.baseImage = baseImage;
-    }
-
-    public boolean isPush() {
-        return push;
-    }
-
-    public void setPush(boolean push) {
-        this.push = push;
-    }
-
-    public String getDockerCertPath() {
-        return dockerCertPath;
-    }
-
-    public void setDockerCertPath(String dockerCertPath) {
-        this.dockerCertPath = dockerCertPath;
-    }
-
-    public Set<String> getImagePullSecrets() {
-        return imagePullSecrets;
-    }
-
-    public void setImagePullSecrets(Set<String> imagePullSecrets) {
-        this.imagePullSecrets = imagePullSecrets;
-    }
-
-    public Set<CopyFileModel> getCopyFiles() {
-        return copyFiles;
-    }
-
-    public void setCopyFiles(Set<CopyFileModel> copyFiles) {
-        this.copyFiles = copyFiles;
-    }
-
-    public boolean isSingleYAML() {
-        return singleYAML;
-    }
-
-    public void setSingleYAML(boolean singleYAML) {
-        this.singleYAML = singleYAML;
-    }
-    
-    public void setRegistry(String registry) {
-        this.registry = registry;
-    }
-    
-    public String getRegistry() {
-        return registry;
-    }
-    
-    public String getCmd() {
-        return cmd;
-    }
-    
-    public void setCmd(String cmd) {
-        this.cmd = cmd;
     }
 }

@@ -89,6 +89,7 @@ public class JobHandler extends AbstractArtifactHandler {
                 .withRestartPolicy(jobModel.getRestartPolicy())
                 .withContainers(generateContainer(jobModel))
                 .withImagePullSecrets(getImagePullSecrets(jobModel))
+                .withNodeSelector(jobModel.getNodeSelector())
                 .endSpec()
                 .endTemplate()
                 .endSpec();

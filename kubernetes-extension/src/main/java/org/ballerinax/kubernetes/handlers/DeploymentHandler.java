@@ -198,7 +198,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                     .withName(configMapModel.getName())
                     .endConfigMap()
                     .build();
-            
+
             if (configMapModel.getDefaultMode() > 0) {
                 volume.getConfigMap().setDefaultMode(configMapModel.getDefaultMode());
             }
@@ -295,6 +295,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                 .withInitContainers(generateInitContainer(deploymentModel))
                 .withVolumes(populateVolume(deploymentModel))
                 .withTolerations(populatePodTolerations(deploymentModel.getPodTolerations()))
+                .withNodeSelector(deploymentModel.getNodeSelector())
                 .endSpec()
                 .endTemplate()
                 .endSpec()
