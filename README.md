@@ -217,7 +217,8 @@ Annotation based kubernetes extension implementation for ballerina.
 1. Download and install JDK 8 or later
 2. Install Docker
 3. Get a clone or download the source from this repository (https://github.com/ballerinax/kubernetes)
-4. Run the Maven command ``mvn clean install`` from within the ``kubernetes`` directory.
+4. Run the Gradle command ``gradle build`` from within the ``kubernetes`` directory.
+5. Copy ``build/kubernetes-extension-***.jar`` file to ``<BALLERINA_HOME>/bre/lib`` directory.
 
 ### Enabling debug logs
 - Use the "BAL_DOCKER_DEBUG=true" environment variable to enable docker related debug logs when building the ballerina

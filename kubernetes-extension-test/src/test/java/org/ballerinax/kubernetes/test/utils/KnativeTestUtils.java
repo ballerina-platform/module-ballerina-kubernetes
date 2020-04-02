@@ -66,7 +66,7 @@ public class KnativeTestUtils {
     private static final Logger log = LoggerFactory.getLogger(SampleTest.class);
     private static final String JAVA_OPTS = "JAVA_OPTS";
     private static final Path DISTRIBUTION_PATH = Paths.get(FilenameUtils.separatorsToSystem(
-            System.getProperty("ballerina.pack")));
+            System.getProperty("ballerinaPack")));
     private static final String BALLERINA_COMMAND = DISTRIBUTION_PATH +
             File.separator + "bin" +
             File.separator +
@@ -254,7 +254,7 @@ public class KnativeTestUtils {
         if (envProperties.containsKey(JAVA_OPTS)) {
             javaOpts = envProperties.get(JAVA_OPTS);
         }
-        if (javaOpts.contains("jacoco.agent")) {
+        if (javaOpts.contains("jacocoAgentLine")) {
             return;
         }
         javaOpts = getJacocoAgentArgs() + javaOpts;
@@ -262,7 +262,7 @@ public class KnativeTestUtils {
     }
 
     private static String getJacocoAgentArgs() {
-        String jacocoArgLine = System.getProperty("jacoco.agent.argLine");
+        String jacocoArgLine = System.getProperty("jacocoAgentLine");
         if (jacocoArgLine == null || jacocoArgLine.isEmpty()) {
             log.warn("Running integration test without jacoco test coverage");
             return "";

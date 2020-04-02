@@ -1,0 +1,66 @@
+/*
+ * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+plugins {
+    id "com.github.johnrengelman.shadow" version "5.2.0"
+    id "java"
+}
+
+description = 'Ballerinax - Kubernetes Extension'
+
+dependencies {
+    implementation "org.ballerinax.docker:docker-generator:${ballerinaLangVersion}"
+    implementation "com.github.docker-java:docker-java:${dockerJavaVersion}"
+    implementation "io.fabric8:kubernetes-client:${fabric8KubernetesClientVersion}"
+    implementation "me.snowdrop:istio-model:${snowdropIstioModelVersion}"
+    implementation "javax.validation:validation-api:${javaxValidationAPIVersion}"
+
+    compileOnly "org.ballerinalang:ballerina-lang:${ballerinaLangVersion}"
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    testImplementation "org.ballerinalang:ballerina-lang:${ballerinaLangVersion}"
+    testImplementation "org.slf4j:slf4j-api:${slf4jVersion}"
+    testImplementation "org.slf4j:slf4j-log4j12:${slf4jVersion}"
+    testImplementation "org.testng:testng:${testngVersion}"
+}
+
+jar {
+    enabled = false
+    dependsOn(shadowJar {
+        exclude 'kubectl-extension'
+        classifier = null
+        minimize()
+    })
+}
+
+test {
+    testLogging.showStandardStreams = true
+    useTestNG() {
+        suites 'src/test/resources/testng.xml'
+    }
+}
+
+publishing {
+    publications {
+        mavenJava {
+            from components.java
+        }
+    }
+}
+
