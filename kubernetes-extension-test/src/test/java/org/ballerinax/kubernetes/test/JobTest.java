@@ -23,7 +23,6 @@ import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.batch.Job;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.test.utils.DockerTestException;
 import org.ballerinax.kubernetes.test.utils.KubernetesTestUtils;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.testng.Assert;
@@ -34,6 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
@@ -46,33 +46,61 @@ public class JobTest {
     private static final Path SOURCE_DIR_PATH = Paths.get("src", "test", "resources", "job");
     private static final Path DOCKER_TARGET_PATH = SOURCE_DIR_PATH.resolve(DOCKER);
     private static final Path KUBERNETES_TARGET_PATH = SOURCE_DIR_PATH.resolve(KUBERNETES);
-    private static final String DOCKER_IMAGE = "my-ballerina-job:1.0";
+    private static final String DOCKER_IMAGE_JOB = "my-ballerina-job:1.0";
+    private static final String DOCKER_IMAGE_NODE = "job-node:1.0";
 
     @Test
-    public void testKubernetesJobGeneration() throws IOException, InterruptedException, DockerTestException {
+    public void testKubernetesJobGeneration() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "ballerina_job.bal"), 0);
-        
+
         File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerFile.exists());
-        InspectImageResponse imageInspect = getDockerImage(DOCKER_IMAGE);
+        InspectImageResponse imageInspect = getDockerImage(DOCKER_IMAGE_JOB);
         Assert.assertNotNull(imageInspect.getConfig());
-        
+
         File jobYAML = KUBERNETES_TARGET_PATH.resolve("ballerina_job_job.yaml").toFile();
         Job job = KubernetesTestUtils.loadYaml(jobYAML);
         Assert.assertEquals(job.getMetadata().getName(), "ballerina-job-job");
         Assert.assertEquals(job.getSpec().getTemplate().getSpec().getContainers().size(), 1);
-        
+
         Container container = job.getSpec().getTemplate().getSpec().getContainers().get(0);
-        Assert.assertEquals(container.getImage(), DOCKER_IMAGE);
+        Assert.assertEquals(container.getImage(), DOCKER_IMAGE_JOB);
         Assert.assertEquals(container.getImagePullPolicy(), KubernetesConstants.ImagePullPolicy.IfNotPresent.name());
         Assert.assertEquals(job.getSpec().getTemplate().getSpec()
                 .getRestartPolicy(), KubernetesConstants.RestartPolicy.Never.name());
+    }
+
+    @Test
+    public void testKubernetesJobNodeSelector() throws IOException, InterruptedException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "node_selector.bal"), 0);
+
+        File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
+        Assert.assertTrue(dockerFile.exists());
+        InspectImageResponse imageInspect = getDockerImage(DOCKER_IMAGE_NODE);
+        Assert.assertNotNull(imageInspect.getConfig());
+
+        File jobYAML = KUBERNETES_TARGET_PATH.resolve("node_selector_job.yaml").toFile();
+        Job job = KubernetesTestUtils.loadYaml(jobYAML);
+        Assert.assertEquals(job.getMetadata().getName(), "node-selector-job");
+        Assert.assertEquals(job.getSpec().getTemplate().getSpec().getContainers().size(), 1);
+
+        Container container = job.getSpec().getTemplate().getSpec().getContainers().get(0);
+        Assert.assertEquals(container.getImage(), DOCKER_IMAGE_NODE);
+        Assert.assertEquals(container.getImagePullPolicy(), KubernetesConstants.ImagePullPolicy.IfNotPresent.name());
+        Assert.assertEquals(job.getSpec().getTemplate().getSpec()
+                .getRestartPolicy(), KubernetesConstants.RestartPolicy.Never.name());
+
+        //Validate node selector
+        Map<String, String> nodeSelectors = job.getSpec().getTemplate().getSpec().getNodeSelector();
+        Assert.assertEquals(nodeSelectors.size(), 1);
+        Assert.assertEquals(nodeSelectors.get("disktype"), "ssd");
     }
 
     @AfterClass
     public void cleanUp() throws KubernetesPluginException {
         KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
         KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
-        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE_JOB);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE_NODE);
     }
 }

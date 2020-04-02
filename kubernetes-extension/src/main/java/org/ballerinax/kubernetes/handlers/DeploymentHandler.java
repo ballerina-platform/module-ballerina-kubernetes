@@ -185,6 +185,10 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                     .withSecretName(secretModel.getName())
                     .endSecret()
                     .build();
+
+            if (secretModel.getDefaultMode() > 0) {
+                volume.getSecret().setDefaultMode(secretModel.getDefaultMode());
+            }
             volumes.add(volume);
         }
         for (ConfigMapModel configMapModel : deploymentModel.getConfigMapModels()) {
@@ -194,6 +198,10 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                     .withName(configMapModel.getName())
                     .endConfigMap()
                     .build();
+
+            if (configMapModel.getDefaultMode() > 0) {
+                volume.getConfigMap().setDefaultMode(configMapModel.getDefaultMode());
+            }
             volumes.add(volume);
         }
         for (PersistentVolumeClaimModel volumeClaimModel : deploymentModel.getVolumeClaimModels()) {
@@ -287,6 +295,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                 .withInitContainers(generateInitContainer(deploymentModel))
                 .withVolumes(populateVolume(deploymentModel))
                 .withTolerations(populatePodTolerations(deploymentModel.getPodTolerations()))
+                .withNodeSelector(deploymentModel.getNodeSelector())
                 .endSpec()
                 .endTemplate()
                 .endSpec()

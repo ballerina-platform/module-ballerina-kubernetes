@@ -59,6 +59,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |dependsOn|Listeners this deployment Depends on|null|
 |imagePullSecrets|Image pull secrets value|null|
 |strategy|Update strategy|null|
+|nodeSelector|Node selector labels|null|
 
 ### @kubernetes:Service{}
 - Supported with ballerina services and listeners.
@@ -110,6 +111,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |annotations|Map of annotations|null|
 |mountPath|Path to mount on container|null|
 |readOnly|Is mount read only|true|
+|defaultMode|Default permission mode|null|
 |data|Paths to data files|null|
 
 ### @kubernetes:ConfigMap{}
@@ -120,6 +122,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |name|Name config map mount|<BALLERINA_SERVICE_NAME>-config-map|
 |mountPath|Path to mount on container|null|
 |readOnly|Is mount read only|true|
+|defaultMode|Default permission mode|null|
 |ballerinaConf|Ballerina conf file location|null|
 |data|Paths to data files|null|
 
@@ -174,6 +177,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |activeDeadlineSeconds|Active deadline seconds|20|
 |schedule|Schedule for cron jobs|none|
 |imagePullSecrets|Image pull secrets value|null|
+|nodeSelector|Node selector labels|null|
 
 ### @istio:Gateway{}
 - Support with ballerina services and listeners.

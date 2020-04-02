@@ -14,6 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+# Configuration to use the OpenShift Build Configs.
 public const string BUILD_EXTENSION_OPENSHIFT = "openshift";
 
 # Domain for OpenShift Route configuration.
