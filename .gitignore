@@ -25,6 +25,7 @@ hs_err_pid*
 # Gradle
 build
 .gradle/
+!gradle/wrapper/gradle-wrapper.jar
 
 # Maven
 target
