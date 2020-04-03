@@ -14,21 +14,24 @@
  * limitations under the License.
  *
  */
- 
+
 plugins {
-  id "com.gradle.enterprise" version "3.2"
+    id "de.undercouch.download" version "4.0.4"
 }
 
-rootProject.name = 'kubernetes-extension-parent'
-include(':build-config:checkstyle')
-include(':kubernetes-extension')
-include(':kubernetes-extension-annotations')
-include(':kubernetes-extension-test')
-include(':kubernetes-extension-examples')
+task downloadMultipleFiles(type: Download) {
+    src([
+        'https://raw.githubusercontent.com/wso2/code-quality-tools/v1.3/checkstyle/checkstyle.xml',
+        'https://raw.githubusercontent.com/wso2/code-quality-tools/v1.3/checkstyle/suppressions.xml'
+    ])
+    overwrite false
+    dest buildDir
+}
 
-gradleEnterprise {
-    buildScan {
-        termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-        termsOfServiceAgree = 'yes'
-    }
+artifacts.add('default', file("$project.buildDir/checkstyle.xml")) {
+    builtBy('downloadMultipleFiles')
+}
+
+artifacts.add('default', file("$project.buildDir/suppressions.xml")) {
+    builtBy('downloadMultipleFiles')
 }
