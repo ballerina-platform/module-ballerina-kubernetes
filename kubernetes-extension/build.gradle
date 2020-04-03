@@ -48,6 +48,7 @@ jar {
     enabled = false
     dependsOn(shadowJar {
         exclude 'kubectl-extension'
+        classifier = null
         minimize()
     })
 }
@@ -63,7 +64,7 @@ spotbugsMain {
     ignoreFailures = true
     effort = "max"
     reportLevel = "low"
-    reportsDir = file("$project.buildDir/spotbugs")
+    reportsDir = file("$project.buildDir/reports/spotbugs")
     excludeFilter = file("spotbugs-exclude.xml")
     reports {
         text.enabled = true
@@ -76,7 +77,9 @@ spotbugsTest {
 
 task validateSpotbugs() {
     doLast {
-        if (spotbugsMain.reports[0].destination?.text.readLines().size() > 0) {
+        if (spotbugsMain.reports.size() > 0 &&
+            spotbugsMain.reports[0].destination.exists() &&
+            spotbugsMain.reports[0].destination.text.readLines().size() > 0) {
             spotbugsMain.reports[0].destination?.eachLine {
                 println 'Failure: ' + it
             }
@@ -93,8 +96,8 @@ checkstyle {
 
 publishing {
     publications {
-        mavenJava {
-            from components.java
+        mavenJava(MavenPublication) {
+            artifact shadowJar
         }
     }
 }
