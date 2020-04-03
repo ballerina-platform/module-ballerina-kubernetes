@@ -17,7 +17,8 @@
  
 
 plugins {
-    id "com.github.spotbugs" version "1.6.10"
+    id "com.github.spotbugs" version "4.0.5"
+    id "com.github.johnrengelman.shadow" version "5.2.0"
 }
 
 ext.ballerinaLangVersion = '1.3.0-SNAPSHOT'

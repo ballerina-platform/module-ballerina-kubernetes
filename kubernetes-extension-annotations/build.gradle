@@ -17,7 +17,7 @@
 
  
 dependencies {
-    compile project(":kubernetes-extension")
+    implementation project(":kubernetes-extension")
 }
 
 configurations{
