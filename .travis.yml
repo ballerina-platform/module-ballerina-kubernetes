@@ -38,6 +38,8 @@ jobs:
       os: linux
       language: java
       jdk: openjdk8
+      install:
+        - java -version
       script:
         - |
           set -e
