@@ -24,8 +24,9 @@ dependencies {
 }
 
 dependencies {
-    testImplementation project(":kubernetes-extension")
-    testImplementation project(":kubernetes-extension-annotations")
+    implementation project(":kubernetes-extension")
+    implementation project(":kubernetes-extension-annotations")
+
     testImplementation "com.github.docker-java:docker-java:${dockerJavaVersion}"
     testImplementation "io.fabric8:kubernetes-client:${fabric8KubernetesClientVersion}"
     testImplementation "me.snowdrop:istio-model:${snowdropIstioModelVersion}"
@@ -38,8 +39,13 @@ dependencies {
 description = 'Ballerinax - Kubernetes Extension Tests'
 
 test {
-    testLogging.showStandardStreams = true
-    useTestNG(){
+    testLogging {
+        showStackTraces = true
+        showStandardStreams = true
+        events "failed"
+        exceptionFormat "full"
+    }
+    useTestNG() {
         if (project.hasProperty('Travis')) {
             suites 'src/test/resources/testng-travis.xml'
         } else {

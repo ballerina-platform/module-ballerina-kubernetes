@@ -15,22 +15,25 @@
  *
  */
 
- 
+description = 'Ballerinax - Kubernetes Extension Annotations'
+
 dependencies {
     implementation project(":kubernetes-extension")
 }
 
-configurations{
+configurations {
     balTools
+    kubernetesExtensionPlugin {
+        transitive = false
+    }
 }
 
 dependencies{
     balTools ("org.ballerinalang:jballerina-tools:${ballerinaLangVersion}"){
         transitive = false
     }
+    kubernetesExtensionPlugin project(":kubernetes-extension")
 }
-
-description = 'Ballerinax - Kubernetes Extension Annotations'
 
 task unzip {
     doLast {
@@ -52,7 +55,7 @@ task runScript {
             workingDir project.projectDir
             if (System.properties['os.name'].toLowerCase().contains('windows')) {
                 commandLine 'cmd', '/c', 'cd scripts && annotation-build.bat ' + distributionPath + ' ' + projectRoot
-            }else{
+            } else {
                 commandLine 'sh', '-c', 'scripts/annotation-build.sh ' + distributionPath + ' ' + projectRoot
             }
             
@@ -61,17 +64,14 @@ task runScript {
 }
 
 task copyBalKubernetesExt {
-    doLast{
-        configurations.compile.resolvedConfiguration.resolvedArtifacts.each { artifact ->
-            copy {
-                from artifact.getFile()
-                into new File(project.buildDir, "extracted-distribution/jballerina-tools-${ballerinaLangVersion}/bre/lib/")
-            }
+    doLast {
+        copy {
+            from configurations.kubernetesExtensionPlugin
+            into new File(project.buildDir, "extracted-distribution/jballerina-tools-${ballerinaLangVersion}/bre/lib/")
         }
     }
 }
 
-unzip.dependsOn ':kubernetes-extension:build'
 copyBalKubernetesExt.dependsOn unzip
 runScript.dependsOn copyBalKubernetesExt
 build.dependsOn runScript

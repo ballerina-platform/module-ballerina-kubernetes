@@ -23,6 +23,32 @@ plugins {
 
 description = 'Ballerinax - Kubernetes Extension'
 
+configurations {
+    fatJar {
+        extendsFrom implementation
+        exclude group: "io.netty"
+        exclude group: "org.javassist"
+        exclude group: "com.google.guava"
+        exclude group: "com.fasterxml.jackson.core"
+        exclude group: "com.fasterxml.jackson.dataformat"
+        exclude group: "com.fasterxml.jackson.module"
+        exclude group: "org.glassfish.hk2.external"
+        exclude group: "org.bouncycastle"
+        exclude group: "org.slf4j"
+        exclude group: "commons-codec"
+        exclude group: "org.apache.commons"
+        exclude group: "commons-io"
+        exclude group: "commons-logging"
+        exclude group: "com.github.mifmif"
+        exclude group: "dk.brics.automaton"
+        exclude group: "io.fabric8", module: "zjsonpatch"
+        exclude group: "com.squareup.okhttp3"
+        exclude group: "com.squareup.okio"
+        exclude group: "org.antlr"
+        exclude group: "org.joda", module: "joda-convert"
+    }
+}
+
 dependencies {
     implementation "org.ballerinax.docker:docker-generator:${ballerinaLangVersion}"
     implementation "com.github.docker-java:docker-java:${dockerJavaVersion}"
@@ -47,14 +73,20 @@ dependencies {
 jar {
     enabled = false
     dependsOn(shadowJar {
+        project.configurations.implementation.canBeResolved = true
+        configurations = [project.configurations.fatJar]
         exclude 'kubectl-extension'
         classifier = null
-        minimize()
     })
 }
 
 test {
-    testLogging.showStandardStreams = true
+    testLogging {
+        showStackTraces = true
+        showStandardStreams = true
+        events "failed"
+        exceptionFormat "full"
+    }
     useTestNG() {
         suites 'src/test/resources/testng.xml'
     }
@@ -97,6 +129,9 @@ checkstyle {
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            groupId project.group
+            artifactId project.name
+            version = project.version
             artifact shadowJar
         }
     }
