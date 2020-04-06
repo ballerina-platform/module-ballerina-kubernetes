@@ -24,14 +24,12 @@ import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.EnvVarValueModel;
 import org.ballerinax.kubernetes.models.JobModel;
-import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.utils.Utils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,11 +57,11 @@ public class KubernetesJobGeneratorTests extends HandlerTestSuite {
         EnvVarValueModel testEnvVar = new EnvVarValueModel("ENV");
         env.put("ENV_VAR", testEnvVar);
         jobModel.setEnv(env);
-        KubernetesContext.getInstance().getDataHolder().setJobModel(jobModel);
+        dataHolder.setJobModel(jobModel);
 
         try {
             new JobHandler().createArtifacts();
-            File tempFile = Paths.get("target", "kubernetes", module.name.toString(), "hello_job.yaml").toFile();
+            File tempFile = dataHolder.getK8sArtifactOutputPath().resolve("hello_job.yaml").toFile();
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

@@ -22,7 +22,6 @@ import me.snowdrop.istio.api.networking.v1alpha3.Gateway;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.handlers.istio.IstioGatewayHandler;
-import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
 import org.ballerinax.kubernetes.models.istio.IstioPortModel;
 import org.ballerinax.kubernetes.models.istio.IstioServerModel;
@@ -32,7 +31,6 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -76,11 +74,11 @@ public class IstioGatewayGeneratorTests extends HandlerTestSuite {
         
         istioGatewayModel.setServers(serverModels);
         
-        KubernetesContext.getInstance().getDataHolder().addIstioGatewayModel("sample-svc", istioGatewayModel);
+        dataHolder.addIstioGatewayModel("sample-svc", istioGatewayModel);
         try {
             new IstioGatewayHandler().createArtifacts();
-            File gwYaml = Paths.get("target", "kubernetes", module.name.toString(), "hello" +
-                                                            ISTIO_GATEWAY_FILE_POSTFIX + YAML).toFile();
+            File gwYaml = dataHolder.getK8sArtifactOutputPath()
+                    .resolve("hello" + ISTIO_GATEWAY_FILE_POSTFIX + YAML).toFile();
             Gateway gateway = Utils.loadYaml(gwYaml);
             
             // metadata

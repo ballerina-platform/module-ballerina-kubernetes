@@ -25,11 +25,10 @@ plugins {
 ext.ballerinaLangVersion = '1.3.0-SNAPSHOT'
 ext.ballerinaSourceDirectory = "$buildDir/../src/main/ballerina"
 ext.dockerJavaVersion = "3.1.5"
-ext.fabric8KubernetesClientVersion = "4.6.4"
-ext.fabric8KnativeClientVersion = "4.6.4"
+ext.fabric8KubernetesClientVersion = "4.9.0"
+ext.fabric8KnativeClientVersion = "4.9.0"
 ext.snowdropIstioModelVersion = "1.1.1"
 ext.javaxValidationAPIVersion = "2.0.0.Final"
-ext.snakeYamlVersion = "1.17"
 ext.projectBuildSourceEncoding = "UTF-8"
 ext.projectReportingOutputEncoding = "UTF-8"
 ext.puppycrawlCheckstyleVersion = "8.18"

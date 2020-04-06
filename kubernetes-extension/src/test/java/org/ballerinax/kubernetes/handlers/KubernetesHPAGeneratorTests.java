@@ -23,7 +23,6 @@ import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.EnvVarValueModel;
-import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.PodAutoscalerModel;
 import org.ballerinax.kubernetes.models.ProbeModel;
 import org.ballerinax.kubernetes.utils.Utils;
@@ -32,7 +31,6 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,11 +74,11 @@ public class KubernetesHPAGeneratorTests extends HandlerTestSuite {
         podAutoscalerModel.setDeployment(deploymentName);
         podAutoscalerModel.setLabels(labels);
         deploymentModel.setPodAutoscalerModel(podAutoscalerModel);
-        KubernetesContext.getInstance().getDataHolder().setPodAutoscalerModel(podAutoscalerModel);
-        KubernetesContext.getInstance().getDataHolder().setDeploymentModel(deploymentModel);
+        dataHolder.setPodAutoscalerModel(podAutoscalerModel);
+        dataHolder.setDeploymentModel(deploymentModel);
         try {
             new HPAHandler().createArtifacts();
-            File tempFile = Paths.get("target", "kubernetes", module.name.toString(), "hello_hpa.yaml").toFile();
+            File tempFile = dataHolder.getK8sArtifactOutputPath().resolve("hello_hpa.yaml").toFile();
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();
@@ -98,7 +96,9 @@ public class KubernetesHPAGeneratorTests extends HandlerTestSuite {
                 .KUBERNETES_SELECTOR_KEY), selector);
         Assert.assertEquals(podAutoscaler.getSpec().getMaxReplicas().intValue(), maxReplicas);
         Assert.assertEquals(podAutoscaler.getSpec().getMinReplicas().intValue(), minReplicas);
-        Assert.assertEquals(podAutoscaler.getSpec().getTargetCPUUtilizationPercentage().intValue(), cpuPercentage);
+        Assert.assertEquals(podAutoscaler.getSpec().getMetrics().size(), 1);
+        Assert.assertEquals(podAutoscaler.getSpec().getMetrics().get(0).getResource().getTarget()
+                .getAverageUtilization().intValue(), cpuPercentage);
         Assert.assertEquals(podAutoscaler.getSpec().getScaleTargetRef().getName(), deploymentName);
     }
 }

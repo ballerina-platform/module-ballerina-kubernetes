@@ -24,7 +24,6 @@ import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.EnvVarValueModel;
-import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.ProbeModel;
 import org.ballerinax.kubernetes.utils.Utils;
 import org.testng.Assert;
@@ -32,7 +31,6 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,10 +66,10 @@ public class KubernetesDeploymentGeneratorTests extends HandlerTestSuite {
         env.put("ENV_VAR", testEnvVar);
         deploymentModel.setEnv(env);
         deploymentModel.setReplicas(replicas);
-        KubernetesContext.getInstance().getDataHolder().setDeploymentModel(deploymentModel);
+        dataHolder.setDeploymentModel(deploymentModel);
         try {
             new DeploymentHandler().createArtifacts();
-            File tempFile = Paths.get("target", "kubernetes", module.name.toString(), "hello_deployment.yaml").toFile();
+            File tempFile = dataHolder.getK8sArtifactOutputPath().resolve("hello_deployment.yaml").toFile();
             Assert.assertTrue(tempFile.exists());
             testGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

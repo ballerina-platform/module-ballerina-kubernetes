@@ -20,7 +20,6 @@ package org.ballerinax.kubernetes.handlers;
 
 import io.fabric8.kubernetes.api.model.Secret;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.SecretModel;
 import org.ballerinax.kubernetes.utils.Utils;
 import org.testng.Assert;
@@ -28,7 +27,6 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -55,10 +53,10 @@ public class KubernetesSecretGeneratorTests extends HandlerTestSuite {
         secretModel.setData(data);
         Set<SecretModel> secretModels = new HashSet<>();
         secretModels.add(secretModel);
-        KubernetesContext.getInstance().getDataHolder().addSecrets(secretModels);
+        dataHolder.addSecrets(secretModels);
         try {
             new SecretHandler().createArtifacts();
-            File tempFile = Paths.get("target", "kubernetes", module.name.toString(), "hello_secret.yaml").toFile();
+            File tempFile = dataHolder.getK8sArtifactOutputPath().resolve("hello_secret.yaml").toFile();
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

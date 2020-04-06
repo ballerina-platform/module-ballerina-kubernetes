@@ -76,9 +76,14 @@ public class ResourceQuotaHandler extends AbstractArtifactHandler {
      */
     private Map<String, Quantity> getHard(Map<String, String> hard) {
         return hard.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, hardEntry -> new QuantityBuilder()
-                        .withAmount(hardEntry.getValue())
-                        .build()));
+                .collect(Collectors.toMap(Map.Entry::getKey, hardEntry -> {
+                    String amount = hardEntry.getValue().replaceAll("\\D+", "");
+                    String format = hardEntry.getValue().replace(amount, "");
+                    return new QuantityBuilder()
+                            .withAmount(amount)
+                            .withFormat(format)
+                            .build();
+                }));
     }
     
     /**

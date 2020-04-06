@@ -20,7 +20,6 @@ package org.ballerinax.kubernetes.handlers;
 
 import io.fabric8.kubernetes.api.model.PersistentVolumeClaim;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
 import org.ballerinax.kubernetes.utils.Utils;
 import org.testng.Assert;
@@ -28,7 +27,6 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -51,16 +49,17 @@ public class KubernetesVolumeClaimGeneratorTests extends HandlerTestSuite {
         volumeClaimModel.setReadOnly(readOnly);
         volumeClaimModel.setMountPath(mountPath);
         volumeClaimModel.setAccessMode("ReadWriteOnce");
+        volumeClaimModel.setVolumeClaimSizeAmount("200");
+        volumeClaimModel.setVolumeClaimSizeFormat("Mi");
         HashMap<String, String> annotations = new HashMap<>();
         annotations.put(annotationKey, annotationValue);
         volumeClaimModel.setAnnotations(annotations);
         Set<PersistentVolumeClaimModel> claimModles = new HashSet<>();
         claimModles.add(volumeClaimModel);
-        KubernetesContext.getInstance().getDataHolder().addPersistentVolumeClaims(claimModles);
+        dataHolder.addPersistentVolumeClaims(claimModles);
         try {
             new PersistentVolumeClaimHandler().createArtifacts();
-            File tempFile = Paths.get("target", "kubernetes", module.name.toString(), "hello_volume_claim.yaml")
-                    .toFile();
+            File tempFile = dataHolder.getK8sArtifactOutputPath().resolve("hello_volume_claim.yaml").toFile();
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

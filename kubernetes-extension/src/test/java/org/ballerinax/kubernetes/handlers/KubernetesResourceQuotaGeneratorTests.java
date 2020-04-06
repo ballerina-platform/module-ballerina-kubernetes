@@ -20,7 +20,6 @@ package org.ballerinax.kubernetes.handlers;
 
 import io.fabric8.kubernetes.api.model.ResourceQuota;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.ResourceQuotaModel;
 import org.ballerinax.kubernetes.utils.Utils;
 import org.testng.Assert;
@@ -28,7 +27,6 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -59,11 +57,11 @@ public class KubernetesResourceQuotaGeneratorTests extends HandlerTestSuite {
     
         Set<ResourceQuotaModel> resourceQuotaModels = new LinkedHashSet<>();
         resourceQuotaModels.add(resourceQuotaModel);
-        KubernetesContext.getInstance().getDataHolder().setResourceQuotaModels(resourceQuotaModels);
+        dataHolder.setResourceQuotaModels(resourceQuotaModels);
         try {
             new ResourceQuotaHandler().createArtifacts();
-            File yamlFile = Paths.get("target", "kubernetes", module.name.toString(), "hello" +
-                                                                          RESOURCE_QUOTA_FILE_POSTFIX + YAML).toFile();
+            File yamlFile = dataHolder.getK8sArtifactOutputPath()
+                    .resolve("hello" + RESOURCE_QUOTA_FILE_POSTFIX + YAML).toFile();
             Assert.assertTrue(yamlFile.exists(), "Generated file not found.");
             ResourceQuota resourceQuota = Utils.loadYaml(yamlFile);
             
@@ -73,7 +71,8 @@ public class KubernetesResourceQuotaGeneratorTests extends HandlerTestSuite {
             // quotas
             Assert.assertEquals(3, resourceQuota.getSpec().getHard().size());
             Assert.assertEquals("1000", resourceQuota.getSpec().getHard().get("cpu").getAmount());
-            Assert.assertEquals("200Gi", resourceQuota.getSpec().getHard().get("memory").getAmount());
+            Assert.assertEquals("200", resourceQuota.getSpec().getHard().get("memory").getAmount());
+            Assert.assertEquals("Gi", resourceQuota.getSpec().getHard().get("memory").getFormat());
             Assert.assertEquals("10", resourceQuota.getSpec().getHard().get("pods").getAmount());
             
             // scopes

@@ -53,6 +53,7 @@ dependencies {
     implementation "com.github.docker-java:docker-java:${dockerJavaVersion}"
     implementation "io.fabric8:kubernetes-client:${fabric8KubernetesClientVersion}"
     implementation "me.snowdrop:istio-model:${snowdropIstioModelVersion}"
+    implementation "io.fabric8:knative-client:${fabric8KnativeClientVersion}"
     implementation "javax.validation:validation-api:${javaxValidationAPIVersion}"
 
     compileOnly "org.ballerinalang:ballerina-lang:${ballerinaLangVersion}"
@@ -89,6 +90,9 @@ test {
     useTestNG() {
         suites 'src/test/resources/testng.xml'
     }
+    systemProperties = [
+        buildDir: System.getProperty('buildDir', "$project.buildDir")
+    ]
 }
 
 spotbugsMain {

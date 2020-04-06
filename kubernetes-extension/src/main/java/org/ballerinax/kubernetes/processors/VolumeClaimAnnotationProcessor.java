@@ -110,8 +110,11 @@ public class VolumeClaimAnnotationProcessor extends AbstractAnnotationProcessor 
                         case accessMode:
                             claimModel.setAccessMode(getStringValue(annotation.getValue()));
                             break;
-                        case volumeClaimSize:
-                            claimModel.setVolumeClaimSize(getStringValue(annotation.getValue()));
+                        case volumeClaimSizeAmount:
+                            claimModel.setVolumeClaimSizeAmount(getStringValue(annotation.getValue()));
+                            break;
+                        case volumeClaimSizeFormat:
+                            claimModel.setVolumeClaimSizeFormat(getStringValue(annotation.getValue()));
                             break;
                         case readOnly:
                             claimModel.setReadOnly(getBooleanValue(annotation.getValue()));
@@ -136,6 +139,7 @@ public class VolumeClaimAnnotationProcessor extends AbstractAnnotationProcessor 
         mountPath,
         readOnly,
         accessMode,
-        volumeClaimSize,
+        volumeClaimSizeAmount,
+        volumeClaimSizeFormat
     }
 }

@@ -22,7 +22,6 @@ import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.IngressModel;
-import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.ServiceModel;
 import org.ballerinax.kubernetes.utils.Utils;
 import org.testng.Assert;
@@ -30,7 +29,6 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,18 +60,18 @@ public class KubernetesIngressGeneratorTests extends HandlerTestSuite {
         Map<String, String> labels = new HashMap<>();
         labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, selector);
         ingressModel.setLabels(labels);
-        KubernetesContext.getInstance().getDataHolder().addIngressModel(ingressModel);
+        dataHolder.addIngressModel(ingressModel);
         ServiceModel serviceModel = new ServiceModel();
         serviceModel.setName(serviceName);
         serviceModel.setPort(9090);
         serviceModel.setServiceType("NodePort");
         serviceModel.setSelector(selector);
         serviceModel.setLabels(labels);
-        KubernetesContext.getInstance().getDataHolder().addBListenerToK8sServiceMap("HelloWorldService", serviceModel);
+        dataHolder.addBListenerToK8sServiceMap("HelloWorldService", serviceModel);
 
         try {
             new IngressHandler().createArtifacts();
-            File tempFile = Paths.get("target", "kubernetes", module.name.toString(), "hello_ingress.yaml").toFile();
+            File tempFile = dataHolder.getK8sArtifactOutputPath().resolve("hello_ingress.yaml").toFile();
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();
