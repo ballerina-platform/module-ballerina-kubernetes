@@ -28,8 +28,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.fabric8.kubernetes.api.model.KubernetesResource;
 import io.fabric8.kubernetes.api.model.LabelSelector;
 import io.fabric8.kubernetes.api.model.apps.DeploymentStrategy;
+
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.Generated;
 import javax.validation.Valid;
 

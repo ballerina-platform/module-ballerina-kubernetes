@@ -1,0 +1,141 @@
+/*
+ * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+plugins {
+    id "com.github.spotbugs"
+    id "com.github.johnrengelman.shadow"
+    id "checkstyle"
+}
+
+description = 'Ballerinax - Kubernetes Extension'
+
+configurations {
+    fatJar {
+        extendsFrom implementation
+        exclude group: "io.netty"
+        exclude group: "org.javassist"
+        exclude group: "com.google.guava"
+        exclude group: "com.fasterxml.jackson.core"
+        exclude group: "com.fasterxml.jackson.dataformat"
+        exclude group: "com.fasterxml.jackson.module"
+        exclude group: "org.glassfish.hk2.external"
+        exclude group: "org.bouncycastle"
+        exclude group: "org.slf4j"
+        exclude group: "commons-codec"
+        exclude group: "org.apache.commons"
+        exclude group: "commons-io"
+        exclude group: "commons-logging"
+        exclude group: "com.github.mifmif"
+        exclude group: "dk.brics.automaton"
+        exclude group: "io.fabric8", module: "zjsonpatch"
+        exclude group: "com.squareup.okhttp3"
+        exclude group: "com.squareup.okio"
+        exclude group: "org.antlr"
+        exclude group: "org.joda", module: "joda-convert"
+    }
+}
+
+dependencies {
+    implementation "org.ballerinax.docker:docker-generator:${ballerinaLangVersion}"
+    implementation "com.github.docker-java:docker-java:${dockerJavaVersion}"
+    implementation "io.fabric8:kubernetes-client:${fabric8KubernetesClientVersion}"
+    implementation "me.snowdrop:istio-model:${snowdropIstioModelVersion}"
+    implementation "javax.validation:validation-api:${javaxValidationAPIVersion}"
+
+    compileOnly "org.ballerinalang:ballerina-lang:${ballerinaLangVersion}"
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    testImplementation "org.ballerinalang:ballerina-lang:${ballerinaLangVersion}"
+    testImplementation "org.slf4j:slf4j-api:${slf4jVersion}"
+    testImplementation "org.slf4j:slf4j-log4j12:${slf4jVersion}"
+    testImplementation "org.testng:testng:${testngVersion}"
+
+    checkstyle project(":build-config:checkstyle")
+    checkstyle "com.puppycrawl.tools:checkstyle:${puppycrawlCheckstyleVersion}"
+}
+
+jar {
+    enabled = false
+    dependsOn(shadowJar {
+        project.configurations.implementation.canBeResolved = true
+        configurations = [project.configurations.fatJar]
+        exclude 'kubectl-extension'
+        classifier = null
+    })
+}
+
+test {
+    testLogging {
+        showStackTraces = true
+        showStandardStreams = true
+        events "failed"
+        exceptionFormat "full"
+    }
+    useTestNG() {
+        suites 'src/test/resources/testng.xml'
+    }
+}
+
+spotbugsMain {
+    ignoreFailures = true
+    effort = "max"
+    reportLevel = "low"
+    reportsDir = file("$project.buildDir/reports/spotbugs")
+    excludeFilter = file("spotbugs-exclude.xml")
+    reports {
+        text.enabled = true
+    }
+}
+
+spotbugsTest {
+    enabled = false
+}
+
+task validateSpotbugs() {
+    doLast {
+        if (spotbugsMain.reports.size() > 0 &&
+            spotbugsMain.reports[0].destination.exists() &&
+            spotbugsMain.reports[0].destination.text.readLines().size() > 0) {
+            spotbugsMain.reports[0].destination?.eachLine {
+                println 'Failure: ' + it
+            }
+            throw new GradleException("Spotbugs rule violations were found.");
+        }
+    }
+}
+
+checkstyle {
+    toolVersion '7.8.2'
+    configFile rootProject.file("build-config/checkstyle/build/checkstyle.xml")
+    configProperties = ["suppressionFile" : rootProject.file("build-config/checkstyle/build/suppressions.xml")]
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId project.group
+            artifactId project.name
+            version = project.version
+            artifact shadowJar
+        }
+    }
+}
+
+spotbugsMain.finalizedBy validateSpotbugs
+checkstyleMain.dependsOn(":build-config:checkstyle:downloadMultipleFiles")

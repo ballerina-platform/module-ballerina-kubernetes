@@ -36,7 +36,7 @@ public abstract class SampleTest {
      * Location of the samples directory.
      */
     protected static final Path SAMPLE_DIR = Paths.get(FilenameUtils.separatorsToSystem(
-            System.getProperty("sample.dir")));
+            System.getProperty("sampleDir")));
     
     @BeforeClass
     abstract void compileSample() throws IOException, InterruptedException;
