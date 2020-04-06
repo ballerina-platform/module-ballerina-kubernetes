@@ -30,12 +30,11 @@ import org.ballerinax.kubernetes.models.knative.KnativeDataHolder;
 import org.ballerinax.kubernetes.models.knative.ServiceModel;
 
 import java.io.PrintStream;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_LATEST_TAG;
+import static org.ballerinax.kubernetes.KubernetesConstants.KNATIVE;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.getValidName;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.isBlank;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.printInstruction;
@@ -45,7 +44,6 @@ import static org.ballerinax.kubernetes.utils.KnativeUtils.printInstruction;
  */
 public class KnativeArtifactManager {
 
-    private static final Map<String, String> instructions = new LinkedHashMap<>();
     private static final PrintStream OUT = System.out;
     private KnativeDataHolder knativeDataHolder;
 
@@ -59,8 +57,6 @@ public class KnativeArtifactManager {
      * @throws KubernetesPluginException if an error occurs while generating artifacts
      */
     void createArtifacts() throws KubernetesPluginException {
-        // add default kubernetes instructions.
-        setDefaultKnativeInstructions();
         OUT.println("\nGenerating Knative artifacts...");
         new KnativeContainerHandler().createArtifacts();
         new KnativeSecretHandler().createArtifacts();
@@ -74,11 +70,10 @@ public class KnativeArtifactManager {
     private void printInstructions() {
         printInstruction("");
         printInstruction("");
-        for (Map.Entry<String, String> instruction : instructions.entrySet()) {
-            printInstruction(instruction.getKey());
-            printInstruction(instruction.getValue());
-            printInstruction("");
-        }
+        printInstruction("\tExecute the below command to deploy the Knative artifacts: ");
+        printInstruction("\tkubectl apply -f " + this.knativeDataHolder.getK8sArtifactOutputPath().resolve(KNATIVE)
+                .toAbsolutePath());
+        printInstruction("");
     }
 
     public void populateDeploymentModel() {
@@ -97,25 +92,4 @@ public class KnativeArtifactManager {
         knativeDataHolder.setServiceModel(serviceModel);
     }
 
-    /**setDeploymentModel
-     * Returns print instructions.
-     *
-     * @return instructions.
-     */
-    public static Map<String, String> getInstructions() {
-        return instructions;
-    }
-
-    /**
-     * Set instructions for kubernetes and helm artifacts.
-     */
-    private void setDefaultKnativeInstructions() {
-        instructions.put("\tRun the following command to deploy the Knative artifacts: ",
-                "\tkubectl apply -f " + this.knativeDataHolder.getK8sArtifactOutputPath().toAbsolutePath());
-
-        ServiceModel model = this.knativeDataHolder.getServiceModel();
-        instructions.put("\tRun the following command to install the application using Helm: ",
-                "\thelm install --name " + model.getName() + " " +
-                        this.knativeDataHolder.getK8sArtifactOutputPath().resolve(model.getName()).toAbsolutePath());
-    }
 }

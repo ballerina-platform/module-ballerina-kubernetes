@@ -56,8 +56,8 @@ import java.util.Set;
 
 import static org.ballerinax.docker.generator.DockerGenConstants.REGISTRY_SEPARATOR;
 import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
-import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.EXECUTABLE_JAR;
+import static org.ballerinax.kubernetes.KubernetesConstants.KNATIVE_SVC_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.VOLUME_DEFINE;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.populateEnvVar;
@@ -203,8 +203,8 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
         knativeServiceBuild.setSpec(knativeServiceSpec);
 
         try {
-            String deploymentContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(knativeServiceBuild);
-            KnativeUtils.writeToFile(deploymentContent, DEPLOYMENT_FILE_POSTFIX + YAML);
+            String knativeSvcContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(knativeServiceBuild);
+            KnativeUtils.writeToFile(knativeSvcContent, KNATIVE_SVC_FILE_POSTFIX + YAML);
         } catch (IOException e) {
             String errorMessage = "error while generating yaml file for deployment: " + serviceModel.getName();
             throw new KubernetesPluginException(errorMessage, e);

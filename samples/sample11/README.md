@@ -32,10 +32,10 @@ Generating artifacts...
         @kubernetes:Job                          - complete 1/1
         @kubernetes:Docker                       - complete 2/2 
 
-        Run the following command to deploy the Kubernetes artifacts: 
+        Execute the below command to deploy the Kubernetes artifacts: 
         kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample11/kubernetes
 
-        Run the following command to install the application using Helm: 
+        Execute the below command to install the application using Helm: 
         helm install --name hello-world-job-deployment /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample11/kubernetes/hello-world-job-deployment
 ```
 

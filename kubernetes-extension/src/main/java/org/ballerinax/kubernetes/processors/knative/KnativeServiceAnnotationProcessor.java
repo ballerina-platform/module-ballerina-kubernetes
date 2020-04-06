@@ -46,8 +46,8 @@ import java.util.Set;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_CERT_PATH;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_HOST;
+import static org.ballerinax.kubernetes.KubernetesConstants.KNATIVE_SVC_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.MAIN_FUNCTION_NAME;
-import static org.ballerinax.kubernetes.KubernetesConstants.SVC_POSTFIX;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.convertRecordFields;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.getBooleanValue;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.getEnvVarMap;
@@ -87,14 +87,14 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
                 serviceModelAttched.addPort(serviceModelAttched.getPort());
                 if (KnativeUtils.isBlank(serviceModelAttched.getName())) {
                     serviceModelAttched.setName(KnativeUtils.getValidName(serviceNode.getName().getValue())
-                            + SVC_POSTFIX);
+                            + KNATIVE_SVC_POSTFIX);
                 }
                 return;
             }
         }
         ServiceModel serviceModel = processService(attachmentNode);
         if (KnativeUtils.isBlank(serviceModel.getName())) {
-            serviceModel.setName(KnativeUtils.getValidName(serviceNode.getName().getValue()) + SVC_POSTFIX);
+            serviceModel.setName(KnativeUtils.getValidName(serviceNode.getName().getValue()) + KNATIVE_SVC_POSTFIX);
         }
         // If service annotation port is not empty, then listener port is used for the k8s svc target port while
         // service annotation port is used for k8s port.
@@ -115,7 +115,7 @@ public class KnativeServiceAnnotationProcessor extends AbstractAnnotationProcess
             throws KubernetesPluginException {
         ServiceModel serviceModel = processService(attachmentNode);
         if (KnativeUtils.isBlank(serviceModel.getName())) {
-            serviceModel.setName(KnativeUtils.getValidName(variableNode.getName().getValue()) + SVC_POSTFIX);
+            serviceModel.setName(KnativeUtils.getValidName(variableNode.getName().getValue()) + KNATIVE_SVC_POSTFIX);
         }
         // If service annotation port is not empty, then listener port is used for the k8s svc target port while
         // service annotation port is used for k8s port.

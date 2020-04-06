@@ -39,6 +39,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
+import static org.ballerinax.kubernetes.KubernetesConstants.KNATIVE;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 
@@ -56,7 +57,7 @@ public class Sample18Test extends SampleTest {
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KnativeTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "hello_world_knative.bal"), 0);
-        File artifactYaml = KUBERNETES_TARGET_PATH.resolve("hello_world_knative.yaml").toFile();
+        File artifactYaml = KUBERNETES_TARGET_PATH.resolve(KNATIVE).resolve("hello_world_knative.yaml").toFile();
         Assert.assertTrue(artifactYaml.exists());
         Handlers.register(new KnativeTestUtils.ServiceHandler());
         KubernetesClient client = new DefaultKubernetesClient();

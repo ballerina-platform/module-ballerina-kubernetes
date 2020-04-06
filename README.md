@@ -259,10 +259,10 @@ Generating executable
 	@kubernetes:Docker 			 - complete 3/3
 	@kubernetes:Helm 			 - complete 1/1
 
-	Run the following command to deploy the Kubernetes artifacts:
+	Execute the below command to deploy the Kubernetes artifacts:
 	kubectl apply -f ./kubernetes
 
-	Run the following command to install the application using Helm:
+	Execute the below command to install the application using Helm:
 	helm install --name hello-world-k8s-deployment ./kubernetes/hello-world-k8s-deployment
 
 > deploying artifacts...
