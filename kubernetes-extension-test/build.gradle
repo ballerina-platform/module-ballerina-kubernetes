@@ -27,6 +27,7 @@ dependencies {
     implementation project(":kubernetes-extension")
     implementation project(":kubernetes-extension-annotations")
 
+    testImplementation "org.ballerinalang:ballerina-lang:${ballerinaLangVersion}"
     testImplementation "com.github.docker-java:docker-java:${dockerJavaVersion}"
     testImplementation "io.fabric8:kubernetes-client:${fabric8KubernetesClientVersion}"
     testImplementation "me.snowdrop:istio-model:${snowdropIstioModelVersion}"
