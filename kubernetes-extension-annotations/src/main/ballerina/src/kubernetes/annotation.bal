@@ -203,6 +203,7 @@ public type DeploymentConfiguration record {|
     string[] dependsOn?;
     string[] imagePullSecrets?;
     map<string> nodeSelector?;
+    string serviceAccountName;
 |};
 
 public const STRATEGY_RECREATE = "Recreate";
@@ -322,6 +323,17 @@ public type Secret record {|
 public type SecretMount record {|
     string conf?;
     Secret[] secrets?;
+|};
+
+public type ProjectedVolumeMount record {|
+    ServiceAccountToken[] sources;
+|};
+
+public type ServiceAccountToken record {|
+    string name;
+    string mountPath;
+    int expirationSeconds;
+    string audience;
 |};
 
 # @kubernetes:Secret annotation to configure secrets.
