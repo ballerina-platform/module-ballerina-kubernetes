@@ -68,6 +68,7 @@ public class DeploymentModel extends KubernetesModel {
     private List<PodTolerationModel> podTolerations;
     private DeploymentStrategy strategy;
     private Map<String, String> nodeSelector;
+    private String serviceAccountName;
 
     public DeploymentModel() {
         // Initialize with default values.
