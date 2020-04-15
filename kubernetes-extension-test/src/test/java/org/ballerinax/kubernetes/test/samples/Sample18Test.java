@@ -74,7 +74,7 @@ public class Sample18Test extends SampleTest {
     @Test
     public void validateDeployment() {
         Assert.assertNotNull(this.knativeService);
-        Assert.assertEquals(this.knativeService.getMetadata().getName(), "helloworld-svc");
+        Assert.assertEquals(this.knativeService.getMetadata().getName(), "helloworld-knative-svc");
         Assert.assertEquals(this.knativeService.getSpec().getTemplate().getSpec().getContainerConcurrency().longValue(),
                 100);
         Container container = this.knativeService.getSpec().getTemplate().getSpec().getContainers().get(0);
@@ -82,7 +82,7 @@ public class Sample18Test extends SampleTest {
         Assert.assertEquals(container.getPorts().size(), 1);
         Assert.assertEquals(container.getPorts().get(0).getContainerPort().intValue(), 8080);
         Assert.assertEquals(container.getPorts().get(0).getProtocol(), "TCP");
-        Assert.assertEquals(container.getName(), "helloworld-svc");
+        Assert.assertEquals(container.getName(), "helloworld-knative-svc");
     }
 
     @Test

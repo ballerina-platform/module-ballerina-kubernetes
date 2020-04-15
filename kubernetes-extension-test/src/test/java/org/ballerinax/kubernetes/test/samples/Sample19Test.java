@@ -96,7 +96,7 @@ public class Sample19Test extends SampleTest {
     @Test
     public void validateDeployment() {
         Assert.assertNotNull(knativeService);
-        Assert.assertEquals(knativeService.getMetadata().getName(), "helloworldep-svc");
+        Assert.assertEquals(knativeService.getMetadata().getName(), "helloworldep-knative-svc");
         Assert.assertEquals(knativeService.getSpec().getTemplate().getSpec().getContainerConcurrency().longValue(),
                 100);
         Assert.assertEquals(knativeService.getSpec().getTemplate().getSpec().getContainers().size(), 1);
