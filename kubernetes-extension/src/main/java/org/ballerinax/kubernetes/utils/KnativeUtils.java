@@ -69,6 +69,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
+import static org.ballerinax.kubernetes.KubernetesConstants.KNATIVE;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 
 /**
@@ -89,7 +90,7 @@ public class KnativeUtils {
      */
     public static void writeToFile(String context, String outputFileName) throws IOException {
         KnativeDataHolder dataHolder = KnativeContext.getInstance().getDataHolder();
-        writeToFile(dataHolder.getK8sArtifactOutputPath(), context, outputFileName);
+        writeToFile(dataHolder.getK8sArtifactOutputPath().resolve(KNATIVE), context, outputFileName);
     }
 
     /**

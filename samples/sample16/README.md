@@ -194,10 +194,10 @@ Generating artifacts...
         @kubernetes:Docker                       - complete 2/2 
         @kubernetes:Helm                         - complete 1/1
 
-        Run the following command to deploy the Kubernetes artifacts: 
+        Execute the below command to deploy the Kubernetes artifacts: 
         kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample16/target/kubernetes/car_rental
 
-        Run the following command to install the application using Helm: 
+        Execute the below command to install the application using Helm: 
         helm install --name car-rental-deployment /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample16/target/kubernetes/car_rental/car-rental-deployment
 
 
@@ -210,10 +210,10 @@ Generating artifacts...
         @istio:Gateway                           - complete 1/1
         @istio:VirtualService                    - complete 1/1
 
-        Run the following command to deploy the Kubernetes artifacts: 
+        Execute the below command to deploy the Kubernetes artifacts: 
         kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample16/target/kubernetes/travel_agency
 
-        Run the following command to install the application using Helm: 
+        Execute the below command to install the application using Helm: 
         helm install --name travel-agency-deployment /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample16/target/kubernetes/travel_agency/travel-agency-deployment
 
 
@@ -224,10 +224,10 @@ Generating artifacts...
         @kubernetes:Docker                       - complete 2/2 
         @kubernetes:Helm                         - complete 1/1
 
-        Run the following command to deploy the Kubernetes artifacts: 
+        Execute the below command to deploy the Kubernetes artifacts: 
         kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample16/target/kubernetes/hotel_reservation
 
-        Run the following command to install the application using Helm: 
+        Execute the below command to install the application using Helm: 
         helm install --name hotel-reservation-deployment /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample16/target/kubernetes/hotel_reservation/hotel-reservation-deployment
 
 
@@ -238,10 +238,10 @@ Generating artifacts...
         @kubernetes:Docker                       - complete 2/2 
         @kubernetes:Helm                         - complete 1/1
 
-        Run the following command to deploy the Kubernetes artifacts: 
+        Execute the below command to deploy the Kubernetes artifacts: 
         kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample16/target/kubernetes/airline_reservation
 
-        Run the following command to install the application using Helm: 
+        Execute the below command to install the application using Helm: 
         helm install --name airline-reservation-deployment /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample16/target/kubernetes/airline_reservation/airline-reservation-deployment
 ```
 

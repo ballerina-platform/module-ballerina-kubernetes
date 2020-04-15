@@ -139,11 +139,11 @@ public class ArtifactManager {
      * Set instructions for kubernetes and helm artifacts.
      */
     private void setDefaultKubernetesInstructions() {
-        instructions.put("\tRun the following command to deploy the Kubernetes artifacts: ",
+        instructions.put("\tExecute the below command to deploy the Kubernetes artifacts: ",
                 "\tkubectl apply -f " + this.kubernetesDataHolder.getK8sArtifactOutputPath().toAbsolutePath());
         
         DeploymentModel model = this.kubernetesDataHolder.getDeploymentModel();
-        instructions.put("\tRun the following command to install the application using Helm: ",
+        instructions.put("\tExecute the below command to install the application using Helm: ",
                 "\thelm install --name " + model.getName() + " " +
                 this.kubernetesDataHolder.getK8sArtifactOutputPath().resolve(model.getName()).toAbsolutePath());
     }

@@ -39,6 +39,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
+import static org.ballerinax.kubernetes.KubernetesConstants.KNATIVE;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.getExposedPorts;
 
@@ -56,7 +57,7 @@ public class Sample18Test extends SampleTest {
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KnativeTestUtils.compileBallerinaFile(SOURCE_DIR_PATH, "hello_world_knative.bal"), 0);
-        File artifactYaml = KUBERNETES_TARGET_PATH.resolve("hello_world_knative.yaml").toFile();
+        File artifactYaml = KUBERNETES_TARGET_PATH.resolve(KNATIVE).resolve("hello_world_knative.yaml").toFile();
         Assert.assertTrue(artifactYaml.exists());
         Handlers.register(new KnativeTestUtils.ServiceHandler());
         KubernetesClient client = new DefaultKubernetesClient();
@@ -73,7 +74,7 @@ public class Sample18Test extends SampleTest {
     @Test
     public void validateDeployment() {
         Assert.assertNotNull(this.knativeService);
-        Assert.assertEquals(this.knativeService.getMetadata().getName(), "helloworld-svc");
+        Assert.assertEquals(this.knativeService.getMetadata().getName(), "helloworld-knative-svc");
         Assert.assertEquals(this.knativeService.getSpec().getTemplate().getSpec().getContainerConcurrency().longValue(),
                 100);
         Container container = this.knativeService.getSpec().getTemplate().getSpec().getContainers().get(0);
@@ -81,7 +82,7 @@ public class Sample18Test extends SampleTest {
         Assert.assertEquals(container.getPorts().size(), 1);
         Assert.assertEquals(container.getPorts().get(0).getContainerPort().intValue(), 8080);
         Assert.assertEquals(container.getPorts().get(0).getProtocol(), "TCP");
-        Assert.assertEquals(container.getName(), "helloworld-svc");
+        Assert.assertEquals(container.getName(), "helloworld-knative-svc");
     }
 
     @Test

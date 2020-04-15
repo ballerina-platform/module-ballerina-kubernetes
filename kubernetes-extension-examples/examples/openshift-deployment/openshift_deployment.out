@@ -13,13 +13,13 @@ Generating executable
 	@openshift:ImageStream 			 - complete 1/1
 	@openshift:Route 			 - complete 1/1
 
-	Run the following command to deploy the OpenShift artifacts:
+	Execute the below command to deploy the OpenShift artifacts:
 	oc apply -f ./kubernetes/openshift
 
-	Run the following command to start a build:
+	Execute the below command to start a build:
 	oc start-build bc/openshift-openshift-bc-openshift-bc --from-dir=. --follow
 
-	Run the following command to deploy the Kubernetes artifacts:
+	Execute the below command to deploy the Kubernetes artifacts:
 	kubectl apply -f ./kubernetes
 
 # Create a new OpenShift project

@@ -82,10 +82,10 @@ Generating artifacts...
         @kubernetes:Docker                       - complete 2/2 
         @kubernetes:Helm                         - complete 1/1
 
-        Run the following command to deploy the Kubernetes artifacts: 
+        Execute the below command to deploy the Kubernetes artifacts: 
         kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample10/target/kubernetes/burger
 
-        Run the following command to install the application using Helm: 
+        Execute the below command to install the application using Helm: 
         helm install --name burger-deployment /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample10/target/kubernetes/burger/burger-deployment
 
 
@@ -97,10 +97,10 @@ Generating artifacts...
         @kubernetes:Docker                       - complete 2/2 
         @kubernetes:Helm                         - complete 1/1
 
-        Run the following command to deploy the Kubernetes artifacts: 
+        Execute the below command to deploy the Kubernetes artifacts: 
         kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample10/target/kubernetes/pizza
 
-        Run the following command to install the application using Helm: 
+        Execute the below command to install the application using Helm: 
         helm install --name foodstore /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample10/target/kubernetes/pizza/foodstore
 
 ```

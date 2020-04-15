@@ -50,13 +50,13 @@ Generating artifacts...
         @openshift:ImageStream                   - complete 1/1
         @openshift:Route                         - complete 1/1
 
-        Run the following command to deploy the OpenShift artifacts: 
+        Execute the below command to deploy the OpenShift artifacts: 
         oc apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample17/kubernetes/openshift
 
-        Run the following command to start a build: 
+        Execute the below command to start a build: 
         oc start-build bc/hello-world-oc-openshift-bc --from-dir=. --follow
 
-        Run the following command to deploy the Kubernetes artifacts: 
+        Execute the below command to deploy the Kubernetes artifacts: 
         kubectl apply -f /Users/parkavi/Documents/Parkavi/BalKube/kubernetes/samples/sample17/kubernetes
 ```
 

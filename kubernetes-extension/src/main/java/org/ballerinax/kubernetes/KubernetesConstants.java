@@ -25,6 +25,7 @@ public class KubernetesConstants {
     public static final String ENABLE_DEBUG_LOGS = "BAL_KUBERNETES_DEBUG";
     public static final String KUBERNETES = "kubernetes";
     public static final String OPENSHIFT = "openshift";
+    public static final String KNATIVE = "knative";
     public static final String MAIN_FUNCTION_NAME = "main";
     public static final String KUBERNETES_SVC_PROTOCOL = "TCP";
     public static final String KUBERNETES_SELECTOR_KEY = "app";
@@ -53,6 +54,7 @@ public class KubernetesConstants {
     public static final String OPENSHIFT_BUILD_CONFIG_FILE_POSTFIX = "_openshift_bc";
     public static final String OPENSHIFT_IMAGE_STREAM_TAG_FILE_POSTFIX = "_openshift_is";
     public static final String OPENSHIFT_ROUTE_FILE_POSTFIX = "_openshift_route";
+    public static final String KNATIVE_SVC_FILE_POSTFIX = "_knative_svc";
     public static final String HPA_FILE_POSTFIX = "_hpa";
     public static final String YAML = ".yaml";
     public static final String DOCKER_LATEST_TAG = ":latest";
@@ -78,6 +80,7 @@ public class KubernetesConstants {
     public static final String ISTIO_VIRTUAL_SERVICE_POSTFIX = "-istio-vs";
     public static final String OPENSHIFT_BUILD_CONFIG_POSTFIX = "-openshift-bc";
     public static final String OPENSHIFT_ROUTE_POSTFIX = "-openshift-route";
+    public static final String KNATIVE_SVC_POSTFIX = "-knative-svc";
     public static final String VOLUME_DEFINE = "-volume";
 
     /**

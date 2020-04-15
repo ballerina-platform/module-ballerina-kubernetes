@@ -35,7 +35,6 @@ configurations {
         exclude group: "org.glassfish.hk2.external"
         exclude group: "org.bouncycastle"
         exclude group: "org.slf4j"
-        exclude group: "commons-codec"
         exclude group: "org.apache.commons"
         exclude group: "commons-io"
         exclude group: "commons-logging"

@@ -50,18 +50,18 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
             OUT.print("\t@openshift:BuildConfig \t\t\t - complete 1/1");
     
             Map<String, String> instructions = ArtifactManager.getInstructions();
-            instructions.put("\tRun the following command to deploy the OpenShift artifacts: ",
+            instructions.put("\tExecute the below command to deploy the OpenShift artifacts: ",
                     "\toc apply -f " + dataHolder.getK8sArtifactOutputPath().resolve(OPENSHIFT).toAbsolutePath());
             if (dataHolder.getK8sArtifactOutputPath().toString().contains("target")) {
-                instructions.put("\tRun the following command to start a build: ",
+                instructions.put("\tExecute the below command to start a build: ",
                         "\toc start-build bc/" + buildConfigModel.getName() +
                         " --from-dir=./target --follow");
             } else {
-                instructions.put("\tRun the following command to start a build: ",
+                instructions.put("\tExecute the below command to start a build: ",
                         "\toc start-build bc/" + buildConfigModel.getName() +
                         " --from-dir=. --follow");
             }
-            instructions.put("\tRun the following command to deploy the Kubernetes artifacts: ",
+            instructions.put("\tExecute the below command to deploy the Kubernetes artifacts: ",
                     "\tkubectl apply -f " + dataHolder.getK8sArtifactOutputPath());
         }
     }
