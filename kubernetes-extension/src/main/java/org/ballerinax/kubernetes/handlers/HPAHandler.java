@@ -69,6 +69,7 @@ public class HPAHandler extends AbstractArtifactHandler {
     
     private MetricSpec generateTargetCPUUtilizationPercentage(int percentage) {
         MetricTarget cpuMetricTarget = new MetricTargetBuilder()
+                .withType("Utilization")
                 .withAverageUtilization(percentage)
                 .build();
     
