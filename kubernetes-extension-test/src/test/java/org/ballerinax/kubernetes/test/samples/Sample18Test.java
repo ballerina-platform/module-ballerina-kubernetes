@@ -64,7 +64,7 @@ public class Sample18Test extends SampleTest {
         List<HasMetadata> k8sItems = client.load(new FileInputStream(artifactYaml)).get();
         for (HasMetadata data : k8sItems) {
             if ("Service".equals(data.getKind())) {
-                knativeService = (Service) data;
+                this.knativeService = (Service) data;
             } else {
                 Assert.fail("Unexpected k8s/knative resource found: " + data.getKind());
             }
@@ -77,6 +77,8 @@ public class Sample18Test extends SampleTest {
         Assert.assertEquals(this.knativeService.getMetadata().getName(), "helloworld-knative-svc");
         Assert.assertEquals(this.knativeService.getSpec().getTemplate().getSpec().getContainerConcurrency().longValue(),
                 100);
+        Assert.assertEquals(this.knativeService.getSpec().getTemplate().getSpec().getContainers().size(), 1);
+        
         Container container = this.knativeService.getSpec().getTemplate().getSpec().getContainers().get(0);
         Assert.assertEquals(container.getImage(), DOCKER_IMAGE);
         Assert.assertEquals(container.getPorts().size(), 1);

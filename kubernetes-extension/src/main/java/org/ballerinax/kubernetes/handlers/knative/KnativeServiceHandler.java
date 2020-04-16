@@ -190,7 +190,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
                 .withNewSpec()
                 .withContainerConcurrency((long) serviceModel.getContainerConcurrency())
                 .withTimeoutSeconds((long) serviceModel.getTimeoutSeconds())
-                .withContainer(container)
+                .withContainers(container)
                 .withInitContainers(generateInitContainer(serviceModel))
                 .withVolumes(populateVolume(serviceModel))
                 .endSpec()
