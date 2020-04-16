@@ -290,6 +290,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                 .addToAnnotations(deploymentModel.getPodAnnotations())
                 .endMetadata()
                 .withNewSpec()
+                .withServiceAccountName(deploymentModel.getServiceAccountName())
                 .withContainers(container)
                 .withImagePullSecrets(getImagePullSecrets(deploymentModel))
                 .withInitContainers(generateInitContainer(deploymentModel))

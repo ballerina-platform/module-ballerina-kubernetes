@@ -203,7 +203,8 @@ public type DeploymentConfiguration record {|
     string[] dependsOn?;
     string[] imagePullSecrets?;
     map<string> nodeSelector?;
-    string serviceAccountName;
+    string serviceAccountName?;
+    ProjectedVolumeMount projectedVolumeMount?;
 |};
 
 public const STRATEGY_RECREATE = "Recreate";
