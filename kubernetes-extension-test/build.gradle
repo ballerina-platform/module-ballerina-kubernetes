@@ -15,17 +15,19 @@
  *
  */
 
-configurations {
-    jacocoRuntime
-}
+apply from: "$rootDir/gradle/javaProject.gradle"
 
-dependencies {
-    jacocoRuntime "org.jacoco:org.jacoco.agent:${jacoco.toolVersion}:runtime"
+configurations {
+    extensionPlugin
+    birDir
+    kubernetesJar
+    istioJar
+    openshiftJar
+    knativeJar
 }
 
 dependencies {
     implementation project(":kubernetes-extension")
-    implementation project(":kubernetes-extension-annotations")
 
     testImplementation "org.ballerinalang:ballerina-lang:${ballerinaLangVersion}"
     testImplementation "com.github.docker-java:docker-java:${dockerJavaVersion}"
@@ -35,17 +37,53 @@ dependencies {
     testImplementation "org.slf4j:slf4j-api:${slf4jVersion}"
     testImplementation "org.slf4j:slf4j-log4j12:${slf4jVersion}"
     testImplementation "org.testng:testng:${testngVersion}"
+
+    extensionPlugin project(path: ":kubernetes-extension", configuration: "shadow")
+    birDir project(path: ":kubernetes-extension-annotations", configuration: "birDir")
+    kubernetesJar project(path: ":kubernetes-extension-annotations", configuration: "kubernetesJar")
+    istioJar project(path: ":kubernetes-extension-annotations", configuration: "istioJar")
+    openshiftJar project(path: ":kubernetes-extension-annotations", configuration: "openshiftJar")
+    knativeJar project(path: ":kubernetes-extension-annotations", configuration: "knativeJar")
 }
 
 description = 'Ballerinax - Kubernetes Extension Tests'
 
-test {
-    testLogging {
-        showStackTraces = true
-        showStandardStreams = true
-        events "failed"
-        exceptionFormat "full"
+def distributionLocation = project(":kubernetes-extension-annotations").buildDir.absolutePath + "/extracted-distribution/jballerina-tools-${ballerinaLangVersion}"
+
+task copyExtensionPlugin {
+    doLast {
+        copy {
+            from configurations.extensionPlugin
+            into file("${distributionLocation}/bre/lib/")
+        }
     }
+}
+
+task copyBallerinaArtifacts {
+    doLast {
+        copy {
+            from configurations.birDir
+            into file("${distributionLocation}/bir-cache/")
+        }
+        [configurations.kubernetesJar,
+         configurations.istioJar,
+         configurations.openshiftJar,
+         configurations.knativeJar].each { jar ->
+            copy {
+                from jar
+                into file("${distributionLocation}/bre/lib/")
+            }
+        }
+    }
+}
+
+task prepareDistribution {
+    dependsOn copyExtensionPlugin
+    dependsOn copyBallerinaArtifacts
+}
+
+test {
+    dependsOn prepareDistribution
     useTestNG() {
         if (project.hasProperty('Travis')) {
             suites 'src/test/resources/testng-travis.xml'
@@ -59,6 +97,3 @@ test {
         ]
 	}
 }
-
-test.dependsOn(":kubernetes-extension:build")
-test.dependsOn(":kubernetes-extension-annotations:build")

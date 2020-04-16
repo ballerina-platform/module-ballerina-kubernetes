@@ -15,28 +15,20 @@
  *
  */
 
-apply from: "$rootDir/gradle/mvnPublisher.gradle"
-
-description = 'Ballerinax - Kubernetes Extension Examples'
-
-task zipExamples(type: Zip) {
-   from 'examples/'
-   include '*'
-   include '*/*'
-   archiveFileName = "kubernetes-extension-examples-${ballerinaLangVersion}.zip"
-   destinationDirectory = file(project.buildDir.absolutePath)
-}
-
-jar {
-   enabled = false
-}
+apply plugin: "maven-publish"
 
 publishing {
-   publications {
-      mavenJava(MavenPublication) {
-         artifact source: zipExamples, extension: 'zip'
-      }
-   }
+    repositories {
+        maven {
+            if (project.version.endsWith('-SNAPSHOT')) {
+                url "https://maven.wso2.org/nexus/content/repositories/snapshots/"
+            } else {
+                url "https://maven.wso2.org/nexus/service/local/staging/deploy/maven2/"
+            }
+            credentials {
+                username System.getenv("NEXUS_USERNAME")
+                password System.getenv("NEXUS_PASSWORD")
+            }
+        }
+    }
 }
-
-build.dependsOn zipExamples
