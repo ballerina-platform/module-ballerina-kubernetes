@@ -136,8 +136,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |annotations|Metadata Annotations map|null|
 |mountPath|Path to mount on container|null|
 |accessMode|Access mode|ReadWriteOnce|
-|volumeClaimSizeAmount|Amount of the volume claim|null|
-|volumeClaimSizeFormat|Amount's format of the volume claim|null|
+|volumeClaimSize|Size of the volume claim|null|
 |readOnly|Is mount read only|false|
 
 ### @kubernetes:ResourceQuota{}

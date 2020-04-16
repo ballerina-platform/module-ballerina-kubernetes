@@ -357,15 +357,13 @@ public const annotation ConfigMapMount ConfigMap on source service, source funct
 #
 # + mountPath - Mount Path.
 # + accessMode - Access mode. Default is `"ReadWriteOnce"`.
-# + volumeClaimSizeAmount - Amount of the volume claim.
-# + volumeClaimSizeFormat - Amount's format of the volume claim.
+# + volumeClaimSize - Size of the volume claim.
 # + readOnly - Is mount read only.
 public type PersistentVolumeClaimConfig record {|
     *Metadata;
     string mountPath;
     string accessMode = "ReadWriteOnce";
-    string volumeClaimSizeAmount;
-    string volumeClaimSizeFormat;
+    string volumeClaimSize;
     boolean readOnly;
 |};
 
