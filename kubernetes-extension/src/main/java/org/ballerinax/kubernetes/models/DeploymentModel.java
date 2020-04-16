@@ -69,6 +69,7 @@ public class DeploymentModel extends KubernetesModel {
     private DeploymentStrategy strategy;
     private Map<String, String> nodeSelector;
     private String serviceAccountName;
+    private List<ServiceAccountTokenModel> serviceAccountTokenModel;
 
     public DeploymentModel() {
         // Initialize with default values.
@@ -174,6 +175,7 @@ public class DeploymentModel extends KubernetesModel {
                 ", registry='" + registry +
                 ", buildExtension=" + buildExtension +
                 ", podTolerations=" + podTolerations +
+                ", serviceAccountTokenModel=" + serviceAccountTokenModel +
                 '}';
     }
 }

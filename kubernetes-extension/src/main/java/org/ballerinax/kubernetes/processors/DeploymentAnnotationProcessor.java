@@ -178,6 +178,11 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 case nodeSelector:
                     deploymentModel.setNodeSelector(getMap(keyValue.getValue()));
                     break;
+                case serviceAccountName:
+                    deploymentModel.setServiceAccountName(getStringValue(keyValue.getValue()));
+                    break;
+                case projectedVolumeMount:
+                    break;
                 default:
                     break;
             }
@@ -364,7 +369,9 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         dependsOn,
         imagePullSecrets,
         updateStrategy,
-        nodeSelector
+        nodeSelector,
+        serviceAccountName,
+        projectedVolumeMount
     }
 
     private enum ProbeConfiguration {
