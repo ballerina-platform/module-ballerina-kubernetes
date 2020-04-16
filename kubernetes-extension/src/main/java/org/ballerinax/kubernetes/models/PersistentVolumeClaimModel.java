@@ -26,7 +26,8 @@ public class PersistentVolumeClaimModel extends KubernetesModel {
     private String mountPath;
     private boolean readOnly;
     private String accessMode;
-    private String volumeClaimSize;
+    private String volumeClaimSizeAmount;
+    private String volumeClaimSizeFormat;
 
     public PersistentVolumeClaimModel() {
         this.accessMode = "ReadWriteOnce";
@@ -56,12 +57,20 @@ public class PersistentVolumeClaimModel extends KubernetesModel {
     public void setAccessMode(String accessMode) {
         this.accessMode = accessMode;
     }
-
-    public String getVolumeClaimSize() {
-        return volumeClaimSize;
+    
+    public String getVolumeClaimSizeAmount() {
+        return volumeClaimSizeAmount;
     }
-
-    public void setVolumeClaimSize(String volumeClaimSize) {
-        this.volumeClaimSize = volumeClaimSize;
+    
+    public void setVolumeClaimSizeAmount(String volumeClaimSizeAmount) {
+        this.volumeClaimSizeAmount = volumeClaimSizeAmount;
+    }
+    
+    public String getVolumeClaimSizeFormat() {
+        return volumeClaimSizeFormat;
+    }
+    
+    public void setVolumeClaimSizeFormat(String volumeClaimSizeFormat) {
+        this.volumeClaimSizeFormat = volumeClaimSizeFormat;
     }
 }

@@ -18,12 +18,12 @@
 
 package org.ballerinax.kubernetes.handlers.knative;
 
+import io.fabric8.knative.serving.v1alpha1.Service;
+import io.fabric8.knative.serving.v1alpha1.ServiceBuilder;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
-import io.fabric8.kubernetes.api.model.ObjectMeta;
-import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
 import io.fabric8.kubernetes.api.model.Probe;
 import io.fabric8.kubernetes.api.model.ProbeBuilder;
 import io.fabric8.kubernetes.api.model.TCPSocketAction;
@@ -39,18 +39,13 @@ import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.knative.ConfigMapModel;
 import org.ballerinax.kubernetes.models.knative.KnativeContext;
-import org.ballerinax.kubernetes.models.knative.KnativeService;
 import org.ballerinax.kubernetes.models.knative.ProbeModel;
 import org.ballerinax.kubernetes.models.knative.SecretModel;
 import org.ballerinax.kubernetes.models.knative.ServiceModel;
-import org.ballerinax.kubernetes.specs.KnativePodSpec;
-import org.ballerinax.kubernetes.specs.KnativePodTemplateSpec;
-import org.ballerinax.kubernetes.specs.KnativeServiceSpec;
 import org.ballerinax.kubernetes.utils.KnativeUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -117,8 +112,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
         return initContainers;
     }
 
-    private Container generateContainer(ServiceModel serviceModel, List<ContainerPort> containerPorts)
-            throws KubernetesPluginException {
+    private Container generateContainer(ServiceModel serviceModel, List<ContainerPort> containerPorts) {
         String dockerRegistry = serviceModel.getRegistry();
         String deploymentImageName = serviceModel.getImage();
         if (null != dockerRegistry && !"".equals(dockerRegistry)) {
@@ -184,26 +178,28 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
             containerPorts = populatePorts(serviceModel.getPorts());
         }
         Container container = generateContainer(serviceModel, containerPorts);
-        ObjectMeta metaData = new ObjectMetaBuilder()
+        Service knativeSvc = new ServiceBuilder()
+                .withNewMetadata()
                 .withName(serviceModel.getName())
                 .withNamespace(knativeDataHolder.getNamespace())
+                .withAnnotations(serviceModel.getAnnotations())
+                .withLabels(serviceModel.getLabels())
+                .endMetadata()
+                .withNewSpec()
+                .withNewTemplate()
+                .withNewSpec()
+                .withContainerConcurrency((long) serviceModel.getContainerConcurrency())
+                .withTimeoutSeconds((long) serviceModel.getTimeoutSeconds())
+                .withContainers(container)
+                .withInitContainers(generateInitContainer(serviceModel))
+                .withVolumes(populateVolume(serviceModel))
+                .endSpec()
+                .endTemplate()
+                .endSpec()
                 .build();
-                 KnativeService knativeServiceBuild = new KnativeService();
-                 knativeServiceBuild.setMetadata(metaData);
-        KnativeServiceSpec knativeServiceSpec = new KnativeServiceSpec();
-        KnativePodSpec knativePodSpec = new KnativePodSpec();
-        knativePodSpec.setContainerConcurrency(serviceModel.getContainerConcurrency());
-        knativePodSpec.setContainers(Collections.singletonList(container));
-        knativePodSpec.setInitContainers(generateInitContainer(serviceModel));
-        knativePodSpec.setVolumes(populateVolume(serviceModel));
-        KnativePodTemplateSpec knativePodTemplateSpec = new KnativePodTemplateSpec();
-        knativePodTemplateSpec.setMetadata(null);
-        knativePodTemplateSpec.setSpec(knativePodSpec);
-        knativeServiceSpec.setTemplate(knativePodTemplateSpec);
-        knativeServiceBuild.setSpec(knativeServiceSpec);
-
+                
         try {
-            String knativeSvcContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(knativeServiceBuild);
+            String knativeSvcContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(knativeSvc);
             KnativeUtils.writeToFile(knativeSvcContent, KNATIVE_SVC_FILE_POSTFIX + YAML);
         } catch (IOException e) {
             String errorMessage = "error while generating yaml file for deployment: " + serviceModel.getName();

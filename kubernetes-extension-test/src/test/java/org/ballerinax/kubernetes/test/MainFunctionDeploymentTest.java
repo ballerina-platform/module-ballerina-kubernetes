@@ -100,7 +100,9 @@ public class MainFunctionDeploymentTest {
                 .KUBERNETES_SELECTOR_KEY), "main_function");
         Assert.assertEquals(podAutoscaler.getSpec().getMaxReplicas().intValue(), 2);
         Assert.assertEquals(podAutoscaler.getSpec().getMinReplicas().intValue(), 1);
-        Assert.assertEquals(podAutoscaler.getSpec().getTargetCPUUtilizationPercentage().intValue(), 50);
+        Assert.assertEquals(podAutoscaler.getSpec().getMetrics().size(), 1);
+        Assert.assertEquals(podAutoscaler.getSpec().getMetrics().get(0).getResource().getTarget()
+                .getAverageUtilization().intValue(), 50);
         Assert.assertEquals(podAutoscaler.getSpec().getScaleTargetRef().getName(), "pizzashack");
     
         Container container = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);

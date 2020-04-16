@@ -20,8 +20,6 @@ package org.ballerinax.kubernetes.handlers;
 
 import org.ballerinax.docker.generator.models.DockerModel;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.KubernetesContext;
-import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -49,13 +47,9 @@ public class DockerGeneratorTests extends HandlerTestSuite {
         dockerModel.setBaseImage("ballerina/ballerina-runtime" + ":latest");
         dockerModel.setDebugPort(5005);
         dockerModel.setBuildImage(false);
-        KubernetesContext context = KubernetesContext.getInstance();
-        KubernetesDataHolder dataHolder = context.getDataHolder();
         dataHolder.setDockerModel(dockerModel);
         new DockerHandler().createArtifacts();
-        File dockerfile = new File("target/docker/" + module.name.toString() + "/");
-        dockerfile.mkdirs();
-        dockerfile = new File("target/docker/" + module.name.toString() + "/Dockerfile");
+        File dockerfile = dataHolder.getDockerArtifactOutputPath().resolve("Dockerfile").toFile();
         Assert.assertTrue(dockerfile.exists());
         dockerfile.deleteOnExit();
     }

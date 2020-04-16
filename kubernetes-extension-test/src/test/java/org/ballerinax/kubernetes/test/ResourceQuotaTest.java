@@ -78,12 +78,16 @@ public class ResourceQuotaTest {
         Assert.assertEquals(resourceQuota.getSpec().getHard().get("pods").getAmount(), "4", "Invalid number of pods.");
         Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.cpu").getAmount(), "1",
                 "Invalid number of cpu requests.");
-        Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.memory").getAmount(), "1Gi",
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.memory").getAmount(), "1",
                 "Invalid number of memory requests.");
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.memory").getFormat(), "Gi",
+                "Invalid format of memory requests.");
         Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.cpu").getAmount(), "2",
                 "Invalid number of cpu limits");
-        Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.memory").getAmount(), "2Gi",
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.memory").getAmount(), "2",
                 "Invalid number of memory limits.");
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.memory").getFormat(), "Gi",
+                "Invalid format of memory limits.");
     
         Assert.assertEquals(resourceQuota.getSpec().getScopes().size(), 0, "Unexpected number of scopes.");
     
@@ -118,12 +122,16 @@ public class ResourceQuotaTest {
         Assert.assertEquals(resourceQuota.getSpec().getHard().get("pods").getAmount(), "4", "Invalid number of pods.");
         Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.cpu").getAmount(), "1",
                 "Invalid number of cpu requests.");
-        Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.memory").getAmount(), "1Gi",
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.memory").getAmount(), "1",
                 "Invalid number of memory requests.");
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.memory").getFormat(), "Gi",
+                "Invalid format of memory requests.");
         Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.cpu").getAmount(), "2",
                 "Invalid number of cpu limits");
-        Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.memory").getAmount(), "2Gi",
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.memory").getAmount(), "2",
                 "Invalid number of memory limits.");
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.memory").getFormat(), "Gi",
+                "Invalid format of memory limits.");
         
         Assert.assertEquals(resourceQuota.getSpec().getScopes().size(), 1, "Unexpected number of scopes.");
         Assert.assertEquals(resourceQuota.getSpec().getScopes().get(0), "BestEffort", "Invalid scope found.");
@@ -160,12 +168,16 @@ public class ResourceQuotaTest {
                 "Invalid number of pods.");
         Assert.assertEquals(resourceQuotas.get(0).getSpec().getHard().get("requests.cpu").getAmount(), "1",
                 "Invalid number of cpu requests.");
-        Assert.assertEquals(resourceQuotas.get(0).getSpec().getHard().get("requests.memory").getAmount(), "1Gi",
+        Assert.assertEquals(resourceQuotas.get(0).getSpec().getHard().get("requests.memory").getAmount(), "1",
                 "Invalid number of memory requests.");
+        Assert.assertEquals(resourceQuotas.get(0).getSpec().getHard().get("requests.memory").getFormat(), "Gi",
+                "Invalid format of memory requests.");
         Assert.assertEquals(resourceQuotas.get(0).getSpec().getHard().get("limits.cpu").getAmount(), "2",
                 "Invalid number of cpu limits");
-        Assert.assertEquals(resourceQuotas.get(0).getSpec().getHard().get("limits.memory").getAmount(), "2Gi",
+        Assert.assertEquals(resourceQuotas.get(0).getSpec().getHard().get("limits.memory").getAmount(), "2",
                 "Invalid number of memory limits.");
+        Assert.assertEquals(resourceQuotas.get(0).getSpec().getHard().get("limits.memory").getFormat(), "Gi",
+                "Invalid format of memory limits.");
     
         
         Assert.assertEquals(resourceQuotas.get(1).getMetadata().getName(), "minimum-resources");
@@ -228,12 +240,16 @@ public class ResourceQuotaTest {
         Assert.assertEquals(resourceQuota.getSpec().getHard().get("pods").getAmount(), "4", "Invalid number of pods.");
         Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.cpu").getAmount(), "1",
                 "Invalid number of cpu requests.");
-        Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.memory").getAmount(), "1Gi",
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.memory").getAmount(), "1",
                 "Invalid number of memory requests.");
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("requests.memory").getFormat(), "Gi",
+                "Invalid format of memory requests.");
         Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.cpu").getAmount(), "2",
                 "Invalid number of cpu limits");
-        Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.memory").getAmount(), "2Gi",
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.memory").getAmount(), "2",
                 "Invalid number of memory limits.");
+        Assert.assertEquals(resourceQuota.getSpec().getHard().get("limits.memory").getFormat(), "Gi",
+                "Invalid format of memory limits.");
         
         Assert.assertEquals(resourceQuota.getSpec().getScopes().size(), 0, "Unexpected number of scopes.");
         

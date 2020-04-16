@@ -54,7 +54,8 @@ public class HelmChartGeneratorTests extends HandlerTestSuite {
         dataHolder.setDockerModel(dockerModel);
         new DockerHandler().createArtifacts();
         new HelmChartHandler().createArtifacts();
-        File charYaml = new File("target/kubernetes/" + module.name.toString() + "/hello-deployment/Chart.yaml");
+        File charYaml = dataHolder.getK8sArtifactOutputPath().resolve(module.name.toString())
+                .resolve("hello-deployment").resolve("Chart.yaml").toFile();
         Assert.assertTrue(charYaml.exists());
         charYaml.deleteOnExit();
     }

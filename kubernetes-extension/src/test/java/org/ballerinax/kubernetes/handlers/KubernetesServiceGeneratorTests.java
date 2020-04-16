@@ -21,7 +21,6 @@ package org.ballerinax.kubernetes.handlers;
 import io.fabric8.kubernetes.api.model.Service;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
-import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.ServiceModel;
 import org.ballerinax.kubernetes.utils.Utils;
 import org.testng.Assert;
@@ -29,7 +28,6 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,10 +53,10 @@ public class KubernetesServiceGeneratorTests extends HandlerTestSuite {
         Map<String, String> labels = new HashMap<>();
         labels.put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, selector);
         serviceModel.setLabels(labels);
-        KubernetesContext.getInstance().getDataHolder().addBListenerToK8sServiceMap("HelloWorldService", serviceModel);
+        dataHolder.addBListenerToK8sServiceMap("HelloWorldService", serviceModel);
         try {
             new ServiceHandler().createArtifacts();
-            File tempFile = Paths.get("target", "kubernetes", module.name.toString(), "hello_svc.yaml").toFile();
+            File tempFile = dataHolder.getK8sArtifactOutputPath().resolve("hello_svc.yaml").toFile();
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

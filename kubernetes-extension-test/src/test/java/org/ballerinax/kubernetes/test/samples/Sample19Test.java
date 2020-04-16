@@ -72,15 +72,15 @@ public class Sample19Test extends SampleTest {
         for (HasMetadata data : k8sItems) {
             switch (data.getKind()) {
                 case "Service":
-                    knativeService = (Service) data;
+                    this.knativeService = (Service) data;
                     break;
                 case "ConfigMap":
                     switch (data.getMetadata().getName()) {
                         case "helloworld-ballerina-conf-config-map":
-                            ballerinaConf = (ConfigMap) data;
+                            this.ballerinaConf = (ConfigMap) data;
                             break;
                         case "helloworld-config-map":
-                            dataMap = (ConfigMap) data;
+                            this.dataMap = (ConfigMap) data;
                             break;
                         default:
                             break;
@@ -95,20 +95,20 @@ public class Sample19Test extends SampleTest {
 
     @Test
     public void validateDeployment() {
-        Assert.assertNotNull(knativeService);
-        Assert.assertEquals(knativeService.getMetadata().getName(), "helloworldep-knative-svc");
-        Assert.assertEquals(knativeService.getSpec().getTemplate().getSpec().getContainerConcurrency().longValue(),
+        Assert.assertNotNull(this.knativeService);
+        Assert.assertEquals(this.knativeService.getMetadata().getName(), "helloworldep-knative-svc");
+        Assert.assertEquals(this.knativeService.getSpec().getTemplate().getSpec().getContainerConcurrency().longValue(),
                 100);
-        Assert.assertEquals(knativeService.getSpec().getTemplate().getSpec().getContainers().size(), 1);
+        Assert.assertEquals(this.knativeService.getSpec().getTemplate().getSpec().getContainers().size(), 1);
 
         // Assert Containers
-        Container container = knativeService.getSpec().getTemplate().getSpec().getContainers().get(0);
+        Container container = this.knativeService.getSpec().getTemplate().getSpec().getContainers().get(0);
         Assert.assertEquals(container.getVolumeMounts().size(), 2);
         Assert.assertEquals(container.getImage(), DOCKER_IMAGE);
         Assert.assertEquals(container.getPorts().size(), 1);
         Assert.assertEquals(container.getEnv().size(), 1);
 
-        Assert.assertEquals(knativeService.getSpec().getTemplate().getSpec().getVolumes().size(), 2);
+        Assert.assertEquals(this.knativeService.getSpec().getTemplate().getSpec().getVolumes().size(), 2);
         
         // Validate config file
         Assert.assertEquals(container.getEnv().get(0).getName(), "CONFIG_FILE");
@@ -118,12 +118,12 @@ public class Sample19Test extends SampleTest {
     @Test
     public void validateConfigMap() {
         // Assert ballerina.conf config map
-        Assert.assertNotNull(ballerinaConf);
-        Assert.assertEquals(1, ballerinaConf.getData().size());
+        Assert.assertNotNull(this.ballerinaConf);
+        Assert.assertEquals(1, this.ballerinaConf.getData().size());
 
         // Assert Data config map
-        Assert.assertNotNull(dataMap);
-        Assert.assertEquals(1, dataMap.getData().size());
+        Assert.assertNotNull(this.dataMap);
+        Assert.assertEquals(1, this.dataMap.getData().size());
     }
 
     @Test

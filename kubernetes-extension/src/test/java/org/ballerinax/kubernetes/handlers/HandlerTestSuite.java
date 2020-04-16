@@ -19,10 +19,12 @@
 package org.ballerinax.kubernetes.handlers;
 
 import org.ballerinalang.model.elements.PackageID;
+import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
-import org.testng.annotations.AfterSuite;
+import org.ballerinax.kubernetes.utils.KubernetesUtils;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeSuite;
 import org.wso2.ballerinalang.compiler.util.Name;
 import org.wso2.ballerinalang.compiler.util.Names;
@@ -38,23 +40,26 @@ import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
  */
 public class HandlerTestSuite {
     static PackageID module = new PackageID(Names.ANON_ORG, new Name("my_pkg"), Names.DEFAULT_VERSION);
-
+    protected static KubernetesDataHolder dataHolder;
+    
     @BeforeSuite
-    public static void setUp() {
+    public void setUp() {
         KubernetesContext context = KubernetesContext.getInstance();
-        context.addDataHolder(module, Paths.get("target"));
-        KubernetesDataHolder dataHolder = context.getDataHolder();
-        dataHolder.setK8sArtifactOutputPath(Paths.get("target").resolve(KUBERNETES).resolve(module.name.toString()));
-        dataHolder.setDockerArtifactOutputPath(Paths.get("target").resolve(DOCKER).resolve(module.name.toString()));
+        context.addDataHolder(module, Paths.get("build"));
+        dataHolder = context.getDataHolder();
+        Path buildDir = Paths.get(System.getProperty("buildDir"));
+        dataHolder.setK8sArtifactOutputPath(buildDir.resolve(KUBERNETES).resolve(module.name.toString()));
+        dataHolder.setDockerArtifactOutputPath(buildDir.resolve(DOCKER).resolve(module.name.toString()));
         Path resourcesDirectory = Paths.get("src").resolve("test").resolve("resources");
         DeploymentModel deploymentModel = new DeploymentModel();
         deploymentModel.setSingleYAML(false);
         dataHolder.setDeploymentModel(deploymentModel);
         dataHolder.setUberJarPath(resourcesDirectory.toAbsolutePath().resolve("hello.jar"));
     }
-
-    @AfterSuite
-    public static void tearDown() {
+    
+    @AfterClass
+    public void clearArtifacts() throws KubernetesPluginException {
+        KubernetesUtils.deleteDirectory(dataHolder.getK8sArtifactOutputPath());
+        KubernetesUtils.deleteDirectory(dataHolder.getDockerArtifactOutputPath());
     }
-
 }

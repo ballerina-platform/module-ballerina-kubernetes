@@ -21,14 +21,12 @@ package org.ballerinax.kubernetes.handlers;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.ConfigMapModel;
-import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.utils.Utils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -55,10 +53,10 @@ public class KubernetesConfigMapGeneratorTests extends HandlerTestSuite {
         configMapModel.setData(data);
         Set<ConfigMapModel> configMapModels = new HashSet<>();
         configMapModels.add(configMapModel);
-        KubernetesContext.getInstance().getDataHolder().addConfigMaps(configMapModels);
+        dataHolder.addConfigMaps(configMapModels);
         try {
             new ConfigMapHandler().createArtifacts();
-            File tempFile = Paths.get("target", "kubernetes", module.name.toString(), "hello_config_map.yaml").toFile();
+            File tempFile = dataHolder.getK8sArtifactOutputPath().resolve("hello_config_map.yaml").toFile();
             Assert.assertTrue(tempFile.exists());
             assertGeneratedYAML(tempFile);
             tempFile.deleteOnExit();

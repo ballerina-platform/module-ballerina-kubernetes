@@ -20,6 +20,10 @@ package org.ballerinax.kubernetes.handlers;
 
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscaler;
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscalerBuilder;
+import io.fabric8.kubernetes.api.model.MetricSpec;
+import io.fabric8.kubernetes.api.model.MetricSpecBuilder;
+import io.fabric8.kubernetes.api.model.MetricTarget;
+import io.fabric8.kubernetes.api.model.MetricTargetBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -50,7 +54,7 @@ public class HPAHandler extends AbstractArtifactHandler {
                 .withNewSpec()
                 .withMaxReplicas(podAutoscalerModel.getMaxReplicas())
                 .withMinReplicas(podAutoscalerModel.getMinReplicas())
-                .withTargetCPUUtilizationPercentage(podAutoscalerModel.getCpuPercentage())
+                .withMetrics(generateTargetCPUUtilizationPercentage(podAutoscalerModel.getCpuPercentage()))
                 .withNewScaleTargetRef("apps/v1", "Deployment", podAutoscalerModel.getDeployment())
                 .endSpec()
                 .build();
@@ -61,6 +65,21 @@ public class HPAHandler extends AbstractArtifactHandler {
             String errorMessage = "error while generating yaml file for autoscaler: " + podAutoscalerModel.getName();
             throw new KubernetesPluginException(errorMessage, e);
         }
+    }
+    
+    private MetricSpec generateTargetCPUUtilizationPercentage(int percentage) {
+        MetricTarget cpuMetricTarget = new MetricTargetBuilder()
+                .withType("Utilization")
+                .withAverageUtilization(percentage)
+                .build();
+    
+        return new MetricSpecBuilder()
+                .withType("Resource")
+                .withNewResource()
+                .withName("cpu")
+                .withTarget(cpuMetricTarget)
+                .endResource()
+                .build();
     }
 
     @Override

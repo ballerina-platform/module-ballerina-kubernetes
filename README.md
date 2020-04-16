@@ -251,12 +251,15 @@ $> kubectl ballerina deploy hello_world_k8s.bal
 > building ballerina source...
 Compiling source
     hello_world_k8s.bal
+
 Generating executable
-    hello_world_k8s.balx
+    hello_world_k8s.jar
+
+Generating artifacts...
 
 	@kubernetes:Service 			 - complete 1/1
 	@kubernetes:Deployment 			 - complete 1/1
-	@kubernetes:Docker 			 - complete 3/3
+	@kubernetes:Docker 			 - complete 2/2
 	@kubernetes:Helm 			 - complete 1/1
 
 	Execute the below command to deploy the Kubernetes artifacts:
@@ -280,7 +283,7 @@ import ballerina/http;
 import ballerina/log;
 import ballerina/kubernetes;
 
-@kubernetes:Ingress{
+@kubernetes:Ingress {
     hostname: "abc.com"
 }
 @kubernetes:Service {

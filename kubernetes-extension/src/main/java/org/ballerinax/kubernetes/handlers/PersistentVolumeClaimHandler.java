@@ -42,8 +42,10 @@ public class PersistentVolumeClaimHandler extends AbstractArtifactHandler {
 
     private void generate(PersistentVolumeClaimModel volumeClaimModel) throws KubernetesPluginException {
         Quantity quantity = new QuantityBuilder()
-                .withAmount(volumeClaimModel.getVolumeClaimSize())
+                .withAmount(volumeClaimModel.getVolumeClaimSizeAmount())
+                .withFormat(volumeClaimModel.getVolumeClaimSizeFormat())
                 .build();
+        
         Map<String, Quantity> requests = new HashMap<>();
         requests.put("storage", quantity);
         PersistentVolumeClaim claim = new PersistentVolumeClaimBuilder()
