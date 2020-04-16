@@ -21,11 +21,20 @@ plugins {
 
 task downloadMultipleFiles(type: Download) {
     src([
-        'https://raw.githubusercontent.com/wso2/code-quality-tools/v1.3/checkstyle/checkstyle.xml',
-        'https://raw.githubusercontent.com/wso2/code-quality-tools/v1.3/checkstyle/suppressions.xml'
+            'https://raw.githubusercontent.com/wso2/code-quality-tools/v1.3/checkstyle/checkstyle.xml',
+            'https://raw.githubusercontent.com/wso2/code-quality-tools/v1.3/checkstyle/suppressions.xml'
     ])
     overwrite false
+    onlyIfNewer true
     dest buildDir
+}
+
+jar {
+    enabled = false
+}
+
+clean {
+    enabled = false
 }
 
 artifacts.add('default', file("$project.buildDir/checkstyle.xml")) {

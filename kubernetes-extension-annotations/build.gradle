@@ -15,24 +15,34 @@
  *
  */
 
-description = 'Ballerinax - Kubernetes Extension Annotations'
+import org.apache.tools.ant.taskdefs.condition.Os
 
-dependencies {
-    implementation project(":kubernetes-extension")
-}
+apply from: "$rootDir/gradle/mvnPublisher.gradle"
+
+description = 'Ballerinax - Kubernetes Extension Annotations'
 
 configurations {
     balTools
-    kubernetesExtensionPlugin {
-        transitive = false
-    }
+    birDir
+    kubernetesJar
+    istioJar
+    openshiftJar
+    knativeJar
 }
 
 dependencies{
     balTools ("org.ballerinalang:jballerina-tools:${ballerinaLangVersion}"){
         transitive = false
     }
-    kubernetesExtensionPlugin project(":kubernetes-extension")
+}
+
+jar {
+    enabled = false
+}
+
+clean {
+    delete "$project.projectDir/target"
+    delete "$project.projectDir/Ballerina.lock"
 }
 
 task unzip {
@@ -44,35 +54,112 @@ task unzip {
             }
         }
     }
+    outputs.dir file("$project.buildDir/extracted-distribution/jballerina-tools-${ballerinaLangVersion}")
 }
 
-def distributionPath = project.projectDir.absolutePath + "/build/extracted-distribution/jballerina-tools-${ballerinaLangVersion}"
-def projectRoot = project.projectDir.absolutePath
+def artifactBirDir = file("$project.projectDir/target/caches/bir_cache/")
+def artifactKubernetesJar = file("$project.projectDir/target/caches/jar_cache/ballerina/kubernetes/ballerina.kubernetes.jar")
+def artifactIstioJar = file("$project.projectDir/target/caches/jar_cache/ballerina/istio/ballerina.istio.jar")
+def artifactOpenshiftJar = file("$project.projectDir/target/caches/jar_cache/ballerina/openshift/ballerina.openshift.jar")
+def artifactKnativeJar = file("$project.projectDir/target/caches/jar_cache/ballerina/knative/ballerina.knative.jar")
 
-task runScript {   
+task ballerinaBuild {
+    dependsOn unzip
+    inputs.dir file("$project.projectDir/src")
+    inputs.file file("$project.projectDir/Ballerina.toml")
     doLast {
         exec {
             workingDir project.projectDir
-            if (System.properties['os.name'].toLowerCase().contains('windows')) {
-                commandLine 'cmd', '/c', 'cd scripts && annotation-build.bat ' + distributionPath + ' ' + projectRoot
+            environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
+            def distributionBinPath = project.projectDir.absolutePath + "/build/extracted-distribution/jballerina-tools-${ballerinaLangVersion}/bin"
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine 'cmd', '/c', "$distributionBinPath/ballerina.bat build -c -a --skip-tests"
             } else {
-                commandLine 'sh', '-c', 'scripts/annotation-build.sh ' + distributionPath + ' ' + projectRoot
+                commandLine 'sh', '-c', "$distributionBinPath/ballerina build -c -a --skip-tests"
             }
-            
         }
-    }
-}
-
-task copyBalKubernetesExt {
-    doLast {
+        // Rename kubernetes jar
         copy {
-            from configurations.kubernetesExtensionPlugin
-            into new File(project.buildDir, "extracted-distribution/jballerina-tools-${ballerinaLangVersion}/bre/lib/")
+            from "$project.projectDir/target/caches/jar_cache/ballerina/kubernetes/ballerina-kubernetes-.jar"
+            into "$project.projectDir/target/caches/jar_cache/ballerina/kubernetes/"
+            rename { String fileName ->
+                fileName.replace("ballerina-kubernetes-.jar", artifactKubernetesJar.getName())
+            }
+        }
+        // Rename istio jar
+        copy {
+            from "$project.projectDir/target/caches/jar_cache/ballerina/istio/ballerina-istio-.jar"
+            into "$project.projectDir/target/caches/jar_cache/ballerina/istio/"
+            rename { String fileName ->
+                fileName.replace("ballerina-istio-.jar", artifactIstioJar.getName())
+            }
+        }
+        // Rename openshift jar
+        copy {
+            from "$project.projectDir/target/caches/jar_cache/ballerina/openshift/ballerina-openshift-.jar"
+            into "$project.projectDir/target/caches/jar_cache/ballerina/openshift/"
+            rename { String fileName ->
+                fileName.replace("ballerina-openshift-.jar", artifactOpenshiftJar.getName())
+            }
+        }
+        // Rename knative jar
+        copy {
+            from "$project.projectDir/target/caches/jar_cache/ballerina/knative/ballerina-knative-.jar"
+            into "$project.projectDir/target/caches/jar_cache/ballerina/knative/"
+            rename { String fileName ->
+                fileName.replace("ballerina-knative-.jar", artifactKnativeJar.getName())
+            }
+        }
+        // Copy the kubernetes BIR to the 0.0.0 folder within it
+        ant.move file: "${artifactBirDir}/ballerina/kubernetes/kubernetes.bir",
+                todir: "${artifactBirDir}/ballerina/kubernetes/0.0.0/"
+        // Copy the istio BIR to the 0.0.0 folder within it
+        ant.move file: "${artifactBirDir}/ballerina/istio/istio.bir",
+                todir: "${artifactBirDir}/ballerina/istio/0.0.0/"
+        // Copy the openshift BIR to the 0.0.0 folder within it
+        ant.move file: "${artifactBirDir}/ballerina/openshift/openshift.bir",
+                todir: "${artifactBirDir}/ballerina/openshift/0.0.0/"
+        // Copy the knative BIR to the 0.0.0 folder within it
+        ant.move file: "${artifactBirDir}/ballerina/knative/knative.bir",
+                todir: "${artifactBirDir}/ballerina/knative/0.0.0/"
+
+        // Copy the TOML to the same folder as the BIRs
+        ["${artifactBirDir}/ballerina/kubernetes/0.0.0",
+         "${artifactBirDir}/ballerina/istio/0.0.0",
+         "${artifactBirDir}/ballerina/openshift/0.0.0",
+         "${artifactBirDir}/ballerina/knative/0.0.0"].each { birDir ->
+            copy {
+                from file("$project.projectDir/Ballerina.toml")
+                into birDir
+            }
+        }
+    }
+    outputs.dir artifactBirDir
+    outputs.file artifactKubernetesJar
+    outputs.file artifactIstioJar
+    outputs.file artifactOpenshiftJar
+    outputs.file artifactKnativeJar
+}
+
+artifacts {
+    birDir file: artifactBirDir, builtBy: ballerinaBuild
+    kubernetesJar file: artifactKubernetesJar, builtBy: ballerinaBuild
+    istioJar file: artifactIstioJar, builtBy: ballerinaBuild
+    openshiftJar file: artifactOpenshiftJar, builtBy: ballerinaBuild
+    knativeJar file: artifactKnativeJar, builtBy: ballerinaBuild
+}
+
+task createArtifactZip(type: Zip) {
+    destinationDirectory = file("$buildDir/distributions")
+    from ballerinaBuild
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact source: createArtifactZip, extension: 'zip'
         }
     }
 }
 
-copyBalKubernetesExt.dependsOn unzip
-runScript.dependsOn copyBalKubernetesExt
-build.dependsOn runScript
-
+build.dependsOn ballerinaBuild

@@ -29,6 +29,7 @@ ext.fabric8KubernetesClientVersion = "4.9.0"
 ext.fabric8KnativeClientVersion = "4.9.0"
 ext.snowdropIstioModelVersion = "1.1.1"
 ext.javaxValidationAPIVersion = "2.0.0.Final"
+ext.snakeYamlVersion = "1.24"
 ext.projectBuildSourceEncoding = "UTF-8"
 ext.projectReportingOutputEncoding = "UTF-8"
 ext.puppycrawlCheckstyleVersion = "8.18"
@@ -66,50 +67,8 @@ allprojects {
     }
 }
 
-jacoco {
-    toolVersion = "0.8.5"
-}
-
 subprojects {
-	apply plugin: 'java'
-    apply plugin: 'maven-publish'
-	
-    test{
-        jacoco {
-            enabled = true
-            destinationFile = file("$buildDir/coverage-reports/jacoco.exec")
-            includeNoLocationClasses = true
-        }
-    }
-
-    sourceCompatibility = '1.8'
-
-    publishing {
-        publications {
-            mavenJava(MavenPublication) {
-                groupId project.group
-                artifactId project.name
-                version = project.version
-            }
-        }
-        repositories {
-            maven {
-                if(project.version.endsWith('-SNAPSHOT')) {
-                    url "https://maven.wso2.org/nexus/content/repositories/snapshots/"
-                } else {
-                    url "https://maven.wso2.org/nexus/service/local/staging/deploy/maven2/"
-                }
-                credentials {
-                    username System.getenv("NEXUS_USERNAME")
-                    password System.getenv("NEXUS_PASSWORD")
-                }
-            }
-        }
-    }
-
-    tasks.withType(JavaCompile) {
-        options.encoding = 'UTF-8'
-    }
+    apply plugin: 'java'
 }
 
 task codeCoverageReport(type: JacocoReport) {

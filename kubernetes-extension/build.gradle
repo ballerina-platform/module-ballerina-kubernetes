@@ -16,10 +16,10 @@
  */
 
 plugins {
-    id "com.github.spotbugs"
     id "com.github.johnrengelman.shadow"
-    id "checkstyle"
 }
+
+apply from: "$rootDir/gradle/javaProject.gradle"
 
 description = 'Ballerinax - Kubernetes Extension'
 
@@ -55,6 +55,7 @@ dependencies {
     implementation "me.snowdrop:istio-model:${snowdropIstioModelVersion}"
     implementation "io.fabric8:knative-client:${fabric8KnativeClientVersion}"
     implementation "javax.validation:validation-api:${javaxValidationAPIVersion}"
+    implementation "org.yaml:snakeyaml:${snakeYamlVersion}"
 
     compileOnly "org.ballerinalang:ballerina-lang:${ballerinaLangVersion}"
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
@@ -80,13 +81,15 @@ jar {
     })
 }
 
-test {
-    testLogging {
-        showStackTraces = true
-        showStandardStreams = true
-        events "failed"
-        exceptionFormat "full"
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact shadowJar
+        }
     }
+}
+
+test {
     useTestNG() {
         suites 'src/test/resources/testng.xml'
     }
@@ -95,50 +98,3 @@ test {
     ]
 }
 
-spotbugsMain {
-    ignoreFailures = true
-    effort = "max"
-    reportLevel = "low"
-    reportsDir = file("$project.buildDir/reports/spotbugs")
-    excludeFilter = file("spotbugs-exclude.xml")
-    reports {
-        text.enabled = true
-    }
-}
-
-spotbugsTest {
-    enabled = false
-}
-
-task validateSpotbugs() {
-    doLast {
-        if (spotbugsMain.reports.size() > 0 &&
-            spotbugsMain.reports[0].destination.exists() &&
-            spotbugsMain.reports[0].destination.text.readLines().size() > 0) {
-            spotbugsMain.reports[0].destination?.eachLine {
-                println 'Failure: ' + it
-            }
-            throw new GradleException("Spotbugs rule violations were found.");
-        }
-    }
-}
-
-checkstyle {
-    toolVersion '7.8.2'
-    configFile rootProject.file("build-config/checkstyle/build/checkstyle.xml")
-    configProperties = ["suppressionFile" : rootProject.file("build-config/checkstyle/build/suppressions.xml")]
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId project.group
-            artifactId project.name
-            version = project.version
-            artifact shadowJar
-        }
-    }
-}
-
-spotbugsMain.finalizedBy validateSpotbugs
-checkstyleMain.dependsOn(":build-config:checkstyle:downloadMultipleFiles")

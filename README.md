@@ -2,7 +2,7 @@
  
 Annotation based kubernetes extension implementation for ballerina. 
 
-[![Build Status](https://wso2.org/jenkins/job/ballerinax/job/kubernetes/badge/icon)](https://wso2.org/jenkins/job/ballerinax/job/kubernetes/)
+[![Build Status](https://wso2.org/jenkins/job/ballerinax/job/kubernetes-pipeline/badge/icon)](https://wso2.org/jenkins/job/ballerinax/job/kubernetes-pipeline/)
 [![Travis (.org)](https://img.shields.io/travis/ballerinax/kubernetes.svg?logo=travis)](https://travis-ci.org/ballerinax/kubernetes)
 [![codecov](https://codecov.io/gh/ballerinax/kubernetes/branch/master/graph/badge.svg)](https://codecov.io/gh/ballerinax/kubernetes)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
