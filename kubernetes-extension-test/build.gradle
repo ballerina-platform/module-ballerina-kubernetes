@@ -18,12 +18,10 @@
 apply from: "$rootDir/gradle/javaProject.gradle"
 
 configurations {
+    bDistributionDir
     extensionPlugin
     birDir
-    kubernetesJar
-    istioJar
-    openshiftJar
-    knativeJar
+    bJars
 }
 
 dependencies {
@@ -39,18 +37,20 @@ dependencies {
     testImplementation "org.testng:testng:${testngVersion}"
 
     extensionPlugin project(path: ":kubernetes-extension", configuration: "shadow")
+    bDistributionDir project(path: ":kubernetes-extension-annotations", configuration: "bDistributionDir")
     birDir project(path: ":kubernetes-extension-annotations", configuration: "birDir")
-    kubernetesJar project(path: ":kubernetes-extension-annotations", configuration: "kubernetesJar")
-    istioJar project(path: ":kubernetes-extension-annotations", configuration: "istioJar")
-    openshiftJar project(path: ":kubernetes-extension-annotations", configuration: "openshiftJar")
-    knativeJar project(path: ":kubernetes-extension-annotations", configuration: "knativeJar")
+    bJars project(path: ":kubernetes-extension-annotations", configuration: "kubernetesJar")
+    bJars project(path: ":kubernetes-extension-annotations", configuration: "istioJar")
+    bJars project(path: ":kubernetes-extension-annotations", configuration: "openshiftJar")
+    bJars project(path: ":kubernetes-extension-annotations", configuration: "knativeJar")
 }
 
 description = 'Ballerinax - Kubernetes Extension Tests'
 
-def distributionLocation = project(":kubernetes-extension-annotations").buildDir.absolutePath + "/extracted-distribution/jballerina-tools-${ballerinaLangVersion}"
+def distributionLocation = configurations.bDistributionDir.singleFile
 
 task copyExtensionPlugin {
+    dependsOn configurations.extensionPlugin
     doLast {
         copy {
             from configurations.extensionPlugin
@@ -60,15 +60,14 @@ task copyExtensionPlugin {
 }
 
 task copyBallerinaArtifacts {
+    dependsOn configurations.birDir
+    dependsOn configurations.bJars
     doLast {
         copy {
             from configurations.birDir
             into file("${distributionLocation}/bir-cache/")
         }
-        [configurations.kubernetesJar,
-         configurations.istioJar,
-         configurations.openshiftJar,
-         configurations.knativeJar].each { jar ->
+        configurations.bJars.each { jar ->
             copy {
                 from jar
                 into file("${distributionLocation}/bre/lib/")
@@ -92,7 +91,7 @@ test {
         }
         systemProperties = [
             sampleDir: System.getProperty('sampleDir', project.projectDir.absolutePath + "/../samples"),
-            ballerinaPack: System.getProperty('ballerinaPack', project.projectDir.absolutePath + "/../kubernetes-extension-annotations/build/extracted-distribution/jballerina-tools-${ballerinaLangVersion}"),
+            ballerinaPack: System.getProperty('ballerinaPack', "$configurations.bDistributionDir.singleFile.absolutePath"),
             jacocoAgentLine: "-javaagent:${configurations.jacocoRuntime.asPath}=destfile=${test.jacoco.destinationFile.absolutePath},append=true,inclnolocationclasses=true"
         ]
 	}

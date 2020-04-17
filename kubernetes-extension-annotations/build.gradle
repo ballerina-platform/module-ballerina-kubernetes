@@ -22,6 +22,7 @@ apply from: "$rootDir/gradle/mvnPublisher.gradle"
 description = 'Ballerinax - Kubernetes Extension Annotations'
 
 configurations {
+    bDistributionDir
     balTools
     birDir
     kubernetesJar
@@ -45,6 +46,8 @@ clean {
     delete "$project.projectDir/Ballerina.lock"
 }
 
+def bDistribution = file("$project.buildDir/extracted-distribution/jballerina-tools-${ballerinaLangVersion}")
+
 task unzip {
     doLast {
         configurations.balTools.resolvedConfiguration.resolvedArtifacts.each { artifact ->
@@ -54,7 +57,7 @@ task unzip {
             }
         }
     }
-    outputs.dir file("$project.buildDir/extracted-distribution/jballerina-tools-${ballerinaLangVersion}")
+    outputs.dir bDistribution
 }
 
 def artifactBirDir = file("$project.projectDir/target/caches/bir_cache/")
@@ -142,6 +145,7 @@ task ballerinaBuild {
 }
 
 artifacts {
+    bDistributionDir file: bDistribution, builtBy: unzip
     birDir file: artifactBirDir, builtBy: ballerinaBuild
     kubernetesJar file: artifactKubernetesJar, builtBy: ballerinaBuild
     istioJar file: artifactIstioJar, builtBy: ballerinaBuild
