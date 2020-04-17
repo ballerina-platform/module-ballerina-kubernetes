@@ -60,6 +60,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |imagePullSecrets|Image pull secrets value|null|
 |strategy|Update strategy|null|
 |nodeSelector|Node selector labels|null|
+|projectedVolumeMount|Projected Volume Mount configuration|null|
 
 ### @kubernetes:Service{}
 - Supported with ballerina services and listeners.
