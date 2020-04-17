@@ -23,6 +23,7 @@ import lombok.EqualsAndHashCode;
 import org.ballerinax.docker.generator.models.CopyFileModel;
 import org.ballerinax.kubernetes.KubernetesConstants;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -93,6 +94,7 @@ public class DeploymentModel extends KubernetesModel {
         this.singleYAML = true;
         this.commandArgs = "";
         this.registry = "";
+        this.serviceAccountTokenModel = new ArrayList<>();
     }
 
     public Map<String, String> getPodAnnotations() {

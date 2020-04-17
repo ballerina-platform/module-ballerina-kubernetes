@@ -19,6 +19,8 @@
 package org.ballerinax.kubernetes.test;
 
 import com.github.dockerjava.api.command.InspectImageResponse;
+import io.fabric8.kubernetes.api.model.PodSpec;
+import io.fabric8.kubernetes.api.model.ServiceAccountTokenProjection;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.test.utils.DockerTestException;
@@ -181,6 +183,47 @@ public class DeploymentTest {
                 "NoSchedule", "Invalid toleration effect.");
         Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getTolerations().get(0).getTolerationSeconds()
                 .longValue(), 0L, "Invalid toleration seconds.");
+
+        KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
+        KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
+        KubernetesTestUtils.deleteDockerImage(DOCKER_IMAGE);
+    }
+
+    /**
+     * Build bal file with deployment having projectedVolume annotations.
+     *
+     * @throws IOException               Error when loading the generated yaml.
+     * @throws InterruptedException      Error when compiling the ballerina file.
+     * @throws KubernetesPluginException Error when deleting the generated artifacts folder.
+     */
+    @Test
+    public void projectedVolumeTest() throws IOException, InterruptedException, KubernetesPluginException,
+            DockerTestException {
+        Assert.assertEquals(KubernetesTestUtils.compileBallerinaFile(BAL_DIRECTORY, "projected.bal"), 0);
+
+        // Check if docker image exists and correct
+        validateDockerfile();
+        validateDockerImage();
+
+        // Validate deployment yaml
+        File deploymentYAML = KUBERNETES_TARGET_PATH.resolve("projected_deployment.yaml").toFile();
+        Assert.assertTrue(deploymentYAML.exists());
+        Deployment deployment = KubernetesTestUtils.loadYaml(deploymentYAML);
+        Assert.assertNotNull(deployment.getSpec());
+        Assert.assertNotNull(deployment.getSpec().getTemplate());
+        final PodSpec spec = deployment.getSpec().getTemplate().getSpec();
+        Assert.assertNotNull(spec);
+        Assert.assertEquals(spec.getServiceAccountName(), "build-robot");
+        Assert.assertEquals(spec.getContainers().get(0).getVolumeMounts().size(), 1);
+        Assert.assertEquals(spec.getContainers().get(0).getVolumeMounts().get(0).getMountPath(), "/tmp/");
+        Assert.assertEquals(spec.getContainers().get(0).getVolumeMounts().get(0).getName(), "vault-volume");
+
+        Assert.assertEquals(spec.getVolumes().get(0).getName(), "vault-volume");
+        final ServiceAccountTokenProjection serviceAccountToken =
+                spec.getVolumes().get(0).getProjected().getSources().get(0).getServiceAccountToken();
+        Assert.assertEquals(serviceAccountToken.getAudience(), "test");
+        Assert.assertEquals(serviceAccountToken.getPath(), "vault-volume");
+        Assert.assertEquals(serviceAccountToken.getExpirationSeconds(), Long.valueOf("600"));
 
         KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
         KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
