@@ -49,6 +49,7 @@ import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
 import org.ballerinax.kubernetes.models.PodTolerationModel;
 import org.ballerinax.kubernetes.models.ProbeModel;
 import org.ballerinax.kubernetes.models.SecretModel;
+import org.ballerinax.kubernetes.models.ServiceAccountTokenModel;
 import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
@@ -99,6 +100,13 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                     .withMountPath(configMapModel.getMountPath())
                     .withName(configMapModel.getName() + "-volume")
                     .withReadOnly(configMapModel.isReadOnly())
+                    .build();
+            volumeMounts.add(volumeMount);
+        }
+        for (ServiceAccountTokenModel volumeClaimModel : deploymentModel.getServiceAccountTokenModel()) {
+            VolumeMount volumeMount = new VolumeMountBuilder()
+                    .withMountPath(volumeClaimModel.getMountPath())
+                    .withName(volumeClaimModel.getName() + "-volume")
                     .build();
             volumeMounts.add(volumeMount);
         }
@@ -210,6 +218,23 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                     .withNewPersistentVolumeClaim()
                     .withClaimName(volumeClaimModel.getName())
                     .endPersistentVolumeClaim()
+                    .build();
+            volumes.add(volume);
+        }
+
+        for (ServiceAccountTokenModel volumeClaimModel : deploymentModel.getServiceAccountTokenModel()) {
+            Volume volume = new VolumeBuilder()
+                    .withName(volumeClaimModel.getName() + "-volume")
+                    .withNewProjected()
+                    .withSources()
+                    .addNewSource()
+                    .withNewServiceAccountToken()
+                    .withAudience(volumeClaimModel.getAudience())
+                    .withPath(volumeClaimModel.getName() + "-volume")
+                    .withExpirationSeconds((long) volumeClaimModel.getExpirationSeconds())
+                    .endServiceAccountToken()
+                    .endSource()
+                    .endProjected()
                     .build();
             volumes.add(volume);
         }

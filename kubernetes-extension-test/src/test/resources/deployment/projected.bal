@@ -20,10 +20,11 @@ import ballerina/kubernetes;
 @kubernetes:Deployment {
     image: "pizza-shop:latest",
     singleYAML: false,
+    serviceAccountName: "build-robot",
     projectedVolumeMount: {
         sources: [
             {
-                name: "valut",
+                name: "vault",
                 mountPath: "/tmp/",
                 expirationSeconds: 600,
                 audience: "test"
