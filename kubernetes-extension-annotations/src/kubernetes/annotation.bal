@@ -176,6 +176,8 @@ public type PodTolerationConfiguration record {|
 # + dependsOn - Services this deployment depends on.
 # + imagePullSecrets - Image pull secrets.
 # + nodeSelector - Node selector labels.
+# + serviceAccountName - Service Account Name.
+# + projectedVolumeMount - Projected Volume Mount config.
 public type DeploymentConfiguration record {|
     *Metadata;
     string dockerHost?;
@@ -203,6 +205,8 @@ public type DeploymentConfiguration record {|
     string[] dependsOn?;
     string[] imagePullSecrets?;
     map<string> nodeSelector?;
+    string serviceAccountName?;
+    ProjectedVolumeMount projectedVolumeMount?;
 |};
 
 public const STRATEGY_RECREATE = "Recreate";
@@ -322,6 +326,26 @@ public type Secret record {|
 public type SecretMount record {|
     string conf?;
     Secret[] secrets?;
+|};
+
+# Projected volume mount configurations for kubernetes.
+#
+# + sources - projected Sources
+public type ProjectedVolumeMount record {|
+    ServiceAccountToken[] sources;
+|};
+
+# Service account token configurations for kubernetes.
+#
+# + name - ServiceAccountToken Name
+# + mountPath - volume mount path
+# + expirationSeconds - token expirations seconds
+# + audience - token audience
+public type ServiceAccountToken record {|
+    string name;
+    string mountPath;
+    int expirationSeconds;
+    string audience;
 |};
 
 # @kubernetes:Secret annotation to configure secrets.

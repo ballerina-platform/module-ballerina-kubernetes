@@ -49,6 +49,7 @@ import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
 import org.ballerinax.kubernetes.models.PodTolerationModel;
 import org.ballerinax.kubernetes.models.ProbeModel;
 import org.ballerinax.kubernetes.models.SecretModel;
+import org.ballerinax.kubernetes.models.ServiceAccountTokenModel;
 import org.ballerinax.kubernetes.models.openshift.OpenShiftBuildExtensionModel;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
@@ -99,6 +100,13 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                     .withMountPath(configMapModel.getMountPath())
                     .withName(configMapModel.getName() + "-volume")
                     .withReadOnly(configMapModel.isReadOnly())
+                    .build();
+            volumeMounts.add(volumeMount);
+        }
+        for (ServiceAccountTokenModel volumeClaimModel : deploymentModel.getServiceAccountTokenModel()) {
+            VolumeMount volumeMount = new VolumeMountBuilder()
+                    .withMountPath(volumeClaimModel.getMountPath())
+                    .withName(volumeClaimModel.getName() + "-volume")
                     .build();
             volumeMounts.add(volumeMount);
         }
@@ -213,6 +221,23 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                     .build();
             volumes.add(volume);
         }
+
+        for (ServiceAccountTokenModel volumeClaimModel : deploymentModel.getServiceAccountTokenModel()) {
+            Volume volume = new VolumeBuilder()
+                    .withName(volumeClaimModel.getName() + "-volume")
+                    .withNewProjected()
+                    .withSources()
+                    .addNewSource()
+                    .withNewServiceAccountToken()
+                    .withAudience(volumeClaimModel.getAudience())
+                    .withPath(volumeClaimModel.getName() + "-volume")
+                    .withExpirationSeconds((long) volumeClaimModel.getExpirationSeconds())
+                    .endServiceAccountToken()
+                    .endSource()
+                    .endProjected()
+                    .build();
+            volumes.add(volume);
+        }
         return volumes;
     }
 
@@ -290,6 +315,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
                 .addToAnnotations(deploymentModel.getPodAnnotations())
                 .endMetadata()
                 .withNewSpec()
+                .withServiceAccountName(deploymentModel.getServiceAccountName())
                 .withContainers(container)
                 .withImagePullSecrets(getImagePullSecrets(deploymentModel))
                 .withInitContainers(generateInitContainer(deploymentModel))
