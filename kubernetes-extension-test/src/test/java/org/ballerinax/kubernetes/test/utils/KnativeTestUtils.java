@@ -23,8 +23,8 @@ import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
-import io.fabric8.knative.serving.v1alpha1.Service;
-import io.fabric8.knative.serving.v1alpha1.ServiceBuilder;
+import io.fabric8.knative.serving.v1.Service;
+import io.fabric8.knative.serving.v1.ServiceBuilder;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ResourceHandler;
 import io.fabric8.kubernetes.client.Watch;
@@ -295,7 +295,7 @@ public class KnativeTestUtils {
 
         @Override
         public String getApiVersion() {
-            return "serving.knative.dev/v1alpha1";
+            return "serving.knative.dev/v1";
         }
 
         @Override
