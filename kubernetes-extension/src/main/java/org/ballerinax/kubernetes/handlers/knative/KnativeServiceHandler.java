@@ -18,8 +18,8 @@
 
 package org.ballerinax.kubernetes.handlers.knative;
 
-import io.fabric8.knative.serving.v1alpha1.Service;
-import io.fabric8.knative.serving.v1alpha1.ServiceBuilder;
+import io.fabric8.knative.serving.v1.Service;
+import io.fabric8.knative.serving.v1.ServiceBuilder;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
 import io.fabric8.kubernetes.api.model.ContainerPort;
