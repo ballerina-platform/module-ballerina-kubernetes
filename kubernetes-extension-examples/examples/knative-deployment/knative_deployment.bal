@@ -2,17 +2,17 @@ import ballerina/http;
 import ballerina/knative;
 import ballerina/log;
 
-//Add the `@knative:Service` to a Ballerina service to generate a Knative Service artifact and push the Docker image to Docker Hub.
+//Adds the `@knative:Service` to a Ballerina service to generate a Knative Service artifact and push the Docker image to Docker Hub.
 @knative:Service {
-    //Enable pushing the Docker image.
+    //Enables pushing the Docker image.
     push: true,
-    //Set the name of the Docker image.
+    //Sets the name of the Docker image.
     name: "hello-world-knative",
     //Sets the username credential to push the Docker image using the `DOCKER_USERNAME` environment  variable.
     username: "$env{DOCKER_USERNAME}",
     //Sets the password credential to push the Docker image using the `DOCKER_PASSWORD` environment  variable.
     password: "$env{DOCKER_PASSWORD}",
-    //Setting the registry URL.
+    //Sets the registry URL.
     registry: "index.docker.io/$env{DOCKER_USERNAME}"
 }
 @http:ServiceConfig {
