@@ -20,9 +20,10 @@ plugins {
     id "com.github.spotbugs" version "4.0.5"
     id "com.github.johnrengelman.shadow" version "5.2.0"
     id "de.undercouch.download" version "4.0.4"
+    id "net.researchgate.release" version "2.6.0"
 }
 
-ext.ballerinaLangVersion = '1.3.0-SNAPSHOT'
+ext.ballerinaLangVersion = project.ballerinaVersion
 ext.ballerinaSourceDirectory = "$buildDir/../src/main/ballerina"
 ext.dockerJavaVersion = "3.1.5"
 ext.fabric8KubernetesClientVersion = "4.9.0"
@@ -40,6 +41,7 @@ ext.lombokVersion = "1.18.10"
 allprojects {
 
 	apply plugin: 'jacoco'
+    apply plugin: 'maven-publish'
 
     repositories {
         mavenLocal()
@@ -63,6 +65,22 @@ allprojects {
             url = 'https://repo.maven.apache.org/maven2'
         }
     }
+
+    release {
+        // Workaround to fix build task not found issue in release plugin
+        buildTasks = []
+        failOnSnapshotDependencies = false
+        failOnCommitNeeded = false
+        versionPropertyFile = 'gradle.properties'
+        tagTemplate = 'v${version}'
+        git {
+            // To release from any branch
+            requireBranch = ''
+        }
+    }
+
+    afterReleaseBuild.dependsOn publishToMavenLocal
+    afterReleaseBuild.dependsOn publish
 }
 
 subprojects {
