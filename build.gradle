@@ -23,7 +23,7 @@ plugins {
     id "net.researchgate.release" version "2.6.0"
 }
 
-ext.ballerinaLangVersion = project.ballerinaVersion
+ext.ballerinaLangVersion = project.version
 ext.ballerinaSourceDirectory = "$buildDir/../src/main/ballerina"
 ext.dockerJavaVersion = "3.1.5"
 ext.fabric8KubernetesClientVersion = "4.9.0"
