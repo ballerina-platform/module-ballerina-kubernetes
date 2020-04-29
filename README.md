@@ -58,9 +58,11 @@ Annotation based kubernetes extension implementation for ballerina.
 |buildExtension|Extension for building docker images and artifacts|null|
 |dependsOn|Listeners this deployment Depends on|null|
 |imagePullSecrets|Image pull secrets value|null|
-|strategy|Update strategy|null|
+|updateStrategy|Update strategy|null|
 |nodeSelector|Node selector labels|null|
 |projectedVolumeMount|Projected Volume Mount configuration|null|
+|serviceAccountName|Service Account Name|null|
+|cmd|Value for CMD for the generated Dockerfile|`CMD java -jar ${APP} [--b7a.config.file=${CONFIG_FILE}] [--debug]`|
 
 ### @kubernetes:Service{}
 - Supported with ballerina services and listeners.
@@ -124,7 +126,6 @@ Annotation based kubernetes extension implementation for ballerina.
 |mountPath|Path to mount on container|null|
 |readOnly|Is mount read only|true|
 |defaultMode|Default permission mode|null|
-|ballerinaConf|Ballerina conf file location|null|
 |data|Paths to data files|null|
 
 ### @kubernetes:PersistentVolumeClaim{}
@@ -179,6 +180,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |schedule|Schedule for cron jobs|none|
 |imagePullSecrets|Image pull secrets value|null|
 |nodeSelector|Node selector labels|null|
+|cmd|Value for CMD for the generated Dockerfile|`CMD java -jar ${APP} [--b7a.config.file=${CONFIG_FILE}] [--debug]`|
 
 ### @istio:Gateway{}
 - Support with ballerina services and listeners.
