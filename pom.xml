@@ -327,7 +327,7 @@
         <com.fasterxml.jackson.core.annotations.version>2.9.8</com.fasterxml.jackson.core.annotations.version>
         <com.fasterxml.jackson.dataformat.yaml.version>2.9.8</com.fasterxml.jackson.dataformat.yaml.version>
         <commons.codec.version>1.12</commons.codec.version>
-        <docker.generator.version>1.2.2</docker.generator.version>
+        <docker.generator.version>1.2.3</docker.generator.version>
         <docker.java.version>3.1.5</docker.java.version>
         <fabric8.knative.client.version>4.6.4</fabric8.knative.client.version>
         <fabric8.kubernetes.client.version>4.6.4</fabric8.kubernetes.client.version>
