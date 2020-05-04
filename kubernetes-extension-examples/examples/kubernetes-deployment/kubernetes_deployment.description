@@ -8,5 +8,5 @@
 //Then copy the ballerinaKeystore.p12 and ballerinaTruststore.p12 files
 //located in https://github.com/ballerina-platform/ballerina-lang/tree/master/examples/resources/
 //to the security folder.<br/><br/>
-//For more information, see [How to Run and Deploy Ballerina Programs](https://ballerina.io/learn/how-to-deploy-and-run-ballerina-programs/).
+//For more information, see [How to Deploy Ballerina Programs and Services in the Cloud](https://ballerina.io/learn/how-to-deploy-ballerina-programs-in-cloud/).
 
