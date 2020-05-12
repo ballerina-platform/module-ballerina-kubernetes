@@ -65,7 +65,7 @@ task copyBallerinaArtifacts {
     doLast {
         copy {
             from configurations.birDir
-            into file("${distributionLocation}/bir-cache/")
+            into file("${distributionLocation}/bir-cache/ballerina")
         }
         configurations.bJars.each { jar ->
             copy {
