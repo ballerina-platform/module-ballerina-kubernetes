@@ -260,7 +260,8 @@ public type ServiceType "NodePort"|"ClusterIP"|"LoadBalancer";
 # + nodePort - NodePort for the pods. Default is not set.
 # + sessionAffinity - Session affinity for pods. Default is `"None"`.
 # + serviceType - Service type of the service. Default is `"ClusterIP"`.
-public type ServiceConfiguration record  {|
+# + prometheus - Prometheus port configurations.
+public type ServiceConfiguration record {|
     *Metadata;
     string portName?;
     int port?;
