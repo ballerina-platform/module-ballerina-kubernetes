@@ -63,6 +63,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |projectedVolumeMount|Projected Volume Mount configuration|null|
 |serviceAccountName|Service Account Name|null|
 |cmd|Value for CMD for the generated Dockerfile|`CMD java -jar ${APP} [--b7a.config.file=${CONFIG_FILE}] [--debug]`|
+|prometheusPort|Prometheus port exposed|
 
 ### @kubernetes:Service{}
 - Supported with ballerina services and listeners.

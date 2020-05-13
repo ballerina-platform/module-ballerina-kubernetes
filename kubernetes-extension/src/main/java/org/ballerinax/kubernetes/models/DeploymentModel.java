@@ -40,6 +40,7 @@ import static org.ballerinax.docker.generator.DockerGenConstants.OPENJDK_8_JRE_A
 public class DeploymentModel extends KubernetesModel {
     private Map<String, String> podAnnotations;
     private int replicas;
+    private int prometheusPort;
     private ProbeModel livenessProbe;
     private ProbeModel readinessProbe;
     private String namespace;
@@ -75,6 +76,7 @@ public class DeploymentModel extends KubernetesModel {
     public DeploymentModel() {
         // Initialize with default values.
         this.replicas = 1;
+        this.prometheusPort = -1;
         this.buildImage = true;
         this.baseImage = OPENJDK_8_JRE_ALPINE_BASE_IMAGE;
         this.push = false;
@@ -133,6 +135,10 @@ public class DeploymentModel extends KubernetesModel {
                 this.readinessProbe.setPeriodSeconds(1);
             }
         }
+    }
+
+    public void setPrometheusPort(int port) {
+        this.ports.add(port);
     }
 
     public void addPort(int port) {

@@ -178,6 +178,7 @@ public type PodTolerationConfiguration record {|
 # + nodeSelector - Node selector labels.
 # + serviceAccountName - Service Account Name.
 # + projectedVolumeMount - Projected Volume Mount config.
+# + prometheusPort - PrometheusPort port exposed.
 public type DeploymentConfiguration record {|
     *Metadata;
     string dockerHost?;
@@ -207,6 +208,7 @@ public type DeploymentConfiguration record {|
     map<string> nodeSelector?;
     string serviceAccountName?;
     ProjectedVolumeMount projectedVolumeMount?;
+    int prometheusPort?;
 |};
 
 public const STRATEGY_RECREATE = "Recreate";
@@ -258,7 +260,7 @@ public type ServiceType "NodePort"|"ClusterIP"|"LoadBalancer";
 # + nodePort - NodePort for the pods. Default is not set.
 # + sessionAffinity - Session affinity for pods. Default is `"None"`.
 # + serviceType - Service type of the service. Default is `"ClusterIP"`.
-public type ServiceConfiguration record {|
+public type ServiceConfiguration record  {|
     *Metadata;
     string portName?;
     int port?;

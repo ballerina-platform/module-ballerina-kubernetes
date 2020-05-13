@@ -30,7 +30,8 @@ import ballerina/kubernetes;
                 audience: "test"
             }
         ]
-    }
+    },
+    prometheusPort: 9097
 }
 @kubernetes:Service {}
 listener http:Listener helloEP = new (9090);
