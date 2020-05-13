@@ -185,8 +185,8 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 case projectedVolumeMount:
                     deploymentModel.setServiceAccountTokenModel(parseProjectedVolumeConfiguration(keyValue.getValue()));
                     break;
-                case prometheusPort:
-                    deploymentModel.setPrometheusPort(getIntValue(keyValue.getValue()));
+                case prometheus:
+                    deploymentModel.setPrometheus(getBooleanValue(keyValue.getValue()));
                     break;
                 default:
                     break;
@@ -420,7 +420,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         nodeSelector,
         serviceAccountName,
         projectedVolumeMount,
-        prometheusPort
+        prometheus
     }
 
     private enum ProbeConfiguration {

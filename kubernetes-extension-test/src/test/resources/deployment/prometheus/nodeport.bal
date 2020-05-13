@@ -20,19 +20,14 @@ import ballerina/kubernetes;
 @kubernetes:Deployment {
     image: "pizza-shop:latest",
     singleYAML: false,
-    serviceAccountName: "build-robot",
-    projectedVolumeMount: {
-        sources: [
-            {
-                name: "vault",
-                mountPath: "/tmp/",
-                expirationSeconds: 600,
-                audience: "test"
-            }
-        ]
+    prometheus: true
+}
+@kubernetes:Service {
+    prometheus: {
+        port: 9898,
+        serviceType: "NodePort"
     }
 }
-@kubernetes:Service {}
 listener http:Listener helloEP = new (9090);
 
 @http:ServiceConfig {
