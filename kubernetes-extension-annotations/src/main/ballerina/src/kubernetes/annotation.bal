@@ -278,7 +278,7 @@ public type ServiceConfiguration record {|
 # + serviceType - Service type of the service. Default is `"ClusterIP"`.
 # + nodePort - NodePort for the pods. Default is not set.
 public type PrometheusConfig record {|
-    int port=9797;
+    int port = 9797;
     ServiceType serviceType = SERVICE_TYPE_CLUSTER_IP;
     int nodePort?;
 |};
