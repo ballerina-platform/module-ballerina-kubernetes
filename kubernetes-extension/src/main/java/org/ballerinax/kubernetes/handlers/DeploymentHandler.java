@@ -66,6 +66,7 @@ import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.EXECUTABLE_JAR;
 import static org.ballerinax.kubernetes.KubernetesConstants.OPENSHIFT_BUILD_CONFIG_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
+import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.populateEnvVar;
 
 /**
@@ -392,6 +393,10 @@ public class DeploymentHandler extends AbstractArtifactHandler {
         dockerModel.setUsername(deploymentModel.getUsername());
         dockerModel.setPassword(deploymentModel.getPassword());
         dockerModel.setPush(deploymentModel.isPush());
+        if (isBlank(deploymentModel.getCmd()) && deploymentModel.isPrometheus()) {
+            // Add cmd to Dockerfile if prometheus is enabled.
+            deploymentModel.setCmd(KubernetesConstants.PROMETHEUS_CMD + deploymentModel.getPrometheusPort());
+        }
         dockerModel.setCmd(deploymentModel.getCmd());
         dockerModel.setUberJarFileName(extractUberJarName(dataHolder.getUberJarPath()) + EXECUTABLE_JAR);
         dockerModel.setPorts(deploymentModel.getPorts());

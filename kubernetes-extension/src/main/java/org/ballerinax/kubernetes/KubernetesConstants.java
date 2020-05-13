@@ -82,6 +82,8 @@ public class KubernetesConstants {
     public static final String OPENSHIFT_ROUTE_POSTFIX = "-openshift-route";
     public static final String KNATIVE_SVC_POSTFIX = "-knative-svc";
     public static final String VOLUME_DEFINE = "-volume";
+    public static final String PROMETHEUS_CMD = "CMD java -jar ${APP} --b7a.observability.enabled=true " +
+            "--b7a.observability.metrics.prometheus.port=";
 
     /**
      * Restart policy enum.
