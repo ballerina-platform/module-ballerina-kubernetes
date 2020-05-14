@@ -208,7 +208,7 @@ public type DeploymentConfiguration record {|
     map<string> nodeSelector?;
     string serviceAccountName?;
     ProjectedVolumeMount projectedVolumeMount?;
-    boolean prometheus=false;
+    boolean prometheus = false;
 |};
 
 public const STRATEGY_RECREATE = "Recreate";
