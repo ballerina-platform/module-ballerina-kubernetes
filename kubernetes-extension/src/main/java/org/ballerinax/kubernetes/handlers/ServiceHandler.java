@@ -96,11 +96,51 @@ public class ServiceHandler extends AbstractArtifactHandler {
             serviceModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
             serviceModel.setSelector(balxFileName);
             generate(serviceModel);
+            if (deploymentModel.isPrometheus()) {
+                deploymentModel.setPrometheusPort(serviceModel.getPrometheusModel().getPort());
+                generatePrometheusService(serviceModel);
+            }
             deploymentModel.addPort(serviceModel.getTargetPort());
             OUT.println();
             OUT.print("\t@kubernetes:Service \t\t\t - complete " + count + "/" + serviceModels.size() + "\r");
         }
     }
 
+    /**
+     * Generate kubernetes service definition for Prometheus.
+     *
+     * @throws KubernetesPluginException If an error occurs while generating artifact.
+     */
+    private void generatePrometheusService(ServiceModel serviceModel) throws KubernetesPluginException {
+        ServicePortBuilder servicePortBuilder = new ServicePortBuilder()
+                .withName(serviceModel.getProtocol() + "-prometheus-" + serviceModel.getName())
+                .withProtocol(KubernetesConstants.KUBERNETES_SVC_PROTOCOL)
+                .withPort(serviceModel.getPrometheusModel().getPort())
+                .withNewTargetPort(serviceModel.getPrometheusModel().getPort());
+
+        if (serviceModel.getPrometheusModel().getNodePort() > 0) {
+            servicePortBuilder.withNodePort(serviceModel.getNodePort());
+        }
+        Service service = new ServiceBuilder()
+                .withNewMetadata()
+                .withName(serviceModel.getName() + "-prometheus")
+                .withNamespace(dataHolder.getNamespace())
+                .addToLabels(serviceModel.getLabels())
+                .endMetadata()
+                .withNewSpec()
+                .withPorts(servicePortBuilder.build())
+                .addToSelector(KubernetesConstants.KUBERNETES_SELECTOR_KEY, serviceModel.getSelector())
+                .withSessionAffinity(serviceModel.getSessionAffinity())
+                .withType(serviceModel.getPrometheusModel().getServiceType())
+                .endSpec()
+                .build();
+        try {
+            String serviceYAML = SerializationUtils.dumpWithoutRuntimeStateAsYaml(service);
+            KubernetesUtils.writeToFile(serviceYAML, "_prometheus" + SVC_FILE_POSTFIX + YAML);
+        } catch (IOException e) {
+            String errorMessage = "error while generating yaml file for prometheus service: " + serviceModel.getName();
+            throw new KubernetesPluginException(errorMessage, e);
+        }
+    }
 
 }

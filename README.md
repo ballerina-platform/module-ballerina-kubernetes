@@ -63,6 +63,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |projectedVolumeMount|Projected Volume Mount configuration|null|
 |serviceAccountName|Service Account Name|null|
 |cmd|Value for CMD for the generated Dockerfile|`CMD java -jar ${APP} [--b7a.config.file=${CONFIG_FILE}] [--debug]`|
+|prometheus|Enable prometheus|Default port and ClusterIP service type|
 
 ### @kubernetes:Service{}
 - Supported with ballerina services and listeners.
@@ -77,6 +78,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |nodePort|NodePort to expose service|None|
 |sessionAffinity|Pod session affinity|None|
 |serviceType|Service type of the service|ClusterIP|
+|prometheus|Configure prometheus config|9797 port and ClusterIP service type|
 
 ### @kubernetes:Ingress{}
 - Supported with ballerina services and listeners.

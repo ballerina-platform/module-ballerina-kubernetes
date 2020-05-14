@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -21,34 +21,19 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.ballerinax.kubernetes.KubernetesConstants;
 
-import java.util.HashMap;
-
 /**
- * Kubernetes service annotations model class.
+ * Prometheus model class.
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class ServiceModel extends KubernetesModel {
+public class PrometheusModel extends KubernetesModel {
     private String serviceType;
     private int port;
     private int nodePort;
-    private int targetPort;
-    private String selector;
-    private String sessionAffinity;
-    private String portName;
-    private String protocol;
-    private PrometheusModel prometheusModel;
 
-    public ServiceModel() {
+    public PrometheusModel() {
         serviceType = KubernetesConstants.ServiceType.ClusterIP.name();
-        labels = new HashMap<>();
-        port = -1;
-        targetPort = -1;
+        port = 9797;
         nodePort = -1;
-        prometheusModel = new PrometheusModel();
-    }
-
-    public void addLabel(String key, String value) {
-        this.labels.put(key, value);
     }
 }
