@@ -61,10 +61,10 @@ task unzip {
 }
 
 def artifactBirDir = file("$project.projectDir/target/caches/bir_cache/ballerina")
-def artifactKubernetesJar = file("$project.projectDir/target/caches/jar_cache/ballerina/kubernetes/ballerina.kubernetes.jar")
-def artifactIstioJar = file("$project.projectDir/target/caches/jar_cache/ballerina/istio/ballerina.istio.jar")
-def artifactOpenshiftJar = file("$project.projectDir/target/caches/jar_cache/ballerina/openshift/ballerina.openshift.jar")
-def artifactKnativeJar = file("$project.projectDir/target/caches/jar_cache/ballerina/knative/ballerina.knative.jar")
+def artifactKubernetesJar = file("$project.projectDir/target/caches/jar_cache/ballerina/kubernetes/1.0.0/ballerina-kubernetes-1.0.0.jar")
+def artifactIstioJar = file("$project.projectDir/target/caches/jar_cache/ballerina/istio/1.0.0/ballerina-istio-1.0.0.jar")
+def artifactOpenshiftJar = file("$project.projectDir/target/caches/jar_cache/ballerina/openshift/1.0.0/ballerina-openshift-1.0.0.jar")
+def artifactKnativeJar = file("$project.projectDir/target/caches/jar_cache/ballerina/knative/1.0.0/ballerina-knative-1.0.0.jar")
 
 task ballerinaBuild {
     dependsOn unzip
@@ -81,56 +81,12 @@ task ballerinaBuild {
                 commandLine 'sh', '-c', "$distributionBinPath/ballerina build -c -a --skip-tests"
             }
         }
-        // Rename kubernetes jar
-        copy {
-            from "$project.projectDir/target/caches/jar_cache/ballerina/kubernetes/ballerina-kubernetes-.jar"
-            into "$project.projectDir/target/caches/jar_cache/ballerina/kubernetes/"
-            rename { String fileName ->
-                fileName.replace("ballerina-kubernetes-.jar", artifactKubernetesJar.getName())
-            }
-        }
-        // Rename istio jar
-        copy {
-            from "$project.projectDir/target/caches/jar_cache/ballerina/istio/ballerina-istio-.jar"
-            into "$project.projectDir/target/caches/jar_cache/ballerina/istio/"
-            rename { String fileName ->
-                fileName.replace("ballerina-istio-.jar", artifactIstioJar.getName())
-            }
-        }
-        // Rename openshift jar
-        copy {
-            from "$project.projectDir/target/caches/jar_cache/ballerina/openshift/ballerina-openshift-.jar"
-            into "$project.projectDir/target/caches/jar_cache/ballerina/openshift/"
-            rename { String fileName ->
-                fileName.replace("ballerina-openshift-.jar", artifactOpenshiftJar.getName())
-            }
-        }
-        // Rename knative jar
-        copy {
-            from "$project.projectDir/target/caches/jar_cache/ballerina/knative/ballerina-knative-.jar"
-            into "$project.projectDir/target/caches/jar_cache/ballerina/knative/"
-            rename { String fileName ->
-                fileName.replace("ballerina-knative-.jar", artifactKnativeJar.getName())
-            }
-        }
-        // Copy the kubernetes BIR to the 0.0.0 folder within it
-        ant.move file: "${artifactBirDir}/kubernetes/kubernetes.bir",
-                todir: "${artifactBirDir}/kubernetes/0.0.0/"
-        // Copy the istio BIR to the 0.0.0 folder within it
-        ant.move file: "${artifactBirDir}/istio/istio.bir",
-                todir: "${artifactBirDir}/istio/0.0.0/"
-        // Copy the openshift BIR to the 0.0.0 folder within it
-        ant.move file: "${artifactBirDir}/openshift/openshift.bir",
-                todir: "${artifactBirDir}/openshift/0.0.0/"
-        // Copy the knative BIR to the 0.0.0 folder within it
-        ant.move file: "${artifactBirDir}/knative/knative.bir",
-                todir: "${artifactBirDir}/knative/0.0.0/"
 
         // Copy the TOML to the same folder as the BIRs
-        ["${artifactBirDir}/kubernetes/0.0.0",
-         "${artifactBirDir}/istio/0.0.0",
-         "${artifactBirDir}/openshift/0.0.0",
-         "${artifactBirDir}/knative/0.0.0"].each { birDir ->
+        ["${artifactBirDir}/kubernetes/1.0.0",
+         "${artifactBirDir}/istio/1.0.0",
+         "${artifactBirDir}/openshift/1.0.0",
+         "${artifactBirDir}/knative/1.0.0"].each { birDir ->
             copy {
                 from file("$project.projectDir/Ballerina.toml")
                 into birDir
