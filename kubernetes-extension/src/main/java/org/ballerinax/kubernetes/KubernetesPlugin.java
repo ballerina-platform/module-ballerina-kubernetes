@@ -94,7 +94,8 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     
         // Get the imports with alias _
         List<BLangImportPackage> kubernetesImports = bPackage.getImports().stream()
-                .filter(i -> i.symbol.toString().equals("ballerina/kubernetes") && i.getAlias().toString().equals("_"))
+                .filter(i -> i.symbol.toString().startsWith("ballerina/kubernetes") &&
+                             i.getAlias().toString().equals("_"))
                 .collect(Collectors.toList());
     
         if (kubernetesImports.size() > 0) {
