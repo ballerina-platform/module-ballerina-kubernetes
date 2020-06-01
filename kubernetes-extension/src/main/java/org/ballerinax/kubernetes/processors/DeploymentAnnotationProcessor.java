@@ -30,6 +30,7 @@ import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.PodTolerationModel;
 import org.ballerinax.kubernetes.models.ProbeModel;
+import org.ballerinax.kubernetes.models.ServiceAccountTokenModel;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangExpression;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangListConstructorExpr;
@@ -178,6 +179,15 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 case nodeSelector:
                     deploymentModel.setNodeSelector(getMap(keyValue.getValue()));
                     break;
+                case serviceAccountName:
+                    deploymentModel.setServiceAccountName(getStringValue(keyValue.getValue()));
+                    break;
+                case projectedVolumeMount:
+                    deploymentModel.setServiceAccountTokenModel(parseProjectedVolumeConfiguration(keyValue.getValue()));
+                    break;
+                case prometheus:
+                    deploymentModel.setPrometheus(getBooleanValue(keyValue.getValue()));
+                    break;
                 default:
                     break;
             }
@@ -192,6 +202,49 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
             deploymentModel.setDockerCertPath(dockerCertPath);
         }
         KubernetesContext.getInstance().getDataHolder().setDeploymentModel(deploymentModel);
+    }
+
+    /**
+     * Parse pod toleration configurations from a record array.
+     *
+     * @param projectedVolumeSources Pod toleration configuration records.
+     * @return Pod toleration models.
+     * @throws KubernetesPluginException When an unknown field is found.
+     */
+    private List<ServiceAccountTokenModel> parseProjectedVolumeConfiguration(BLangExpression projectedVolumeSources)
+            throws KubernetesPluginException {
+        List<ServiceAccountTokenModel> serviceAccountTokenModels = new LinkedList<>();
+        List<BLangExpression> sources =
+                ((BLangListConstructorExpr) ((BLangRecordLiteral.BLangRecordKeyValueField)
+                        (((BLangRecordLiteral) projectedVolumeSources).getFields()).get(0)).valueExpr).getExpressions();
+        for (BLangExpression projectionMountFieldsAsExpression : sources) {
+            List<BLangRecordLiteral.BLangRecordKeyValueField> fields =
+                    convertRecordFields(((BLangRecordLiteral) projectionMountFieldsAsExpression).getFields());
+            ServiceAccountTokenModel serviceAccountTokenModel = new ServiceAccountTokenModel();
+            for (BLangRecordLiteral.BLangRecordKeyValueField projectionMountField : fields) {
+                ServiceAccountConfig fieldName =
+                        ServiceAccountConfig.valueOf(projectionMountField.getKey().toString());
+                switch (fieldName) {
+                    case name:
+                        serviceAccountTokenModel.setName(getStringValue(projectionMountField.getValue()));
+                        break;
+                    case mountPath:
+                        serviceAccountTokenModel.setMountPath(getStringValue(projectionMountField.getValue()));
+                        break;
+                    case expirationSeconds:
+                        serviceAccountTokenModel.setExpirationSeconds(getIntValue(projectionMountField.getValue()));
+                        break;
+                    case audience:
+                        serviceAccountTokenModel.setAudience(getStringValue(projectionMountField.getValue()));
+                        break;
+                    default:
+                        throw new KubernetesPluginException("unknown pod toleration field found: " +
+                                projectionMountField.getKey().toString());
+                }
+            }
+            serviceAccountTokenModels.add(serviceAccountTokenModel);
+        }
+        return serviceAccountTokenModels;
     }
 
     /**
@@ -364,7 +417,10 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         dependsOn,
         imagePullSecrets,
         updateStrategy,
-        nodeSelector
+        nodeSelector,
+        serviceAccountName,
+        projectedVolumeMount,
+        prometheus
     }
 
     private enum ProbeConfiguration {
@@ -379,5 +435,12 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         value,
         effect,
         tolerationSeconds
+    }
+
+    private enum ServiceAccountConfig {
+        name,
+        mountPath,
+        expirationSeconds,
+        audience
     }
 }

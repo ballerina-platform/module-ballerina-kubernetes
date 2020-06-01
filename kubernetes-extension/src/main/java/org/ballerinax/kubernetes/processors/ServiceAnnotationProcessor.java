@@ -24,6 +24,7 @@ import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
+import org.ballerinax.kubernetes.models.PrometheusModel;
 import org.ballerinax.kubernetes.models.ServiceModel;
 import org.wso2.ballerinalang.compiler.tree.BLangAnnotationAttachment;
 import org.wso2.ballerinalang.compiler.tree.BLangIdentifier;
@@ -49,6 +50,40 @@ import static org.ballerinax.kubernetes.utils.KubernetesUtils.isBlank;
  * Service annotation processor.
  */
 public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
+
+    /**
+     * Construct Prometheus Config.
+     *
+     * @param keyValue key values to extract configs
+     * @return PrometheusModel
+     * @throws KubernetesPluginException if an error occurs
+     */
+    private PrometheusModel getPrometheusConfig(BLangRecordLiteral.BLangRecordKeyValueField keyValue) throws
+            KubernetesPluginException {
+        PrometheusModel prometheusModel = new PrometheusModel();
+        for (BLangRecordLiteral.RecordField prometheusConfig : ((BLangRecordLiteral) keyValue.valueExpr).fields) {
+            BLangRecordLiteral.BLangRecordKeyValueField prometheusConfigKeyValue =
+                    ((BLangRecordLiteral.BLangRecordKeyValueField) prometheusConfig);
+            switch (prometheusConfigKeyValue.getKey().toString()) {
+                case "port":
+                    prometheusModel.setPort(
+                            getIntValue(((BLangRecordLiteral.BLangRecordKeyValueField) prometheusConfig).getValue()));
+                    break;
+                case "serviceType":
+                    prometheusModel.setServiceType(
+                            getStringValue(((BLangRecordLiteral.BLangRecordKeyValueField) prometheusConfig)
+                                    .getValue()));
+                    break;
+                case "nodePort":
+                    prometheusModel.setNodePort(
+                            getIntValue(((BLangRecordLiteral.BLangRecordKeyValueField) prometheusConfig).getValue()));
+                    break;
+                default:
+                    break;
+            }
+        }
+        return prometheusModel;
+    }
 
     @Override
     public void processAnnotation(ServiceNode serviceNode, AnnotationAttachmentNode attachmentNode) throws
@@ -201,6 +236,9 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
                 case sessionAffinity:
                     serviceModel.setSessionAffinity(getStringValue(keyValue.getValue()));
                     break;
+                case prometheus:
+                    serviceModel.setPrometheusModel(getPrometheusConfig(keyValue));
+                    break;
                 default:
                     break;
             }
@@ -220,6 +258,7 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
         port,
         targetPort,
         nodePort,
-        sessionAffinity
+        sessionAffinity,
+        prometheus
     }
 }

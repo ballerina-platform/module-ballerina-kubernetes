@@ -23,6 +23,7 @@ import lombok.EqualsAndHashCode;
 import org.ballerinax.docker.generator.models.CopyFileModel;
 import org.ballerinax.kubernetes.KubernetesConstants;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -39,6 +40,8 @@ import static org.ballerinax.docker.generator.DockerGenConstants.OPENJDK_8_JRE_A
 public class DeploymentModel extends KubernetesModel {
     private Map<String, String> podAnnotations;
     private int replicas;
+    private boolean prometheus;
+    private int prometheusPort;
     private ProbeModel livenessProbe;
     private ProbeModel readinessProbe;
     private String namespace;
@@ -68,10 +71,13 @@ public class DeploymentModel extends KubernetesModel {
     private List<PodTolerationModel> podTolerations;
     private DeploymentStrategy strategy;
     private Map<String, String> nodeSelector;
+    private String serviceAccountName;
+    private List<ServiceAccountTokenModel> serviceAccountTokenModel;
 
     public DeploymentModel() {
         // Initialize with default values.
         this.replicas = 1;
+        this.prometheus = false;
         this.buildImage = true;
         this.baseImage = OPENJDK_8_JRE_ALPINE_BASE_IMAGE;
         this.push = false;
@@ -91,6 +97,7 @@ public class DeploymentModel extends KubernetesModel {
         this.singleYAML = true;
         this.commandArgs = "";
         this.registry = "";
+        this.serviceAccountTokenModel = new ArrayList<>();
     }
 
     public Map<String, String> getPodAnnotations() {
@@ -99,6 +106,11 @@ public class DeploymentModel extends KubernetesModel {
 
     public void setPodAnnotations(Map<String, String> podAnnotations) {
         this.podAnnotations = podAnnotations;
+    }
+
+    public void setPrometheusPort(int port) {
+        this.prometheusPort = port;
+        this.addPort(port);
     }
 
     public void setLivenessProbe(ProbeModel livenessProbe) {
@@ -173,6 +185,7 @@ public class DeploymentModel extends KubernetesModel {
                 ", registry='" + registry +
                 ", buildExtension=" + buildExtension +
                 ", podTolerations=" + podTolerations +
+                ", serviceAccountTokenModel=" + serviceAccountTokenModel +
                 '}';
     }
 }

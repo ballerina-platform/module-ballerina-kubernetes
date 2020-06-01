@@ -176,6 +176,9 @@ public type PodTolerationConfiguration record {|
 # + dependsOn - Services this deployment depends on.
 # + imagePullSecrets - Image pull secrets.
 # + nodeSelector - Node selector labels.
+# + serviceAccountName - Service Account Name.
+# + projectedVolumeMount - Projected Volume Mount config.
+# + prometheus - Enable Prometheus.
 public type DeploymentConfiguration record {|
     *Metadata;
     string dockerHost?;
@@ -203,6 +206,9 @@ public type DeploymentConfiguration record {|
     string[] dependsOn?;
     string[] imagePullSecrets?;
     map<string> nodeSelector?;
+    string serviceAccountName?;
+    ProjectedVolumeMount projectedVolumeMount?;
+    boolean prometheus = false;
 |};
 
 public const STRATEGY_RECREATE = "Recreate";
@@ -254,6 +260,7 @@ public type ServiceType "NodePort"|"ClusterIP"|"LoadBalancer";
 # + nodePort - NodePort for the pods. Default is not set.
 # + sessionAffinity - Session affinity for pods. Default is `"None"`.
 # + serviceType - Service type of the service. Default is `"ClusterIP"`.
+# + prometheus - Prometheus port configurations.
 public type ServiceConfiguration record {|
     *Metadata;
     string portName?;
@@ -262,6 +269,18 @@ public type ServiceConfiguration record {|
     int nodePort?;
     SessionAffinity sessionAffinity = SESSION_AFFINITY_NONE;
     ServiceType serviceType = SERVICE_TYPE_CLUSTER_IP;
+    PrometheusConfig prometheus?;
+|};
+
+# Prometheus port configuration.
+#
+# + port - Prometheus port. Default is 9797.
+# + serviceType - Service type of the service. Default is `"ClusterIP"`.
+# + nodePort - NodePort for the pods. Default is not set.
+public type PrometheusConfig record {|
+    int port = 9797;
+    ServiceType serviceType = SERVICE_TYPE_CLUSTER_IP;
+    int nodePort?;
 |};
 
 # @kubernetes:Service annotation to configure service yaml.
@@ -322,6 +341,26 @@ public type Secret record {|
 public type SecretMount record {|
     string conf?;
     Secret[] secrets?;
+|};
+
+# Projected volume mount configurations for kubernetes.
+#
+# + sources - projected Sources
+public type ProjectedVolumeMount record {|
+    ServiceAccountToken[] sources;
+|};
+
+# Service account token configurations for kubernetes.
+#
+# + name - ServiceAccountToken Name
+# + mountPath - volume mount path
+# + expirationSeconds - token expirations seconds
+# + audience - token audience
+public type ServiceAccountToken record {|
+    string name;
+    string mountPath;
+    int expirationSeconds;
+    string audience;
 |};
 
 # @kubernetes:Secret annotation to configure secrets.
