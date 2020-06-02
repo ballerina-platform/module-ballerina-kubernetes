@@ -73,14 +73,23 @@ task ballerinaBuild {
     inputs.dir file("$project.projectDir/src")
     inputs.file file("$project.projectDir/Ballerina.toml")
     doLast {
+        def distributionBinPath = project.projectDir.absolutePath + "/build/extracted-distribution/jballerina-tools-${ballerinaLangVersion}/bin"
         exec {
             workingDir project.projectDir
             environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
-            def distributionBinPath = project.projectDir.absolutePath + "/build/extracted-distribution/jballerina-tools-${ballerinaLangVersion}/bin"
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                 commandLine 'cmd', '/c', "$distributionBinPath/ballerina.bat build -c -a --skip-tests"
             } else {
                 commandLine 'sh', '-c', "$distributionBinPath/ballerina build -c -a --skip-tests"
+            }
+        }
+        exec {
+            workingDir project.projectDir
+            environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine 'cmd', '/c', "$distributionBinPath/ballerina.bat doc -a"
+            } else {
+                commandLine 'sh', '-c', "$distributionBinPath/ballerina doc -a"
             }
         }
 
@@ -94,8 +103,27 @@ task ballerinaBuild {
                 into birDir
             }
         }
+
+        // Restructure API docs directories
+        copy {
+            from file("$project.projectDir/target/apidocs/kubernetes")
+            into file("$project.buildDir/apidocs/docs/kubernetes")
+        }
+        copy {
+            from file("$project.projectDir/target/apidocs/istio")
+            into file("$project.buildDir/apidocs/docs/istio")
+        }
+        copy {
+            from file("$project.projectDir/target/apidocs/openshift")
+            into file("$project.buildDir/apidocs/docs/openshift")
+        }
+        copy {
+            from file("$project.projectDir/target/apidocs/knative")
+            into file("$project.buildDir/apidocs/docs/knative")
+        }
     }
     outputs.dir artifactBirDir
+    outputs.dir file("$project.buildDir/apidocs")
     outputs.file artifactKubernetesJar
     outputs.file artifactIstioJar
     outputs.file artifactOpenshiftJar
