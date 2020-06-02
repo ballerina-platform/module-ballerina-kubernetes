@@ -17,8 +17,6 @@
 
 import org.apache.tools.ant.taskdefs.condition.Os
 
-apply from: "$rootDir/gradle/mvnPublisher.gradle"
-
 description = 'Ballerinax - Kubernetes Extension Annotations'
 
 configurations {

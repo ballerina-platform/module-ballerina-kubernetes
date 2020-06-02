@@ -17,6 +17,7 @@
  
 
 plugins {
+    id "base"
     id "com.github.spotbugs" version "4.0.5"
     id "com.github.johnrengelman.shadow" version "5.2.0"
     id "de.undercouch.download" version "4.0.4"
@@ -39,10 +40,7 @@ ext.testngVersion = "6.14.3"
 ext.lombokVersion = "1.18.10"
 
 allprojects {
-
-	apply plugin: 'jacoco'
-    apply plugin: 'maven-publish'
-
+    apply plugin: 'jacoco'
     repositories {
         mavenLocal()
         maven {
@@ -58,24 +56,38 @@ allprojects {
         }
 
         maven {
-            url = 'https://maven.wso2.org/nexus/content/repositories/orgballerinalang-1509'
-        }
-
-        maven {
             url = 'https://repo.maven.apache.org/maven2'
+        }
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+    publishing {
+        repositories {
+            maven {
+                if (project.version.endsWith('-SNAPSHOT')) {
+                    url "https://maven.wso2.org/nexus/content/repositories/snapshots/"
+                } else {
+                    url "https://maven.wso2.org/nexus/service/local/staging/deploy/maven2/"
+                }
+                credentials {
+                    username System.getenv("NEXUS_USERNAME")
+                    password System.getenv("NEXUS_PASSWORD")
+                }
+            }
         }
     }
 
     release {
-        // Workaround to fix build task not found issue in release plugin
-        buildTasks = []
+        // Disable check snapshots temporarily
         failOnSnapshotDependencies = false
         failOnCommitNeeded = false
-        versionPropertyFile = 'gradle.properties'
         tagTemplate = 'v${version}'
         git {
             // To release from any branch
-            requireBranch = ''
+            requireBranch = null
         }
     }
 
@@ -83,13 +95,9 @@ allprojects {
     afterReleaseBuild.dependsOn publish
 }
 
-subprojects {
-    apply plugin: 'java'
-}
-
 task codeCoverageReport(type: JacocoReport) {
     dependsOn = subprojects.test
-    
+
     executionData fileTree(project.rootDir.absolutePath).include("**/build/coverage-reports/*.exec")
 
     subprojects.each {
