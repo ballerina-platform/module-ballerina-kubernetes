@@ -60,11 +60,15 @@ task unzip {
     outputs.dir bDistribution
 }
 
+def ballerinaToml = file("$project.projectDir/Ballerina.toml")
+def semverMatcher = ballerinaToml.getText("UTF-8") =~ /(([0-9]+)\.([0-9]+)\.([0-9]+))/
+def tomlSemver = semverMatcher[0][1]
+
 def artifactBirDir = file("$project.projectDir/target/caches/bir_cache/ballerina")
-def artifactKubernetesJar = file("$project.projectDir/target/caches/jar_cache/ballerina/kubernetes/1.0.0/ballerina-kubernetes-1.0.0.jar")
-def artifactIstioJar = file("$project.projectDir/target/caches/jar_cache/ballerina/istio/1.0.0/ballerina-istio-1.0.0.jar")
-def artifactOpenshiftJar = file("$project.projectDir/target/caches/jar_cache/ballerina/openshift/1.0.0/ballerina-openshift-1.0.0.jar")
-def artifactKnativeJar = file("$project.projectDir/target/caches/jar_cache/ballerina/knative/1.0.0/ballerina-knative-1.0.0.jar")
+def artifactKubernetesJar = file("$project.projectDir/target/caches/jar_cache/ballerina/kubernetes/${tomlSemver}/ballerina-kubernetes-${tomlSemver}.jar")
+def artifactIstioJar = file("$project.projectDir/target/caches/jar_cache/ballerina/istio/${tomlSemver}/ballerina-istio-${tomlSemver}.jar")
+def artifactOpenshiftJar = file("$project.projectDir/target/caches/jar_cache/ballerina/openshift/${tomlSemver}/ballerina-openshift-${tomlSemver}.jar")
+def artifactKnativeJar = file("$project.projectDir/target/caches/jar_cache/ballerina/knative/${tomlSemver}/ballerina-knative-${tomlSemver}.jar")
 
 task ballerinaBuild {
     dependsOn unzip
@@ -83,10 +87,10 @@ task ballerinaBuild {
         }
 
         // Copy the TOML to the same folder as the BIRs
-        ["${artifactBirDir}/kubernetes/1.0.0",
-         "${artifactBirDir}/istio/1.0.0",
-         "${artifactBirDir}/openshift/1.0.0",
-         "${artifactBirDir}/knative/1.0.0"].each { birDir ->
+        ["${artifactBirDir}/kubernetes/${tomlSemver}",
+         "${artifactBirDir}/istio/${tomlSemver}",
+         "${artifactBirDir}/openshift/${tomlSemver}",
+         "${artifactBirDir}/knative/${tomlSemver}"].each { birDir ->
             copy {
                 from file("$project.projectDir/Ballerina.toml")
                 into birDir
