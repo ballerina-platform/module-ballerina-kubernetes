@@ -96,3 +96,11 @@ test {
         ]
 	}
 }
+
+// Disable publishing artifacts
+tasks.withType(PublishToMavenRepository) {
+    enabled = false
+}
+tasks.withType(PublishToMavenLocal) {
+    enabled = false
+}

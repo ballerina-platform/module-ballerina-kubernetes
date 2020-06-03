@@ -17,8 +17,6 @@
 
 import org.apache.tools.ant.taskdefs.condition.Os
 
-apply from: "$rootDir/gradle/mvnPublisher.gradle"
-
 description = 'Ballerinax - Kubernetes Extension Annotations'
 
 configurations {
@@ -60,40 +58,72 @@ task unzip {
     outputs.dir bDistribution
 }
 
+def ballerinaToml = file("$project.projectDir/Ballerina.toml")
+def semverMatcher = ballerinaToml.getText("UTF-8") =~ /(([0-9]+)\.([0-9]+)\.([0-9]+))/
+def tomlSemver = semverMatcher[0][1]
+
 def artifactBirDir = file("$project.projectDir/target/caches/bir_cache/ballerina")
-def artifactKubernetesJar = file("$project.projectDir/target/caches/jar_cache/ballerina/kubernetes/1.0.0/ballerina-kubernetes-1.0.0.jar")
-def artifactIstioJar = file("$project.projectDir/target/caches/jar_cache/ballerina/istio/1.0.0/ballerina-istio-1.0.0.jar")
-def artifactOpenshiftJar = file("$project.projectDir/target/caches/jar_cache/ballerina/openshift/1.0.0/ballerina-openshift-1.0.0.jar")
-def artifactKnativeJar = file("$project.projectDir/target/caches/jar_cache/ballerina/knative/1.0.0/ballerina-knative-1.0.0.jar")
+def artifactKubernetesJar = file("$project.projectDir/target/caches/jar_cache/ballerina/kubernetes/${tomlSemver}/ballerina-kubernetes-${tomlSemver}.jar")
+def artifactIstioJar = file("$project.projectDir/target/caches/jar_cache/ballerina/istio/${tomlSemver}/ballerina-istio-${tomlSemver}.jar")
+def artifactOpenshiftJar = file("$project.projectDir/target/caches/jar_cache/ballerina/openshift/${tomlSemver}/ballerina-openshift-${tomlSemver}.jar")
+def artifactKnativeJar = file("$project.projectDir/target/caches/jar_cache/ballerina/knative/${tomlSemver}/ballerina-knative-${tomlSemver}.jar")
 
 task ballerinaBuild {
     dependsOn unzip
     inputs.dir file("$project.projectDir/src")
     inputs.file file("$project.projectDir/Ballerina.toml")
     doLast {
+        def distributionBinPath = project.projectDir.absolutePath + "/build/extracted-distribution/jballerina-tools-${ballerinaLangVersion}/bin"
         exec {
             workingDir project.projectDir
             environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
-            def distributionBinPath = project.projectDir.absolutePath + "/build/extracted-distribution/jballerina-tools-${ballerinaLangVersion}/bin"
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                 commandLine 'cmd', '/c', "$distributionBinPath/ballerina.bat build -c -a --skip-tests"
             } else {
                 commandLine 'sh', '-c', "$distributionBinPath/ballerina build -c -a --skip-tests"
             }
         }
+        exec {
+            workingDir project.projectDir
+            environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine 'cmd', '/c', "$distributionBinPath/ballerina.bat doc -a"
+            } else {
+                commandLine 'sh', '-c', "$distributionBinPath/ballerina doc -a"
+            }
+        }
 
         // Copy the TOML to the same folder as the BIRs
-        ["${artifactBirDir}/kubernetes/1.0.0",
-         "${artifactBirDir}/istio/1.0.0",
-         "${artifactBirDir}/openshift/1.0.0",
-         "${artifactBirDir}/knative/1.0.0"].each { birDir ->
+        ["${artifactBirDir}/kubernetes/${tomlSemver}",
+         "${artifactBirDir}/istio/${tomlSemver}",
+         "${artifactBirDir}/openshift/${tomlSemver}",
+         "${artifactBirDir}/knative/${tomlSemver}"].each { birDir ->
             copy {
                 from file("$project.projectDir/Ballerina.toml")
                 into birDir
             }
         }
+
+        // Restructure API docs directories
+        copy {
+            from file("$project.projectDir/target/apidocs/kubernetes")
+            into file("$project.buildDir/apidocs/docs/kubernetes")
+        }
+        copy {
+            from file("$project.projectDir/target/apidocs/istio")
+            into file("$project.buildDir/apidocs/docs/istio")
+        }
+        copy {
+            from file("$project.projectDir/target/apidocs/openshift")
+            into file("$project.buildDir/apidocs/docs/openshift")
+        }
+        copy {
+            from file("$project.projectDir/target/apidocs/knative")
+            into file("$project.buildDir/apidocs/docs/knative")
+        }
     }
     outputs.dir artifactBirDir
+    outputs.dir file("$project.buildDir/apidocs")
     outputs.file artifactKubernetesJar
     outputs.file artifactIstioJar
     outputs.file artifactOpenshiftJar

@@ -15,8 +15,6 @@
  *
  */
 
-apply from: "$rootDir/gradle/mvnPublisher.gradle"
-
 description = 'Ballerinax - Kubernetes Extension Examples'
 
 task zipExamples(type: Zip) {
