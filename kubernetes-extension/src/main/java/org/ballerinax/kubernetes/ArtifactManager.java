@@ -43,7 +43,7 @@ import java.io.PrintStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
+import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_LATEST_TAG;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.getValidName;
@@ -113,7 +113,7 @@ public class ArtifactManager {
     public void populateDeploymentModel() {
         DeploymentModel deploymentModel = kubernetesDataHolder.getDeploymentModel();
         kubernetesDataHolder.setDeploymentModel(deploymentModel);
-        String balxFileName = extractUberJarName(kubernetesDataHolder.getUberJarPath());
+        String balxFileName = extractJarName(kubernetesDataHolder.getUberJarPath());
         if (isBlank(deploymentModel.getName())) {
             if (balxFileName != null) {
                 deploymentModel.setName(getValidName(balxFileName) + DEPLOYMENT_POSTFIX);

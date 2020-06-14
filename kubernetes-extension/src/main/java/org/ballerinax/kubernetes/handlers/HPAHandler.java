@@ -33,7 +33,7 @@ import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
 
-import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
+import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.HPA_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.HPA_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
@@ -89,7 +89,7 @@ public class HPAHandler extends AbstractArtifactHandler {
         if (podAutoscalerModel == null) {
             return;
         }
-        String balxFileName = extractUberJarName(dataHolder.getUberJarPath());
+        String balxFileName = extractJarName(dataHolder.getUberJarPath());
         podAutoscalerModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
         podAutoscalerModel.setDeployment(deploymentModel.getName());
         if (podAutoscalerModel.getMaxReplicas() == 0) {

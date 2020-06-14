@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
+import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_LATEST_TAG;
 import static org.ballerinax.kubernetes.KubernetesConstants.EXECUTABLE_JAR;
 import static org.ballerinax.kubernetes.KubernetesConstants.JOB_FILE_POSTFIX;
@@ -124,7 +124,7 @@ public class JobHandler extends AbstractArtifactHandler {
     @Override
     public void createArtifacts() throws KubernetesPluginException {
         try {
-            String balxFileName = extractUberJarName(dataHolder.getUberJarPath());
+            String balxFileName = extractJarName(dataHolder.getUberJarPath());
             JobModel jobModel = dataHolder.getJobModel();
             if (isBlank(jobModel.getName())) {
                 jobModel.setName(getValidName(balxFileName) + JOB_POSTFIX);
@@ -156,7 +156,7 @@ public class JobHandler extends AbstractArtifactHandler {
         dockerModel.setPassword(jobModel.getPassword());
         dockerModel.setPush(jobModel.isPush());
         dockerModel.setCmd(jobModel.getCmd());
-        dockerModel.setUberJarFileName(extractUberJarName(dataHolder.getUberJarPath()) + EXECUTABLE_JAR);
+        dockerModel.setJarFileName(extractJarName(dataHolder.getUberJarPath()) + EXECUTABLE_JAR);
         dockerModel.setService(false);
         dockerModel.setDockerHost(jobModel.getDockerHost());
         dockerModel.setDockerCertPath(jobModel.getDockerCertPath());

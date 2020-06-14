@@ -179,6 +179,7 @@ public type PodTolerationConfiguration record {|
 # + serviceAccountName - Service Account Name.
 # + projectedVolumeMount - Projected Volume Mount config.
 # + prometheus - Enable Prometheus.
+# + uberJar - Use ballerina uber jar. Default is `true`.
 public type DeploymentConfiguration record {|
     *Metadata;
     string dockerHost?;
@@ -209,6 +210,7 @@ public type DeploymentConfiguration record {|
     string serviceAccountName?;
     ProjectedVolumeMount projectedVolumeMount?;
     boolean prometheus = false;
+    boolean uberJar = true;
 |};
 
 public const STRATEGY_RECREATE = "Recreate";

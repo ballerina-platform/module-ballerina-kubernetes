@@ -73,6 +73,7 @@ public class DeploymentModel extends KubernetesModel {
     private Map<String, String> nodeSelector;
     private String serviceAccountName;
     private List<ServiceAccountTokenModel> serviceAccountTokenModel;
+    private boolean uberJar;
 
     public DeploymentModel() {
         // Initialize with default values.

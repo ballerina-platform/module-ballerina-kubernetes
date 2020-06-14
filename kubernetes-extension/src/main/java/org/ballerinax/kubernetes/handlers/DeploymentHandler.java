@@ -60,7 +60,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.ballerinax.docker.generator.DockerGenConstants.REGISTRY_SEPARATOR;
-import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
+import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.EXECUTABLE_JAR;
@@ -398,8 +398,9 @@ public class DeploymentHandler extends AbstractArtifactHandler {
             deploymentModel.setCmd(KubernetesConstants.PROMETHEUS_CMD + deploymentModel.getPrometheusPort());
         }
         dockerModel.setCmd(deploymentModel.getCmd());
-        dockerModel.setUberJarFileName(extractUberJarName(dataHolder.getUberJarPath()) + EXECUTABLE_JAR);
+        dockerModel.setJarFileName(extractJarName(dataHolder.getUberJarPath()) + EXECUTABLE_JAR);
         dockerModel.setPorts(deploymentModel.getPorts());
+        dockerModel.setUberJar(deploymentModel.isUberJar());
         dockerModel.setService(true);
         dockerModel.setDockerHost(deploymentModel.getDockerHost());
         dockerModel.setDockerCertPath(deploymentModel.getDockerCertPath());

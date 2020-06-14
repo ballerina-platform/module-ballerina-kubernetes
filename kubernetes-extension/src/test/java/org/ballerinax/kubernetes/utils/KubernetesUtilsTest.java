@@ -53,9 +53,9 @@ public class KubernetesUtilsTest {
         Path balxFilePath =
                 Paths.get("/Users/anuruddha/workspace/ballerinax/docker/samples/sample5/hello_config_file.balx");
         String baxlFileName = "hello_config_file";
-        Assert.assertEquals(DockerGenUtils.extractUberJarName(balxFilePath), baxlFileName);
+        Assert.assertEquals(DockerGenUtils.extractJarName(balxFilePath), baxlFileName);
         balxFilePath = Paths.get("/Users/anuruddha/workspace/ballerinax/docker/samples/sample5/");
-        Assert.assertNull(DockerGenUtils.extractUberJarName((balxFilePath)));
+        Assert.assertNull(DockerGenUtils.extractJarName((balxFilePath)));
     }
 
     @Test

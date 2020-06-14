@@ -26,7 +26,7 @@ import org.ballerinax.kubernetes.models.knative.ServiceModel;
 
 import java.util.Map;
 
-import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
+import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractJarName;
 
 /**
  * Generates kubernetes service from annotations.
@@ -49,7 +49,7 @@ public class KnativeContainerHandler extends KnativeAbstractArtifactHandler {
         int count = 0;
         for (KnativeContainerModel serviceModel : serviceModels.values()) {
             count++;
-            String balxFileName = extractUberJarName(KnativeContext.getInstance().getDataHolder()
+            String balxFileName = extractJarName(KnativeContext.getInstance().getDataHolder()
                     .getUberJarPath());
             serviceModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
             serviceModel.setSelector(balxFileName);

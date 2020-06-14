@@ -44,7 +44,7 @@ public class HelmChartGeneratorTests extends HandlerTestSuite {
         ports.add(9092);
         dockerModel.setPorts(ports);
         dockerModel.setService(true);
-        dockerModel.setUberJarFileName("hello.jar");
+        dockerModel.setJarFileName("hello.jar");
         dockerModel.setEnableDebug(true);
         dockerModel.setBaseImage(OPENJDK_8_JRE_ALPINE_BASE_IMAGE);
         dockerModel.setDebugPort(5005);
