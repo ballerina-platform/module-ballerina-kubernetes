@@ -64,6 +64,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |serviceAccountName|Service Account Name|null|
 |cmd|Value for CMD for the generated Dockerfile|`CMD java -jar ${APP} [--b7a.config.file=${CONFIG_FILE}] [--debug]`|
 |prometheus|Enable prometheus|Default port and ClusterIP service type|
+|uberJar|Use ballerina uber jar|Default is `true`|
 
 ### @kubernetes:Service{}
 - Supported with ballerina services and listeners.
@@ -183,6 +184,7 @@ Annotation based kubernetes extension implementation for ballerina.
 |imagePullSecrets|Image pull secrets value|null|
 |nodeSelector|Node selector labels|null|
 |cmd|Value for CMD for the generated Dockerfile|`CMD java -jar ${APP} [--b7a.config.file=${CONFIG_FILE}] [--debug]`|
+|uberJar|Use ballerina uber jar|Default is `true`|
 
 ### @istio:Gateway{}
 - Support with ballerina services and listeners.

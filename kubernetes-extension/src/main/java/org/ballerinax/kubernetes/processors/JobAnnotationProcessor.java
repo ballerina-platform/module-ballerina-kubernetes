@@ -49,7 +49,7 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
             KubernetesPluginException {
         JobModel jobModel = new JobModel();
         List<BLangRecordLiteral.BLangRecordKeyValueField> keyValues =
-            convertRecordFields(((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getFields());
+                convertRecordFields(((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getFields());
         for (BLangRecordLiteral.BLangRecordKeyValueField keyValue : keyValues) {
             JobConfiguration jobConfiguration =
                     JobConfiguration.valueOf(keyValue.getKey().toString());
@@ -127,6 +127,9 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
                 case nodeSelector:
                     jobModel.setNodeSelector(getMap(keyValue.getValue()));
                     break;
+                case uberJar:
+                    jobModel.setUberJar(getBooleanValue(keyValue.getValue()));
+                    break;
                 default:
                     break;
             }
@@ -171,6 +174,7 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
         dependsOn,
         imagePullSecrets,
         registry,
-        nodeSelector
+        nodeSelector,
+        uberJar
     }
 }

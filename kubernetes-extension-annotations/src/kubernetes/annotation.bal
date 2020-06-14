@@ -478,6 +478,7 @@ public type RestartPolicy "OnFailure"|"Always"|"Never";
 # + schedule - Schedule for cron jobs.
 # + imagePullSecrets - Image pull secrets.
 # + nodeSelector - Node selector labels.
+# + uberJar - Use ballerina uber jar. Default is `true`.
 public type JobConfig record {|
     *Metadata;
     string dockerHost?;
@@ -501,6 +502,7 @@ public type JobConfig record {|
     string schedule?;
     string[] imagePullSecrets?;
     map<string> nodeSelector?;
+    boolean uberJar = true;
 |};
 
 # @kubernetes:Job annotation to configure kubernetes jobs.

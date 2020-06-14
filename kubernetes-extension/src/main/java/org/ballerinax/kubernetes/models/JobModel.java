@@ -57,6 +57,7 @@ public class JobModel extends KubernetesModel {
     private Set<CopyFileModel> copyFiles;
     private boolean singleYAML;
     private String registry;
+    private boolean uberJar;
 
     public JobModel() {
         this.labels = new HashMap<>();
