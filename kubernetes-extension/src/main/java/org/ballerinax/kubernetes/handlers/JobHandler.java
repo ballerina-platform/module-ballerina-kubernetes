@@ -29,6 +29,7 @@ import org.ballerinax.docker.generator.models.DockerModel;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.JobModel;
+import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
@@ -144,7 +145,7 @@ public class JobHandler extends AbstractArtifactHandler {
     }
 
     private DockerModel getDockerModel(JobModel jobModel) throws DockerGenException {
-        DockerModel dockerModel = new DockerModel();
+        DockerModel dockerModel = KubernetesContext.getInstance().getDataHolder().getDockerModel();
         String dockerImage = jobModel.getImage();
         String imageTag = dockerImage.substring(dockerImage.lastIndexOf(":") + 1);
         dockerImage = dockerImage.substring(0, dockerImage.lastIndexOf(":"));

@@ -49,7 +49,8 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
             KubernetesPluginException {
         JobModel jobModel = new JobModel();
         List<BLangRecordLiteral.BLangRecordKeyValueField> keyValues =
-                convertRecordFields(((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getFields());
+                convertRecordFields(((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr)
+                        .getFields());
         for (BLangRecordLiteral.BLangRecordKeyValueField keyValue : keyValues) {
             JobConfiguration jobConfiguration =
                     JobConfiguration.valueOf(keyValue.getKey().toString());

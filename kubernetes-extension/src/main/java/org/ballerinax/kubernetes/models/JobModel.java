@@ -74,6 +74,7 @@ public class JobModel extends KubernetesModel {
         this.activeDeadlineSeconds = 20;
         this.imagePullSecrets = new HashSet<>();
         this.singleYAML = true;
+        this.uberJar = true;
     }
 
     public void addLabel(String key, String value) {

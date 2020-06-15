@@ -378,7 +378,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
      * @param deploymentModel Deployment model
      */
     private DockerModel getDockerModel(DeploymentModel deploymentModel) throws DockerGenException {
-        DockerModel dockerModel = new DockerModel();
+        DockerModel dockerModel = KubernetesContext.getInstance().getDataHolder().getDockerModel();
         String dockerImage = deploymentModel.getImage();
         String imageTag = "latest";
         if (dockerImage.contains(":")) {
