@@ -33,7 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
+import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.HELM_API_VERSION;
 import static org.ballerinax.kubernetes.KubernetesConstants.HELM_API_VERSION_DEFAULT;
 import static org.ballerinax.kubernetes.KubernetesConstants.HELM_APP_VERSION;
@@ -57,7 +57,7 @@ public class HelmChartHandler extends AbstractArtifactHandler {
         OUT.println();
         Path helmBaseOutputDir = this.dataHolder.getK8sArtifactOutputPath();
         if (helmBaseOutputDir.endsWith("target" + File.separator + "kubernetes" + File.separator)) {
-            helmBaseOutputDir = helmBaseOutputDir.resolve(extractUberJarName(this.dataHolder.getUberJarPath()));
+            helmBaseOutputDir = helmBaseOutputDir.resolve(extractJarName(this.dataHolder.getUberJarPath()));
         }
         helmBaseOutputDir = helmBaseOutputDir.resolve(model.getName());
         String helmTemplatesOutputDir = helmBaseOutputDir + File.separator + HELM_CHART_TEMPLATES;

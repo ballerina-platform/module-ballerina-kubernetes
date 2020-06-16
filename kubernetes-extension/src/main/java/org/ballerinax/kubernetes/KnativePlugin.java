@@ -48,7 +48,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
+import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.utils.KnativeUtils.printError;
@@ -151,10 +151,10 @@ public class KnativePlugin extends AbstractCompilerPlugin {
                         dataHolder.setProject(true);
                         kubernetesOutputPath = projectRoot.resolve("target")
                                 .resolve(KUBERNETES)
-                                .resolve(extractUberJarName(executableJarFile));
+                                .resolve(extractJarName(executableJarFile));
                         dockerOutputPath = projectRoot.resolve("target")
                                 .resolve(DOCKER)
-                                .resolve(extractUberJarName(executableJarFile));
+                                .resolve(extractJarName(executableJarFile));
                     }
                 }
 

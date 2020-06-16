@@ -76,7 +76,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
+import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 
 /**
@@ -110,14 +110,14 @@ public class KubernetesUtils {
      */
     public static void writeToFile(Path outputDir, String context, String fileSuffix) throws IOException {
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
-        Path artifactFileName = outputDir.resolve(extractUberJarName(dataHolder.getUberJarPath()) + fileSuffix);
+        Path artifactFileName = outputDir.resolve(extractJarName(dataHolder.getUberJarPath()) + fileSuffix);
         DeploymentModel deploymentModel = dataHolder.getDeploymentModel();
         JobModel jobModel = dataHolder.getJobModel();
         // Priority given for job, then deployment.
         if (jobModel != null && jobModel.isSingleYAML()) {
-            artifactFileName = outputDir.resolve(extractUberJarName(dataHolder.getUberJarPath()) + YAML);
+            artifactFileName = outputDir.resolve(extractJarName(dataHolder.getUberJarPath()) + YAML);
         } else if (jobModel == null && deploymentModel != null && deploymentModel.isSingleYAML()) {
-            artifactFileName = outputDir.resolve(extractUberJarName(dataHolder.getUberJarPath()) + YAML);
+            artifactFileName = outputDir.resolve(extractJarName(dataHolder.getUberJarPath()) + YAML);
 
         }
         File newFile = artifactFileName.toFile();

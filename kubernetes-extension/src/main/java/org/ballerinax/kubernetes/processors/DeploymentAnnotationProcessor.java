@@ -188,6 +188,9 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 case prometheus:
                     deploymentModel.setPrometheus(getBooleanValue(keyValue.getValue()));
                     break;
+                case uberJar:
+                    deploymentModel.setUberJar(getBooleanValue(keyValue.getValue()));
+                    break;
                 default:
                     break;
             }
@@ -420,7 +423,8 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         nodeSelector,
         serviceAccountName,
         projectedVolumeMount,
-        prometheus
+        prometheus,
+        uberJar
     }
 
     private enum ProbeConfiguration {
