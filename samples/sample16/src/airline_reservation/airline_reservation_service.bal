@@ -87,6 +87,6 @@ service airlineReservationService on airlineEP {
 
 function handleError(error? result) {
     if (result is error) {
-        log:printError(result.reason(), result);
+        log:printError(result.message(), result);
     }
 }
