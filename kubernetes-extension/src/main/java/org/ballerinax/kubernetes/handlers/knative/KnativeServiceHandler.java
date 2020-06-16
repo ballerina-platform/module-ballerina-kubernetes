@@ -50,7 +50,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.ballerinax.docker.generator.DockerGenConstants.REGISTRY_SEPARATOR;
-import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
+import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.EXECUTABLE_JAR;
 import static org.ballerinax.kubernetes.KubernetesConstants.KNATIVE_SVC_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.VOLUME_DEFINE;
@@ -64,7 +64,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
 
     private List<ContainerPort> populatePorts(Set<Integer> ports) {
         List<ContainerPort> containerPorts = new ArrayList<>();
-        for (int port :ports) {
+        for (int port : ports) {
             ContainerPort containerPort = new ContainerPortBuilder()
                     .withContainerPort(port)
                     .withProtocol(KubernetesConstants.KUBERNETES_SVC_PROTOCOL)
@@ -197,7 +197,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
                 .endTemplate()
                 .endSpec()
                 .build();
-                
+
         try {
             String knativeSvcContent = SerializationUtils.dumpWithoutRuntimeStateAsYaml(knativeSvc);
             KnativeUtils.writeToFile(knativeSvcContent, KNATIVE_SVC_FILE_POSTFIX + YAML);
@@ -253,7 +253,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
         dockerModel.setUsername(serviceModel.getUsername());
         dockerModel.setPassword(serviceModel.getPassword());
         dockerModel.setPush(serviceModel.isPush());
-        dockerModel.setUberJarFileName(extractUberJarName(knativeDataHolder.getUberJarPath()) + EXECUTABLE_JAR);
+        dockerModel.setJarFileName(extractJarName(knativeDataHolder.getUberJarPath()) + EXECUTABLE_JAR);
         dockerModel.setPorts(serviceModel.getPorts());
         dockerModel.setService(true);
         dockerModel.setDockerHost(serviceModel.getDockerHost());

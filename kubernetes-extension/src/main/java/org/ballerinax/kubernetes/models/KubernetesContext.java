@@ -20,6 +20,7 @@ package org.ballerinax.kubernetes.models;
 
 import org.ballerinalang.model.elements.PackageID;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
+import org.wso2.ballerinalang.compiler.util.CompilerContext;
 import org.wso2.ballerinalang.compiler.util.Names;
 
 import java.nio.file.Path;
@@ -35,6 +36,7 @@ public class KubernetesContext {
     private static KubernetesContext instance;
     private final Map<PackageID, KubernetesDataHolder> packageIDtoDataHolderMap;
     private PackageID currentPackage;
+    private CompilerContext compilerContext;
 
     private KubernetesContext() {
         packageIDtoDataHolderMap = new HashMap<>();
@@ -95,5 +97,13 @@ public class KubernetesContext {
             }
         }
         throw new KubernetesPluginException("dependent listener " + dependsOn + " not found.");
+    }
+
+    public CompilerContext getCompilerContext() {
+        return compilerContext;
+    }
+
+    public void setCompilerContext(CompilerContext compilerContext) {
+        this.compilerContext = compilerContext;
     }
 }

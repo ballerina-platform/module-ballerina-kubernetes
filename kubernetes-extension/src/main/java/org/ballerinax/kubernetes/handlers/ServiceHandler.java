@@ -32,7 +32,7 @@ import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import java.io.IOException;
 import java.util.Map;
 
-import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
+import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.SVC_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 
@@ -91,7 +91,7 @@ public class ServiceHandler extends AbstractArtifactHandler {
         int count = 0;
         for (ServiceModel serviceModel : serviceModels.values()) {
             count++;
-            String balxFileName = extractUberJarName(KubernetesContext.getInstance().getDataHolder()
+            String balxFileName = extractJarName(KubernetesContext.getInstance().getDataHolder()
                     .getUberJarPath());
             serviceModel.addLabel(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
             serviceModel.setSelector(balxFileName);

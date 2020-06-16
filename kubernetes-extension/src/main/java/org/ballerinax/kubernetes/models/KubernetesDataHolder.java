@@ -71,20 +71,21 @@ public class KubernetesDataHolder {
         this.istioGatewayModels = new LinkedHashMap<>();
         this.istioVirtualServiceModels = new LinkedHashMap<>();
         this.openShiftRouteModels = new LinkedHashMap<>();
+        this.dockerModel = new DockerModel();
     }
-    
+
     public Path getSourceRoot() {
         return sourceRoot;
     }
-    
+
     public boolean isProject() {
         return isProject;
     }
-    
+
     public void setProject(boolean project) {
         isProject = project;
     }
-    
+
     public DeploymentModel getDeploymentModel() {
         return deploymentModel;
     }
@@ -132,15 +133,15 @@ public class KubernetesDataHolder {
     public void addPersistentVolumeClaims(Set<PersistentVolumeClaimModel> persistentVolumeClaims) {
         this.volumeClaimModelSet.addAll(persistentVolumeClaims);
     }
-    
+
     public Set<ResourceQuotaModel> getResourceQuotaModels() {
         return resourceQuotaModels;
     }
-    
+
     public void setResourceQuotaModels(Set<ResourceQuotaModel> resourceQuotaModels) {
         this.resourceQuotaModels = resourceQuotaModels;
     }
-    
+
     public Map<String, ServiceModel> getbListenerToK8sServiceMap() {
         return bListenerToK8sServiceMap;
     }
@@ -192,15 +193,15 @@ public class KubernetesDataHolder {
     public void setK8sArtifactOutputPath(Path k8sArtifactOutputPath) {
         this.k8sArtifactOutputPath = k8sArtifactOutputPath;
     }
-    
+
     public Path getDockerArtifactOutputPath() {
         return dockerArtifactOutputPath;
     }
-    
+
     public void setDockerArtifactOutputPath(Path dockerArtifactOutputPath) {
         this.dockerArtifactOutputPath = dockerArtifactOutputPath;
     }
-    
+
     public DockerModel getDockerModel() {
         return dockerModel;
     }
@@ -216,43 +217,43 @@ public class KubernetesDataHolder {
     public void setNamespace(String namespace) {
         this.namespace = namespace;
     }
-    
+
     public Map<String, IstioGatewayModel> getIstioGatewayModels() {
         return istioGatewayModels;
     }
-    
+
     public IstioGatewayModel getIstioGatewayModel(String serviceName) {
         return istioGatewayModels.get(serviceName);
     }
-    
+
     public void addIstioGatewayModel(String serviceName, IstioGatewayModel istioGatewayModel) {
         this.istioGatewayModels.put(serviceName, istioGatewayModel);
     }
-    
+
     public Map<String, IstioVirtualServiceModel> getIstioVirtualServiceModels() {
         return istioVirtualServiceModels;
     }
-    
+
     public IstioVirtualServiceModel getIstioVirtualServiceModel(String serviceName) {
         return istioVirtualServiceModels.get(serviceName);
     }
-    
+
     public void addIstioVirtualServiceModel(String serviceName, IstioVirtualServiceModel istioVirtualServiceModel) {
         this.istioVirtualServiceModels.put(serviceName, istioVirtualServiceModel);
     }
-    
+
     public OpenShiftBuildExtensionModel getOpenShiftBuildExtensionModel() {
         return openShiftBuildExtensionModel;
     }
-    
+
     public void setOpenShiftBuildExtensionModel(OpenShiftBuildExtensionModel openShiftBuildExtensionModel) {
         this.openShiftBuildExtensionModel = openShiftBuildExtensionModel;
     }
-    
+
     public Map<String, OpenShiftRouteModel> getOpenShiftRouteModels() {
         return this.openShiftRouteModels;
     }
-    
+
     public void addOpenShiftRouteModel(String serviceName, OpenShiftRouteModel openShiftRouteModel) {
         this.openShiftRouteModels.put(serviceName, openShiftRouteModel);
     }

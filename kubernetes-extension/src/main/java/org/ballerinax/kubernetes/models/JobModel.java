@@ -57,6 +57,7 @@ public class JobModel extends KubernetesModel {
     private Set<CopyFileModel> copyFiles;
     private boolean singleYAML;
     private String registry;
+    private boolean uberJar;
 
     public JobModel() {
         this.labels = new HashMap<>();
@@ -73,6 +74,7 @@ public class JobModel extends KubernetesModel {
         this.activeDeadlineSeconds = 20;
         this.imagePullSecrets = new HashSet<>();
         this.singleYAML = true;
+        this.uberJar = true;
     }
 
     public void addLabel(String key, String value) {

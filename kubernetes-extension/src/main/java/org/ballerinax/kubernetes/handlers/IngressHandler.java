@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
+import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.INGRESS_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.NGINX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
@@ -140,7 +140,7 @@ public class IngressHandler extends AbstractArtifactHandler {
             }
             ingressModel.setServiceName(serviceModel.getName());
             ingressModel.setServicePort(serviceModel.getPort());
-            String balxFileName = extractUberJarName(dataHolder.getUberJarPath());
+            String balxFileName = extractJarName(dataHolder.getUberJarPath());
             ingressModel.getLabels().put(KubernetesConstants.KUBERNETES_SELECTOR_KEY, balxFileName);
             if (secretModelsMap.get(ingressModel.getListenerName()) != null && secretModelsMap.get(ingressModel
                     .getListenerName()).size() != 0) {

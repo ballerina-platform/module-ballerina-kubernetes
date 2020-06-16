@@ -18,6 +18,7 @@
 
 package org.ballerinax.kubernetes;
 
+import org.ballerinalang.compiler.JarResolver;
 import org.ballerinalang.compiler.plugins.AbstractCompilerPlugin;
 import org.ballerinalang.compiler.plugins.SupportedAnnotationPackages;
 import org.ballerinalang.model.elements.Flag;
@@ -51,13 +52,15 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
+import static org.ballerinalang.compiler.JarResolver.JAR_RESOLVER_KEY;
+import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.utils.KubernetesUtils.createAnnotation;
@@ -80,6 +83,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
         if (this.sourceDirectory == null) {
             throw new IllegalArgumentException("source directory has not been initialized");
         }
+        KubernetesContext.getInstance().setCompilerContext(context);
     }
 
     @Override
@@ -91,13 +95,19 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     public void process(PackageNode packageNode) {
         BLangPackage bPackage = (BLangPackage) packageNode;
         KubernetesContext.getInstance().addDataHolder(bPackage.packageID, sourceDirectory.getPath());
-    
+
+        //Get dependency jar paths
+        JarResolver jarResolver = KubernetesContext.getInstance().getCompilerContext().get(JAR_RESOLVER_KEY);
+        Set<Path> dependencyJarPaths = new HashSet<>(jarResolver.allDependencies(bPackage));
+        KubernetesContext.getInstance().getDataHolder(bPackage.packageID).getDockerModel()
+                .addDependencyJarPaths(dependencyJarPaths);
+
         // Get the imports with alias _
         List<BLangImportPackage> kubernetesImports = bPackage.getImports().stream()
                 .filter(i -> i.symbol.toString().startsWith("ballerina/kubernetes") &&
-                             i.getAlias().toString().equals("_"))
+                        i.getAlias().toString().equals("_"))
                 .collect(Collectors.toList());
-    
+
         if (kubernetesImports.size() > 0) {
             for (BLangImportPackage kubernetesImport : kubernetesImports) {
                 // Get the units of the file which has kubernetes import as _
@@ -105,27 +115,27 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                         .filter(cu -> cu.getName().equals(kubernetesImport.compUnit.getValue()))
                         .flatMap(cu -> cu.getTopLevelNodes().stream())
                         .collect(Collectors.toList());
-            
+
                 // Filter out the services
                 List<ServiceNode> serviceNodes = topLevelNodes.stream()
                         .filter(tln -> tln instanceof ServiceNode)
                         .map(tln -> (ServiceNode) tln)
                         .collect(Collectors.toList());
-            
+
                 // Generate artifacts for services for all services
                 serviceNodes.forEach(sn -> process(sn, Collections.singletonList(createAnnotation("Deployment"))));
-                
+
                 // Filter services with 'new Listener()' and generate services
                 for (ServiceNode serviceNode : serviceNodes) {
                     Optional<? extends ExpressionNode> initListener = serviceNode.getAttachedExprs().stream()
                             .filter(aex -> aex instanceof BLangTypeInit)
                             .findAny();
-                    
+
                     if (initListener.isPresent()) {
                         serviceNodes.forEach(sn -> process(sn, Collections.singletonList(createAnnotation("Service"))));
                     }
                 }
-                
+
                 // Get the variable names of the listeners attached to services
                 List<String> listenerNamesToExpose = serviceNodes.stream()
                         .map(ServiceNode::getAttachedExprs)
@@ -134,14 +144,14 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                         .map(aex -> (BLangSimpleVarRef) aex)
                         .map(BLangSimpleVarRef::toString)
                         .collect(Collectors.toList());
-            
+
                 // Generate artifacts for listeners attached to services
                 topLevelNodes.stream()
                         .filter(tln -> tln instanceof SimpleVariableNode)
                         .map(tln -> (SimpleVariableNode) tln)
                         .filter(listener -> listenerNamesToExpose.contains(listener.getName().getValue()))
                         .forEach(listener -> process(listener, Collections.singletonList(createAnnotation("Service"))));
-            
+
                 // Generate artifacts for main functions
                 topLevelNodes.stream()
                         .filter(tln -> tln instanceof FunctionNode)
@@ -215,13 +225,17 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                         dataHolder.setProject(true);
                         kubernetesOutputPath = projectRoot.resolve("target")
                                 .resolve(KUBERNETES)
-                                .resolve(extractUberJarName(executableJarFile));
+                                .resolve(extractJarName(executableJarFile));
                         dockerOutputPath = projectRoot.resolve("target")
                                 .resolve(DOCKER)
-                                .resolve(extractUberJarName(executableJarFile));
+                                .resolve(extractJarName(executableJarFile));
                     }
                 }
-
+                if (!dataHolder.getDockerModel().isUberJar()) {
+                    JarResolver jarResolver =
+                            KubernetesContext.getInstance().getCompilerContext().get(JAR_RESOLVER_KEY);
+                    executableJarFile = jarResolver.moduleJar(moduleID);
+                }
                 dataHolder.setUberJarPath(executableJarFile);
                 dataHolder.setK8sArtifactOutputPath(kubernetesOutputPath);
                 dataHolder.setDockerArtifactOutputPath(dockerOutputPath);

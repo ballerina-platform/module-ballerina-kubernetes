@@ -68,7 +68,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
+import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.KNATIVE;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
 
@@ -104,7 +104,7 @@ public class KnativeUtils {
     public static void writeToFile(Path outputDir, String context, String fileSuffix) throws IOException {
         KnativeDataHolder dataHolder = KnativeContext.getInstance().getDataHolder();
         // Priority given for job, then deployment.
-        Path artifactFileName = outputDir.resolve(extractUberJarName(dataHolder.getUberJarPath()) + YAML);
+        Path artifactFileName = outputDir.resolve(extractJarName(dataHolder.getUberJarPath()) + YAML);
 
         File newFile = artifactFileName.toFile();
         // append if file exists

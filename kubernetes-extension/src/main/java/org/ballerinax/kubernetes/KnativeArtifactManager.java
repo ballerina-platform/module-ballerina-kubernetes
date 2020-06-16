@@ -31,7 +31,7 @@ import org.ballerinax.kubernetes.models.knative.ServiceModel;
 
 import java.io.PrintStream;
 
-import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractUberJarName;
+import static org.ballerinax.docker.generator.utils.DockerGenUtils.extractJarName;
 import static org.ballerinax.kubernetes.KubernetesConstants.DEPLOYMENT_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER_LATEST_TAG;
 import static org.ballerinax.kubernetes.KubernetesConstants.KNATIVE;
@@ -79,7 +79,7 @@ public class KnativeArtifactManager {
     public void populateDeploymentModel() {
         ServiceModel serviceModel = knativeDataHolder.getServiceModel();
         knativeDataHolder.setServiceModel(serviceModel);
-        String balxFileName = extractUberJarName(knativeDataHolder.getUberJarPath());
+        String balxFileName = extractJarName(knativeDataHolder.getUberJarPath());
         if (isBlank(serviceModel.getName())) {
             if (balxFileName != null) {
                 serviceModel.setName(getValidName(balxFileName) + DEPLOYMENT_POSTFIX);
