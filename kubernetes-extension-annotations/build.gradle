@@ -40,6 +40,7 @@ jar {
 }
 
 clean {
+    delete "$project.projectDir/output"
     delete "$project.projectDir/target"
     delete "$project.projectDir/Ballerina.lock"
 }
@@ -74,19 +75,58 @@ task ballerinaBuild {
     inputs.file file("$project.projectDir/Ballerina.toml")
     doLast {
         def distributionBinPath = project.projectDir.absolutePath + "/build/extracted-distribution/jballerina-tools-${ballerinaLangVersion}/bin"
-// Removing Doc generation logic due to https://github.com/ballerina-platform/ballerina-lang/issues/24180
-//        exec {
-//            workingDir project.projectDir
-//            environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
-//            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-//                commandLine 'cmd', '/c', "$distributionBinPath/ballerina.bat doc -a"
-//            } else {
-//                commandLine 'sh', '-c', "$distributionBinPath/ballerina doc kubernetes"
-//                commandLine 'sh', '-c', "$distributionBinPath/ballerina doc isito"
-//                commandLine 'sh', '-c', "$distributionBinPath/ballerina doc knative"
-//                commandLine 'sh', '-c', "$distributionBinPath/ballerina doc openshift"
-//            }
-//        }
+        exec {
+            workingDir project.projectDir
+            environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine 'cmd', '/c', "$distributionBinPath/ballerina.bat doc kubernetes"
+            } else {
+                commandLine 'sh', '-c', "$distributionBinPath/ballerina doc kubernetes"
+            }
+        }
+        copy {
+            from file("$project.projectDir/target/apidocs/kubernetes")
+            into file("$project.buildDir/apidocs/docs/kubernetes")
+        }
+        exec {
+            workingDir project.projectDir
+            environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine 'cmd', '/c', "$distributionBinPath/ballerina.bat doc istio"
+            } else {
+                commandLine 'sh', '-c', "$distributionBinPath/ballerina doc istio"
+            }
+        }
+        copy {
+            from file("$project.projectDir/target/apidocs/istio")
+            into file("$project.buildDir/apidocs/docs/istio")
+        }
+        exec {
+            workingDir project.projectDir
+            environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine 'cmd', '/c', "$distributionBinPath/ballerina.bat doc openshift"
+            } else {
+                commandLine 'sh', '-c', "$distributionBinPath/ballerina doc openshift"
+            }
+        }
+        copy {
+            from file("$project.projectDir/target/apidocs/openshift")
+            into file("$project.buildDir/apidocs/docs/openshift")
+        }
+        exec {
+            workingDir project.projectDir
+            environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
+            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                commandLine 'cmd', '/c', "$distributionBinPath/ballerina.bat doc knative"
+            } else {
+                commandLine 'sh', '-c', "$distributionBinPath/ballerina doc knative"
+            }
+        }
+        copy {
+            from file("$project.projectDir/target/apidocs/knative")
+            into file("$project.buildDir/apidocs/docs/knative")
+        }
         exec {
             workingDir project.projectDir
             environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
@@ -105,24 +145,6 @@ task ballerinaBuild {
                 from file("$project.projectDir/Ballerina.toml")
                 into birDir
             }
-        }
-
-        // Restructure API docs directories
-        copy {
-            from file("$project.projectDir/target/apidocs/kubernetes")
-            into file("$project.buildDir/apidocs/docs/kubernetes")
-        }
-        copy {
-            from file("$project.projectDir/target/apidocs/istio")
-            into file("$project.buildDir/apidocs/docs/istio")
-        }
-        copy {
-            from file("$project.projectDir/target/apidocs/openshift")
-            into file("$project.buildDir/apidocs/docs/openshift")
-        }
-        copy {
-            from file("$project.projectDir/target/apidocs/knative")
-            into file("$project.buildDir/apidocs/docs/knative")
         }
     }
     outputs.dir artifactBirDir
