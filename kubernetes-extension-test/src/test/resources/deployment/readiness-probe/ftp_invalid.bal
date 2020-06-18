@@ -28,7 +28,7 @@ public type MockListener object {
     *lang:Listener;
     private ListenerConfig config = {};
 
-    public function __init(ListenerConfig listenerConfig) {
+    public function init(ListenerConfig listenerConfig) {
         self.config = listenerConfig;
     }
 
