@@ -58,6 +58,7 @@ public class JobModel extends KubernetesModel {
     private boolean singleYAML;
     private String registry;
     private boolean uberJar;
+    private String dockerConfigPath;
 
     public JobModel() {
         this.labels = new HashMap<>();

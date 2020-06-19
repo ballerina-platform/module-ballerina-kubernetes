@@ -131,6 +131,9 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
                 case uberJar:
                     jobModel.setUberJar(getBooleanValue(keyValue.getValue()));
                     break;
+                case dockerConfigPath:
+                    jobModel.setDockerConfigPath(getStringValue(keyValue.getValue()));
+                    break;
                 default:
                     break;
             }
@@ -176,6 +179,7 @@ public class JobAnnotationProcessor extends AbstractAnnotationProcessor {
         imagePullSecrets,
         registry,
         nodeSelector,
-        uberJar
+        uberJar,
+        dockerConfigPath
     }
 }
