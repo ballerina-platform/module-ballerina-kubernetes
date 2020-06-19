@@ -193,6 +193,7 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                     break;
                 case dockerConfigPath:
                     deploymentModel.setDockerConfigPath(getStringValue(keyValue.getValue()));
+                    break;
                 default:
                     break;
             }
