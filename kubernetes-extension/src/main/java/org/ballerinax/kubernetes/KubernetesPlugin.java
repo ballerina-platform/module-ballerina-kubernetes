@@ -98,10 +98,11 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
 
         //Get dependency jar paths
         JarResolver jarResolver = KubernetesContext.getInstance().getCompilerContext().get(JAR_RESOLVER_KEY);
-        Set<Path> dependencyJarPaths = new HashSet<>(jarResolver.allDependencies(bPackage));
-        KubernetesContext.getInstance().getDataHolder(bPackage.packageID).getDockerModel()
-                .addDependencyJarPaths(dependencyJarPaths);
-
+        if (jarResolver != null) {
+            Set<Path> dependencyJarPaths = new HashSet<>(jarResolver.allDependencies(bPackage));
+            KubernetesContext.getInstance().getDataHolder(bPackage.packageID).getDockerModel()
+                    .addDependencyJarPaths(dependencyJarPaths);
+        }
         // Get the imports with alias _
         List<BLangImportPackage> kubernetesImports = bPackage.getImports().stream()
                 .filter(i -> i.symbol.toString().startsWith("ballerina/kubernetes") &&

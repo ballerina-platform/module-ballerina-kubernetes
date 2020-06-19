@@ -191,6 +191,9 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
                 case uberJar:
                     deploymentModel.setUberJar(getBooleanValue(keyValue.getValue()));
                     break;
+                case dockerConfigPath:
+                    deploymentModel.setDockerConfigPath(getStringValue(keyValue.getValue()));
+                    break;
                 default:
                     break;
             }
@@ -424,7 +427,8 @@ public class DeploymentAnnotationProcessor extends AbstractAnnotationProcessor {
         serviceAccountName,
         projectedVolumeMount,
         prometheus,
-        uberJar
+        uberJar,
+        dockerConfigPath
     }
 
     private enum ProbeConfiguration {

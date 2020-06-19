@@ -164,6 +164,7 @@ public class JobHandler extends AbstractArtifactHandler {
         dockerModel.setBuildImage(jobModel.isBuildImage());
         dockerModel.setCopyFiles(jobModel.getCopyFiles());
         dockerModel.setUberJar(jobModel.isUberJar());
+        dockerModel.setDockerConfig(jobModel.getDockerConfigPath());
         return dockerModel;
     }
 }
