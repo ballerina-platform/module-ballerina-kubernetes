@@ -397,6 +397,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
             // Add cmd to Dockerfile if prometheus is enabled.
             deploymentModel.setCmd(KubernetesConstants.PROMETHEUS_CMD + deploymentModel.getPrometheusPort());
         }
+        dockerModel.setDockerConfig(deploymentModel.getDockerConfigPath());
         dockerModel.setCmd(deploymentModel.getCmd());
         dockerModel.setJarFileName(extractJarName(dataHolder.getUberJarPath()) + EXECUTABLE_JAR);
         dockerModel.setPorts(deploymentModel.getPorts());

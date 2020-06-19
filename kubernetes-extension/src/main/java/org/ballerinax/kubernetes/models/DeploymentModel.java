@@ -74,6 +74,7 @@ public class DeploymentModel extends KubernetesModel {
     private String serviceAccountName;
     private List<ServiceAccountTokenModel> serviceAccountTokenModel;
     private boolean uberJar;
+    private String dockerConfigPath;
 
     public DeploymentModel() {
         // Initialize with default values.
