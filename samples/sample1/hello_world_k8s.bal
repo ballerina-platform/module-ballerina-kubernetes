@@ -4,9 +4,16 @@ import ballerina/log;
 
 @kubernetes:Service {
     serviceType: "NodePort",
-    nodePort: 32001
+    nodePort: 32001,
+    prometheus: {
+        serviceType: "NodePort",
+        nodePort: 33001,
+        port: 9097
+    }
 }
-@kubernetes:Deployment {}
+@kubernetes:Deployment {
+    prometheus: true
+}
 @http:ServiceConfig {
     basePath: "/helloWorld"
 }

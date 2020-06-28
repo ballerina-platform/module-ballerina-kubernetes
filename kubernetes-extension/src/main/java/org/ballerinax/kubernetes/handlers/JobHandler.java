@@ -30,6 +30,7 @@ import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.JobModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
@@ -145,7 +146,8 @@ public class JobHandler extends AbstractArtifactHandler {
     }
 
     private DockerModel getDockerModel(JobModel jobModel) throws DockerGenException {
-        DockerModel dockerModel = KubernetesContext.getInstance().getDataHolder().getDockerModel();
+        final KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
+        DockerModel dockerModel = dataHolder.getDockerModel();
         String dockerImage = jobModel.getImage();
         String imageTag = dockerImage.substring(dockerImage.lastIndexOf(":") + 1);
         dockerImage = dockerImage.substring(0, dockerImage.lastIndexOf(":"));
@@ -157,11 +159,12 @@ public class JobHandler extends AbstractArtifactHandler {
         dockerModel.setPassword(jobModel.getPassword());
         dockerModel.setPush(jobModel.isPush());
         dockerModel.setCmd(jobModel.getCmd());
-        dockerModel.setJarFileName(extractJarName(dataHolder.getUberJarPath()) + EXECUTABLE_JAR);
+        dockerModel.setJarFileName(extractJarName(this.dataHolder.getUberJarPath()) + EXECUTABLE_JAR);
         dockerModel.setService(false);
         dockerModel.setDockerHost(jobModel.getDockerHost());
         dockerModel.setDockerCertPath(jobModel.getDockerCertPath());
         dockerModel.setBuildImage(jobModel.isBuildImage());
+        dockerModel.setPkgId(dataHolder.getPackageID());
         dockerModel.setCopyFiles(jobModel.getCopyFiles());
         dockerModel.setUberJar(jobModel.isUberJar());
         dockerModel.setDockerConfig(jobModel.getDockerConfigPath());

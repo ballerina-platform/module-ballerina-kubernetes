@@ -18,6 +18,7 @@
 
 package org.ballerinax.kubernetes.models;
 
+import org.ballerinalang.model.elements.PackageID;
 import org.ballerinax.docker.generator.models.DockerModel;
 import org.ballerinax.kubernetes.models.istio.IstioGatewayModel;
 import org.ballerinax.kubernetes.models.istio.IstioVirtualServiceModel;
@@ -57,6 +58,7 @@ public class KubernetesDataHolder {
     private String namespace;
     private Path sourceRoot;
     private boolean isProject = false;
+    private PackageID packageID;
 
     KubernetesDataHolder(Path sourceRoot) {
         this.sourceRoot = sourceRoot;
@@ -256,5 +258,13 @@ public class KubernetesDataHolder {
 
     public void addOpenShiftRouteModel(String serviceName, OpenShiftRouteModel openShiftRouteModel) {
         this.openShiftRouteModels.put(serviceName, openShiftRouteModel);
+    }
+
+    public PackageID getPackageID() {
+        return packageID;
+    }
+
+    public void setPackageID(PackageID packageID) {
+        this.packageID = packageID;
     }
 }

@@ -212,6 +212,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     public void codeGenerated(PackageID moduleID, Path executableJarFile) {
         KubernetesContext.getInstance().setCurrentPackage(moduleID);
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
+        dataHolder.setPackageID(moduleID);
         if (dataHolder.isCanProcess()) {
             executableJarFile = executableJarFile.toAbsolutePath();
             if (null != executableJarFile.getParent() && Files.exists(executableJarFile.getParent())) {

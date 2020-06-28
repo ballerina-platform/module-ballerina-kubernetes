@@ -45,6 +45,7 @@ import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.ConfigMapModel;
 import org.ballerinax.kubernetes.models.DeploymentModel;
 import org.ballerinax.kubernetes.models.KubernetesContext;
+import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.models.PersistentVolumeClaimModel;
 import org.ballerinax.kubernetes.models.PodTolerationModel;
 import org.ballerinax.kubernetes.models.ProbeModel;
@@ -378,13 +379,15 @@ public class DeploymentHandler extends AbstractArtifactHandler {
      * @param deploymentModel Deployment model
      */
     private DockerModel getDockerModel(DeploymentModel deploymentModel) throws DockerGenException {
-        DockerModel dockerModel = KubernetesContext.getInstance().getDataHolder().getDockerModel();
+        final KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
+        DockerModel dockerModel = dataHolder.getDockerModel();
         String dockerImage = deploymentModel.getImage();
         String imageTag = "latest";
         if (dockerImage.contains(":")) {
             imageTag = dockerImage.substring(dockerImage.lastIndexOf(":") + 1);
             dockerImage = dockerImage.substring(0, dockerImage.lastIndexOf(":"));
         }
+        dockerModel.setPkgId(dataHolder.getPackageID());
         dockerModel.setBaseImage(deploymentModel.getBaseImage());
         dockerModel.setRegistry(deploymentModel.getRegistry());
         dockerModel.setName(dockerImage);
@@ -399,7 +402,7 @@ public class DeploymentHandler extends AbstractArtifactHandler {
         }
         dockerModel.setDockerConfig(deploymentModel.getDockerConfigPath());
         dockerModel.setCmd(deploymentModel.getCmd());
-        dockerModel.setJarFileName(extractJarName(dataHolder.getUberJarPath()) + EXECUTABLE_JAR);
+        dockerModel.setJarFileName(extractJarName(this.dataHolder.getUberJarPath()) + EXECUTABLE_JAR);
         dockerModel.setPorts(deploymentModel.getPorts());
         dockerModel.setUberJar(deploymentModel.isUberJar());
         dockerModel.setService(true);

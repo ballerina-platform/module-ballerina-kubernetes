@@ -35,8 +35,7 @@ public abstract class SampleTest {
     /**
      * Location of the samples directory.
      */
-    protected static final Path SAMPLE_DIR = Paths.get(FilenameUtils.separatorsToSystem(
-            System.getProperty("sampleDir")));
+    protected static final Path SAMPLE_DIR = Paths.get("/Users/anuruddha/workspace/ballerinax/kubernetes/samples");
     
     @BeforeClass
     abstract void compileSample() throws IOException, InterruptedException;
