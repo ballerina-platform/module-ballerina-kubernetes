@@ -15,6 +15,10 @@
             {
                  "name": "Knative Deployment",
                  "url": "knative-deployment"
+            },
+            {
+                "name": "Kubernetes Deployment without Annotations",
+                "url": "kubernetes-deployment-without-annotations"
             }
         ]
     }
