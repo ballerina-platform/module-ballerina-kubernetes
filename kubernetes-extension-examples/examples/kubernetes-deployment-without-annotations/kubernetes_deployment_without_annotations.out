@@ -1,27 +1,42 @@
-# Build the Ballerina program to generate the Docker image and Dockerfile.
-$ ballerina build docker_deployment_without_annotations.bal
+# Build the ballerina program
+$ ballerina build kubernetes_deployment.bal
 Compiling source
-    docker_deployment_without_annotations.bal
+    kubernetes_deployment_without_annotations.bal
 
 Generating executables
-    docker_deployment_without_annotations.jar
+    kubernetes_deployment_without_annotations.jar
 
-Generating docker artifacts...
-    @docker                  - complete 0/2
-    @docker                  - complete 1/2
-    @docker                  - complete 2/2
+Generating artifacts...
 
-    Run the following command to start a Docker container:
-    docker run -d -p 9090:9090 docker_deployment_without_annotations:latest
+    @kubernetes:Service                      - complete 1/1
+    @kubernetes:Deployment                   - complete 1/1
+    @kubernetes:Docker                       - complete 0/2
+    @kubernetes:Docker                       - complete 1/2
+    @kubernetes:Docker                       - complete 2/2
+    @kubernetes:Helm                         - complete 1/1
 
-# Verify if the Docker image is generated
+    Execute the below command to deploy the Kubernetes artifacts:
+    kubectl apply -f ./kubernetes
+
+    Execute the below command to install the application using Helm:
+    helm install --name kubernetes-deployment-without-annotations-deployment ./kubernetes/kubernetes-deployment-without-annotations-deployment
+
+
+# Verify the Docker image is generated
 $ docker images
-REPOSITORY                              TAG         IMAGE ID            CREATED              SIZE
-docker_deployment_without_annotations   latest      17ab867e9010        About a minute ago   135MB
+REPOSITORY                                  TAG      IMAGE ID            CREATED             SIZE
+kubernetes_deployment_without_annotations   latest   3559d3df6774        2 seconds ago       127MB
 
-# Run the generated Docker image
-$ docker run -d -p 9090:9090 docker_deployment_without_annotations:latest
+# Apply the Kubernetes artifacts
+$ kubectl apply -f ./kubernetes/
+service/helloworldep-svc created
+deployment.apps/kubernetes-deployment-without-annotations-deployment created
 
-# Access the service
-$ curl http://localhost:9090/helloWorld/sayHello
-Hello World from Docker!
+# Verify if the service & pods are deployed
+$ kubectl get pods
+NAME                                                              READY   STATUS    RESTARTS   AGE
+kubernetes-deployment-without-annotations-deployment-7469csvzvf   1/1     Running   0          13s
+
+$ kubectl get svc
+NAME               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+helloworldep-svc   ClusterIP   10.101.237.201   <none>        9090/TCP   42s
