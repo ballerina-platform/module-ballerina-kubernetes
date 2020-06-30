@@ -93,5 +93,5 @@ publishing {
    }
 }
 
-zipExamples.dependsOn buildExamples
+//zipExamples.dependsOn buildExamples
 build.dependsOn zipExamples
