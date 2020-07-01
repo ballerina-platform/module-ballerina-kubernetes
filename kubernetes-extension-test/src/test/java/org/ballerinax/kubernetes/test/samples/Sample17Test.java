@@ -158,7 +158,7 @@ public class Sample17Test extends SampleTest {
     public void cleanUp() throws KubernetesPluginException, IOException {
         KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);
         KubernetesUtils.deleteDirectory(DOCKER_TARGET_PATH);
-    
+
         // replace with original source
         if (null != this.originalSourceContent) {
             Path sourcePath = SOURCE_DIR_PATH.resolve("hello_world_oc.bal");

@@ -74,7 +74,8 @@ import java.util.stream.Collectors;
 public class KubernetesTestUtils {
     private static final Logger log = LoggerFactory.getLogger(KubernetesTestUtils.class);
     private static final String JAVA_OPTS = "JAVA_OPTS";
-    private static final Path DISTRIBUTION_PATH = Paths.get("/Users/anuruddha/workspace/ballerinax/kubernetes/kubernetes-extension-annotations/build/extracted-distribution/jballerina-tools-2.0.0-SNAPSHOT");
+    private static final Path DISTRIBUTION_PATH = Paths.get(FilenameUtils.separatorsToSystem(
+            System.getProperty("ballerinaPack")));
     private static final String BALLERINA_COMMAND = DISTRIBUTION_PATH +
             File.separator + "bin" +
             File.separator +
@@ -91,12 +92,12 @@ public class KubernetesTestUtils {
             br.lines().forEach(log::info);
         }
     }
-    
+
     public static DockerClient getDockerClient() {
         DefaultDockerClientConfig.Builder dockerClientConfig = DefaultDockerClientConfig.createDefaultConfigBuilder();
         return DockerClientBuilder.getInstance(dockerClientConfig.build()).build();
     }
-    
+
     /**
      * Return a ImageInspect object for a given Docker Image name.
      *
@@ -106,7 +107,7 @@ public class KubernetesTestUtils {
     public static InspectImageResponse getDockerImage(String imageName) {
         return getDockerClient().inspectImageCmd(imageName).exec();
     }
-    
+
     /**
      * Get the list of exposed ports of the docker image.
      *
@@ -118,11 +119,11 @@ public class KubernetesTestUtils {
         if (null == dockerImage.getConfig()) {
             return new ArrayList<>();
         }
-        
+
         ExposedPort[] exposedPorts = dockerImage.getConfig().getExposedPorts();
         return Arrays.stream(exposedPorts).map(ExposedPort::toString).collect(Collectors.toList());
     }
-    
+
     /**
      * Get the list of commands of the docker image.
      *
@@ -134,10 +135,10 @@ public class KubernetesTestUtils {
         if (null == dockerImage.getConfig() || null == dockerImage.getConfig().getCmd()) {
             return new ArrayList<>();
         }
-        
+
         return Arrays.asList(dockerImage.getConfig().getCmd());
     }
-    
+
     /**
      * Delete a given Docker image and prune.
      *

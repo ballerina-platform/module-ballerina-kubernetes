@@ -119,13 +119,15 @@ public class Sample10Test extends SampleTest {
 
     @Test
     public void validateHelmChartYaml() {
-        Assert.assertTrue(BURGER_PKG_K8S_TARGET_PATH.resolve("john-burger-0-0-1-deployment").resolve("Chart.yaml").toFile()
+        Assert.assertTrue(BURGER_PKG_K8S_TARGET_PATH.resolve("john-burger-0-0-1-deployment")
+                .resolve("Chart.yaml").toFile()
                 .exists());
     }
 
     @Test
     public void validateHelmChartTemplates() {
-        File templateDir = BURGER_PKG_K8S_TARGET_PATH.resolve("john-burger-0-0-1-deployment").resolve("templates").toFile();
+        File templateDir = BURGER_PKG_K8S_TARGET_PATH.resolve("john-burger-0-0-1-deployment")
+                .resolve("templates").toFile();
         Assert.assertTrue(templateDir.isDirectory());
         Assert.assertTrue(Objects.requireNonNull(templateDir.list()).length > 0);
     }
@@ -235,17 +237,17 @@ public class Sample10Test extends SampleTest {
         Assert.assertEquals(ports.get(0), "9099/tcp");
     }
 
-//    @Test(groups = {"integration"})
-//    public void deploySample() throws IOException, InterruptedException {
-//        Assert.assertEquals(0, loadImage(BURGER_DOCKER_IMAGE));
-//        Assert.assertEquals(0, loadImage(PIZZA_DOCKER_IMAGE));
-//        Assert.assertEquals(0, deployK8s(BURGER_PKG_K8S_TARGET_PATH));
-//        Assert.assertEquals(0, deployK8s(PIZZA_PKG_K8S_TARGET_PATH));
-//        Assert.assertTrue(validateService("http://pizza.com/pizzastore/pizza/menu", "Pizza menu"));
-//        Assert.assertTrue(validateService("http://burger.com/menu", "Burger menu"));
-//        deleteK8s(BURGER_PKG_K8S_TARGET_PATH);
-//        deleteK8s(PIZZA_PKG_K8S_TARGET_PATH);
-//    }
+    @Test(groups = {"integration"})
+    public void deploySample() throws IOException, InterruptedException {
+        Assert.assertEquals(0, loadImage(BURGER_DOCKER_IMAGE));
+        Assert.assertEquals(0, loadImage(PIZZA_DOCKER_IMAGE));
+        Assert.assertEquals(0, deployK8s(BURGER_PKG_K8S_TARGET_PATH));
+        Assert.assertEquals(0, deployK8s(PIZZA_PKG_K8S_TARGET_PATH));
+        Assert.assertTrue(validateService("http://pizza.com/pizzastore/pizza/menu", "Pizza menu"));
+        Assert.assertTrue(validateService("http://burger.com/menu", "Burger menu"));
+        deleteK8s(BURGER_PKG_K8S_TARGET_PATH);
+        deleteK8s(PIZZA_PKG_K8S_TARGET_PATH);
+    }
 
     @AfterClass
     public void cleanUp() throws KubernetesPluginException {
