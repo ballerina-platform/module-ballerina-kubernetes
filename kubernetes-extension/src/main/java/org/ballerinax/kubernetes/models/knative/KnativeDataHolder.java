@@ -55,6 +55,7 @@ public class KnativeDataHolder {
         this.configMapModelSet = new HashSet<>();
         this.serviceModel = new ServiceModel();
         this.resourceQuotaModels = new HashSet<>();
+        this.dockerModel = new DockerModel();
     }
 
     public Path getSourceRoot() {

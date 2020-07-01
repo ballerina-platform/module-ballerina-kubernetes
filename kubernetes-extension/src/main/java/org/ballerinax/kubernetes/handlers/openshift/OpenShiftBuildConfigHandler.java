@@ -98,7 +98,7 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
                     .endSource()
                     .withNewStrategy()
                     .withNewDockerStrategy()
-                    .withDockerfilePath(dataHolder.getUberJarPath().getParent().relativize(dockerOutputDir).toString())
+                    .withDockerfilePath(dataHolder.getSourceRoot().relativize(dockerOutputDir).toString())
                     .withForcePull(buildConfigModel.isForcePullDockerImage())
                     .withNoCache(buildConfigModel.isBuildDockerWithNoCache())
                     .endDockerStrategy()

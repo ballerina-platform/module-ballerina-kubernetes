@@ -137,6 +137,7 @@ public class KnativePlugin extends AbstractCompilerPlugin {
     public void codeGenerated(PackageID moduleID, Path executableJarFile) {
         KnativeContext.getInstance().setCurrentPackage(moduleID);
         KnativeDataHolder dataHolder = KnativeContext.getInstance().getDataHolder();
+        dataHolder.getDockerModel().setPkgId(moduleID);
         if (dataHolder.isCanProcess()) {
             executableJarFile = executableJarFile.toAbsolutePath();
             if (executableJarFile != null && Files.exists(executableJarFile)) {

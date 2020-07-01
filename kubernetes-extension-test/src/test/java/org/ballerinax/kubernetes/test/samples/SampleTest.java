@@ -37,11 +37,11 @@ public abstract class SampleTest {
      */
     protected static final Path SAMPLE_DIR = Paths.get(FilenameUtils.separatorsToSystem(
             System.getProperty("sampleDir")));
-    
+
     @BeforeClass
     abstract void compileSample() throws IOException, InterruptedException;
-    
+
     @AfterClass
     abstract void cleanUp() throws KubernetesPluginException, InterruptedException, DockerTestException, IOException;
-    
+
 }

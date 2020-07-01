@@ -6,7 +6,8 @@ import ballerina/log;
     serviceType: "NodePort",
     nodePort: 32001
 }
-@kubernetes:Deployment {}
+@kubernetes:Deployment {
+}
 @http:ServiceConfig {
     basePath: "/helloWorld"
 }

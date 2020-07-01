@@ -41,6 +41,7 @@ public class DockerGeneratorTests extends HandlerTestSuite {
         ports.add(9091);
         ports.add(9092);
         dockerModel.setPorts(ports);
+        dockerModel.setUberJar(true);
         dockerModel.setService(true);
         dockerModel.setJarFileName("hello.jar");
         dockerModel.setEnableDebug(true);
