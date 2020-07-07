@@ -66,7 +66,7 @@ public class NoAnnotationsTest {
                 Assert.assertEquals(service.getMetadata().getName(), "helloworld-svc");
                 Assert.assertEquals(service.getMetadata().getLabels().get(KubernetesConstants
                         .KUBERNETES_SELECTOR_KEY), "no_annotation_service");
-                Assert.assertEquals(service.getSpec().getType(), KubernetesConstants.ServiceType.ClusterIP.name());
+                Assert.assertEquals(service.getSpec().getType(), KubernetesConstants.ServiceType.NodePort.name());
                 Assert.assertEquals(service.getSpec().getPorts().size(), 1);
                 Assert.assertEquals(service.getSpec().getPorts().get(0).getPort().intValue(), 9090);
             }
@@ -109,7 +109,7 @@ public class NoAnnotationsTest {
                 Assert.assertEquals(service.getMetadata().getName(), "helloworldep-svc");
                 Assert.assertEquals(service.getMetadata().getLabels().get(KubernetesConstants
                         .KUBERNETES_SELECTOR_KEY), "no_annotation_listener");
-                Assert.assertEquals(service.getSpec().getType(), KubernetesConstants.ServiceType.ClusterIP.name());
+                Assert.assertEquals(service.getSpec().getType(), KubernetesConstants.ServiceType.NodePort.name());
                 Assert.assertEquals(service.getSpec().getPorts().size(), 1);
                 Assert.assertEquals(service.getSpec().getPorts().get(0).getPort().intValue(), 9090);
             }

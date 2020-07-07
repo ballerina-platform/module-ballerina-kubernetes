@@ -249,7 +249,7 @@ public class ServiceAnnotationProcessor extends AbstractAnnotationProcessor {
     /**
      * Enum for Service configurations.
      */
-    private enum ServiceConfiguration {
+    public enum ServiceConfiguration {
         name,
         labels,
         annotations,
