@@ -9,6 +9,6 @@ listener http:Listener helloWorldEP = new(9090);
 }
 service helloWorld on helloWorldEP {
     resource function sayHello(http:Caller outboundEP, http:Request request) returns error? {
-        check outboundEP->respond("Hello World from Docker! \n");
+        check outboundEP->respond("Hello World from Kubernetes! \n");
     }
 }

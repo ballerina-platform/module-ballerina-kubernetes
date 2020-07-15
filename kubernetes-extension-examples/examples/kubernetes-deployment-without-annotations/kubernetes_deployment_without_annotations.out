@@ -32,11 +32,16 @@ $ kubectl apply -f ./kubernetes/
 service/helloworldep-svc created
 deployment.apps/kubernetes-deployment-without-annotations-deployment created
 
-# Verify if the service & pods are deployed
+# Verify if the pods & service are deployed
 $ kubectl get pods
 NAME                                                              READY   STATUS    RESTARTS   AGE
 kubernetes-deployment-without-annotations-deployment-7469csvzvf   1/1     Running   0          13s
 
 $ kubectl get svc
-NAME               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
-helloworldep-svc   ClusterIP   10.101.237.201   <none>        9090/TCP   42s
+NAME                TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+helloworldep-svc    NodePort    10.109.125.193   <none>        9090:32417/TCP   1m
+
+# Access the service
+$ curl https://localhost:<32417>/helloWorld/sayHello
+"Hello World from Kubernetes!
+
