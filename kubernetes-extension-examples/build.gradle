@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 /*
  * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -16,6 +18,60 @@
  */
 
 description = 'Ballerinax - Kubernetes Extension Examples'
+
+configurations {
+   bDistributionDir
+}
+
+dependencies {
+   bDistributionDir project(path: ":kubernetes-extension-annotations", configuration: "bDistributionDir")
+}
+
+jar {
+   enabled = false
+}
+
+task buildExamples {
+   dependsOn configurations.bDistributionDir
+   dependsOn ':kubernetes-extension-test:prepareDistribution'
+   doLast {
+      if (!Os.isFamily(Os.FAMILY_WINDOWS)) {
+         def distributionLocation = configurations.bDistributionDir.singleFile
+         // Example - "kubernetes-deployment"
+         exec {
+            workingDir file("${project.projectDir}/examples/kubernetes-deployment")
+            commandLine 'sh', '-c', "$distributionLocation/bin/ballerina build kubernetes_deployment.bal"
+         }
+         exec {
+            commandLine 'sh', '-c', "docker rmi kubernetes:v.1.0"
+         }
+         file("${project.projectDir}/examples/kubernetes-deployment/kubernetes_deployment.jar").delete()
+         file("${project.projectDir}/examples/kubernetes-deployment/docker").deleteDir()
+         file("${project.projectDir}/examples/kubernetes-deployment/kubernetes").deleteDir()
+
+         // Example - "openshift-deployment"
+         exec {
+            workingDir file("${project.projectDir}/examples/openshift-deployment")
+            commandLine 'sh', '-c', "$distributionLocation/bin/ballerina build openshift_deployment.bal"
+         }
+         file("${project.projectDir}/examples/openshift-deployment/openshift_deployment.jar").delete()
+         file("${project.projectDir}/examples/openshift-deployment/docker").deleteDir()
+         file("${project.projectDir}/examples/openshift-deployment/kubernetes").deleteDir()
+
+         // Example - "kubernetes-deployment-without-annotations"
+         exec {
+            workingDir file("${project.projectDir}/examples/kubernetes-deployment-without-annotations")
+            commandLine 'sh', '-c', "$distributionLocation/bin/ballerina build kubernetes_deployment_without_annotations.bal"
+         }
+         exec {
+            commandLine 'sh', '-c', "docker rmi kubernetes_deployment_without_annotations:latest"
+         }
+         file("${project.projectDir}/examples/kubernetes-deployment-without-annotations/kubernetes_deployment_without_annotations.jar").delete()
+         file("${project.projectDir}/examples/kubernetes-deployment-without-annotations/docker").deleteDir()
+         file("${project.projectDir}/examples/kubernetes-deployment-without-annotations/kubernetes").deleteDir()
+      }
+   }
+}
 
 task zipExamples(type: Zip) {
    from 'examples/'
@@ -37,4 +93,5 @@ publishing {
    }
 }
 
+//zipExamples.dependsOn buildExamples
 build.dependsOn zipExamples

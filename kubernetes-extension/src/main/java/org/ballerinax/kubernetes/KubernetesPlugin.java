@@ -21,6 +21,7 @@ package org.ballerinax.kubernetes;
 import org.ballerinalang.compiler.JarResolver;
 import org.ballerinalang.compiler.plugins.AbstractCompilerPlugin;
 import org.ballerinalang.compiler.plugins.SupportedAnnotationPackages;
+import org.ballerinalang.model.TreeBuilder;
 import org.ballerinalang.model.elements.Flag;
 import org.ballerinalang.model.elements.PackageID;
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
@@ -36,16 +37,21 @@ import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
 import org.ballerinax.kubernetes.models.KubernetesDataHolder;
 import org.ballerinax.kubernetes.processors.AnnotationProcessorFactory;
+import org.ballerinax.kubernetes.processors.ServiceAnnotationProcessor;
 import org.ballerinax.kubernetes.utils.DependencyValidator;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.ballerinalang.compiler.SourceDirectory;
+import org.wso2.ballerinalang.compiler.semantics.model.types.BType;
 import org.wso2.ballerinalang.compiler.tree.BLangImportPackage;
 import org.wso2.ballerinalang.compiler.tree.BLangPackage;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangLiteral;
+import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangTypeInit;
 import org.wso2.ballerinalang.compiler.util.CompilerContext;
+import org.wso2.ballerinalang.compiler.util.TypeTags;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -126,6 +132,26 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                 // Generate artifacts for services for all services
                 serviceNodes.forEach(sn -> process(sn, Collections.singletonList(createAnnotation("Deployment"))));
 
+                // Create Service annotation with NodePort service type
+                AnnotationAttachmentNode serviceAnnotation = createAnnotation("Service");
+                BLangRecordLiteral svcRecordLiteral = (BLangRecordLiteral) TreeBuilder.createRecordLiteralNode();
+                serviceAnnotation.setExpression(svcRecordLiteral);
+                
+                BLangLiteral serviceTypeKey = (BLangLiteral) TreeBuilder.createLiteralExpression();
+                serviceTypeKey.value = ServiceAnnotationProcessor.ServiceConfiguration.serviceType.name();
+                serviceTypeKey.type = new BType(TypeTags.STRING, null);
+    
+                BLangLiteral serviceTypeValue = new BLangLiteral();
+                serviceTypeValue.value = KubernetesConstants.ServiceType.NodePort.name();
+                serviceTypeValue.type = new BType(TypeTags.STRING, null);
+    
+                BLangRecordLiteral.BLangRecordKeyValueField serviceTypeRecordField =
+                        new BLangRecordLiteral.BLangRecordKeyValueField();
+                serviceTypeRecordField.key = new BLangRecordLiteral.BLangRecordKey(serviceTypeKey);
+                serviceTypeRecordField.valueExpr = serviceTypeValue;
+                
+                svcRecordLiteral.fields.add(serviceTypeRecordField);
+    
                 // Filter services with 'new Listener()' and generate services
                 for (ServiceNode serviceNode : serviceNodes) {
                     Optional<? extends ExpressionNode> initListener = serviceNode.getAttachedExprs().stream()
@@ -133,7 +159,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                             .findAny();
 
                     if (initListener.isPresent()) {
-                        serviceNodes.forEach(sn -> process(sn, Collections.singletonList(createAnnotation("Service"))));
+                        serviceNodes.forEach(sn -> process(sn, Collections.singletonList(serviceAnnotation)));
                     }
                 }
 
@@ -145,13 +171,13 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                         .map(aex -> (BLangSimpleVarRef) aex)
                         .map(BLangSimpleVarRef::toString)
                         .collect(Collectors.toList());
-
+    
                 // Generate artifacts for listeners attached to services
                 topLevelNodes.stream()
                         .filter(tln -> tln instanceof SimpleVariableNode)
                         .map(tln -> (SimpleVariableNode) tln)
                         .filter(listener -> listenerNamesToExpose.contains(listener.getName().getValue()))
-                        .forEach(listener -> process(listener, Collections.singletonList(createAnnotation("Service"))));
+                        .forEach(listener -> process(listener, Collections.singletonList(serviceAnnotation)));
 
                 // Generate artifacts for main functions
                 topLevelNodes.stream()
@@ -212,6 +238,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     public void codeGenerated(PackageID moduleID, Path executableJarFile) {
         KubernetesContext.getInstance().setCurrentPackage(moduleID);
         KubernetesDataHolder dataHolder = KubernetesContext.getInstance().getDataHolder();
+        dataHolder.setPackageID(moduleID);
         if (dataHolder.isCanProcess()) {
             executableJarFile = executableJarFile.toAbsolutePath();
             if (null != executableJarFile.getParent() && Files.exists(executableJarFile.getParent())) {

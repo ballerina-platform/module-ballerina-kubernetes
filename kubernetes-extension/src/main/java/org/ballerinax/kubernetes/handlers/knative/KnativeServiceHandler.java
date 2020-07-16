@@ -238,7 +238,7 @@ public class KnativeServiceHandler extends KnativeAbstractArtifactHandler {
      * @param serviceModel Service model
      */
     private DockerModel getDockerModel(ServiceModel serviceModel) throws DockerGenException {
-        DockerModel dockerModel = new DockerModel();
+        DockerModel dockerModel = knativeDataHolder.getDockerModel();
         String dockerImage = serviceModel.getImage();
         String imageTag = "latest";
         if (dockerImage.contains(":")) {

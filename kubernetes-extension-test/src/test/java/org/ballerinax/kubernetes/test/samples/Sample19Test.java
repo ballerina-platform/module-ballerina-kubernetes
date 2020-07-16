@@ -139,7 +139,8 @@ public class Sample19Test extends SampleTest {
         Assert.assertEquals(ports.get(0), "8080/tcp");
         // Validate ballerina.conf in run command
         Assert.assertEquals(getCommand(DOCKER_IMAGE).toString(),
-                "[/bin/sh, -c, java -jar hello_world_knative_config_map.jar --b7a.config.file=${CONFIG_FILE}]");
+                "[/bin/sh, -c, java -Xdiag -cp \"hello_world_knative_config_map.jar:jars/*\" ___init --b7a.config" +
+                        ".file=${CONFIG_FILE}]");
     }
 
     @AfterClass

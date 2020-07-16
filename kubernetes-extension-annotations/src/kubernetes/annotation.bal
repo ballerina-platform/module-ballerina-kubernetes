@@ -179,7 +179,7 @@ public type PodTolerationConfiguration record {|
 # + serviceAccountName - Service Account Name.
 # + projectedVolumeMount - Projected Volume Mount config.
 # + prometheus - Enable Prometheus.
-# + uberJar - Use ballerina uber jar. Default is `true`.
+# + uberJar - Use ballerina uber jar. Default is `false`.
 # + dockerConfigPath - Path to docker configuration.
 public type DeploymentConfiguration record {|
     *Metadata;
@@ -211,7 +211,7 @@ public type DeploymentConfiguration record {|
     string serviceAccountName?;
     ProjectedVolumeMount projectedVolumeMount?;
     boolean prometheus = false;
-    boolean uberJar = true;
+    boolean uberJar = false;
     string dockerConfigPath?;
 |};
 
@@ -505,7 +505,7 @@ public type JobConfig record {|
     string schedule?;
     string[] imagePullSecrets?;
     map<string> nodeSelector?;
-    boolean uberJar = true;
+    boolean uberJar = false;
     string dockerConfigPath?;
 |};
 

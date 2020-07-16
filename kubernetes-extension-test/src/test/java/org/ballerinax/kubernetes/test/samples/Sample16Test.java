@@ -60,10 +60,10 @@ public class Sample16Test extends SampleTest {
     private static final Path CAR_RENTAL_PKG_DOCKER_TARGET_PATH = DOCKER_TARGET_PATH.resolve("car_rental");
     private static final Path TRAVEL_AGENCY_PKG_DOCKER_TARGET_PATH = DOCKER_TARGET_PATH.resolve("travel_agency");
     private static final Path TRAVEL_AGENCY_PKG_K8S_TARGET_PATH = KUBERNETES_TARGET_PATH.resolve("travel_agency");
-    private static final String AIRLINE_RESERVATION_DOCKER_IMAGE = "airline_reservation:latest";
-    private static final String HOTEL_RESERVATION_DOCKER_IMAGE = "hotel_reservation:latest";
-    private static final String CAR_RENTAL_DOCKER_IMAGE = "car_rental:latest";
-    private static final String TRAVEL_AGENCY_DOCKER_IMAGE = "travel_agency:latest";
+    private static final String AIRLINE_RESERVATION_DOCKER_IMAGE = "gogo-airline_reservation-1.0.0:latest";
+    private static final String HOTEL_RESERVATION_DOCKER_IMAGE = "gogo-hotel_reservation-1.0.0:latest";
+    private static final String CAR_RENTAL_DOCKER_IMAGE = "gogo-car_rental-1.0.0:latest";
+    private static final String TRAVEL_AGENCY_DOCKER_IMAGE = "gogo-travel_agency-1.0.0:latest";
     private Deployment deployment = null;
     private Service service = null;
     private Gateway gateway = null;
@@ -72,7 +72,7 @@ public class Sample16Test extends SampleTest {
     @BeforeClass
     public void compileSample() throws IOException, InterruptedException {
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaProject(SOURCE_DIR_PATH, true), 0);
-        File yamlFile = TRAVEL_AGENCY_PKG_K8S_TARGET_PATH.resolve("travel_agency.yaml").toFile();
+        File yamlFile = TRAVEL_AGENCY_PKG_K8S_TARGET_PATH.resolve("gogo-travel_agency-1.0.0.yaml").toFile();
         Assert.assertTrue(yamlFile.exists());
         List<HasMetadata> k8sItems = KubernetesTestUtils.loadYaml(yamlFile);
         for (HasMetadata data : k8sItems) {
@@ -136,10 +136,10 @@ public class Sample16Test extends SampleTest {
         // Assert Deployment
         Assert.assertNotNull(deployment);
         Assert.assertNotNull(deployment.getMetadata());
-        Assert.assertEquals(deployment.getMetadata().getName(), "travel-agency-deployment");
+        Assert.assertEquals(deployment.getMetadata().getName(), "gogo-travel-agency-1-0-0-deployment");
         Assert.assertEquals(deployment.getSpec().getReplicas().intValue(), 1, "Invalid replica value");
         Assert.assertEquals(deployment.getMetadata().getLabels().get(KubernetesConstants
-                .KUBERNETES_SELECTOR_KEY), "travel_agency", "Invalid label");
+                .KUBERNETES_SELECTOR_KEY), "gogo-travel_agency-1.0.0", "Invalid label");
         Assert.assertEquals(deployment.getSpec().getTemplate().getSpec().getContainers().size(), 1,
                 "Invalid number of containers.");
 

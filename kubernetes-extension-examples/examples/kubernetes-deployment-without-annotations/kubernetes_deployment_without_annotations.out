@@ -1,0 +1,47 @@
+# Build the ballerina program
+$ ballerina build kubernetes_deployment.bal
+Compiling source
+    kubernetes_deployment_without_annotations.bal
+
+Generating executables
+    kubernetes_deployment_without_annotations.jar
+
+Generating artifacts...
+
+    @kubernetes:Service                      - complete 1/1
+    @kubernetes:Deployment                   - complete 1/1
+    @kubernetes:Docker                       - complete 0/2
+    @kubernetes:Docker                       - complete 1/2
+    @kubernetes:Docker                       - complete 2/2
+    @kubernetes:Helm                         - complete 1/1
+
+    Execute the below command to deploy the Kubernetes artifacts:
+    kubectl apply -f ./kubernetes
+
+    Execute the below command to install the application using Helm:
+    helm install --name kubernetes-deployment-without-annotations-deployment ./kubernetes/kubernetes-deployment-without-annotations-deployment
+
+
+# Verify the Docker image is generated
+$ docker images
+REPOSITORY                                  TAG      IMAGE ID            CREATED             SIZE
+kubernetes_deployment_without_annotations   latest   3559d3df6774        2 seconds ago       127MB
+
+# Apply the Kubernetes artifacts
+$ kubectl apply -f ./kubernetes/
+service/helloworldep-svc created
+deployment.apps/kubernetes-deployment-without-annotations-deployment created
+
+# Verify if the pods & service are deployed
+$ kubectl get pods
+NAME                                                              READY   STATUS    RESTARTS   AGE
+kubernetes-deployment-without-annotations-deployment-7469csvzvf   1/1     Running   0          13s
+
+$ kubectl get svc
+NAME                TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+helloworldep-svc    NodePort    10.109.125.193   <none>        9090:32417/TCP   1m
+
+# Access the service
+$ curl https://localhost:<32417>/helloWorld/sayHello
+"Hello World from Kubernetes!
+

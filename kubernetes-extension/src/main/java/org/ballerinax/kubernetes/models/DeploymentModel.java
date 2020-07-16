@@ -100,7 +100,7 @@ public class DeploymentModel extends KubernetesModel {
         this.commandArgs = "";
         this.registry = "";
         this.serviceAccountTokenModel = new ArrayList<>();
-        this.uberJar = true;
+        this.uberJar = false;
     }
 
     public Map<String, String> getPodAnnotations() {

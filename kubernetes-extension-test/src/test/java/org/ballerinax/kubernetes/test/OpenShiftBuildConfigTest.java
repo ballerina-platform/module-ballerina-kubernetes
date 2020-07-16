@@ -361,7 +361,7 @@ public class OpenShiftBuildConfigTest {
         Path targetPath = projectPath.resolve("target");
         Path moduleArtifacts = targetPath.resolve(KUBERNETES).resolve("printer");
         Assert.assertEquals(KubernetesTestUtils.compileBallerinaProject(projectPath.toAbsolutePath()), 0);
-        File yamlFile = moduleArtifacts.resolve("printer.yaml").toAbsolutePath().toFile();
+        File yamlFile = moduleArtifacts.resolve("doodle-printer-1.0.0.yaml").toAbsolutePath().toFile();
         Assert.assertTrue(yamlFile.exists());
         KubernetesClient client = new DefaultKubernetesClient();
         List<HasMetadata> k8sItems = client.load(new FileInputStream(yamlFile)).get();
