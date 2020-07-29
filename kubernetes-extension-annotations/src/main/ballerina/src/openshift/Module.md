@@ -1,6 +1,9 @@
 ## Module Overview
 
-This module offers an annotation based OpenShift extension implementation for ballerina. 
+This module offers an annotation based OpenShift extension implementation for Ballerina. 
+
+- For information on the operations, which you can perform with this module, see [Objects](https://ballerina.io/learn/api-docs/ballerina/openshift/index.html#objects). 
+- For examples on the usage of the operations, see the [OpenShift Deployment Example](https://ballerina.io/learn/by-example/openshift-deployment.html).
 
 ### Annotation Usage Sample:
 
