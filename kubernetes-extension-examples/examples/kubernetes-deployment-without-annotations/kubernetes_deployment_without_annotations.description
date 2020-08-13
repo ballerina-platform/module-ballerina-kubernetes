@@ -1,4 +1,4 @@
-//Ballerina supports generating Docker images, the Dockerfile and Kubernetes artifacts for services by only adding the `ballerina/kubernetes` import.
+//Ballerina supports generating Docker images, the Dockerfile, and Kubernetes artifacts for services by only adding the `ballerina/kubernetes` import.
 //Minikube or Docker for Mac/Windows should be configured and
 //Kubernetes should be enabled to run the example.<br/><br/>
-//For more information, see [How to Deploy Ballerina Programs and Services in the Cloud](https://ballerina.io/learn/how-to-deploy-ballerina-programs-in-cloud/).
+//For more information, see the [Kubernetes Deployment Guide](https://ballerina.io/swan-lake/learn/deployment/kubernetes/).
