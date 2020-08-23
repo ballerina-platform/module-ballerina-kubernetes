@@ -2,7 +2,8 @@
 
 This module offers an annotation based OpenShift extension implementation for Ballerina. 
 
-For information on the operations, which you can perform with this module, see [Objects](https://ballerina.io/swan-lake/learn/api-docs/ballerina/openshift/index.html#objects). For examples on the usage of the operations, see the [AWS Lambda Deployment Example](https://ballerina.io/swan-lake/learn/by-example/openshift-deployment.html).
+- For information on the operations, which you can perform with this module, see [Objects](/swan-lake/learn/api-docs/ballerina/openshift/index.html#objects). 
+- For examples on the usage of the operations, see the [AWS Lambda Deployment Example](/swan-lake/learn/by-example/openshift-deployment.html).
 
 ### Annotation Usage Sample:
 
