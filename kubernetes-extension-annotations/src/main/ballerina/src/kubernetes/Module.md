@@ -2,9 +2,9 @@
 
 This module offers an annotation based Kubernetes extension implementation for Ballerina. 
 
-- For information on the operations, which you can perform with this module, see [Objects](https://ballerina.io/learn/api-docs/ballerina/kubernetes/index.html#objects). 
-- For more information on the deployment, see [Kubernetes Deployment Guide](https://ballerina.io/learn/deployment/kubernetes/).
-- For examples on the usage of the operations, see the [Kubernetes Deployment Example](https://ballerina.io/learn/by-example/kubernetes-deployment.html).
+- For information on the operations, which you can perform with this module, see [Objects](/learn/api-docs/ballerina/kubernetes/index.html#objects). 
+- For more information on the deployment, see [Kubernetes Deployment Guide](/learn/deployment/kubernetes/).
+- For examples on the usage of the operations, see the [Kubernetes Deployment Example](/learn/by-example/kubernetes-deployment.html).
 
 ### Annotation Usage Sample:
 
