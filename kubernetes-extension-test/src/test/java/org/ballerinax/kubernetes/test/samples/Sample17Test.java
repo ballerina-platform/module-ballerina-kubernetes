@@ -108,7 +108,7 @@ public class Sample17Test extends SampleTest {
         Assert.assertEquals(buildConfig.getSpec().getStrategy().getDockerStrategy().getBuildArgs().size(), 0,
                 "Invalid number of build args.");
         Assert.assertEquals(buildConfig.getSpec().getStrategy().getDockerStrategy().getDockerfilePath(),
-                "docker/Dockerfile", "Invalid docker path.");
+                "Dockerfile", "Invalid docker path.");
         Assert.assertFalse(buildConfig.getSpec().getStrategy().getDockerStrategy().getForcePull(),
                 "Force pull image set to false");
         Assert.assertFalse(buildConfig.getSpec().getStrategy().getDockerStrategy().getNoCache(),
