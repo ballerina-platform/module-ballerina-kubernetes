@@ -47,9 +47,9 @@ public class OpenShiftRouteHandler extends AbstractArtifactHandler {
             OUT.println();
             // setting instructions
             Map<String, String> instructions = ArtifactManager.getInstructions();
-            instructions.put("\tRun the following command to deploy the OpenShift artifacts: ",
+            instructions.put("\tExecute the below command to deploy the OpenShift artifacts: ",
                     "\toc apply -f " + dataHolder.getK8sArtifactOutputPath().resolve(OPENSHIFT).toAbsolutePath());
-            instructions.put("\tRun the following command to deploy the Kubernetes artifacts: ",
+            instructions.put("\tExecute the below command to deploy the Kubernetes artifacts: ",
                     "\tkubectl apply -f " + dataHolder.getK8sArtifactOutputPath());
         }
         int count = 0;

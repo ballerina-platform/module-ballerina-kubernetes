@@ -39,7 +39,7 @@ listener http:Listener helloWorldEP = new(9090, config = {
     //Enable Kubernetes liveness probe to this service.
     livenessProbe: true,
     //Generate a Docker image with the name `kubernetes:v1.0`.
-    image: "kubernetes:v.1.0"
+    image: "kubernetes:v1.0"
     //If you are using minikube, uncomment and change the following values accordingly.
     ////dockerHost:"tcp://<minikube IP>:2376",
     ////dockerCertPath:"<HOME_DIRECTORY>/.minikube/certs"

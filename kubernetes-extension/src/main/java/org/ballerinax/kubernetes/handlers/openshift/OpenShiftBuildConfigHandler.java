@@ -29,7 +29,6 @@ import org.ballerinax.kubernetes.utils.DockerImageName;
 import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -41,6 +40,9 @@ import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
  * Generates OpenShift's Build Configs.
  */
 public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
+    
+    String dockerDir = dataHolder.getSourceRoot().relativize(dataHolder.getDockerArtifactOutputPath()).toString();
+    
     @Override
     public void createArtifacts() throws KubernetesPluginException {
         OpenShiftBuildExtensionModel buildConfigModel = dataHolder.getOpenShiftBuildExtensionModel();
@@ -52,15 +54,8 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
             Map<String, String> instructions = ArtifactManager.getInstructions();
             instructions.put("\tExecute the below command to deploy the OpenShift artifacts: ",
                     "\toc apply -f " + dataHolder.getK8sArtifactOutputPath().resolve(OPENSHIFT).toAbsolutePath());
-            if (dataHolder.getK8sArtifactOutputPath().toString().contains("target")) {
-                instructions.put("\tExecute the below command to start a build: ",
-                        "\toc start-build bc/" + buildConfigModel.getName() +
-                        " --from-dir=./target --follow");
-            } else {
-                instructions.put("\tExecute the below command to start a build: ",
-                        "\toc start-build bc/" + buildConfigModel.getName() +
-                        " --from-dir=. --follow");
-            }
+            instructions.put("\tExecute the below command to start a build: ",
+                    "\toc start-build bc/" + buildConfigModel.getName() + " --from-dir=" + dockerDir + " --follow");
             instructions.put("\tExecute the below command to deploy the Kubernetes artifacts: ",
                     "\tkubectl apply -f " + dataHolder.getK8sArtifactOutputPath());
         }
@@ -74,8 +69,6 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
             }
     
             // Generate docker artifacts
-            Path dockerOutputDir = dataHolder.getDockerArtifactOutputPath().resolve("Dockerfile");
-    
             DockerImageName dockerImageName = new DockerImageName(dataHolder.getDockerModel().getName());
             
             BuildConfig bc = new BuildConfigBuilder()
@@ -98,7 +91,7 @@ public class OpenShiftBuildConfigHandler extends AbstractArtifactHandler {
                     .endSource()
                     .withNewStrategy()
                     .withNewDockerStrategy()
-                    .withDockerfilePath(dataHolder.getSourceRoot().relativize(dockerOutputDir).toString())
+                    .withDockerfilePath("Dockerfile")
                     .withForcePull(buildConfigModel.isForcePullDockerImage())
                     .withNoCache(buildConfigModel.isBuildDockerWithNoCache())
                     .endDockerStrategy()
