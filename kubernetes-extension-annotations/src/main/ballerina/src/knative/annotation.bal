@@ -165,7 +165,7 @@ public type PodTolerationConfiguration record {|
 # it will be prepended to the docker image name as `<registry>/<OUTPUT_FILE_NAME>:latest`
 # + buildImage - Docker image to be build or not. Default is `true`
 # + push - Enable pushing docker image to registry. Field `buildImage` must be set to `true` to be effective. Default value is `false`
-# + copyFiles - Array of [External files](kubernetes#FileConfig) for docker image
+# + copyFiles - Array of file configurations for docker image
 # + singleYAML - Generate a single yaml file with all kubernetes artifacts (services, deployment, ingress and etc). Default is `true`
 # + namespace - Kubernetes namespace to be used on all artifacts
 # + replicas - Number of replicas. Default is `1`
@@ -237,7 +237,7 @@ public type Secret record {|
 
 # Secret volume mount configurations for knative.
 #
-# + secrets - Array of [Secret](knative.html#Secret)
+# + secrets - Array of secrets
 public type SecretMount record {|
     Secret[] secrets;
 |};
@@ -260,7 +260,7 @@ public type ConfigMap record {|
 # Secret volume mount configurations for knative.
 #
 # + conf - path to ballerina configuration file
-# + configMaps - Array of [ConfigMap](kubernetes.html#ConfigMap)
+# + configMaps - Array of configuration maps
 public type ConfigMapMount record {|
     string conf;
     ConfigMap[] configMaps?;
