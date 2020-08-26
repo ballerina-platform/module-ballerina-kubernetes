@@ -162,7 +162,7 @@ public type PodTolerationConfiguration record {|
 # + push - Enable pushing docker image to registry. Field `buildImage` must be set to `true` to be effective. Default value is `false`.
 # + cmd - Value for CMD for the generated Dockerfile. Default is `CMD java -jar ${APP} [--b7a.config.file=${CONFIG_FILE}] [--debug]`.
 # + updateStrategy - Deployment strategy.
-# + copyFiles - Array of file configurations for docker image.
+# + copyFiles - Array of file configurations for the Docker image.
 # + singleYAML - Generate a single yaml file with all kubernetes artifacts (services, deployment, ingress and etc). Default is `true`.
 # + namespace - Kubernetes namespace to be used on all artifacts.
 # + replicas - Number of replicas. Default is `1`.
@@ -412,7 +412,7 @@ public type PersistentVolumeClaimConfig record {|
 
 # Persistent Volume Claims configurations for kubernetes.
 #
-# + volumeClaims - Array of [PersistentVolumeClaimConfig](kubernetes.html#PersistentVolumeClaimConfig)
+# + volumeClaims - Array of PersistentVolumeClaimConfig
 public type PersistentVolumeClaims record {|
     PersistentVolumeClaimConfig[] volumeClaims;
 |};
@@ -435,7 +435,7 @@ public type ResourceQuotaConfig record {|
 
 # Resource Quota configuration for kubernetes.
 #
-# + resourceQuotas - Array of [ResourceQuotaConfig](kubernetes.html#ResourceQuotaConfig)
+# + resourceQuotas - Array of ResourceQuotaConfig
 public type ResourceQuotas record {|
     ResourceQuotaConfig[] resourceQuotas;
 |};
@@ -469,7 +469,7 @@ public type RestartPolicy "OnFailure"|"Always"|"Never";
 # + buildImage - Docker image to be build or not. Default is `true`.
 # + push - Enable pushing docker image to registry. Field `buildImage` must be set to `true`. Default value is `false`.
 # + cmd - Value for CMD for the generated Dockerfile. Default is `CMD java -jar ${APP} [--b7a.config.file=${CONFIG_FILE}] [--debug]`.
-# + copyFiles - Array of file configuration for docker image.
+# + copyFiles - Array of external files for the Docker image.
 # + singleYAML - Generate a single yaml file with all kubernetes artifacts (ingress, configmaps, secrets and etc). Default is `true`.
 # + namespace - Kubernetes namespace to be used on all artifacts.
 # + imagePullPolicy - Image pull policy. Default is `"IfNotPresent"`.
