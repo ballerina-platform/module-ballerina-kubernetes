@@ -205,7 +205,7 @@ subprojects {
         repositories {
             maven {
                 if (project.version.endsWith('-SNAPSHOT')) {
-                    url "https:/ / maven.wso2.org / nexus / content / repositories / snapshots / "
+                    url "https://maven.wso2.org/nexus/content/repositories/snapshots/"
                 } else {
                     url "https://maven.wso2.org/nexus/service/local/staging/deploy/maven2/"
                 }
