@@ -20,9 +20,9 @@ jobs:
         run: chmod +x gradlew
       - name: Build with Gradle
         env:
-          GITHUB_TOKEN: ${{ secrets.BALLERINA_KUBERNETES_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.BALLERINA_KUBERENETES_TOKEN }}
           packageUser: ${{ github.actor }}
-          packagePAT: ${{ secrets.BALLERINA_KUBERNETES_TOKEN }}
+          packagePAT: ${{ secrets.BALLERINA_KUBERENETES_TOKEN }}
         run: |
           set -e
           curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
