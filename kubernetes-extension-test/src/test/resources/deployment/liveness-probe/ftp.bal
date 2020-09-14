@@ -26,7 +26,7 @@ listener MockListener remoteServer = new({
     port: 9090
 });
 
-public type MockListener object {
+public class MockListener {
     *lang:Listener;
     private ListenerConfig config = {};
 
@@ -50,7 +50,7 @@ public type MockListener object {
     public function __immediateStop() returns error? {
         return ();
     }
-};
+}
 
 public type ListenerConfig record {|
     string protocol = "FTP";

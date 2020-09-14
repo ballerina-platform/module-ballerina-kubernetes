@@ -18,7 +18,7 @@ import ballerina/http;
 import ballerina/'lang\.object as lang;
 import ballerina/kubernetes;
 
-public type ABC object {
+public class ABC {
     *lang:Listener;
 
     public function __init() {
@@ -40,7 +40,7 @@ public type ABC object {
     public function __immediateStop() returns error? {
         return ();
     }
-};
+}
 
 @kubernetes:Deployment {
     image: "pizza-shop:latest"
