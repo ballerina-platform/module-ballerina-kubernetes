@@ -41,6 +41,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import static org.ballerinax.docker.generator.DockerGenConstants.MODULE_INIT_QUOTED;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deleteK8s;
@@ -113,7 +114,8 @@ public class Sample1Test extends SampleTest {
     public void validateDockerfile() throws IOException {
         File dockerFile = DOCKER_TARGET_PATH.resolve("Dockerfile").toFile();
         String dockerFileContent = new String(Files.readAllBytes(dockerFile.toPath()));
-        Assert.assertTrue(dockerFileContent.contains("CMD java -Xdiag -cp \"hello_world_k8s.jar:jars/*\" ___init"));
+        Assert.assertTrue(dockerFileContent.contains("CMD java -Xdiag -cp \"hello_world_k8s.jar:jars/*\" "
+                + MODULE_INIT_QUOTED));
         Assert.assertTrue(dockerFileContent.contains("USER ballerina"));
         Assert.assertTrue(dockerFile.exists());
     }

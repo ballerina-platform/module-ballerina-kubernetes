@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
+import static org.ballerinax.docker.generator.DockerGenConstants.MODULE_INIT_QUOTED;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
 import static org.ballerinax.kubernetes.test.utils.KubernetesTestUtils.deployK8s;
@@ -144,7 +145,8 @@ public class Sample8Test extends SampleTest {
         Assert.assertEquals(ports.get(0), "9090/tcp");
         // Validate ballerina.conf in run command
         Assert.assertEquals(getCommand(DOCKER_IMAGE).toString(),
-                "[/bin/sh, -c, java -Xdiag -cp \"hello_world_config_map_k8s.jar:jars/*\" ___init --b7a.config" +
+                "[/bin/sh, -c, java -Xdiag -cp \"hello_world_config_map_k8s.jar:jars/*\" " + MODULE_INIT_QUOTED + " " +
+                        "--b7a.config" +
                         ".file=${CONFIG_FILE}]");
     }
 

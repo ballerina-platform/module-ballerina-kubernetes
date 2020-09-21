@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
+import static org.ballerinax.docker.generator.DockerGenConstants.MODULE_INIT_QUOTED;
 import static org.ballerinax.kubernetes.KubernetesConstants.DOCKER;
 import static org.ballerinax.kubernetes.KubernetesConstants.KNATIVE;
 import static org.ballerinax.kubernetes.KubernetesConstants.KUBERNETES;
@@ -109,7 +110,7 @@ public class Sample19Test extends SampleTest {
         Assert.assertEquals(container.getEnv().size(), 1);
 
         Assert.assertEquals(this.knativeService.getSpec().getTemplate().getSpec().getVolumes().size(), 2);
-        
+
         // Validate config file
         Assert.assertEquals(container.getEnv().get(0).getName(), "CONFIG_FILE");
         Assert.assertEquals(container.getEnv().get(0).getValue(), "/home/ballerina/conf/ballerina.conf");
@@ -139,7 +140,8 @@ public class Sample19Test extends SampleTest {
         Assert.assertEquals(ports.get(0), "8080/tcp");
         // Validate ballerina.conf in run command
         Assert.assertEquals(getCommand(DOCKER_IMAGE).toString(),
-                "[/bin/sh, -c, java -Xdiag -cp \"hello_world_knative_config_map.jar:jars/*\" ___init --b7a.config" +
+                "[/bin/sh, -c, java -Xdiag -cp \"hello_world_knative_config_map.jar:jars/*\" "
+                        + MODULE_INIT_QUOTED + " --b7a.config" +
                         ".file=${CONFIG_FILE}]");
     }
 
