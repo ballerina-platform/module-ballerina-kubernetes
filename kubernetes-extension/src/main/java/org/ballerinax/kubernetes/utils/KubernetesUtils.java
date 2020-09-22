@@ -276,15 +276,13 @@ public class KubernetesUtils {
      * @param value The user provided value
      * @return The resolved value
      */
-    public static String resolveValue(String value) throws KubernetesPluginException {
+    public static String resolveValue(String value) {
         int startIndex;
         if ((startIndex = value.indexOf("$env{")) >= 0) {
             int endIndex = value.indexOf("}", startIndex);
             if (endIndex > 0) {
                 String varName = value.substring(startIndex + 5, endIndex).trim();
-                String resolvedVar = Optional.ofNullable(System.getenv(varName)).orElseThrow(() -> 
-                    new KubernetesPluginException("error resolving value: " + varName + 
-                            " is not set in the environment."));
+                String resolvedVar = Optional.ofNullable(System.getenv(varName));
                 String rest = (value.length() > endIndex + 1) ? resolveValue(value.substring(endIndex + 1)) : "";
                 return value.substring(0, startIndex) + resolvedVar + rest;
             }

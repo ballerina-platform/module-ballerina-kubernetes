@@ -70,6 +70,7 @@ public class KubernetesUtilsTest {
     public void resolveValueTest() throws Exception {
         Map<String, String> env = new HashMap<>();
         env.put("DOCKER_USERNAME", "anuruddhal");
+        env.put("DOCKER_PASSWORD", "");
         setEnv(env);
         try {
             Assert.assertEquals(KubernetesUtils.resolveValue("$env{DOCKER_USERNAME}"), "anuruddhal");
@@ -77,15 +78,14 @@ public class KubernetesUtilsTest {
             Assert.fail("Unable to resolve environment variable");
         }
         try {
-            KubernetesUtils.resolveValue("$env{DOCKER_PASSWORD}");
-            Assert.fail("Env value should be resolved");
+            Assert.assertEquals(KubernetesUtils.resolveValue("$env{DOCKER_PASSWORD}"), "");
+            Assert.assertEquals(KubernetesUtils.resolveValue("$env{DOCKER_UNDEFINED}"), "");
         } catch (KubernetesPluginException e) {
-            Assert.assertEquals(e.getMessage(), "error resolving value: DOCKER_PASSWORD is not set in the " +
-                    "environment.");
+            Assert.fail("Unable to resolve null/blank environment variable");
         }
         Assert.assertEquals(KubernetesUtils.resolveValue("demo"), "demo");
     }
-    
+
     @Test
     public void deleteDirectoryTest() throws IOException, KubernetesPluginException {
         File file = tempDirectory.resolve("myfile.txt").toFile();
