@@ -49,7 +49,7 @@ configurations {
 }
 
 dependencies {
-    implementation "org.ballerinax.docker:docker-generator:${ballerinaLangVersion}"
+    implementation "org.ballerinax.docker:docker-generator:${ballerinaDockerVersion}"
     implementation "com.github.docker-java:docker-java:${dockerJavaVersion}"
     implementation "io.fabric8:kubernetes-client:${fabric8KubernetesClientVersion}"
     implementation "me.snowdrop:istio-model:${snowdropIstioModelVersion}"
