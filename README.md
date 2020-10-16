@@ -224,7 +224,7 @@ Annotation based kubernetes extension implementation for ballerina.
 
 ## How to build
 
-1. Download and install JDK 8 or later
+1. Download and install JDK 11
 2. Install Docker
 3. Get a clone or download the source from this repository (https://github.com/ballerinax/kubernetes)
 4. Run the Gradle command ``gradle build`` from within the ``kubernetes`` directory.

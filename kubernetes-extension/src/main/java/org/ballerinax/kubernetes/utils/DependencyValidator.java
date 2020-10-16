@@ -49,7 +49,7 @@ public class DependencyValidator {
             this.dependencies = dependencies;
         }
 
-        private boolean addChild(Node n) {
+        boolean addChild(Node n) {
             //if we add a child, all the children of the that node cannot be this node, otherwise we create a cycle.
             if (n.allDescendants().contains(this)) {
                 return false;

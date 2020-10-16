@@ -92,7 +92,7 @@ test {
         systemProperties = [
             sampleDir: System.getProperty('sampleDir', project.projectDir.absolutePath + "/../samples"),
             ballerinaPack: System.getProperty('ballerinaPack', "$configurations.bDistributionDir.singleFile.absolutePath"),
-            jacocoAgentLine: "-javaagent:${configurations.jacocoRuntime.asPath}=destfile=${test.jacoco.destinationFile.absolutePath},append=true,inclnolocationclasses=true"
+            jacocoAgentLine: "-javaagent:${configurations.jacocoRuntime.asPath}=destfile=${test.jacoco.destinationFile.absolutePath},append=true,inclnolocationclasses=true,exclclassloader=jdk.internal.reflect.DelegatingClassLoader"
         ]
 	}
 }

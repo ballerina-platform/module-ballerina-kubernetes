@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.ballerinax.docker.generator.DockerGenConstants.OPENJDK_8_JRE_ALPINE_BASE_IMAGE;
+import static org.ballerinax.docker.generator.DockerGenConstants.OPENJDK_11_JRE_SLIM_BASE;
 
 /**
  * Knative deployment annotations model class.
@@ -68,7 +68,7 @@ public class ServiceModel extends KnativeModel {
         this.replicas = 1;
         this.port = 8080;
         this.buildImage = true;
-        this.baseImage = OPENJDK_8_JRE_ALPINE_BASE_IMAGE;
+        this.baseImage = OPENJDK_11_JRE_SLIM_BASE;
         this.push = false;
         this.labels = new LinkedHashMap<>();
         this.env = new LinkedHashMap<>();

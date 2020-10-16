@@ -106,8 +106,6 @@ public class Sample5Test extends SampleTest {
         Assert.assertEquals(0, deployK8s(KUBERNETES_TARGET_PATH));
         Assert.assertTrue(validateService("http://internal.pizzashack.com/customer",
                 "Get Customer resource !!!!"));
-        Assert.assertTrue(validateService("https://pizzashack.com/customer",
-                "Get Customer resource !!!!"));
         KubernetesTestUtils.deleteK8s(KUBERNETES_TARGET_PATH);
     }
     
