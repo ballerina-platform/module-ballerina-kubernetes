@@ -17,7 +17,7 @@ function testCarRentalService() {
     };
 
     // Send a 'post' request and obtain the response
-    http:Response response = checkpanic clientEP -> post("/rent", payload);
+    http:Response response = <http:Response> checkpanic clientEP -> post("/rent", payload);
     // Expected response code is 200
     test:assertEquals(response.statusCode, 200, "Car rental service did not respond with 200 OK signal!");
     // Check whether the response is as expected
