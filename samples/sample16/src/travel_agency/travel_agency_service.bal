@@ -26,7 +26,7 @@ service travelAgencyService on travelAgencyEP {
         produces: ["application/json"],
         path: "/arrange"
     }
-    resource function arrangeTour(http:Caller caller, http:Request inRequest) returns error? {
+    resource function arrangeTour(http:Caller caller, http:Request inRequest) returns @tainted error? {
         http:Response outResponse = new;
         json inReqPayload = {};
 
@@ -76,7 +76,8 @@ service travelAgencyService on travelAgencyEP {
         };
 
         // Send a post request to airlineReservationService with appropriate payload and get response
-        http:Response|error inResAirline = airlineReservationEP->post("/reserve", <@untainted> outReqPayloadAirline);
+        http:Response|error inResAirline = <http:Response> check airlineReservationEP->post("/reserve",
+        <@untainted> outReqPayloadAirline);
         if (inResAirline is error) {
             outResponse.setJsonPayload({
                 Message: "Failed to reserve airline! Unable to connect to airline service."
@@ -120,7 +121,8 @@ service travelAgencyService on travelAgencyEP {
         };
 
         // Send a post request to hotelReservationService with appropriate payload and get response
-        http:Response|error inResHotel = hotelReservationEP->post("/reserve", <@untainted> outReqPayloadHotel);
+        http:Response|error inResHotel = <http:Response> check hotelReservationEP->post("/reserve",
+        <@untainted> outReqPayloadHotel);
         if (inResHotel is error) {
             outResponse.setJsonPayload({
                 Message: "Failed to reserve hotel! Unable to connect to hotel service."
@@ -164,7 +166,7 @@ service travelAgencyService on travelAgencyEP {
         };
 
         // Send a post request to carRentalService with appropriate payload and get response
-        http:Response|error inResCar = carRentalEP->post("/rent", <@untainted> outReqPayloadCar);
+        http:Response|error inResCar = <http:Response> check carRentalEP->post("/rent", <@untainted> outReqPayloadCar);
         if (inResCar is error) {
             outResponse.setJsonPayload({
                 Message: "Failed to rent car! Unable to connect to car service."
