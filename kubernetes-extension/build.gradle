@@ -58,6 +58,7 @@ dependencies {
     implementation "org.yaml:snakeyaml:${snakeYamlVersion}"
 
     compileOnly "org.ballerinalang:ballerina-lang:${ballerinaLangVersion}"
+    compileOnly "org.ballerinalang:ballerina-tools-api:${ballerinaLangVersion}"
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
 
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
