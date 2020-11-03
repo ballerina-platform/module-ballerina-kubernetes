@@ -18,6 +18,7 @@
 
 package org.ballerinax.kubernetes;
 
+import io.ballerina.tools.diagnostics.DiagnosticSeverity;
 import org.ballerinalang.compiler.JarResolver;
 import org.ballerinalang.compiler.plugins.AbstractCompilerPlugin;
 import org.ballerinalang.compiler.plugins.SupportedAnnotationPackages;
@@ -31,7 +32,6 @@ import org.ballerinalang.model.tree.ServiceNode;
 import org.ballerinalang.model.tree.SimpleVariableNode;
 import org.ballerinalang.model.tree.TopLevelNode;
 import org.ballerinalang.model.tree.expressions.ExpressionNode;
-import org.ballerinalang.util.diagnostic.Diagnostic;
 import org.ballerinalang.util.diagnostic.DiagnosticLog;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.KubernetesContext;
@@ -136,22 +136,22 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                 AnnotationAttachmentNode serviceAnnotation = createAnnotation("Service");
                 BLangRecordLiteral svcRecordLiteral = (BLangRecordLiteral) TreeBuilder.createRecordLiteralNode();
                 serviceAnnotation.setExpression(svcRecordLiteral);
-                
+
                 BLangLiteral serviceTypeKey = (BLangLiteral) TreeBuilder.createLiteralExpression();
                 serviceTypeKey.value = ServiceAnnotationProcessor.ServiceConfiguration.serviceType.name();
                 serviceTypeKey.type = new BType(TypeTags.STRING, null);
-    
+
                 BLangLiteral serviceTypeValue = new BLangLiteral();
                 serviceTypeValue.value = KubernetesConstants.ServiceType.NodePort.name();
                 serviceTypeValue.type = new BType(TypeTags.STRING, null);
-    
+
                 BLangRecordLiteral.BLangRecordKeyValueField serviceTypeRecordField =
                         new BLangRecordLiteral.BLangRecordKeyValueField();
                 serviceTypeRecordField.key = new BLangRecordLiteral.BLangRecordKey(serviceTypeKey);
                 serviceTypeRecordField.valueExpr = serviceTypeValue;
-                
+
                 svcRecordLiteral.fields.add(serviceTypeRecordField);
-    
+
                 // Filter services with 'new Listener()' and generate services
                 for (ServiceNode serviceNode : serviceNodes) {
                     Optional<? extends ExpressionNode> initListener = serviceNode.getAttachedExprs().stream()
@@ -171,7 +171,7 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                         .map(aex -> (BLangSimpleVarRef) aex)
                         .map(BLangSimpleVarRef::toString)
                         .collect(Collectors.toList());
-    
+
                 // Generate artifacts for listeners attached to services
                 topLevelNodes.stream()
                         .filter(tln -> tln instanceof SimpleVariableNode)
@@ -197,7 +197,8 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                 AnnotationProcessorFactory.getAnnotationProcessorInstance(annotationKey).processAnnotation
                         (serviceNode, attachmentNode);
             } catch (KubernetesPluginException e) {
-                dlog.logDiagnostic(Diagnostic.Kind.ERROR, serviceNode.getPosition(), e.getMessage());
+                dlog.logDiagnostic(DiagnosticSeverity.ERROR, KubernetesContext.getInstance().getCurrentPackage(),
+                        serviceNode.getPosition(), e.getMessage());
             }
         }
     }
@@ -205,8 +206,8 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
     @Override
     public void process(SimpleVariableNode variableNode, List<AnnotationAttachmentNode> annotations) {
         if (!variableNode.getFlags().contains(Flag.LISTENER)) {
-            dlog.logDiagnostic(Diagnostic.Kind.ERROR, variableNode.getPosition(), "@kubernetes annotations are only " +
-                    "supported with listeners.");
+            dlog.logDiagnostic(DiagnosticSeverity.ERROR, KubernetesContext.getInstance().getCurrentPackage(),
+                    variableNode.getPosition(), "@kubernetes annotations are only supported with listeners.");
             return;
         }
         for (AnnotationAttachmentNode attachmentNode : annotations) {
@@ -215,7 +216,8 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                 AnnotationProcessorFactory.getAnnotationProcessorInstance(annotationKey).processAnnotation
                         (variableNode, attachmentNode);
             } catch (KubernetesPluginException e) {
-                dlog.logDiagnostic(Diagnostic.Kind.ERROR, variableNode.getPosition(), e.getMessage());
+                dlog.logDiagnostic(DiagnosticSeverity.ERROR, KubernetesContext.getInstance().getCurrentPackage(),
+                        variableNode.getPosition(), e.getMessage());
             }
         }
 
@@ -229,7 +231,8 @@ public class KubernetesPlugin extends AbstractCompilerPlugin {
                 AnnotationProcessorFactory.getAnnotationProcessorInstance(annotationKey).processAnnotation
                         (functionNode, attachmentNode);
             } catch (KubernetesPluginException e) {
-                dlog.logDiagnostic(Diagnostic.Kind.ERROR, functionNode.getPosition(), e.getMessage());
+                dlog.logDiagnostic(DiagnosticSeverity.ERROR, KubernetesContext.getInstance().getCurrentPackage(),
+                        functionNode.getPosition(), e.getMessage());
             }
         }
     }

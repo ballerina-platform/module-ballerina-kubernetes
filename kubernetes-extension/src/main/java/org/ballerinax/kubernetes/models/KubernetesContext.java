@@ -106,4 +106,8 @@ public class KubernetesContext {
     public void setCompilerContext(CompilerContext compilerContext) {
         this.compilerContext = compilerContext;
     }
+
+    public PackageID getCurrentPackage() {
+        return currentPackage;
+    }
 }
