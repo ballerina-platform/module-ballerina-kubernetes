@@ -96,16 +96,12 @@ public class KubernetesUtilsTest {
         env.put("EXAMPLE_FALSE_2", "");
         env.put("EXAMPLE_FALSE_3", null);
         setEnv(env);
-        try {
-            Assert.assertTrue(KubernetesUtils.getBooleanValue("$env{EXAMPLE_TRUE_1}"));
-            Assert.assertTrue(KubernetesUtils.getBooleanValue("$env{EXAMPLE_TRUE_2}"));
-            Assert.assertTrue(KubernetesUtils.getBooleanValue("$env{EXAMPLE_TRUE_3}"));
-            Assert.assertFalse(KubernetesUtils.getBooleanValue("$env{EXAMPLE_FALSE_1}"));
-            Assert.assertFalse(KubernetesUtils.getBooleanValue("$env{EXAMPLE_FALSE_2}"));
-            Assert.assertFalse(KubernetesUtils.getBooleanValue("$env{EXAMPLE_FALSE_3}"));
-        } catch (KubernetesPluginException e) {
-            Assert.fail("Unable to resolve environment variable as boolean");
-        }
+        Assert.assertTrue(KubernetesUtils.getBooleanValue("$env{EXAMPLE_TRUE_1}"));
+        Assert.assertTrue(KubernetesUtils.getBooleanValue("$env{EXAMPLE_TRUE_2}"));
+        Assert.assertTrue(KubernetesUtils.getBooleanValue("$env{EXAMPLE_TRUE_3}"));
+        Assert.assertFalse(KubernetesUtils.getBooleanValue("$env{EXAMPLE_FALSE_1}"));
+        Assert.assertFalse(KubernetesUtils.getBooleanValue("$env{EXAMPLE_FALSE_2}"));
+        Assert.assertFalse(KubernetesUtils.getBooleanValue("$env{EXAMPLE_FALSE_3}"));
     }
 
     @Test

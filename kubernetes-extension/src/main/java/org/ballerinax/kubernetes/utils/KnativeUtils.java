@@ -266,7 +266,7 @@ public class KnativeUtils {
             int endIndex = value.indexOf("}", startIndex);
             if (endIndex > 0) {
                 String varName = value.substring(startIndex + 5, endIndex).trim();
-                String resolvedVar = Optional.ofNullable(System.getenv(varName));
+                String resolvedVar = Optional.ofNullable(System.getenv(varName)).orElse("");
                 String rest = (value.length() > endIndex + 1) ? resolveValue(value.substring(endIndex + 1)) : "";
                 return value.substring(0, startIndex) + resolvedVar + rest;
             }
