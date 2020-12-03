@@ -1,9 +1,6 @@
 ## Module Overview
 
-This module offers an annotation based Kubernetes extension implementation for Ballerina. 
-
-- For more information on the deployment, see the [Kubernetes Deployment Guide](/swan-lake/learn/deployment/kubernetes/).
-- For examples on the usage of the operations, see the [AWS Lambda Deployment Example](/swan-lake/learn/by-example/kubernetes-deployment.html).
+This module offers an annotation based Kubernetes extension implementation for Ballerina. For examples on the usage of the operations, see the [Kubernetes Deployment Example](/swan-lake/learn/by-example/kubernetes-deployment.html).
 
 ### Annotation Usage Sample:
 
