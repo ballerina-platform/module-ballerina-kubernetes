@@ -70,6 +70,7 @@ public class KubernetesUtilsTest {
     public void resolveValueTest() throws Exception {
         Map<String, String> env = new HashMap<>();
         env.put("DOCKER_USERNAME", "anuruddhal");
+        env.put("DOCKER_PASSWORD", "");
         setEnv(env);
         try {
             Assert.assertEquals(KubernetesUtils.resolveValue("$env{DOCKER_USERNAME}"), "anuruddhal");
@@ -77,15 +78,32 @@ public class KubernetesUtilsTest {
             Assert.fail("Unable to resolve environment variable");
         }
         try {
-            KubernetesUtils.resolveValue("$env{DOCKER_PASSWORD}");
-            Assert.fail("Env value should be resolved");
+            Assert.assertEquals(KubernetesUtils.resolveValue("$env{DOCKER_PASSWORD}"), "");
+            Assert.assertEquals(KubernetesUtils.resolveValue("$env{DOCKER_UNDEFINED}"), "");
         } catch (KubernetesPluginException e) {
-            Assert.assertEquals(e.getMessage(), "error resolving value: DOCKER_PASSWORD is not set in the " +
-                    "environment.");
+            Assert.fail("Unable to resolve null/blank environment variable");
         }
         Assert.assertEquals(KubernetesUtils.resolveValue("demo"), "demo");
     }
-    
+
+    @Test
+    public void resolveBooleanValueTrueTest() throws Exception {
+        Map<String, String> env = new HashMap<>();
+        env.put("EXAMPLE_TRUE_1", true);
+        env.put("EXAMPLE_TRUE_2", " ");
+        env.put("EXAMPLE_TRUE_3", "mattclegg");
+        env.put("EXAMPLE_FALSE_1", false);
+        env.put("EXAMPLE_FALSE_2", "");
+        env.put("EXAMPLE_FALSE_3", null);
+        setEnv(env);
+        Assert.assertTrue(KubernetesUtils.getBooleanValue("$env{EXAMPLE_TRUE_1}"));
+        Assert.assertTrue(KubernetesUtils.getBooleanValue("$env{EXAMPLE_TRUE_2}"));
+        Assert.assertTrue(KubernetesUtils.getBooleanValue("$env{EXAMPLE_TRUE_3}"));
+        Assert.assertFalse(KubernetesUtils.getBooleanValue("$env{EXAMPLE_FALSE_1}"));
+        Assert.assertFalse(KubernetesUtils.getBooleanValue("$env{EXAMPLE_FALSE_2}"));
+        Assert.assertFalse(KubernetesUtils.getBooleanValue("$env{EXAMPLE_FALSE_3}"));
+    }
+
     @Test
     public void deleteDirectoryTest() throws IOException, KubernetesPluginException {
         File file = tempDirectory.resolve("myfile.txt").toFile();
