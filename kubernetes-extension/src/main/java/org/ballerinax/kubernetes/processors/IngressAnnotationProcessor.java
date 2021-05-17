@@ -170,7 +170,7 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
             // Mounts to the same path overriding the source file.
             throw new KubernetesPluginException("Invalid path: " + mountPath + ". " +
                     "Providing relative path in the same level as source file is not supported with " +
-                    "@kubernetes:Ingress annotations. Please create a subfolder and provide the relative path. " +
+                    "@kubernetes:Ingress annotations. Please create a sub folder and provide the relative path. " +
                     "eg: './security/ballerinaKeystore.p12'");
         }
         if (!Paths.get(mountPath).isAbsolute()) {
@@ -195,7 +195,8 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
             KubernetesPluginException {
         IngressModel ingressModel = new IngressModel();
         List<BLangRecordLiteral.BLangRecordKeyValueField> keyValues =
-            convertRecordFields(((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr).getFields());
+                convertRecordFields(((BLangRecordLiteral) ((BLangAnnotationAttachment) attachmentNode).expr)
+                        .getFields());
         for (BLangRecordLiteral.BLangRecordKeyValueField keyValue : keyValues) {
             IngressConfiguration ingressConfiguration =
                     IngressConfiguration.valueOf(keyValue.getKey().toString());
@@ -251,8 +252,8 @@ public class IngressAnnotationProcessor extends AbstractAnnotationProcessor {
         BLangService bService = (BLangService) serviceNode;
         for (BLangExpression attachedExpr : bService.getAttachedExprs()) {
             if (attachedExpr instanceof BLangTypeInit) {
-                throw new KubernetesPluginException("adding @kubernetes:Ingress{} annotation to a service is only " +
-                        "supported when service is bind to an anonymous listener");
+                throw new KubernetesPluginException("@kubernetes:Ingress{} annotation must be attached to the " +
+                        "listener");
             }
         }
         IngressModel ingressModel = getIngressModelFromAnnotation(attachmentNode);

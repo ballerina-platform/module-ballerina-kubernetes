@@ -70,7 +70,7 @@ public class ConfigMapAnnotationProcessor extends AbstractAnnotationProcessor {
     public void processAnnotation(FunctionNode functionNode, AnnotationAttachmentNode attachmentNode) throws
             KubernetesPluginException {
         if (!MAIN_FUNCTION_NAME.equals(functionNode.getName().getValue())) {
-            throw new KubernetesPluginException("@kubernetes:ConfigMap{} annotation cannot be attached to a non main " +
+            throw new KubernetesPluginException("@kubernetes:ConfigMap{} annotation must be attached to a main " +
                     "function.");
         }
 
