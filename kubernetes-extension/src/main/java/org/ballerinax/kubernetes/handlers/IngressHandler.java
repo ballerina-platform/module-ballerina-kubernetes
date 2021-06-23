@@ -135,7 +135,7 @@ public class IngressHandler extends AbstractArtifactHandler {
         for (IngressModel ingressModel : ingressModels) {
             ServiceModel serviceModel = dataHolder.getServiceModel(ingressModel.getListenerName());
             if (serviceModel == null) {
-                throw new KubernetesPluginException("@kubernetes:Ingress annotation should be followed by " +
+                throw new KubernetesPluginException("@kubernetes:Ingress annotation must be followed by " +
                         "@kubernetes:Service annotation.");
             }
             ingressModel.setServiceName(serviceModel.getName());

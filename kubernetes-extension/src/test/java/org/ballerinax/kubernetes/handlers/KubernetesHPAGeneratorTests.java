@@ -18,7 +18,7 @@
 
 package org.ballerinax.kubernetes.handlers;
 
-import io.fabric8.kubernetes.api.model.HorizontalPodAutoscaler;
+import io.fabric8.kubernetes.api.model.autoscaling.v1.HorizontalPodAutoscaler;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.DeploymentModel;
