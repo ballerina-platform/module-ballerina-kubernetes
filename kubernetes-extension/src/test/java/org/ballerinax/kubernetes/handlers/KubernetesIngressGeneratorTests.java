@@ -18,7 +18,7 @@
 
 package org.ballerinax.kubernetes.handlers;
 
-import io.fabric8.kubernetes.api.model.extensions.Ingress;
+import io.fabric8.kubernetes.api.model.networking.v1.Ingress;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
 import org.ballerinax.kubernetes.models.IngressModel;
@@ -92,9 +92,9 @@ public class KubernetesIngressGeneratorTests extends HandlerTestSuite {
         Assert.assertEquals(hostname, ingress.getSpec().getRules().get(0).getHost());
         Assert.assertEquals(path, ingress.getSpec().getRules().get(0).getHttp().getPaths().get(0).getPath());
         Assert.assertEquals(serviceName, ingress.getSpec().getRules().get(0).getHttp().getPaths().get(0).getBackend()
-                .getServiceName());
+                .getService().getName());
         Assert.assertEquals(servicePort, ingress.getSpec().getRules().get(0).getHttp().getPaths().get(0).getBackend()
-                .getServicePort().getIntVal().intValue());
+                .getService().getPort().getNumber().intValue());
         Assert.assertEquals(3, ingress.getMetadata().getAnnotations().size());
     }
 }

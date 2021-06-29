@@ -51,6 +51,7 @@ public class KubernetesVolumeClaimGeneratorTests extends HandlerTestSuite {
         volumeClaimModel.setReadOnly(readOnly);
         volumeClaimModel.setMountPath(mountPath);
         volumeClaimModel.setAccessMode("ReadWriteOnce");
+        volumeClaimModel.setVolumeClaimSize("3Gi");
         HashMap<String, String> annotations = new HashMap<>();
         annotations.put(annotationKey, annotationValue);
         volumeClaimModel.setAnnotations(annotations);

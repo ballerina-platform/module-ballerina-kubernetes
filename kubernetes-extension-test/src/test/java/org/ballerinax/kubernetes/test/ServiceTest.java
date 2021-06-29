@@ -20,7 +20,7 @@ package org.ballerinax.kubernetes.test;
 
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Service;
-import io.fabric8.kubernetes.api.model.extensions.Ingress;
+import io.fabric8.kubernetes.api.model.networking.v1.Ingress;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.ballerinax.kubernetes.KubernetesConstants;
@@ -92,11 +92,9 @@ public class ServiceTest {
         Assert.assertEquals("abc.com", ingress.getSpec().getRules().get(0).getHost());
         Assert.assertEquals("/", ingress.getSpec().getRules().get(0).getHttp().getPaths().get(0).getPath());
         Assert.assertEquals(service.getMetadata().getName(), ingress.getSpec().getRules().get(0).getHttp().getPaths()
-                .get(0).getBackend()
-                .getServiceName());
+                .get(0).getBackend().getService().getName());
         Assert.assertEquals(service.getSpec().getPorts().get(0).getPort().intValue(), ingress.getSpec().getRules()
-                .get(0).getHttp().getPaths().get(0).getBackend()
-                .getServicePort().getIntVal().intValue());
+                .get(0).getHttp().getPaths().get(0).getBackend().getService().getPort().getNumber().intValue());
         Assert.assertEquals(2, ingress.getMetadata().getAnnotations().size());
     
         KubernetesUtils.deleteDirectory(KUBERNETES_TARGET_PATH);

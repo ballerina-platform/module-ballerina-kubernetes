@@ -21,7 +21,7 @@ import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
-import io.fabric8.kubernetes.api.model.extensions.Ingress;
+import io.fabric8.kubernetes.api.model.networking.v1.Ingress;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.ballerinax.kubernetes.KubernetesConstants;
@@ -155,12 +155,10 @@ public class Sample3Test extends SampleTest {
         Assert.assertEquals(burgerIngress.getSpec().getRules().get(0).getHttp().getPaths().get(0).getPath(), "/(.*)");
         Assert.assertEquals(burgerSvc.getMetadata().getName(), burgerIngress.getSpec().getRules().get(0).getHttp()
                 .getPaths()
-                .get(0).getBackend()
-                .getServiceName());
+                .get(0).getBackend().getService().getName());
         Assert.assertEquals(burgerSvc.getSpec().getPorts().get(0).getPort().intValue(), burgerIngress.getSpec()
                 .getRules()
-                .get(0).getHttp().getPaths().get(0).getBackend()
-                .getServicePort().getIntVal().intValue());
+                .get(0).getHttp().getPaths().get(0).getBackend().getService().getPort().getNumber().intValue());
         Assert.assertEquals(burgerIngress.getMetadata().getAnnotations().size(), 3);
 
         // Assert Pizza ingress
@@ -173,12 +171,10 @@ public class Sample3Test extends SampleTest {
                 "/pizzastore(/|$)(.*)");
         Assert.assertEquals(pizzaSvc.getMetadata().getName(), pizzaIngress.getSpec().getRules().get(0).getHttp()
                 .getPaths()
-                .get(0).getBackend()
-                .getServiceName());
+                .get(0).getBackend().getService().getName());
         Assert.assertEquals(pizzaSvc.getSpec().getPorts().get(0).getPort().intValue(), pizzaIngress.getSpec()
                 .getRules()
-                .get(0).getHttp().getPaths().get(0).getBackend()
-                .getServicePort().getIntVal().intValue());
+                .get(0).getHttp().getPaths().get(0).getBackend().getService().getPort().getNumber().intValue());
         Assert.assertEquals(pizzaIngress.getMetadata().getAnnotations().size(), 3);
     }
 
