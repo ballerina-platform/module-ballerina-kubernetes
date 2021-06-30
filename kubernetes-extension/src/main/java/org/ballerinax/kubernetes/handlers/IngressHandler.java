@@ -72,6 +72,7 @@ public class IngressHandler extends AbstractArtifactHandler {
         //generate ingress path
         HTTPIngressPath ingressPath = new HTTPIngressPathBuilder()
                 .withBackend(ingressBackend)
+                .withPathType("Prefix")
                 .withPath(ingressModel
                         .getPath()).build();
 
