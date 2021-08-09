@@ -22,7 +22,7 @@ import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Secret;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
-import io.fabric8.kubernetes.api.model.extensions.Ingress;
+import io.fabric8.kubernetes.api.model.networking.v1.Ingress;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.ballerinax.kubernetes.KubernetesConstants;
@@ -130,6 +130,8 @@ public class Sample4Test extends SampleTest {
                 "nginx.ingress.kubernetes.io/ssl-passthrough"));
         Assert.assertTrue(Boolean.parseBoolean(ingress.getMetadata().getAnnotations().get(
                 "nginx.ingress.kubernetes.io/ssl-passthrough")));
+        Assert.assertTrue(ingress.getMetadata().getAnnotations().containsKey(
+                "nginx.ingress.kubernetes.io/backend-protocol"));
         Assert.assertEquals(ingress.getSpec().getTls().size(), 1);
         Assert.assertEquals(ingress.getSpec().getTls().get(0).getHosts().size(), 1);
         Assert.assertEquals(ingress.getSpec().getTls().get(0).getHosts().get(0), "abc.com");

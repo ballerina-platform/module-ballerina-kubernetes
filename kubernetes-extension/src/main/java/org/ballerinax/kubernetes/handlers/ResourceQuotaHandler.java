@@ -29,9 +29,9 @@ import org.ballerinax.kubernetes.utils.KubernetesUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.ballerinax.kubernetes.KubernetesConstants.RESOURCE_QUOTA_FILE_POSTFIX;
 import static org.ballerinax.kubernetes.KubernetesConstants.YAML;
@@ -75,10 +75,18 @@ public class ResourceQuotaHandler extends AbstractArtifactHandler {
      * @return Converted map.
      */
     private Map<String, Quantity> getHard(Map<String, String> hard) {
-        return hard.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, hardEntry -> new QuantityBuilder()
-                        .withAmount(hardEntry.getValue())
-                        .build()));
+        Map<String, Quantity> quantityMap = new HashMap<>();
+        hard.forEach((key, value) -> {
+            if (key.endsWith("memory")) {
+                quantityMap.put(key, new QuantityBuilder()
+                        .withAmount(value.replaceAll("\\D+", ""))
+                        .withFormat(value.replaceAll("\\d", "")).build());
+            } else {
+                quantityMap.put(key, new QuantityBuilder()
+                        .withAmount(value).build());
+            }
+        });
+        return quantityMap;
     }
     
     /**

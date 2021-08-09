@@ -73,7 +73,7 @@ public class KubernetesResourceQuotaGeneratorTests extends HandlerTestSuite {
             // quotas
             Assert.assertEquals(3, resourceQuota.getSpec().getHard().size());
             Assert.assertEquals("1000", resourceQuota.getSpec().getHard().get("cpu").getAmount());
-            Assert.assertEquals("200Gi", resourceQuota.getSpec().getHard().get("memory").getAmount());
+            Assert.assertEquals("200", resourceQuota.getSpec().getHard().get("memory").getAmount());
             Assert.assertEquals("10", resourceQuota.getSpec().getHard().get("pods").getAmount());
             
             // scopes

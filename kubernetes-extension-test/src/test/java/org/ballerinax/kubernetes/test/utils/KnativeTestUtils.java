@@ -25,6 +25,8 @@ import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import io.fabric8.knative.serving.v1alpha1.Service;
 import io.fabric8.knative.serving.v1alpha1.ServiceBuilder;
+import io.fabric8.kubernetes.api.model.DeletionPropagation;
+import io.fabric8.kubernetes.api.model.ListOptions;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ResourceHandler;
 import io.fabric8.kubernetes.client.Watch;
@@ -319,7 +321,8 @@ public class KnativeTestUtils {
         }
 
         @Override
-        public Boolean delete(OkHttpClient okHttpClient, Config config, String s, Boolean aBoolean, Service service) {
+        public Boolean delete(OkHttpClient okHttpClient, Config config, String s,
+                              DeletionPropagation deletionPropagation, Service service) {
             return null;
         }
 
@@ -332,6 +335,12 @@ public class KnativeTestUtils {
         @Override
         public Watch watch(OkHttpClient okHttpClient, Config config, String s, Service service, String s1,
                            Watcher<Service> watcher) {
+            return null;
+        }
+
+        @Override
+        public Watch watch(OkHttpClient okHttpClient, Config config, String s, Service service,
+                           ListOptions listOptions, Watcher<Service> watcher) {
             return null;
         }
 

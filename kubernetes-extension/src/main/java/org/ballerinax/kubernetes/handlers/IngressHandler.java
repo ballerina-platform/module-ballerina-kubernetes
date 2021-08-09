@@ -18,14 +18,14 @@
 
 package org.ballerinax.kubernetes.handlers;
 
-import io.fabric8.kubernetes.api.model.extensions.HTTPIngressPath;
-import io.fabric8.kubernetes.api.model.extensions.HTTPIngressPathBuilder;
-import io.fabric8.kubernetes.api.model.extensions.Ingress;
-import io.fabric8.kubernetes.api.model.extensions.IngressBackend;
-import io.fabric8.kubernetes.api.model.extensions.IngressBackendBuilder;
-import io.fabric8.kubernetes.api.model.extensions.IngressBuilder;
-import io.fabric8.kubernetes.api.model.extensions.IngressTLS;
-import io.fabric8.kubernetes.api.model.extensions.IngressTLSBuilder;
+import io.fabric8.kubernetes.api.model.networking.v1.HTTPIngressPath;
+import io.fabric8.kubernetes.api.model.networking.v1.HTTPIngressPathBuilder;
+import io.fabric8.kubernetes.api.model.networking.v1.Ingress;
+import io.fabric8.kubernetes.api.model.networking.v1.IngressBackend;
+import io.fabric8.kubernetes.api.model.networking.v1.IngressBackendBuilder;
+import io.fabric8.kubernetes.api.model.networking.v1.IngressBuilder;
+import io.fabric8.kubernetes.api.model.networking.v1.IngressTLS;
+import io.fabric8.kubernetes.api.model.networking.v1.IngressTLSBuilder;
 import io.fabric8.kubernetes.client.internal.SerializationUtils;
 import org.ballerinax.kubernetes.KubernetesConstants;
 import org.ballerinax.kubernetes.exceptions.KubernetesPluginException;
@@ -61,13 +61,18 @@ public class IngressHandler extends AbstractArtifactHandler {
     private void generate(IngressModel ingressModel) throws KubernetesPluginException {
         //generate ingress backend
         IngressBackend ingressBackend = new IngressBackendBuilder()
-                .withServiceName(ingressModel.getServiceName())
-                .withNewServicePort(ingressModel.getServicePort())
+                .withNewService()
+                .withName(ingressModel.getServiceName())
+                .withNewPort()
+                .withNumber(ingressModel.getServicePort())
+                .endPort()
+                .endService()
                 .build();
 
         //generate ingress path
         HTTPIngressPath ingressPath = new HTTPIngressPathBuilder()
                 .withBackend(ingressBackend)
+                .withPathType("Prefix")
                 .withPath(ingressModel
                         .getPath()).build();
 
@@ -83,8 +88,11 @@ public class IngressHandler extends AbstractArtifactHandler {
         Map<String, String> annotationMap = new HashMap<>();
         annotationMap.put("kubernetes.io/ingress.class", ingressModel.getIngressClass());
         if (NGINX.equals(ingressModel.getIngressClass())) {
-            annotationMap.put("nginx.ingress.kubernetes.io/ssl-passthrough", String.valueOf(ingressModel.isEnableTLS
-                    ()));
+            annotationMap.put("nginx.ingress.kubernetes.io/ssl-passthrough",
+                    String.valueOf(ingressModel.isEnableTLS()));
+            if (ingressModel.isEnableTLS()) {
+                annotationMap.put("nginx.ingress.kubernetes.io/backend-protocol", "HTTPS");
+            }
             if (ingressModel.getTargetPath() != null) {
                 annotationMap.put("nginx.ingress.kubernetes.io/rewrite-target", ingressModel.getTargetPath());
             }
@@ -135,7 +143,7 @@ public class IngressHandler extends AbstractArtifactHandler {
         for (IngressModel ingressModel : ingressModels) {
             ServiceModel serviceModel = dataHolder.getServiceModel(ingressModel.getListenerName());
             if (serviceModel == null) {
-                throw new KubernetesPluginException("@kubernetes:Ingress annotation should be followed by " +
+                throw new KubernetesPluginException("@kubernetes:Ingress annotation must be followed by " +
                         "@kubernetes:Service annotation.");
             }
             ingressModel.setServiceName(serviceModel.getName());
