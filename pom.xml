@@ -322,7 +322,7 @@
 
     <properties>
         <apache.http.client.version>4.5.10</apache.http.client.version>
-        <ballerina.lang.version>1.2.22</ballerina.lang.version>
+        <ballerina.lang.version>1.2.23</ballerina.lang.version>
         <ballerina.source.directory>${project.build.directory}/../src/main/ballerina</ballerina.source.directory>
         <com.fasterxml.jackson.core.annotations.version>2.9.8</com.fasterxml.jackson.core.annotations.version>
         <com.fasterxml.jackson.dataformat.yaml.version>2.9.8</com.fasterxml.jackson.dataformat.yaml.version>
