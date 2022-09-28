@@ -321,7 +321,7 @@
     </scm>
 
     <properties>
-        <apache.http.client.version>4.5.10</apache.http.client.version>
+        <apache.http.client.version>4.5.13</apache.http.client.version>
         <ballerina.lang.version>1.2.33</ballerina.lang.version>
         <ballerina.source.directory>${project.build.directory}/../src/main/ballerina</ballerina.source.directory>
         <com.fasterxml.jackson.core.annotations.version>2.9.8</com.fasterxml.jackson.core.annotations.version>
