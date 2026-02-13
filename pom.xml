@@ -102,6 +102,26 @@
                 <version>${docker.java.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.github.docker-java</groupId>
+                <artifactId>docker-java-api</artifactId>
+                <version>${docker.java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.docker-java</groupId>
+                <artifactId>docker-java-core</artifactId>
+                <version>${docker.java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.docker-java</groupId>
+                <artifactId>docker-java-transport</artifactId>
+                <version>${docker.java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.docker-java</groupId>
+                <artifactId>docker-java-transport-jersey</artifactId>
+                <version>${docker.java.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.ballerinalang</groupId>
                 <artifactId>ballerina</artifactId>
                 <version>${ballerina.lang.version}</version>
@@ -258,7 +278,7 @@
         <repository>
             <id>wso2.stage</id>
             <name>WSO2 Stage Repository</name>
-            <url>https://maven.wso2.org/nexus/content/repositories/orgballerinalang-1803/</url>
+            <url>https://maven.wso2.org/nexus/content/repositories/orgballerinalang-1807/</url>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>daily</updatePolicy>
@@ -337,14 +357,14 @@
 
     <properties>
         <apache.http.client.version>4.5.10</apache.http.client.version>
-        <ballerina.lang.version>1.2.65</ballerina.lang.version>
+        <ballerina.lang.version>1.2.66</ballerina.lang.version>
         <ballerina.source.directory>${project.build.directory}/../src/main/ballerina</ballerina.source.directory>
         <com.fasterxml.jackson.core.annotations.version>2.9.8</com.fasterxml.jackson.core.annotations.version>
         <com.fasterxml.jackson.dataformat.yaml.version>2.9.8</com.fasterxml.jackson.dataformat.yaml.version>
         <commons.codec.version>1.15</commons.codec.version>
         <commons.io.version>2.14.0</commons.io.version>
         <docker.generator.version>1.2.35</docker.generator.version>
-        <docker.java.version>3.1.5</docker.java.version>
+        <docker.java.version>3.6.0</docker.java.version>
         <fabric8.knative.client.version>4.6.4</fabric8.knative.client.version>
         <fabric8.kubernetes.client.version>4.13.2</fabric8.kubernetes.client.version>
         <jackson.version>2.11.1</jackson.version>

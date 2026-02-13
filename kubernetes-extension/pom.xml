@@ -137,6 +137,10 @@
                                     <include>org.glassfish.jersey.core:jersey-client</include>
                                     <include>org.ballerinax.docker:docker-generator</include>
                                     <include>com.github.docker-java:docker-java</include>
+                                    <include>com.github.docker-java:docker-java-api</include>
+                                    <include>com.github.docker-java:docker-java-core</include>
+                                    <include>com.github.docker-java:docker-java-transport</include>
+                                    <include>com.github.docker-java:docker-java-transport-jersey</include>
                                     <include>commons-lang:commons-lang</include>
                                     <include>org.apache.httpcomponents:httpclient</include>
                                     <include>org.apache.httpcomponents:httpcore</include>
@@ -200,6 +204,30 @@
                                 </filter>
                                 <filter>
                                     <artifact>com.github.docker-java:docker-java</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+                                <filter>
+                                    <artifact>com.github.docker-java:docker-java-api</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+                                <filter>
+                                    <artifact>com.github.docker-java:docker-java-core</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+                                <filter>
+                                    <artifact>com.github.docker-java:docker-java-transport</artifact>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </filter>
+                                <filter>
+                                    <artifact>com.github.docker-java:docker-java-transport-jersey</artifact>
                                     <includes>
                                         <include>**</include>
                                     </includes>
