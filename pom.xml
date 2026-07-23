@@ -285,6 +285,17 @@
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
         </repository>
+        <repository>
+            <id>wso2-nexus3</id>
+            <name>Nexus3 Repository</name>
+            <url>https://maven3-upgrade.wso2.org/nexus/repository/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 
 
@@ -337,14 +348,14 @@
 
     <distributionManagement>
         <repository>
-            <id>nexus-releases</id>
-            <name>WSO2 Nexus Release Repository</name>
-            <url>https://maven.wso2.org/nexus/service/local/staging/deploy/maven2/</url>
+            <id>wso2-nexus3</id>
+            <name>Nexus3 Repository</name>
+            <url>https://maven3-upgrade.wso2.org/nexus/repository/releases/</url>
         </repository>
         <snapshotRepository>
-            <id>wso2.snapshots</id>
-            <name>WSO2 Snapshot Repository</name>
-            <url>https://maven.wso2.org/nexus/content/repositories/snapshots/</url>
+            <id>wso2-nexus3</id>
+            <name>Nexus3 Repository</name>
+            <url>https://maven3-upgrade.wso2.org/nexus/repository/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
