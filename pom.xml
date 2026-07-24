@@ -235,7 +235,7 @@
 
     <repositories>
         <repository>
-            <id>test-releases</id>
+            <id>wso2.releases</id>
             <name>Test Releases Repository</name>
             <url>https://maven3-upgrade.wso2.org/nexus/repository/ballerina-test-releases/</url>
             <releases>
@@ -334,7 +334,7 @@
 
     <pluginRepositories>
         <pluginRepository>
-            <id>test-releases</id>
+            <id>wso2.releases</id>
             <name>Test Releases Repository</name>
             <url>https://maven3-upgrade.wso2.org/nexus/repository/ballerina-test-releases/</url>
             <releases>
@@ -392,12 +392,12 @@
 
     <distributionManagement>
         <repository>
-            <id>wso2-nexus3</id>
+            <id>wso2.releases</id>
             <name>Nexus3 Repository</name>
             <url>https://maven3-upgrade.wso2.org/nexus/repository/ballerina-test-releases/</url>
         </repository>
         <snapshotRepository>
-            <id>wso2-nexus3</id>
+            <id>wso2.releases</id>
             <name>Nexus3 Repository</name>
             <url>https://maven3-upgrade.wso2.org/nexus/repository/ballerina-test-releases/</url>
         </snapshotRepository>
