@@ -236,14 +236,13 @@
     <repositories>
         <repository>
             <id>wso2.releases</id>
-            <name>Test Releases Repository</name>
+            <name>WSO2 Releases Repository</name>
             <url>https://maven3-upgrade.wso2.org/nexus/repository/ballerina-test-releases/</url>
             <releases>
                 <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
             </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
         </repository>
         <repository>
             <id>wso2-nexus3-releases</id>
@@ -288,16 +287,6 @@
             </snapshots>
         </repository>
         <repository>
-            <id>wso2.releases</id>
-            <name>WSO2 Releases Repository</name>
-            <url>https://maven.wso2.org/nexus/content/repositories/releases/</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-                <checksumPolicy>ignore</checksumPolicy>
-            </releases>
-        </repository>
-        <repository>
             <id>wso2.snapshots</id>
             <name>WSO2 Snapshot Repository</name>
             <url>https://maven.wso2.org/nexus/content/repositories/snapshots/</url>
@@ -335,14 +324,13 @@
     <pluginRepositories>
         <pluginRepository>
             <id>wso2.releases</id>
-            <name>Test Releases Repository</name>
+            <name>WSO2 Releases Repository</name>
             <url>https://maven3-upgrade.wso2.org/nexus/repository/ballerina-test-releases/</url>
             <releases>
                 <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
             </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
         </pluginRepository>
         <pluginRepository>
             <id>central</id>
@@ -354,16 +342,6 @@
             </snapshots>
             <releases>
                 <updatePolicy>never</updatePolicy>
-            </releases>
-        </pluginRepository>
-        <pluginRepository>
-            <id>wso2.releases</id>
-            <name>WSO2 Releases Repository</name>
-            <url>https://maven.wso2.org/nexus/content/repositories/releases/</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-                <checksumPolicy>ignore</checksumPolicy>
             </releases>
         </pluginRepository>
         <pluginRepository>
