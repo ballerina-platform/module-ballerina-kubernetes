@@ -50,16 +50,6 @@
                 <testng.config>src/test/resources/testng-travis.xml</testng.config>
             </properties>
         </profile>
-
-        <!-- Overrides Maven's built-in release-profile (auto-activated by release:perform via
-             performRelease=true), which otherwise binds an extra source:jar-no-fork execution
-             on top of the attach-sources execution already bound via the parent POM. Without
-             this override, two "sources" classified artifacts get built and deployed, and the
-             second deploy attempt fails against an immutable Nexus3 release repo. -->
-        <profile>
-            <id>release-profile</id>
-        </profile>
-
     </profiles>
 
     <build>
@@ -91,6 +81,20 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <!-- Prevents maven-release-plugin from activating Maven's built-in release-profile
+                 during release:perform (performRelease=true), which otherwise binds an extra
+                 source:jar-no-fork execution on top of the attach-sources execution already bound
+                 via the parent POM's wso2-release profile, causing a duplicate sources-jar deploy
+                 that Nexus3 rejects as an immutable-artifact conflict. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <useReleaseProfile>false</useReleaseProfile>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
     <dependencyManagement>
