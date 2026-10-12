@@ -332,19 +332,6 @@
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
         </repository>
-        <repository>
-            <id>wso2.azurefunctions.stage</id>
-            <name>WSO2 Azure Functions Stage Repository</name>
-            <url>https://maven.wso2.org/nexus/content/repositories/orgballerinaxazurefunctions-1113/</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-                <checksumPolicy>ignore</checksumPolicy>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
     </repositories>
 
 
